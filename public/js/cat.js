@@ -6249,6 +6249,7 @@ $.extend(UI, {
     },
 	renderContributions: function(d, segment) {
         if(!d) return true;
+                var autofill = false; // Don't autofill the editarea with one of suggestions. This is a hardcoded value for now.
 		var isActiveSegment = $(segment).hasClass('editor');
 		var editarea = $('.editarea', segment);
 
@@ -6342,7 +6343,7 @@ $.extend(UI, {
             UI.setContributionSourceDiff();
 
 //            UI.setContributionSourceDiff_Old();
-			if (editareaLength === 0) {
+			if (editareaLength === 0 && autofill) {
 //				console.log('translation AA: ', translation);
 //				translation = UI.decodePlaceholdersToText(translation, true, segment_id, 'translation');
 				translation = $('#' + segment_id + ' .matches ul.graysmall').first().find('.translation').html();
