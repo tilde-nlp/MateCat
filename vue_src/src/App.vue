@@ -14,7 +14,10 @@
     <transition
       name="fade"
       mode="out-in">
-      <router-view />
+      <img
+        v-if="$loading.isLoading('app')"
+        :src="$assetPath + 'ajax-loader.gif'">
+      <router-view v-else />
     </transition>
   </div>
 </template>
