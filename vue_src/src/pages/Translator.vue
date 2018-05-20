@@ -1,0 +1,179 @@
+<template>
+  <div class="page-container">
+    <div class="translator-container">
+      <div class="section">
+        Some tools and stuff
+      </div>
+      <div
+        v-for="(segment, index) in segments"
+        :key="index"
+        :class="{active: segment.active}"
+        class="section"
+        @click="activateSegment(segment)"
+      >
+        <div class=" column number">{{ index + 1 }}</div>
+        <textarea
+          v-model="segment.original"
+          class="column original"
+          disabled
+        />
+        <div
+          class="column divider"
+          @click="translate(segment)"
+        >></div>
+        <textarea
+          v-model="segment.translation"
+          class="column translation"
+        />
+        <div class="column controls">
+          <div
+            class="icon-container"
+            @click="done(segment)">
+            <svgicon
+              :class="{active: segment.status === 'done'}"
+              class="svg-icon"
+              name="check"
+              height="30"
+            />
+          </div>
+          <div
+            class="icon-container"
+            @click="incomplete(segment)">
+            <svgicon
+              :class="{active: segment.status === 'incomplete'}"
+              class="svg-icon"
+              name="question"
+              height="30"
+            />
+          </div>
+          <div
+            class="icon-container"
+            @click="trash(segment)">
+            <svgicon
+              class="svg-icon"
+              name="delete"
+              height="30"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import _ from 'lodash'
+export default {
+  name: 'Translator',
+  data: function () {
+    return {
+      segments: [
+        {
+          id: 1,
+          original: 'The quick brown fox jumps over lazy dog.',
+          translation: '',
+          status: '',
+          active: false
+        },
+        {
+          id: 2,
+          original: 'The quick brown fox jumps over lazy dog.',
+          translation: '',
+          status: '',
+          active: false
+        },
+        {
+          id: 3,
+          original: 'The quick brown fox jumps over lazy dog.',
+          translation: '',
+          status: '',
+          active: false
+        },
+        {
+          id: 4,
+          original: 'The quick brown fox jumps over lazy dog.',
+          translation: '',
+          status: '',
+          active: false
+        },
+        {
+          id: 5,
+          original: 'The quick brown fox jumps over lazy dog.',
+          translation: '',
+          status: '',
+          active: false
+        }
+      ]
+    }
+  },
+  methods: {
+    activateSegment: function (segment) {
+      _.map(this.segments, e => {
+        e.active = e.id === segment.id
+        return e
+      })
+    },
+    translate: function (segment) {
+      segment.translation = segment.original
+    },
+    done: function (segment) {
+      segment.status = 'done'
+    },
+    incomplete: function (segment) {
+      segment.status = 'incomplete'
+    },
+    trash: function (segment) {
+      segment.translation = ''
+    }
+  }
+}
+</script>
+
+<style lang="less" scoped>
+  @import (reference) "~less-entry";
+  @section-height: @spacer-128;
+  .section {
+    background-color: @color-light-darker;
+    transition: all unit(@golden / 10, s) ease-in-out;
+    &.active {
+      background-color: @color-light;
+    }
+    .mt-8;
+    .mb-8;
+    height: @section-height;
+    line-height: @section-height;
+    .column {
+      display: inline-block;
+      vertical-align: middle;
+      .border-box;
+      height: @section-height;
+      &.number {
+        .size-s;
+        line-height: @section-height;
+        border-right: solid 2px @color-white;
+        .pl-4;
+        .pr-4;
+      }
+      &.original {
+        .size-s;
+        .w-512;
+      }
+      &.divider {
+        .size-m;
+        font-weight: bolder;
+        line-height: @section-height;
+        cursor: pointer;
+      }
+      &.translation {
+        .size-s;
+        .w-512;
+      }
+      &.controls {
+        .icon-container {
+          height: 30px;
+          line-height: 30px;
+        }
+      }
+    }
+  }
+</style>

@@ -26,28 +26,15 @@
         <div id="overlay"></div>
         <div id="droptest">
 
-            <p tal:condition="true:conversion_enabled" class="file-drag">
-                <strong>Upload your files to translate them with MateCat</strong><br/>
-
-            </p>
-
-            <p tal:condition="not:conversion_enabled" class="file-drag">
-                <strong>Upload your XLIFF files to translate them with MateCat</strong><br/>
-                or</p>
-
-            <p class="file-drop">
-                <strong>Drop it</strong> here.
-            </p>
-
-            <div class="container">
+            <div class="container upload-container">
                 <!-- The file upload form used as target for the file upload widget -->
 
                 <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
                 <div class="row fileupload-buttonbar">
                     <div class="span7">
                         <!-- The fileinput-button span is used to style the file input field as button -->
-                                    <span class="btn btn-success fileinput-button">
-                                        <span>Add files...</span>
+                                    <span class="fileinput-button">
+                                        <span>Izvēlēties failus</span>
                                         <input type="file" name="files[]" multiple="multiple" class="multiple-button"/>
                                     </span>
 
@@ -89,7 +76,7 @@
 
             </div>
             <!-- #container -->
-            <span class="min">(or drop them here)</span>
+            <span class="min upload-aftertext">Velciet failus šeit</span>
 
         </div>
 

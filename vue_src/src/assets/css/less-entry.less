@@ -1,0 +1,132 @@
+@import "~@shibetec/vue-toolbox/dist/less/shibetec-less";
+
+@color-red: #b71c1c;
+@color-red-darker: #931C1C;
+@border-radius: unit(@e * @golden, px);
+
+/* FONT VARIABLES */
+@size-3xl: 128px; @spacing-3xl: -6px; @lh-3xl: 128px;
+@size-2xl: 72px;  @spacing-2xl: normal; @lh-2xl: 76px;
+@size-xl: 48px;   @spacing-xl: -2px;  @lh-xl: 52px;
+@size-l: 32px;    @spacing-l: normal;   @lh-l: normal;
+@size-m: 26px;    @spacing-m: -0.5px; @lh-m: 40px;
+@size-s: 16px;    @spacing-s: 0.1px;  @lh-s: 24px;
+@size-xs: 14px;   @spacing-xs: 1px; @lh-xs: 20px;
+
+@font-regular: 'Playfair Display', serif;
+
+.font-base {
+  -webkit-font-smoothing: antialiased;
+  font-family: @font-regular;
+}
+
+.size-3xl {
+  .font-base;
+  font-size: @size-3xl;
+  line-height: @lh-3xl;
+  letter-spacing: @spacing-3xl;
+}
+.size-2xl {
+  .font-base;
+  font-size: @size-2xl;
+  line-height: @lh-2xl;
+  letter-spacing: @spacing-2xl;
+}
+.size-xl {
+  .font-base;
+  font-size: @size-xl;
+  line-height: @lh-xl;
+  letter-spacing: @spacing-xl;
+}
+.size-l {
+  .font-base;
+  font-size: @size-l;
+  line-height: @lh-l;
+  letter-spacing: @spacing-l;
+}
+.size-m {
+  .font-base;
+  font-size: @size-m;
+  line-height: @lh-m;
+  letter-spacing: @spacing-m;
+}
+.size-s {
+  .font-base;
+  font-size: @size-s;
+  line-height: @lh-s;
+  letter-spacing: @spacing-s;
+}
+.size-xs {
+  .font-base;
+  font-size: @size-xs;
+  line-height: @lh-xs;
+  letter-spacing: @spacing-xs;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+}
+::-webkit-scrollbar-thumb {
+  background: @color-red;
+}
+::-webkit-scrollbar-track {
+  opacity: 0;
+}
+
+.button {
+  .border-box;
+  .pointer;
+  .size-s;
+  .white;
+  transition: all unit(@golden / 10, s) ease-in-out;
+
+  text-align: center;
+
+  height: @spacer-32;
+  width: @spacer-256;
+
+  border-radius: @border-radius;
+  background-color: @color-red;
+  border: solid 1px @color-dark;
+
+  &:hover {
+    outline: none !important;
+    box-shadow: none;
+    background-color: @color-red-darker;
+  }
+}
+
+button {
+  .button;
+}
+
+.h1 {
+  .size-2xl;
+  color: @color-dark;
+  font-weight: normal;
+}
+
+h1 {
+  .h1;
+}
+
+.h4 {
+  .size-m;
+  color: @color-dark;
+  font-weight: normal;;
+}
+
+h4 {
+  .h4;
+}
+
+.svg-icon {
+  display: inline-block;
+  cursor: pointer;
+  transition: all unit(@golden / 10, s) ease-in-out;
+  fill: @color-grey-darker;
+  &:hover,
+  &.active {
+    fill: @color-red-darker;
+  }
+}
