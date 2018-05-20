@@ -9,7 +9,7 @@ import VueLocalStorage from 'vue-localstorage'
 import {loading} from './utils/loading'
 import {Auth} from './utils/auth'
 import {CONFIG} from './config'
-// import GSignInButton from 'vue-google-signin-button'
+import GSignInButton from 'vue-google-signin-button'
 // Load Playfair Display typeface
 require('typeface-playfair-display')
 
@@ -23,7 +23,7 @@ Vue.prototype.$assetPath = CONFIG.apiUrl + 'public/vue_dist/static/'
 Vue.use(svgicon, {
   tagName: 'svgicon'
 })
-// Vue.use(GSignInButton)
+Vue.use(GSignInButton)
 Vue.use(VueLocalStorage, {
   name: 'localStorage',
   bind: true

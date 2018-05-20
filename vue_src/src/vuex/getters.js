@@ -3,7 +3,9 @@ export default {
     return function () { return state.ready }
   },
   isLoggedIn: state => {
-    console.log(state)
-    return state.getters.isLoggedIn
+    return state.isLoggedIn
+  },
+  profile: state => {
+    return state.profile
   }
 }

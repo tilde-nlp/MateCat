@@ -4,6 +4,7 @@ import AuthService from '../axios/auth'
 
 export const Auth = {
   checkAccess () {
+    console.log('inside utils/auths')
     return store.state.isLoggedIn
   },
   login (email, pass, persist, cb) {

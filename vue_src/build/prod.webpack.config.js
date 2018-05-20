@@ -115,7 +115,7 @@ module.exports = {
   plugins: [
     new VueLoaderPlugin(),
     new ExtractPlugin('main.css'),
-    new UglifyJsPlugin(),
+    // new UglifyJsPlugin(),
     new CopyWebpackPlugin([{
       from: resolve('static'),
       to: resolve('../public/vue_dist/static'),

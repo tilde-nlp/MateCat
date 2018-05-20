@@ -18,5 +18,6 @@ export default {
   profile (state, profile) {
     if (state.debug) console.log('Setting profile: ' + profile)
     state.profile = profile
+    state.isLoggedIn = true
   }
 }

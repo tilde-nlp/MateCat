@@ -1,5 +1,9 @@
 <template>
   <div class="page-container">
+    <div class="header">
+      Hello, {{ $store.getters.profile.getName() }}
+      <button @click="signOut()">Sign out</button>
+    </div>
     <form
       ref="fileForm"
       :class="{active: dragActive}"
@@ -178,6 +182,15 @@ export default {
     },
     translate: function () {
       this.$router.push({name: 'translate'})
+    },
+    signOut: function () {
+      const auth2 = window.gapi.auth2.getAuthInstance()
+      auth2.signOut().then(() => {
+        console.log('User signed out.')
+        console.log(this.$store)
+        this.$store.dispatch('signOut')
+        this.$router.push({name: 'login'})
+      })
     }
   }
 }
