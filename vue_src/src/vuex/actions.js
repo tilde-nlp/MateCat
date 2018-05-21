@@ -7,7 +7,6 @@ export default {
     state.state = CleanState
     AuthService.checkLogin()
       .then(r => {
-        console.log(r)
         loading.endLoading('app')
         state.commit('ready', true)
       })

@@ -80,11 +80,13 @@
 </template>
 
 <script>
+import FileService from '../axios/file'
 export default {
   name: 'FileList',
   data: function () {
     return {
       uploadFiles: [],
+      pendingFiles: [],
       fileUploader: '',
       fileForm: '',
       dragAndDropCapable: false,
@@ -128,6 +130,7 @@ export default {
         */
         for (let i = 0; i < e.dataTransfer.files.length; i++) {
           this.uploadFiles.push(e.dataTransfer.files[i])
+          this.upload(e.dataTransfer.files[i])
         }
       })
       /*
@@ -146,9 +149,9 @@ export default {
   },
   methods: {
     handleFileUpload: function () {
-      console.log(this.$refs.fileUploader.files)
       for (let i = 0; i < this.$refs.fileUploader.files.length; i++) {
         this.uploadFiles.push(this.$refs.fileUploader.files[i])
+        this.upload(this.$refs.fileUploader.files[i])
       }
     },
     addFiles: function () {
@@ -166,7 +169,7 @@ export default {
         Create a test element to see if certain events
         are present that let us do drag and drop.
       */
-      var div = document.createElement('div')
+      let div = document.createElement('div')
 
       /*
         Check to see if the `draggable` event is in the element
@@ -186,11 +189,19 @@ export default {
     signOut: function () {
       const auth2 = window.gapi.auth2.getAuthInstance()
       auth2.signOut().then(() => {
-        console.log('User signed out.')
-        console.log(this.$store)
         this.$store.dispatch('signOut')
         this.$router.push({name: 'login'})
       })
+    },
+    upload: function (file) {
+      // eslint-disable-next-line no-undef
+      let formData = new FormData()
+      formData.append('files[]', file)
+      FileService.upload(formData)
+        .then(response => {
+          console.log('upload response')
+          console.log(response)
+        })
     }
   }
 }
