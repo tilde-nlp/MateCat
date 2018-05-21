@@ -6,7 +6,7 @@
       class="button"
       @success="onSignInSuccess"
       @error="onSignInError">
-      Pieslēgties
+      Pieslēgties ar Google
     </g-signin-button>
   </div>
 </template>
@@ -47,3 +47,14 @@ export default {
   }
 }
 </script>
+<style lang="less" scoped>
+  @import (reference) "~less-entry";
+  .page-container {
+    max-width: 720px;
+    margin: @spacer-128 auto;
+    text-align: center;
+    .button {
+      line-height: @spacer-32;
+    }
+  }
+</style>

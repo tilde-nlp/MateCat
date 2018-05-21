@@ -1,5 +1,10 @@
 <template>
   <div>
+    <transition
+      name="fade"
+      mode="out-in">
+      <c-header v-if="$store.state.profile"/>
+    </transition>
     <div class="alerts">
       <transition-group
         name="fade"
@@ -24,11 +29,13 @@
 
 <script>
 import {Alert} from '@shibetec/vue-toolbox'
+import Header from './components/layout/Header'
 import './assets/inline-svg'
 export default {
   name: 'App',
   components: {
-    'alert': Alert
+    'alert': Alert,
+    'c-header': Header
   },
   data: function () {
     return {

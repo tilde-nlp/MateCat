@@ -1,7 +1,7 @@
 export default {
-  debug: false,
+  debug: true,
   isLoggedIn: false,
   token: '',
   ready: false,
-  profile: {}
+  profile: false
 }

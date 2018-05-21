@@ -14,8 +14,5 @@ export default {
         loading.endLoading('app')
         state.commit('ready', true)
       })
-  },
-  signOut: state => {
-    state.state = CleanState
   }
 }
