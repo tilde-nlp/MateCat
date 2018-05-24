@@ -7,6 +7,14 @@ export default {
     state.state = CleanState
     AuthService.checkLogin()
       .then(r => {
+        console.log('User response')
+        console.log(r)
+        if (r.data.hasOwnProperty('user')) {
+          let profile = r.data.user
+          profile['fullName'] = profile.first_name + ' ' + profile.last_name
+          profile['imageUrl'] = r.data.metadata.gplus_picture
+          state.commit('profile', r.data.user)
+        }
         loading.endLoading('app')
         state.commit('ready', true)
       })

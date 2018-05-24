@@ -59,6 +59,12 @@ class oauthResponseHandlerController extends viewController{
         $model->setAccessToken( $this->client->getAccessToken() );
 
         $model->signIn() ;
+        $user = new \stdClass();
+        $user->fullName = $this->remoteUser->name;
+        $user->imageUrl = $this->remoteUser->picture;
+
+        echo json_encode($user);
+        die();
     }
 
     protected function _initRemoteUser() {

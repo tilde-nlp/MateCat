@@ -16,7 +16,10 @@ export default {
     state.authReady = ready
   },
   profile (state, profile) {
-    if (state.debug) console.log('Setting profile: ' + profile)
+    if (state.debug) {
+      console.log('Setting profile: ')
+      console.log(profile)
+    }
     state.profile = profile
     state.isLoggedIn = true
   }

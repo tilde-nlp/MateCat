@@ -1,6 +1,9 @@
 <template>
   <div class="page-container">
-    <button @click="googleSignIn">Pieslēgties ar Google</button>
+    <button
+      v-show="!$store.getters.profile"
+      @click="googleSignIn"
+    >Pieslēgties ar Google</button>
   </div>
 </template>
 
@@ -8,9 +11,12 @@
 import AuthService from '../axios/auth'
 export default {
   name: 'LoginPage',
+  created: function () {
+    if (this.$store.getters.profile) this.$router.push({name: 'file-list'})
+  },
   methods: {
     googleSignIn: function () {
-      this.$gAuth.getAuthCode(function (authorizationCode) {
+      this.$gAuth.getAuthCode(authorizationCode => {
         // on success
         // eslint-disable-next-line no-undef
         let formData = new FormData()
@@ -19,8 +25,10 @@ export default {
           .then(response => {
             console.log('Succesful google login')
             console.log(response)
+            this.$store.commit('profile', response.data)
+            this.$router.push({name: 'file-list'})
           })
-      }, function (error) {
+      }, error => {
         // on fail do something
         console.log(error)
       })

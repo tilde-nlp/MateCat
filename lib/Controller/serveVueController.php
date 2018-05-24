@@ -3,7 +3,6 @@
 class serveVueController {
 
     public function doAction() {
-        // TODO INJECT CONFIG INTO index.html
         $config = new \stdClass();
         $config->baseUrl = INIT::$RELATIVE_HOST_NAME;
         $config->googleClientId = INIT::$OAUTH_CLIENT_ID;

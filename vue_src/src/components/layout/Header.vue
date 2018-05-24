@@ -1,21 +1,25 @@
 <template>
   <div class="header-container">
-    <img :src="$store.state.profile.getImageUrl()">
-    Hello, {{ $store.state.profile.getName() }}
+    <img :src="$store.state.profile.imageUrl">
+    Hello, {{ $store.state.profile.fullName }}
     <button @click="signOut()">Sign out</button>
   </div>
 </template>
 
 <script>
+import AuthService from '../../axios/auth'
 export default {
   name: 'CustomHeader',
   methods: {
     signOut: function () {
-      const auth2 = window.gapi.auth2.getAuthInstance()
-      auth2.signOut().then(() => {
+      this.$gAuth.signOut(() => {
+        AuthService.logout()
         this.$store.commit('isLoggedIn', false)
         this.$store.commit('profile', false)
         this.$router.push({name: 'login'})
+      }, error => {
+        console.log('Sing out error')
+        console.log(error)
       })
     }
   }
