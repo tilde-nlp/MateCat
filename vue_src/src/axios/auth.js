@@ -4,14 +4,8 @@ export default {
   checkLogin: function () {
     return HTTP.get('api/app/user')
   },
-  register: function (data) {
-    return HTTP.post('auths/register', data)
-  },
-  login: function (username, password) {
-    return HTTP.post('auths/login', {
-      username: username,
-      password: password
-    })
+  login: function (data) {
+    return HTTP.post('oauth/response', data)
   },
   tokenLogin: function (token) {
     return HTTP.post('auths/token-login', {token: token})

@@ -1,48 +1,29 @@
 <template>
   <div class="page-container">
-    <g-signin-button
-      ref="loginButton"
-      :params="googleSignInParams"
-      class="button"
-      @success="onSignInSuccess"
-      @error="onSignInError">
-      Pieslēgties ar Google
-    </g-signin-button>
+    <button @click="googleSignIn">Pieslēgties ar Google</button>
   </div>
 </template>
 
 <script>
+import AuthService from '../axios/auth'
 export default {
   name: 'LoginPage',
-  data () {
-    return {
-      /**
-       * The Auth2 parameters, as seen on
-       * https://developers.google.com/identity/sign-in/web/reference#gapiauth2initparams.
-       * As the very least, a valid client_id must present.
-       * @type {Object}
-       */
-      googleSignInParams: {
-        client_id: this.$CONFIG.googleClientId
-      },
-      loginButton: ''
-    }
-  },
-  mounted: function () {
-    // console.log(this.$refs.loginButton)
-    // this.$refs.loginButton.$el.click()
-  },
   methods: {
-    onSignInSuccess (googleUser) {
-      // `googleUser` is the GoogleUser object that represents the just-signed-in user.
-      // See https://developers.google.com/identity/sign-in/web/reference#users
-      const profile = googleUser.getBasicProfile() // etc etc
-      this.$store.commit('profile', profile)
-      this.$router.push({name: 'file-list'})
-    },
-    onSignInError (error) {
-      // `error` contains any error occurred.
-      console.log('OH NOES', error)
+    googleSignIn: function () {
+      this.$gAuth.getAuthCode(function (authorizationCode) {
+        // on success
+        // eslint-disable-next-line no-undef
+        let formData = new FormData()
+        formData.append('code', authorizationCode)
+        AuthService.login(formData)
+          .then(response => {
+            console.log('Succesful google login')
+            console.log(response)
+          })
+      }, function (error) {
+        // on fail do something
+        console.log(error)
+      })
     }
   }
 }

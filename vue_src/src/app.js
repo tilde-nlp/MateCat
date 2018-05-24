@@ -8,7 +8,7 @@ import {store} from './vuex/store'
 import VueLocalStorage from 'vue-localstorage'
 import {loading} from './utils/loading'
 import {Auth} from './utils/auth'
-import GSignInButton from 'vue-google-signin-button'
+import GAuth from 'vue-google-oauth2'
 // Load Playfair Display typeface
 require('typeface-playfair-display')
 
@@ -24,7 +24,7 @@ export function main (...config) {
   Vue.use(svgicon, {
     tagName: 'svgicon'
   })
-  Vue.use(GSignInButton)
+  Vue.use(GAuth, {clientId: config[0].googleClientId, scope: 'profile email https://www.googleapis.com/auth/plus.login'})
   Vue.use(VueLocalStorage, {
     name: 'localStorage',
     bind: true

@@ -24,7 +24,8 @@ class OauthClient {
 		$this->client->setApplicationName(INIT::$OAUTH_CLIENT_APP_NAME);
 		$this->client->setClientId(INIT::$OAUTH_CLIENT_ID);
 		$this->client->setClientSecret(INIT::$OAUTH_CLIENT_SECRET);
-		$this->client->setRedirectUri(INIT::$OAUTH_REDIRECT_URL);
+//		$this->client->setRedirectUri(INIT::$OAUTH_REDIRECT_URL);
+		$this->client->setRedirectUri('postmessage');
 		$this->client->setScopes(INIT::$OAUTH_SCOPES);
 	}
 
