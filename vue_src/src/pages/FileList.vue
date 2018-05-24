@@ -21,7 +21,8 @@
       <div
         v-if="dragAndDropCapable"
         class="file-dropoff-note"
-      >Velciet failu šeit</div>
+      >Velciet failu šeit
+      </div>
     </form>
     <div class="file-list-container">
       <div class="file-list-header">
@@ -44,29 +45,45 @@
             class="file-row"
           >
             <div class="status column">{{ file.name }}</div>
-            <div class="segments column">120</div>
-            <div class="words column">520</div>
-            <div class="translated column">55%</div>
-            <div class="created column">22.02.2018</div>
-            <div class="created-by column">Jānis Bērziņš</div>
-            <div class="last-modified column">18.05.2018</div>
-            <div class="controls column">
-              <button
-                class="file-list-button"
-                @click="translate"
-              >Rediģēt</button>
-              <svgicon
-                class="svg-icon"
-                name="share"
-                height="30"
-              />
-              <span @click="removeFile(key)">
+            <div
+              v-if="$loading.isLoading('file_' + key)"
+              class="ib"
+            >
+              Augšupielādējas
+              <img
+                :src="$assetPath + 'ajax-loader.gif'"
+                class="ib ml-16"
+              >
+            </div>
+            <div
+              v-else
+              class="ib"
+            >
+              <div class="segments column">120</div>
+              <div class="words column">520</div>
+              <div class="translated column">55%</div>
+              <div class="created column">22.02.2018</div>
+              <div class="created-by column">Jānis Bērziņš</div>
+              <div class="last-modified column">18.05.2018</div>
+              <div class="controls column">
+                <button
+                  class="file-list-button"
+                  @click="translate"
+                >Rediģēt
+                </button>
                 <svgicon
                   class="svg-icon"
-                  name="close"
+                  name="share"
                   height="30"
                 />
-              </span>
+                <span @click="removeFile(key)">
+                  <svgicon
+                    class="svg-icon"
+                    name="close"
+                    height="30"
+                  />
+                </span>
+              </div>
             </div>
           </div>
         </transition-group>
@@ -77,6 +94,7 @@
 
 <script>
 import FileService from '../axios/file'
+
 export default {
   name: 'FileList',
   data: function () {
@@ -147,7 +165,7 @@ export default {
     handleFileUpload: function () {
       for (let i = 0; i < this.$refs.fileUploader.files.length; i++) {
         this.uploadFiles.push(this.$refs.fileUploader.files[i])
-        this.upload(this.$refs.fileUploader.files[i])
+        this.upload(this.$refs.fileUploader.files[i], this.uploadFiles.length - 1)
       }
     },
     addFiles: function () {
@@ -182,14 +200,28 @@ export default {
     translate: function () {
       this.$router.push({name: 'translate'})
     },
-    upload: function (file) {
+    upload: function (file, index) {
+      this.$loading.startLoading('file_' + index)
       // eslint-disable-next-line no-undef
       let formData = new FormData()
       formData.append('files[]', file)
       FileService.upload(formData)
-        .then(response => {
+        .then(uploadRes => {
           console.log('upload response')
-          console.log(response)
+          console.log(uploadRes)
+          // eslint-disable-next-line no-undef
+          let convertFormData = new FormData()
+          convertFormData.append('action', 'convertFile')
+          convertFormData.append('file_name', uploadRes.data[0].name)
+          convertFormData.append('source_lang', 'en-US')
+          convertFormData.append('target_lang', 'fr-FR')
+          convertFormData.append('segmentation_rule', '')
+          FileService.convert(convertFormData)
+            .then(convertRes => {
+              console.log('convert response')
+              console.log(convertRes.data)
+              this.$loading.endLoading('file_' + index)
+            })
         })
     }
   }
