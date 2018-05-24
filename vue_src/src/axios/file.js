@@ -15,5 +15,8 @@ export default {
   },
   analyze: function (data) {
     return HTTP.post('?action=getVolumeAnalysis', data)
+  },
+  getList: function (data) {
+    return HTTP.post('?action=getProjects', data)
   }
 }

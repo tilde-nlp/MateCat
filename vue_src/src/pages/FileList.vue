@@ -95,7 +95,7 @@
 <script>
 import FileService from '../axios/file'
 import _ from 'lodash'
-
+import Vue from 'vue'
 export default {
   name: 'FileList',
   data: function () {
@@ -168,6 +168,7 @@ export default {
       for (let i = 0; i < this.$refs.fileUploader.files.length; i++) {
         const index = this.uploadFiles.length
         this.uploadProgress[index] = {
+          index: index,
           status: 'Augšupielādējas',
           projectId: '',
           password: '',
@@ -283,6 +284,8 @@ export default {
           .then(analyzeRes => {
             console.log('Analyze complete')
             console.log(analyzeRes)
+            this.$loading.endLoading('file_' + currentUpload.index)
+            Vue.delete(this.uploadProgress, currentUpload.index)
           })
       }
     }
