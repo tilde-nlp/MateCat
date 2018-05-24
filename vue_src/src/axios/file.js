@@ -14,5 +14,15 @@ export default {
         'Content-Type': 'multipart/form-data'
       }
     })
+  },
+  createProject: function (data) {
+    return HTTP.post('?action=createProject&time=1527158705351,jid=undefined', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  },
+  checkStatus: function (link) {
+    return HTTP.get(link)
   }
 }

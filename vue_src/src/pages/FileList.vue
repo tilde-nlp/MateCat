@@ -104,7 +104,8 @@ export default {
       fileUploader: '',
       fileForm: '',
       dragAndDropCapable: false,
-      dragActive: false
+      dragActive: false,
+      uploadProgress: {}
     }
   },
   mounted: function () {
@@ -164,8 +165,17 @@ export default {
   methods: {
     handleFileUpload: function () {
       for (let i = 0; i < this.$refs.fileUploader.files.length; i++) {
+        const index = this.uploadFiles.length
+        this.uploadProgress[index] = {
+          status: 'Augšupielādējas',
+          projectId: '',
+          password: '',
+          fileName: '',
+          link: ''
+        }
         this.uploadFiles.push(this.$refs.fileUploader.files[i])
-        this.upload(this.$refs.fileUploader.files[i], this.uploadFiles.length - 1)
+        this.$loading.startLoading('file_' + index)
+        this.upload(this.$refs.fileUploader.files[i], index)
       }
     },
     addFiles: function () {
@@ -201,7 +211,6 @@ export default {
       this.$router.push({name: 'translate'})
     },
     upload: function (file, index) {
-      this.$loading.startLoading('file_' + index)
       // eslint-disable-next-line no-undef
       let formData = new FormData()
       formData.append('files[]', file)
@@ -209,20 +218,59 @@ export default {
         .then(uploadRes => {
           console.log('upload response')
           console.log(uploadRes)
+          this.uploadProgress[index].fileName = uploadRes.data[0].name
           // eslint-disable-next-line no-undef
           let convertFormData = new FormData()
           convertFormData.append('action', 'convertFile')
-          convertFormData.append('file_name', uploadRes.data[0].name)
+          convertFormData.append('file_name', this.uploadProgress[index].fileName)
           convertFormData.append('source_lang', 'en-US')
           convertFormData.append('target_lang', 'fr-FR')
           convertFormData.append('segmentation_rule', '')
-          FileService.convert(convertFormData)
-            .then(convertRes => {
-              console.log('convert response')
-              console.log(convertRes.data)
-              this.$loading.endLoading('file_' + index)
-            })
+          return FileService.convert(convertFormData)
         })
+        .then(convertRes => {
+          console.log('convert response')
+          console.log(convertRes.data)
+          // eslint-disable-next-line no-undef
+          let projectFormData = new FormData()
+          projectFormData.append('action', 'createProject')
+          projectFormData.append('project_name', '')
+          projectFormData.append('file_name', this.uploadProgress[index].fileName)
+          projectFormData.append('source_language', 'en-US')
+          projectFormData.append('target_language', 'fr-FR')
+          projectFormData.append('job_subject', 'general')
+          projectFormData.append('disable_tms_engine', 'false')
+          projectFormData.append('mt_engine', '1')
+          projectFormData.append('private_key_list', '{"ownergroup":[],"mine":[],"anonymous":[]}')
+          projectFormData.append('lang_detect_files[' + this.uploadProgress[index].fileName + ']', 'detect')
+          projectFormData.append('pretranslate_100', '0')
+          projectFormData.append('lexiqa', 'true')
+          projectFormData.append('speech2text', 'false')
+          projectFormData.append('tag_projection', 'true')
+          projectFormData.append('segmentation_rule', '')
+          projectFormData.append('dqf', 'false')
+          projectFormData.append('get_public_matches', 'true')
+          return FileService.createProject(projectFormData)
+        })
+        .then(projectRes => {
+          console.log('project response')
+          console.log(projectRes.data)
+          this.uploadProgress[index].projectId = projectRes.data.data.id_project
+          this.uploadProgress[index].password = projectRes.data.data.password
+          this.uploadProgress[index].link = 'api/v2/projects/' + projectRes.data.data.id_project + '/' + projectRes.data.data.password + '/creation_status'
+          return FileService.checkStatus(this.uploadProgress[index].link)
+        })
+        .then(this.statusResponse)
+    },
+    statusResponse: function (res) {
+      console.log('status response')
+      console.log(res)
+      if (res.data.status === 202) {
+        setTimeout(() => {
+          FileService.checkStatus(res.request.responseURL)
+            .then(this.statusResponse)
+        }, 1000)
+      }
     }
   }
 }
