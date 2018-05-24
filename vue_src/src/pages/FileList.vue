@@ -94,6 +94,7 @@
 
 <script>
 import FileService from '../axios/file'
+import _ from 'lodash'
 
 export default {
   name: 'FileList',
@@ -244,7 +245,7 @@ export default {
           projectFormData.append('private_key_list', '{"ownergroup":[],"mine":[],"anonymous":[]}')
           projectFormData.append('lang_detect_files[' + this.uploadProgress[index].fileName + ']', 'detect')
           projectFormData.append('pretranslate_100', '0')
-          projectFormData.append('lexiqa', 'true')
+          projectFormData.append('lexiqa', 'false')
           projectFormData.append('speech2text', 'false')
           projectFormData.append('tag_projection', 'true')
           projectFormData.append('segmentation_rule', '')
@@ -257,7 +258,7 @@ export default {
           console.log(projectRes.data)
           this.uploadProgress[index].projectId = projectRes.data.data.id_project
           this.uploadProgress[index].password = projectRes.data.data.password
-          this.uploadProgress[index].link = 'api/v2/projects/' + projectRes.data.data.id_project + '/' + projectRes.data.data.password + '/creation_status'
+          this.uploadProgress[index].link = this.$CONFIG.baseUrl + 'api/v2/projects/' + projectRes.data.data.id_project + '/' + projectRes.data.data.password + '/creation_status'
           return FileService.checkStatus(this.uploadProgress[index].link)
         })
         .then(this.statusResponse)
@@ -270,6 +271,19 @@ export default {
           FileService.checkStatus(res.request.responseURL)
             .then(this.statusResponse)
         }, 1000)
+      }
+      if (res.data.status === 200) {
+        console.log('Project created')
+        const currentUpload = _.find(this.uploadProgress, 'link', res.request.responseURL)
+        // eslint-disable-next-line no-undef
+        let formData = new FormData()
+        formData.append('pid', currentUpload.projectId)
+        formData.append('ppassword', currentUpload.password)
+        FileService.analyze(formData)
+          .then(analyzeRes => {
+            console.log('Analyze complete')
+            console.log(analyzeRes)
+          })
       }
     }
   }

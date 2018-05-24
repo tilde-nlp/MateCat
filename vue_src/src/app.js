@@ -16,10 +16,11 @@ export function main (...config) {
   Vue.config.productionTip = false
 
   Vue.prototype.$Alerts = AlertsObserver
-  Vue.prototype.$HTTP = HTTP
   Vue.prototype.$Auth = Auth
   Vue.prototype.$CONFIG = config[0]
   Vue.prototype.$assetPath = config[0].baseUrl + 'public/vue_dist/static/'
+  HTTP.defaults.baseUrl = config[0].baseUrl
+  Vue.prototype.$HTTP = HTTP
   Vue.use(svgicon, {
     tagName: 'svgicon'
   })
