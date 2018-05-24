@@ -86,6 +86,7 @@ LXQ_PARTNERID = false
 
 ;----------------------------------------
 [production]
+RELATIVE_HOST_NAME = "http://localhost/" ; Relative host path for running cat as submodule
 CLI_HTTP_HOST = "http://localhost" ; Set the hostname for batch processes ( they do not know the global variable $_SERVER )
 DB_SERVER = "localhost"
 DB_DATABASE = "matecat"
