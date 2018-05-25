@@ -110,6 +110,23 @@ export default {
     }
   },
   mounted: function () {
+    // eslint-disable-next-line no-undef
+    let formData = new FormData()
+    formData.append('id_team', this.$store.getters.profile.teamId)
+    formData.append('page', '1')
+    formData.append('filter', '0')
+    FileService.getList(formData)
+      .then(response => {
+        console.log('Got file list')
+        console.log(response.data)
+        this.uploadFiles = null
+        this.uploadFiles = _.map(response.data.data, el => {
+          return {
+            name: el.name,
+            wordCount: el.standard_analysis_wc
+          }
+        })
+      })
     /*
       Determine if drag and drop functionality is capable in the browser
     */
