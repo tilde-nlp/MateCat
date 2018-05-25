@@ -59,12 +59,12 @@
               v-else
               class="ib"
             >
-              <div class="segments column">120</div>
-              <div class="words column">520</div>
-              <div class="translated column">55%</div>
-              <div class="created column">22.02.2018</div>
-              <div class="created-by column">Jānis Bērziņš</div>
-              <div class="last-modified column">18.05.2018</div>
+              <div class="segments column">-</div>
+              <div class="words column">{{ file.wordCount }}</div>
+              <div class="translated column">-</div>
+              <div class="created column">-</div>
+              <div class="created-by column">-</div>
+              <div class="last-modified column">-</div>
               <div class="controls column">
                 <button
                   class="file-list-button"
@@ -162,7 +162,20 @@ export default {
           array.
         */
         for (let i = 0; i < e.dataTransfer.files.length; i++) {
-          this.uploadFiles.push(e.dataTransfer.files[i])
+          const index = this.uploadFiles.length
+          this.uploadProgress[index] = {
+            index: index,
+            status: 'Augšupielādējas',
+            projectId: '',
+            password: '',
+            fileName: '',
+            link: ''
+          }
+          this.uploadFiles.push({
+            name: e.dataTransfer.files[i].name,
+            wordCount: 0
+          })
+          this.$loading.startLoading('file_' + index)
           this.upload(e.dataTransfer.files[i])
         }
       })
@@ -192,7 +205,11 @@ export default {
           fileName: '',
           link: ''
         }
-        this.uploadFiles.push(this.$refs.fileUploader.files[i])
+        console.log(this.$refs.fileUploader.files[i])
+        this.uploadFiles.push({
+          name: this.$refs.fileUploader.files[i].name,
+          wordCount: 0
+        })
         this.$loading.startLoading('file_' + index)
         this.upload(this.$refs.fileUploader.files[i], index)
       }
