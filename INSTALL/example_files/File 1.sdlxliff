@@ -1,0 +1,343 @@
+﻿<?xml version="1.0" encoding="utf-8"?><xliff xmlns:sdl="http://sdl.com/FileTypes/SdlXliff/1.0" version="1.2" sdl:version="1.0" xmlns="urn:oasis:names:tc:xliff:document:1.2"><doc-info xmlns="http://sdl.com/FileTypes/SdlXliff/1.0"><rep-defs><rep-def id="dedd8293-6467-448d-9563-02e632caef86-5"><entry tu="223ca9d7-419d-4bf9-95d7-0c03a514c493" seg="13" /><entry tu="dedd8293-6467-448d-9563-02e632caef86" seg="5" /><entry tu="ba69eb4c-6611-4451-9bcf-9cb113901d87" seg="63" /></rep-def><rep-def id="dad81ef4-d6c8-4932-8d37-e50a5bfb0fbb-21"><entry tu="499e2149-563c-4405-b423-9997be90e3cf" seg="24" /><entry tu="dad81ef4-d6c8-4932-8d37-e50a5bfb0fbb" seg="21" /></rep-def><rep-def id="5d58db00-6619-4cee-98f4-f238cf0b20bd-84"><entry tu="4ed00992-1d2c-496f-9c6a-eea6186bd86c" seg="86" /><entry tu="5d58db00-6619-4cee-98f4-f238cf0b20bd" seg="84" /><entry tu="5aefc760-42f7-4b89-85e4-6047474ed012" seg="90" /></rep-def><rep-def id="660bf0eb-bab3-43f2-8bcd-82235f40877d-109"><entry tu="55e7aff8-5a21-444f-a569-79ae5ff7e40d" seg="110" /><entry tu="660bf0eb-bab3-43f2-8bcd-82235f40877d" seg="109" /></rep-def><rep-def id="8a49c02a-fb35-4c47-8417-50e065117c51-111"><entry tu="8c5de145-6fc6-41d9-bba7-aba82acdf1b1" seg="112" /><entry tu="8a49c02a-fb35-4c47-8417-50e065117c51" seg="111" /></rep-def><rep-def id="b5ba1858-340f-4236-9cba-206ea7372bdf-113"><entry tu="2bb307e5-0586-420f-9a10-fac5ab468bfc" seg="115" /><entry tu="b5ba1858-340f-4236-9cba-206ea7372bdf" seg="113" /></rep-def><rep-def id="61618f6d-ca3c-42a0-b982-76eaea4d0bda-114"><entry tu="62bb9578-8315-4565-aebc-f841fbfcb941" seg="116" /><entry tu="61618f6d-ca3c-42a0-b982-76eaea4d0bda" seg="114" /></rep-def></rep-defs></doc-info><file original="C:\Users\Alessandra\Desktop\Teamcenter SOA Connection - Dry Run.txt" source-language="en-GB" datatype="x-sdlfilterframework2" target-language="fr-FR"><header><file-info xmlns="http://sdl.com/FileTypes/SdlXliff/1.0"><value key="SDL:FileId">6ddb5c66-c91a-4404-a1e1-598855ec2239</value><value key="SDL:CreationDate">10/11/2013 13:03:15</value><value key="SDL:OriginalFilePath">C:\Users\Alessandra\Desktop\Teamcenter SOA Connection - Dry Run.txt</value><value key="SDL:OriginalEncoding">utf-8</value><value key="SDL:AutoClonedFlagSupported">True</value><value key="HasUtf8Bom">True</value><value key="LineBreakType">
+</value><value key="ParagraphTextDirections"></value><sniff-info><detected-encoding detection-level="Certain" encoding="utf-8" /><detected-source-lang detection-level="Guess" lang="en-GB" /><props><value key="HasUtf8Bom">True</value><value key="LineBreakType">
+</value></props></sniff-info></file-info><sdl:filetype-info><sdl:filetype-id>Plain Text v 1.0.0.0</sdl:filetype-id></sdl:filetype-info><tag-defs xmlns="http://sdl.com/FileTypes/SdlXliff/1.0"><tag id="0"><st name="^">^</st></tag><tag id="1"><st name="$">$</st></tag><tag id="2"><st name="&#xD;&#xA;">
+</st></tag><tag id="3"><st name="^">^</st></tag><tag id="4"><st name="$">$</st></tag><tag id="5"><st name="&#xD;&#xA;">
+</st></tag><tag id="6"><st name="^">^</st></tag><tag id="7"><st name="$">$</st></tag><tag id="8"><st name="&#xD;&#xA;">
+</st></tag><tag id="9"><st name="^">^</st></tag><tag id="10"><st name="$">$</st></tag><tag id="11"><st name="&#xD;&#xA;">
+</st></tag><tag id="12"><st name="^">^</st></tag><tag id="13"><st name="$">$</st></tag><tag id="14"><st name="&#xD;&#xA;">
+</st></tag><tag id="15"><st name="^">^</st></tag><tag id="16"><st name="$">$</st></tag><tag id="17"><st name="&#xD;&#xA;">
+</st></tag><tag id="18"><st name="^">^</st></tag><tag id="19"><st name="$">$</st></tag><tag id="20"><st name="&#xD;&#xA;">
+</st></tag><tag id="21"><st name="^">^</st></tag><tag id="22"><st name="$">$</st></tag><tag id="23"><st name="&#xD;&#xA;">
+</st></tag><tag id="24"><st name="^">^</st></tag><tag id="25"><st name="$">$</st></tag><tag id="26"><st name="&#xD;&#xA;">
+</st></tag><tag id="27"><st name="^">^</st></tag><tag id="28"><st name="$">$</st></tag><tag id="29"><st name="&#xD;&#xA;">
+</st></tag><tag id="30"><st name="^">^</st></tag><tag id="31"><st name="$">$</st></tag><tag id="32"><st name="&#xD;&#xA;">
+</st></tag><tag id="33"><st name="^">^</st></tag><tag id="34"><st name="$">$</st></tag><tag id="35"><st name="&#xD;&#xA;">
+</st></tag><tag id="36"><st name="^">^</st></tag><tag id="37"><st name="$">$</st></tag><tag id="38"><st name="&#xD;&#xA;">
+</st></tag><tag id="39"><st name="^">^</st></tag><tag id="40"><st name="$">$</st></tag><tag id="41"><st name="&#xD;&#xA;">
+</st></tag><tag id="42"><st name="^">^</st></tag><tag id="43"><st name="$">$</st></tag><tag id="44"><st name="&#xD;&#xA;">
+</st></tag><tag id="45"><st name="^">^</st></tag><tag id="46"><st name="$">$</st></tag><tag id="47"><st name="&#xD;&#xA;">
+</st></tag><tag id="48"><st name="^">^</st></tag><tag id="49"><st name="$">$</st></tag><tag id="50"><st name="&#xD;&#xA;">
+</st></tag><tag id="51"><st name="^">^</st></tag><tag id="52"><st name="$">$</st></tag><tag id="53"><st name="&#xD;&#xA;">
+</st></tag><tag id="54"><st name="^">^</st></tag><tag id="55"><st name="$">$</st></tag><tag id="56"><st name="&#xD;&#xA;">
+</st></tag><tag id="57"><st name="^">^</st></tag><tag id="58"><st name="$">$</st></tag><tag id="59"><st name="&#xD;&#xA;">
+</st></tag><tag id="60"><st name="^">^</st></tag><tag id="61"><st name="$">$</st></tag><tag id="62"><st name="&#xD;&#xA;">
+</st></tag><tag id="63"><st name="^">^</st></tag><tag id="64"><st name="$">$</st></tag><tag id="65"><st name="&#xD;&#xA;">
+</st></tag><tag id="66"><st name="^">^</st></tag><tag id="67"><st name="$">$</st></tag><tag id="68"><st name="&#xD;&#xA;">
+</st></tag><tag id="69"><st name="^">^</st></tag><tag id="70"><st name="$">$</st></tag><tag id="71"><st name="&#xD;&#xA;">
+</st></tag><tag id="72"><st name="^">^</st></tag><tag id="73"><st name="$">$</st></tag><tag id="74"><st name="&#xD;&#xA;">
+</st></tag><tag id="75"><st name="^">^</st></tag><tag id="76"><st name="$">$</st></tag><tag id="77"><st name="&#xD;&#xA;">
+</st></tag><tag id="78"><st name="^">^</st></tag><tag id="79"><st name="$">$</st></tag><tag id="80"><st name="&#xD;&#xA;">
+</st></tag><tag id="81"><st name="^">^</st></tag><tag id="82"><st name="$">$</st></tag><tag id="83"><st name="&#xD;&#xA;">
+</st></tag><tag id="84"><st name="^">^</st></tag><tag id="85"><st name="$">$</st></tag><tag id="86"><st name="&#xD;&#xA;">
+</st></tag><tag id="87"><st name="^">^</st></tag><tag id="88"><st name="$">$</st></tag><tag id="89"><st name="&#xD;&#xA;">
+</st></tag><tag id="90"><st name="^">^</st></tag><tag id="91"><st name="$">$</st></tag><tag id="92"><st name="&#xD;&#xA;">
+</st></tag><tag id="93"><st name="^">^</st></tag><tag id="94"><st name="$">$</st></tag><tag id="95"><st name="&#xD;&#xA;">
+</st></tag><tag id="96"><st name="^">^</st></tag><tag id="97"><st name="$">$</st></tag><tag id="98"><st name="&#xD;&#xA;">
+</st></tag><tag id="99"><st name="^">^</st></tag><tag id="100"><st name="$">$</st></tag><tag id="101"><st name="&#xD;&#xA;">
+</st></tag><tag id="102"><st name="^">^</st></tag><tag id="103"><st name="$">$</st></tag><tag id="104"><st name="&#xD;&#xA;">
+</st></tag><tag id="105"><st name="^">^</st></tag><tag id="106"><st name="$">$</st></tag><tag id="107"><st name="&#xD;&#xA;">
+</st></tag><tag id="108"><st name="^">^</st></tag><tag id="109"><st name="$">$</st></tag><tag id="110"><st name="&#xD;&#xA;">
+</st></tag><tag id="111"><st name="^">^</st></tag><tag id="112"><st name="$">$</st></tag><tag id="113"><st name="&#xD;&#xA;">
+</st></tag><tag id="114"><st name="^">^</st></tag><tag id="115"><st name="$">$</st></tag><tag id="116"><st name="&#xD;&#xA;">
+</st></tag><tag id="117"><st name="^">^</st></tag><tag id="118"><st name="$">$</st></tag><tag id="119"><st name="&#xD;&#xA;">
+</st></tag><tag id="120"><st name="^">^</st></tag><tag id="121"><st name="$">$</st></tag><tag id="122"><st name="&#xD;&#xA;">
+</st></tag><tag id="123"><st name="^">^</st></tag><tag id="124"><st name="$">$</st></tag><tag id="125"><st name="&#xD;&#xA;">
+</st></tag><tag id="126"><st name="^">^</st></tag><tag id="127"><st name="$">$</st></tag><tag id="128"><st name="&#xD;&#xA;">
+</st></tag><tag id="129"><st name="^">^</st></tag><tag id="130"><st name="$">$</st></tag><tag id="131"><st name="&#xD;&#xA;">
+</st></tag><tag id="132"><st name="^">^</st></tag><tag id="133"><st name="$">$</st></tag><tag id="134"><st name="&#xD;&#xA;">
+</st></tag><tag id="135"><st name="^">^</st></tag><tag id="136"><st name="$">$</st></tag><tag id="137"><st name="&#xD;&#xA;">
+</st></tag><tag id="138"><st name="^">^</st></tag><tag id="139"><st name="$">$</st></tag><tag id="140"><st name="&#xD;&#xA;">
+</st></tag><tag id="141"><st name="^">^</st></tag><tag id="142"><st name="$">$</st></tag><tag id="143"><st name="&#xD;&#xA;">
+</st></tag><tag id="144"><st name="^">^</st></tag><tag id="145"><st name="$">$</st></tag><tag id="146"><st name="&#xD;&#xA;">
+</st></tag><tag id="147"><st name="^">^</st></tag><tag id="148"><st name="$">$</st></tag><tag id="149"><st name="&#xD;&#xA;">
+</st></tag><tag id="150"><st name="^">^</st></tag><tag id="151"><st name="$">$</st></tag><tag id="152"><st name="&#xD;&#xA;">
+</st></tag><tag id="153"><st name="^">^</st></tag><tag id="154"><st name="$">$</st></tag><tag id="155"><st name="&#xD;&#xA;">
+</st></tag><tag id="156"><st name="^">^</st></tag><tag id="157"><st name="$">$</st></tag><tag id="158"><st name="&#xD;&#xA;">
+</st></tag><tag id="159"><st name="^">^</st></tag><tag id="160"><st name="$">$</st></tag><tag id="161"><st name="&#xD;&#xA;">
+</st></tag><tag id="162"><st name="^">^</st></tag><tag id="163"><st name="$">$</st></tag><tag id="164"><st name="&#xD;&#xA;">
+</st></tag><tag id="165"><st name="^">^</st></tag><tag id="166"><st name="$">$</st></tag><tag id="167"><st name="&#xD;&#xA;">
+</st></tag><tag id="168"><st name="^">^</st></tag><tag id="169"><st name="$">$</st></tag><tag id="170"><st name="&#xD;&#xA;">
+</st></tag><tag id="171"><st name="^">^</st></tag><tag id="172"><st name="$">$</st></tag><tag id="173"><st name="&#xD;&#xA;">
+</st></tag><tag id="174"><st name="^">^</st></tag><tag id="175"><st name="$">$</st></tag><tag id="176"><st name="&#xD;&#xA;">
+</st></tag><tag id="177"><st name="^">^</st></tag><tag id="178"><st name="$">$</st></tag><tag id="179"><st name="&#xD;&#xA;">
+</st></tag><tag id="180"><st name="^">^</st></tag><tag id="181"><st name="$">$</st></tag><tag id="182"><st name="&#xD;&#xA;">
+</st></tag><tag id="183"><st name="^">^</st></tag><tag id="184"><st name="$">$</st></tag><tag id="185"><st name="&#xD;&#xA;">
+</st></tag><tag id="186"><st name="^">^</st></tag><tag id="187"><st name="$">$</st></tag><tag id="188"><st name="&#xD;&#xA;">
+</st></tag><tag id="189"><st name="^">^</st></tag><tag id="190"><st name="$">$</st></tag><tag id="191"><st name="^">^</st></tag><tag id="192"><st name="$">$</st></tag><tag id="193"><st name="^">^</st></tag><tag id="194"><st name="$">$</st></tag><tag id="195"><st name="^">^</st></tag><tag id="196"><st name="$">$</st></tag><tag id="197"><st name="^">^</st></tag><tag id="198"><st name="$">$</st></tag><tag id="199"><st name="^">^</st></tag><tag id="200"><st name="$">$</st></tag><tag id="201"><st name="^">^</st></tag><tag id="202"><st name="$">$</st></tag><tag id="203"><st name="^">^</st></tag><tag id="204"><st name="$">$</st></tag><tag id="205"><st name="^">^</st></tag><tag id="206"><st name="$">$</st></tag><tag id="207"><st name="^">^</st></tag><tag id="208"><st name="$">$</st></tag><tag id="209"><st name="^">^</st></tag><tag id="210"><st name="$">$</st></tag><tag id="211"><st name="^">^</st></tag><tag id="212"><st name="$">$</st></tag><tag id="213"><st name="^">^</st></tag><tag id="214"><st name="$">$</st></tag><tag id="215"><st name="^">^</st></tag><tag id="216"><st name="$">$</st></tag><tag id="217"><st name="^">^</st></tag><tag id="218"><st name="$">$</st></tag><tag id="219"><st name="^">^</st></tag><tag id="220"><st name="$">$</st></tag><tag id="221"><st name="^">^</st></tag><tag id="222"><st name="$">$</st></tag><tag id="223"><st name="^">^</st></tag><tag id="224"><st name="$">$</st></tag><tag id="225"><st name="^">^</st></tag><tag id="226"><st name="$">$</st></tag><tag id="227"><st name="^">^</st></tag><tag id="228"><st name="$">$</st></tag><tag id="229"><st name="^">^</st></tag><tag id="230"><st name="$">$</st></tag><tag id="231"><st name="^">^</st></tag><tag id="232"><st name="$">$</st></tag><tag id="233"><st name="^">^</st></tag><tag id="234"><st name="$">$</st></tag><tag id="235"><st name="^">^</st></tag><tag id="236"><st name="$">$</st></tag><tag id="237"><st name="^">^</st></tag><tag id="238"><st name="$">$</st></tag><tag id="239"><st name="^">^</st></tag><tag id="240"><st name="$">$</st></tag><tag id="241"><st name="^">^</st></tag><tag id="242"><st name="$">$</st></tag><tag id="243"><st name="^">^</st></tag><tag id="244"><st name="$">$</st></tag><tag id="245"><st name="^">^</st></tag><tag id="246"><st name="$">$</st></tag></tag-defs></header><body>
+<trans-unit id="1aa6ad76-dce7-4e82-a150-684f7c90c397" translate="no"><source><x id="0" /></source></trans-unit>
+<trans-unit id="ec94532e-e287-4e42-84ce-e1a1fc7da30d"><source>Teamcenter SOA Connection</source><seg-source><mrk mtype="seg" mid="1">Teamcenter SOA Connection</mrk></seg-source><target><mrk mtype="seg" mid="1" /></target><sdl:seg-defs><sdl:seg id="1" /></sdl:seg-defs></trans-unit>
+<trans-unit id="53243307-8371-45d8-8b97-f9b65690aa15" translate="no"><source><x id="1" />
+<x id="2" /><x id="3" /></source></trans-unit>
+<trans-unit id="56e98d7c-ce62-478e-9b42-8203ef801f79"><source>Teamcenter SOA connection type uses the Teamcenter strong SOAs (Service Oriented Architecture) to connect to Teamcenter.</source><seg-source><mrk mtype="seg" mid="2">Teamcenter SOA connection type uses the Teamcenter strong SOAs (Service Oriented Architecture) to connect to Teamcenter.</mrk></seg-source><target><mrk mtype="seg" mid="2" /></target><sdl:seg-defs><sdl:seg id="2" /></sdl:seg-defs></trans-unit>
+<trans-unit id="23ba0641-b513-42c5-a0bb-03decbc2e293" translate="no"><source><x id="4" />
+<x id="5" /><x id="6" /></source></trans-unit>
+<trans-unit id="8362bd0a-eef4-4717-bedd-29acd4e04104"><source>For Teamcenter 9.x onwards it is mandatory to use this connection type to connect to Teamcenter. This connection can also be used for Teamcenter 8.x.</source><seg-source><mrk mtype="seg" mid="3">For Teamcenter 9.x onwards it is mandatory to use this connection type to connect to Teamcenter.</mrk> <mrk mtype="seg" mid="4">This connection can also be used for Teamcenter 8.x.</mrk></seg-source><target><mrk mtype="seg" mid="3" /> <mrk mtype="seg" mid="4" /></target><sdl:seg-defs><sdl:seg id="3" /><sdl:seg id="4" /></sdl:seg-defs></trans-unit>
+<trans-unit id="a43b7cda-a71d-470a-8350-fc6becb35015" translate="no"><source><x id="7" />
+<x id="8" /><x id="9" /></source></trans-unit>
+<trans-unit id="dedd8293-6467-448d-9563-02e632caef86"><source>Note: It is not required to deploy TcRA eQube Remote for this connection.</source><seg-source><mrk mtype="seg" mid="5">Note:</mrk> <mrk mtype="seg" mid="6">It is not required to deploy TcRA eQube Remote for this connection.</mrk></seg-source><target><mrk mtype="seg" mid="5" /> <mrk mtype="seg" mid="6" /></target><sdl:seg-defs><sdl:seg id="5"><sdl:rep id="dedd8293-6467-448d-9563-02e632caef86-5" /></sdl:seg><sdl:seg id="6" /></sdl:seg-defs></trans-unit>
+<trans-unit id="0d42f459-5c8f-44a6-b5c7-ca189bcba46b" translate="no"><source><x id="10" />
+<x id="11" /><x id="12" /></source></trans-unit>
+<trans-unit id="02e3efc7-56ea-44cf-b19d-ed4a699a5888"><source>Pre-requisites for Teamcenter SOA Connection</source><seg-source><mrk mtype="seg" mid="7">Pre-requisites for Teamcenter SOA Connection</mrk></seg-source><target><mrk mtype="seg" mid="7" /></target><sdl:seg-defs><sdl:seg id="7" /></sdl:seg-defs></trans-unit>
+<trans-unit id="d77fb868-2774-4974-9482-5c1673058a08" translate="no"><source><x id="13" />
+<x id="14" /><x id="15" /></source></trans-unit>
+<trans-unit id="a9b7b239-d235-4887-81d5-05da7b07ddba"><source>JDK1.6.x is required to use the Teamcenter SOA connection.</source><seg-source><mrk mtype="seg" mid="8">JDK1.6.x is required to use the Teamcenter SOA connection.</mrk></seg-source><target><mrk mtype="seg" mid="8" /></target><sdl:seg-defs><sdl:seg id="8" /></sdl:seg-defs></trans-unit>
+<trans-unit id="8f301b8b-2c5c-44d8-b70c-a4ff16e6032d" translate="no"><source><x id="16" />
+<x id="17" /><x id="18" /></source></trans-unit>
+<trans-unit id="4d0383df-2970-44fc-9a9d-56b4dceba34a"><source>Teamcenter jars files</source><seg-source><mrk mtype="seg" mid="9">Teamcenter jars files</mrk></seg-source><target><mrk mtype="seg" mid="9" /></target><sdl:seg-defs><sdl:seg id="9" /></sdl:seg-defs></trans-unit>
+<trans-unit id="c53718d7-3342-4801-b192-baa57565a63f" translate="no"><source><x id="19" />
+<x id="20" /><x id="21" /></source></trans-unit>
+<trans-unit id="7f89ac41-4b7d-4b44-a2f6-14a970f2cf09"><source>When the WAR is created through TcRA eQube standalone installer then the following files have to be selected through the ‘Library tab’ of the installer or copied manually into &lt; TcRA eQube context&gt;\WEB-INF\lib folder</source><seg-source><mrk mtype="seg" mid="10">When the WAR is created through TcRA eQube standalone installer then the following files have to be selected through the ‘Library tab’ of the installer or copied manually into &lt; TcRA eQube context&gt;\WEB-INF\lib folder</mrk></seg-source><target><mrk mtype="seg" mid="10" /></target><sdl:seg-defs><sdl:seg id="10" /></sdl:seg-defs></trans-unit>
+<trans-unit id="40cdaf92-cc34-4c74-997f-4066d748341c" translate="no"><source><x id="22" />
+<x id="23" /><x id="24" /></source></trans-unit>
+<trans-unit id="48cff192-612b-4859-ac7d-09b3a0e5a962"><source>The files are present in the Teamcenter installable kit as follows:</source><seg-source><mrk mtype="seg" mid="11">The files are present in the Teamcenter installable kit as follows:</mrk></seg-source><target><mrk mtype="seg" mid="11" /></target><sdl:seg-defs><sdl:seg id="11" /></sdl:seg-defs></trans-unit>
+<trans-unit id="d43a0b9a-8df8-434f-a270-8c17b3e5c03a" translate="no"><source><x id="25" />
+<x id="26" /><x id="27" /></source></trans-unit>
+<trans-unit id="6b12cd49-1886-4ab7-b97c-97f1c2d76a0a"><source>..\Teamcenter Unified\Tc8.3_released\Windows\Tc8.3_win_1_of_2.zip\soa_client.zip\java\libs.</source><seg-source><mrk mtype="seg" mid="12">..\Teamcenter Unified\Tc8.3_released\Windows\Tc8.3_win_1_of_2.zip\soa_client.zip\java\libs.</mrk></seg-source><target><mrk mtype="seg" mid="12" /></target><sdl:seg-defs><sdl:seg id="12" /></sdl:seg-defs></trans-unit>
+<trans-unit id="7905cfce-40c0-40ad-9916-f00cb7f80663" translate="no"><source><x id="28" />
+<x id="29" /><x id="30" /></source></trans-unit>
+<trans-unit id="223ca9d7-419d-4bf9-95d7-0c03a514c493"><source>Note: Do not copy teamcenter_sso_applib.jar and teamcenter_sso_common.jar from soa_client.zip\java\libs if you are pointing to Teamcenter 8.x.</source><seg-source><mrk mtype="seg" mid="13">Note:</mrk> <mrk mtype="seg" mid="14">Do not copy teamcenter_sso_applib.jar and teamcenter_sso_common.jar from soa_client.zip\java\libs if you are pointing to Teamcenter 8.x.</mrk></seg-source><target><mrk mtype="seg" mid="13" /> <mrk mtype="seg" mid="14" /></target><sdl:seg-defs><sdl:seg id="13"><sdl:rep id="dedd8293-6467-448d-9563-02e632caef86-5" /></sdl:seg><sdl:seg id="14" /></sdl:seg-defs></trans-unit>
+<trans-unit id="0244d721-aaee-4091-be6f-4f9668b645d2" translate="no"><source><x id="31" />
+<x id="32" /><x id="33" /></source></trans-unit>
+<trans-unit id="62bae87f-b1f5-446d-89af-e13cd4538786"><source>Two more jar files from the given new TC SOA needs to be selected in the 'Library tab' of standalone installer.</source><seg-source><mrk mtype="seg" mid="15">Two more jar files from the given new TC SOA needs to be selected in the 'Library tab' of standalone installer.</mrk></seg-source><target><mrk mtype="seg" mid="15" /></target><sdl:seg-defs><sdl:seg id="15" /></sdl:seg-defs></trans-unit>
+<trans-unit id="8cc5c148-9597-4f9e-8fac-c6acd6de67fe" translate="no"><source><x id="34" />
+<x id="35" /><x id="36" /></source></trans-unit>
+<trans-unit id="3422ad7c-56e1-4978-8b31-addf75e3586a"><source>For Teamcenter 9.x, extract .\packaging\full_update\eqcustomization_soa_client_kit.zip</source><seg-source><mrk mtype="seg" mid="16">For Teamcenter 9.x, extract .\packaging\full_update\eqcustomization_soa_client_kit.zip</mrk></seg-source><target><mrk mtype="seg" mid="16" /></target><sdl:seg-defs><sdl:seg id="16" /></sdl:seg-defs></trans-unit>
+<trans-unit id="1266832b-3595-4dd7-81fe-69e25404f34e" translate="no"><source><x id="37" />
+<x id="38" /><x id="39" /></source></trans-unit>
+<trans-unit id="77c379a4-7735-48a6-9992-30590a885bd0"><source>For Teamcenter 8.x, extract .\packaging\eqcustomization_soa_client_kit.zip</source><seg-source><mrk mtype="seg" mid="17">For Teamcenter 8.x, extract .\packaging\eqcustomization_soa_client_kit.zip</mrk></seg-source><target><mrk mtype="seg" mid="17" /></target><sdl:seg-defs><sdl:seg id="17" /></sdl:seg-defs></trans-unit>
+<trans-unit id="d7ead3a5-52ec-4aa5-bcb7-9862d645aeea" translate="no"><source><x id="40" />
+<x id="41" /><x id="42" /></source></trans-unit>
+<trans-unit id="5034da0e-be1f-4f4c-99eb-e5be07ae2901"><source>After extraction, select the following files:</source><seg-source><mrk mtype="seg" mid="18">After extraction, select the following files:</mrk></seg-source><target><mrk mtype="seg" mid="18" /></target><sdl:seg-defs><sdl:seg id="18" /></sdl:seg-defs></trans-unit>
+<trans-unit id="dcd68591-58b8-4b60-8045-25229f10b15a" translate="no"><source><x id="43" />
+<x id="44" /><x id="45" /></source></trans-unit>
+<trans-unit id="92ef0254-1b68-4b5f-b6b5-af7b7ea449f4"><source>/soa_client/jars/E4SoaEQCustomLibStrong.jar</source><seg-source><mrk mtype="seg" mid="19">/soa_client/jars/E4SoaEQCustomLibStrong.jar</mrk></seg-source><target><mrk mtype="seg" mid="19" /></target><sdl:seg-defs><sdl:seg id="19" /></sdl:seg-defs></trans-unit>
+<trans-unit id="f770ee0c-11d5-4fb8-b453-b854a634d004" translate="no"><source><x id="46" />
+<x id="47" /><x id="48" /></source></trans-unit>
+<trans-unit id="0dede189-d5f0-446e-a1f7-fab6b0d5b91a"><source>/soa_client/types/jars/E4SoaEQCustomLibTypes.jar</source><seg-source><mrk mtype="seg" mid="20">/soa_client/types/jars/E4SoaEQCustomLibTypes.jar</mrk></seg-source><target><mrk mtype="seg" mid="20" /></target><sdl:seg-defs><sdl:seg id="20" /></sdl:seg-defs></trans-unit>
+<trans-unit id="5bc152e7-79c5-441a-b6c8-bf6c5da48d20" translate="no"><source><x id="49" />
+<x id="50" /><x id="51" /></source></trans-unit>
+<trans-unit id="dad81ef4-d6c8-4932-8d37-e50a5bfb0fbb"><source>If the war file is created through Teamcenter TEM installer then the above two files have to be copied into &lt;TcRA context&gt;\WEB-INF\lib folder manually and appserver should be restarted. The other TC jar files (mentioned in point a) will be copied automatically through the TC 9.1 TEM installer.</source><seg-source><mrk mtype="seg" mid="21">If the war file is created through Teamcenter TEM installer then the above two files have to be copied into &lt;TcRA context&gt;\WEB-INF\lib folder manually and appserver should be restarted.</mrk> <mrk mtype="seg" mid="22">The other TC jar files (mentioned in point a) will be copied automatically through the TC 9.1 TEM installer.</mrk></seg-source><target><mrk mtype="seg" mid="21" /> <mrk mtype="seg" mid="22" /></target><sdl:seg-defs><sdl:seg id="21"><sdl:rep id="dad81ef4-d6c8-4932-8d37-e50a5bfb0fbb-21" /></sdl:seg><sdl:seg id="22" /></sdl:seg-defs></trans-unit>
+<trans-unit id="88172e93-4d0f-4d4e-aabd-70beafad3263" translate="no"><source><x id="52" />
+<x id="53" /><x id="54" /></source></trans-unit>
+<trans-unit id="2c6c6f6d-5b3d-43c7-9c20-f265c2e96288"><source>Two more jar files fmsutil.jar and fscjavaclientproxy.jar need to be selected in the Library tab of the standalone installer.</source><seg-source><mrk mtype="seg" mid="23">Two more jar files fmsutil.jar and fscjavaclientproxy.jar need to be selected in the Library tab of the standalone installer.</mrk></seg-source><target><mrk mtype="seg" mid="23" /></target><sdl:seg-defs><sdl:seg id="23" /></sdl:seg-defs></trans-unit>
+<trans-unit id="6c14f09b-9971-4dfb-9f7c-bf58ef55dcda" translate="no"><source><x id="55" />
+<x id="56" /><x id="57" /></source></trans-unit>
+<trans-unit id="499e2149-563c-4405-b423-9997be90e3cf"><source>If the war file is created through Teamcenter TEM installer then the above two files have to be copied into &lt;TcRA context&gt;\WEB-INF\lib folder manually and appserver should be restarted.</source><seg-source><mrk mtype="seg" mid="24">If the war file is created through Teamcenter TEM installer then the above two files have to be copied into &lt;TcRA context&gt;\WEB-INF\lib folder manually and appserver should be restarted.</mrk></seg-source><target><mrk mtype="seg" mid="24" /></target><sdl:seg-defs><sdl:seg id="24"><sdl:rep id="dad81ef4-d6c8-4932-8d37-e50a5bfb0fbb-21" /></sdl:seg></sdl:seg-defs></trans-unit>
+<trans-unit id="df3649ff-fd96-4621-890b-8e6b55d3f8a0" translate="no"><source><x id="58" />
+<x id="59" /><x id="60" /></source></trans-unit>
+<trans-unit id="cfe555b2-8855-4e42-8daf-eb3933032850"><source>The files are present in the Teamcenter installation folder as follows:</source><seg-source><mrk mtype="seg" mid="25">The files are present in the Teamcenter installation folder as follows:</mrk></seg-source><target><mrk mtype="seg" mid="25" /></target><sdl:seg-defs><sdl:seg id="25" /></sdl:seg-defs></trans-unit>
+<trans-unit id="1484430b-7996-4400-9dc7-521296ebceba" translate="no"><source><x id="61" />
+<x id="62" /><x id="63" /></source></trans-unit>
+<trans-unit id="52c7ce12-b879-4fa6-bb4c-bc21e682e944"><source>..\Teamcenter Unified Installation\tccs\jar</source><seg-source><mrk mtype="seg" mid="26">..\Teamcenter Unified Installation\tccs\jar</mrk></seg-source><target><mrk mtype="seg" mid="26" /></target><sdl:seg-defs><sdl:seg id="26" /></sdl:seg-defs></trans-unit>
+<trans-unit id="3d8b0a1f-20f7-4bd5-b865-54f2b3b5d3eb" translate="no"><source><x id="64" />
+<x id="65" /><x id="66" /></source></trans-unit>
+<trans-unit id="5b45e014-5317-46b8-932b-3b904e4768dc"><source>Teamcenter SOA deployment</source><seg-source><mrk mtype="seg" mid="27">Teamcenter SOA deployment</mrk></seg-source><target><mrk mtype="seg" mid="27" /></target><sdl:seg-defs><sdl:seg id="27" /></sdl:seg-defs></trans-unit>
+<trans-unit id="73fd0606-5abf-48f1-a6b2-f52271d09077" translate="no"><source><x id="67" />
+<x id="68" /><x id="69" /></source></trans-unit>
+<trans-unit id="0f80927a-4e11-46c3-87b8-a4084de92d1d"><source>It is necessary to deploy the given Teamcenter SOA at Teamcenter side. Steps to deploy the TC SOA at Teamcenter are as follows:</source><seg-source><mrk mtype="seg" mid="28">It is necessary to deploy the given Teamcenter SOA at Teamcenter side.</mrk> <mrk mtype="seg" mid="29">Steps to deploy the TC SOA at Teamcenter are as follows:</mrk></seg-source><target><mrk mtype="seg" mid="28" /> <mrk mtype="seg" mid="29" /></target><sdl:seg-defs><sdl:seg id="28" /><sdl:seg id="29" /></sdl:seg-defs></trans-unit>
+<trans-unit id="acdc209a-4c91-4e53-b3ad-20dbb13a34a4" translate="no"><source><x id="70" />
+<x id="71" /><x id="72" /></source></trans-unit>
+<trans-unit id="742faec3-05c8-43f1-81bc-de3afab2058b"><source>TC SOA is available for all platforms, Windows/Linux/Solaris/AIX.</source><seg-source><mrk mtype="seg" mid="30">TC SOA is available for all platforms, Windows/Linux/Solaris/AIX.</mrk></seg-source><target><mrk mtype="seg" mid="30" /></target><sdl:seg-defs><sdl:seg id="30" /></sdl:seg-defs></trans-unit>
+<trans-unit id="114a26f2-6626-4526-8d6a-61f7c8cd122a" translate="no"><source><x id="73" />
+<x id="74" /><x id="75" /></source></trans-unit>
+<trans-unit id="499f7d8b-57c3-47d9-b73e-a25f8bbafa53"><source>Start the TEM installer.</source><seg-source><mrk mtype="seg" mid="31">Start the TEM installer.</mrk></seg-source><target><mrk mtype="seg" mid="31" /></target><sdl:seg-defs><sdl:seg id="31" /></sdl:seg-defs></trans-unit>
+<trans-unit id="c5d59a14-ef40-4c1c-b962-79787f7ddc28" translate="no"><source><x id="76" />
+<x id="77" /><x id="78" /></source></trans-unit>
+<trans-unit id="44314875-4876-4006-aa3d-f91038bad105"><source>Deploy the given TC SOA package template as an extension.</source><seg-source><mrk mtype="seg" mid="32">Deploy the given TC SOA package template as an extension.</mrk></seg-source><target><mrk mtype="seg" mid="32" /></target><sdl:seg-defs><sdl:seg id="32" /></sdl:seg-defs></trans-unit>
+<trans-unit id="e9982626-efb4-4042-a759-70b5246dcf3c" translate="no"><source><x id="79" />
+<x id="80" /><x id="81" /></source></trans-unit>
+<trans-unit id="21876cee-c4df-447f-b3de-56bb362965e6"><source>Navigate to Configuration Manager&gt;Performance Maintenance on an existing configuration&gt;My Database&gt;Add/Remove Features</source><seg-source><mrk mtype="seg" mid="33">Navigate to Configuration Manager&gt;Performance Maintenance on an existing configuration&gt;My Database&gt;Add/Remove Features</mrk></seg-source><target><mrk mtype="seg" mid="33" /></target><sdl:seg-defs><sdl:seg id="33" /></sdl:seg-defs></trans-unit>
+<trans-unit id="65ef4420-9d4c-447e-9c8b-755f449c492d" translate="no"><source><x id="82" />
+<x id="83" /><x id="84" /></source></trans-unit>
+<trans-unit id="d39b4f0f-f251-4773-9d8c-d93ce6380a43"><source>On the Select Features window, browse to /CustomSOA/&lt;Windows or Linux&gt;/full_update/feature_eqcustomization.xml</source><seg-source><mrk mtype="seg" mid="34">On the Select Features window, browse to /CustomSOA/&lt;Windows or Linux&gt;/full_update/feature_eqcustomization.xml</mrk></seg-source><target><mrk mtype="seg" mid="34" /></target><sdl:seg-defs><sdl:seg id="34" /></sdl:seg-defs></trans-unit>
+<trans-unit id="92da45bb-ca80-4735-a3c9-deff43b67f2b" translate="no"><source><x id="85" />
+<x id="86" /><x id="87" /></source></trans-unit>
+<trans-unit id="e8b69c3a-6dc7-49bc-8b3e-8a488c410b4e"><source>Under the Extensions header you can see EQCustomization. Select this check box and deploy the template.</source><seg-source><mrk mtype="seg" mid="35">Under the Extensions header you can see EQCustomization.</mrk> <mrk mtype="seg" mid="36">Select this check box and deploy the template.</mrk></seg-source><target><mrk mtype="seg" mid="35" /> <mrk mtype="seg" mid="36" /></target><sdl:seg-defs><sdl:seg id="35" /><sdl:seg id="36" /></sdl:seg-defs></trans-unit>
+<trans-unit id="99751535-97d3-458e-bdf1-1b64f55870e4" translate="no"><source><x id="88" />
+<x id="89" /><x id="90" /></source></trans-unit>
+<trans-unit id="284a6e1a-c1db-4fc4-ae31-96252bb1bb13"><source>Create a connection with Teamcenter SOA as source</source><seg-source><mrk mtype="seg" mid="37">Create a connection with Teamcenter SOA as source</mrk></seg-source><target><mrk mtype="seg" mid="37" /></target><sdl:seg-defs><sdl:seg id="37" /></sdl:seg-defs></trans-unit>
+<trans-unit id="1fcff58d-f321-4a05-83e7-b039648f3085" translate="no"><source><x id="91" />
+<x id="92" /><x id="93" /></source></trans-unit>
+<trans-unit id="c283b76b-d653-4a94-b2ef-4d4b13b9051b"><source>Connection Id - Enter a connection ID for the connection you want to create.</source><seg-source><mrk mtype="seg" mid="38">Connection Id - Enter a connection ID for the connection you want to create.</mrk></seg-source><target><mrk mtype="seg" mid="38" /></target><sdl:seg-defs><sdl:seg id="38" /></sdl:seg-defs></trans-unit>
+<trans-unit id="df9b3dbe-d266-4cda-b45e-c35596e30dfe" translate="no"><source><x id="94" />
+<x id="95" /><x id="96" /></source></trans-unit>
+<trans-unit id="e608b87a-cbbe-4c37-bc4c-229722213a13"><source>Auto Increment - Select this check box, if you want the connection to take up an ID that follows the ID's of available connections.</source><seg-source><mrk mtype="seg" mid="39">Auto Increment - Select this check box, if you want the connection to take up an ID that follows the ID's of available connections.</mrk></seg-source><target><mrk mtype="seg" mid="39" /></target><sdl:seg-defs><sdl:seg id="39" /></sdl:seg-defs></trans-unit>
+<trans-unit id="230d6677-3679-4198-aefb-9e8c893a44de" translate="no"><source><x id="97" />
+<x id="98" /><x id="99" /></source></trans-unit>
+<trans-unit id="65ddf740-0b10-43c2-b07e-0a07bcefc49f"><source>Name - Enter a connection name.</source><seg-source><mrk mtype="seg" mid="40">Name - Enter a connection name.</mrk></seg-source><target><mrk mtype="seg" mid="40" /></target><sdl:seg-defs><sdl:seg id="40" /></sdl:seg-defs></trans-unit>
+<trans-unit id="7ae54f7a-2d3f-464d-ba1a-62789d60acb9" translate="no"><source><x id="100" />
+<x id="101" /><x id="102" /></source></trans-unit>
+<trans-unit id="1e276bd1-8802-46aa-8118-4544a2b50cfc"><source>Web Tier HTTP server URL - Specify the URL of the TC client.</source><seg-source><mrk mtype="seg" mid="41">Web Tier HTTP server URL - Specify the URL of the TC client.</mrk></seg-source><target><mrk mtype="seg" mid="41" /></target><sdl:seg-defs><sdl:seg id="41" /></sdl:seg-defs></trans-unit>
+<trans-unit id="25a13fd9-acf1-4f4d-b5e4-68d1378d6d53" translate="no"><source><x id="103" />
+<x id="104" /><x id="105" /></source></trans-unit>
+<trans-unit id="6025501e-e8b8-4b21-89dd-7e5e82702bd2"><source>Its format is: http://&lt;host&gt;:&lt;port&gt;/&lt;context name&gt;. For example:  http://192.168.5.80:9080/tc.</source><seg-source><mrk mtype="seg" mid="42">Its format is: http://&lt;host&gt;:&lt;port&gt;/&lt;context name&gt;.</mrk> <mrk mtype="seg" mid="43">For example:</mrk>  <mrk mtype="seg" mid="44">http://192.168.5.80:9080/tc.</mrk></seg-source><target><mrk mtype="seg" mid="42" /> <mrk mtype="seg" mid="43" />  <mrk mtype="seg" mid="44" /></target><sdl:seg-defs><sdl:seg id="42" /><sdl:seg id="43" /><sdl:seg id="44" /></sdl:seg-defs></trans-unit>
+<trans-unit id="86e384f7-1fef-4cdc-903a-40b128546c28" translate="no"><source><x id="106" />
+<x id="107" /><x id="108" /></source></trans-unit>
+<trans-unit id="8160251b-fdad-46cd-8252-86b6e6b3e4e6"><source>Teamcenter Version – Select the version of Teamcenter for this connection from the drop-down list.</source><seg-source><mrk mtype="seg" mid="45">Teamcenter Version – Select the version of Teamcenter for this connection from the drop-down list.</mrk></seg-source><target><mrk mtype="seg" mid="45" /></target><sdl:seg-defs><sdl:seg id="45" /></sdl:seg-defs></trans-unit>
+<trans-unit id="9dde223f-dcad-4987-840b-2c8369ccaa71" translate="no"><source><x id="109" />
+<x id="110" /><x id="111" /></source></trans-unit>
+<trans-unit id="38ba5865-1e6f-467f-bc2f-17254d4667bc"><source>User Name - Specify the user name for the Teamcenter server. This information is used only to validate the users credentials.</source><seg-source><mrk mtype="seg" mid="46">User Name - Specify the user name for the Teamcenter server.</mrk> <mrk mtype="seg" mid="47">This information is used only to validate the users credentials.</mrk></seg-source><target><mrk mtype="seg" mid="46" /> <mrk mtype="seg" mid="47" /></target><sdl:seg-defs><sdl:seg id="46" /><sdl:seg id="47" /></sdl:seg-defs></trans-unit>
+<trans-unit id="f4c13587-62df-4e9f-96e3-a9be6d1d31bd" translate="no"><source><x id="112" />
+<x id="113" /><x id="114" /></source></trans-unit>
+<trans-unit id="cdb7a931-488c-440a-8237-8f1fc21f89ac"><source>Password - Specify the password for the user.</source><seg-source><mrk mtype="seg" mid="48">Password - Specify the password for the user.</mrk></seg-source><target><mrk mtype="seg" mid="48" /></target><sdl:seg-defs><sdl:seg id="48" /></sdl:seg-defs></trans-unit>
+<trans-unit id="ef3b2775-5f92-4601-9031-78d47268062d" translate="no"><source><x id="115" />
+<x id="116" /><x id="117" /></source></trans-unit>
+<trans-unit id="e546f592-9767-44e6-b582-0a7435a25bf2"><source>Group - Specify the group name to which the user belongs.</source><seg-source><mrk mtype="seg" mid="49">Group - Specify the group name to which the user belongs.</mrk></seg-source><target><mrk mtype="seg" mid="49" /></target><sdl:seg-defs><sdl:seg id="49" /></sdl:seg-defs></trans-unit>
+<trans-unit id="3d1dfd25-d06a-499b-bdde-ba494f661f68" translate="no"><source><x id="118" />
+<x id="119" /><x id="120" /></source></trans-unit>
+<trans-unit id="89c93dbd-2f5d-4aef-8f79-b279828f243d"><source>Domain - Specify the domain name. You can refer to  site_specific.properties file for the domain details.</source><seg-source><mrk mtype="seg" mid="50">Domain - Specify the domain name.</mrk> <mrk mtype="seg" mid="51">You can refer to  site_specific.properties file for the domain details.</mrk></seg-source><target><mrk mtype="seg" mid="50" /> <mrk mtype="seg" mid="51" /></target><sdl:seg-defs><sdl:seg id="50" /><sdl:seg id="51" /></sdl:seg-defs></trans-unit>
+<trans-unit id="21822173-3e10-44d0-9169-add8af266749" translate="no"><source><x id="121" />
+<x id="122" /><x id="123" /></source></trans-unit>
+<trans-unit id="8e805086-7e2e-4713-ba26-a926e019d710"><source>Connection Date Format - Enter the format of date for this connection.</source><seg-source><mrk mtype="seg" mid="52">Connection Date Format - Enter the format of date for this connection.</mrk></seg-source><target><mrk mtype="seg" mid="52" /></target><sdl:seg-defs><sdl:seg id="52" /></sdl:seg-defs></trans-unit>
+<trans-unit id="3e70b407-a67d-4818-9b42-77447ae0520e" translate="no"><source><x id="124" />
+<x id="125" /><x id="126" /></source></trans-unit>
+<trans-unit id="82e478bf-5a68-4f1b-9158-9d42dfdeb883"><source>Connection Date-time Format - Enter the date and time format for this connection.</source><seg-source><mrk mtype="seg" mid="53">Connection Date-time Format - Enter the date and time format for this connection.</mrk></seg-source><target><mrk mtype="seg" mid="53" /></target><sdl:seg-defs><sdl:seg id="53" /></sdl:seg-defs></trans-unit>
+<trans-unit id="ececb64b-a3e3-48ac-a12f-2bf3baae3546" translate="no"><source><x id="127" />
+<x id="128" /><x id="129" /></source></trans-unit>
+<trans-unit id="3553179b-96c3-4449-bad1-ad1f64db413e"><source>Select the Create Model check box if you want to create the model for this connection from source system. If you select this check box, the Refresh Model icon   on Connections main page will be enabled. If you don’t select the check box, the icon will appear disabled.</source><seg-source><mrk mtype="seg" mid="54">Select the Create Model check box if you want to create the model for this connection from source system.</mrk> <mrk mtype="seg" mid="55">If you select this check box, the Refresh Model icon   on Connections main page will be enabled.</mrk> <mrk mtype="seg" mid="56">If you don’t select the check box, the icon will appear disabled.</mrk></seg-source><target><mrk mtype="seg" mid="54" /> <mrk mtype="seg" mid="55" /> <mrk mtype="seg" mid="56" /></target><sdl:seg-defs><sdl:seg id="54" /><sdl:seg id="55" /><sdl:seg id="56" /></sdl:seg-defs></trans-unit>
+<trans-unit id="222eea41-e5ae-41f8-8312-2f90c2eaa30f" translate="no"><source><x id="130" />
+<x id="131" /><x id="132" /></source></trans-unit>
+<trans-unit id="7344a145-7b6d-4140-888e-c8d6d6350f33"><source>Status - Select Enabled from the drop-down list if you want to use the connection.</source><seg-source><mrk mtype="seg" mid="57">Status - Select Enabled from the drop-down list if you want to use the connection.</mrk></seg-source><target><mrk mtype="seg" mid="57" /></target><sdl:seg-defs><sdl:seg id="57" /></sdl:seg-defs></trans-unit>
+<trans-unit id="dfdf1a15-0d98-4d82-8215-8330c0842d23" translate="no"><source><x id="133" />
+<x id="134" /><x id="135" /></source></trans-unit>
+<trans-unit id="4ceae3bd-78a0-45eb-b2c7-747965f3a430"><source>Refresh Per Appuser - Set this property to Yes for application connections.  In this case, the user passed from BNP will be used for creating the connection. Set it to No for all database connections. This means that a database connection pool will be used. This includes direct database connections as well as adapter database connections.</source><seg-source><mrk mtype="seg" mid="58">Refresh Per Appuser - Set this property to Yes for application connections.</mrk>  <mrk mtype="seg" mid="59">In this case, the user passed from BNP will be used for creating the connection.</mrk> <mrk mtype="seg" mid="60">Set it to No for all database connections.</mrk> <mrk mtype="seg" mid="61">This means that a database connection pool will be used.</mrk> <mrk mtype="seg" mid="62">This includes direct database connections as well as adapter database connections.</mrk></seg-source><target><mrk mtype="seg" mid="58" />  <mrk mtype="seg" mid="59" /> <mrk mtype="seg" mid="60" /> <mrk mtype="seg" mid="61" /> <mrk mtype="seg" mid="62" /></target><sdl:seg-defs><sdl:seg id="58" /><sdl:seg id="59" /><sdl:seg id="60" /><sdl:seg id="61" /><sdl:seg id="62" /></sdl:seg-defs></trans-unit>
+<trans-unit id="8bb41086-538a-4495-b412-b151144ef5f2" translate="no"><source><x id="136" />
+<x id="137" /><x id="138" /></source></trans-unit>
+<trans-unit id="ba69eb4c-6611-4451-9bcf-9cb113901d87"><source>Note: Only those connections that have Refresh Per Appuser property set to Yes are eligible for authentication (except -2 connection) while adding a user under User Management.</source><seg-source><mrk mtype="seg" mid="63">Note:</mrk> <mrk mtype="seg" mid="64">Only those connections that have Refresh Per Appuser property set to Yes are eligible for authentication (except -2 connection) while adding a user under User Management.</mrk></seg-source><target><mrk mtype="seg" mid="63" /> <mrk mtype="seg" mid="64" /></target><sdl:seg-defs><sdl:seg id="63"><sdl:rep id="dedd8293-6467-448d-9563-02e632caef86-5" /></sdl:seg><sdl:seg id="64" /></sdl:seg-defs></trans-unit>
+<trans-unit id="79360994-3b62-49ab-a2ab-69d54da96f25" translate="no"><source><x id="139" />
+<x id="140" /><x id="141" /></source></trans-unit>
+<trans-unit id="afd9e807-938e-4023-9244-3e2661561bd7"><source>Initial Connections - Enter initial number of connection in the pool.</source><seg-source><mrk mtype="seg" mid="65">Initial Connections - Enter initial number of connection in the pool.</mrk></seg-source><target><mrk mtype="seg" mid="65" /></target><sdl:seg-defs><sdl:seg id="65" /></sdl:seg-defs></trans-unit>
+<trans-unit id="3ccbb7cf-cf16-40c0-b740-072b6bca4cb1" translate="no"><source><x id="142" />
+<x id="143" /><x id="144" /></source></trans-unit>
+<trans-unit id="290b3965-7f3d-436d-92e5-627ba43ee7a3"><source>Maximum Connections - The maximum number of connections to which the pool can grow.</source><seg-source><mrk mtype="seg" mid="66">Maximum Connections - The maximum number of connections to which the pool can grow.</mrk></seg-source><target><mrk mtype="seg" mid="66" /></target><sdl:seg-defs><sdl:seg id="66" /></sdl:seg-defs></trans-unit>
+<trans-unit id="3742a1cc-5020-4f72-ab81-b2ddbae6325e" translate="no"><source><x id="145" />
+<x id="146" /><x id="147" /></source></trans-unit>
+<trans-unit id="ee1ce5e3-5ad6-447a-ac73-9296dfa71343"><source>Increment By - The number of connections by which the pool should be expanded each time the pool is exhausted. (limited to Maximum Connections).</source><seg-source><mrk mtype="seg" mid="67">Increment By - The number of connections by which the pool should be expanded each time the pool is exhausted.</mrk> <mrk mtype="seg" mid="68">(limited to Maximum Connections).</mrk></seg-source><target><mrk mtype="seg" mid="67" /> <mrk mtype="seg" mid="68" /></target><sdl:seg-defs><sdl:seg id="67" /><sdl:seg id="68" /></sdl:seg-defs></trans-unit>
+<trans-unit id="438dadac-793e-4916-9089-2ed3ab7cebcd" translate="no"><source><x id="148" />
+<x id="149" /><x id="150" /></source></trans-unit>
+<trans-unit id="96ade91a-ba8f-4701-89d1-80f0ebd320b0"><source>Connection Timeout (in minutes) – Enter the number of minutes after which the connection should be timed out.</source><seg-source><mrk mtype="seg" mid="69">Connection Timeout (in minutes) – Enter the number of minutes after which the connection should be timed out.</mrk></seg-source><target><mrk mtype="seg" mid="69" /></target><sdl:seg-defs><sdl:seg id="69" /></sdl:seg-defs></trans-unit>
+<trans-unit id="5e5e134e-b408-4291-a8b5-7ad852c6a640" translate="no"><source><x id="151" />
+<x id="152" /><x id="153" /></source></trans-unit>
+<trans-unit id="27d15e9b-509b-4e1a-860b-4f6837ba2617"><source>Application web URL – Enter web client URL of the application. eQube-BITcRA uses this URL to launch the application through reports. Its format is: http://&lt;host&gt;:&lt;port&gt;/&lt;context&gt;</source><seg-source><mrk mtype="seg" mid="70">Application web URL – Enter web client URL of the application. eQube-BITcRA uses this URL to launch the application through reports.</mrk> <mrk mtype="seg" mid="71">Its format is: http://&lt;host&gt;:&lt;port&gt;/&lt;context&gt;</mrk></seg-source><target><mrk mtype="seg" mid="70" /> <mrk mtype="seg" mid="71" /></target><sdl:seg-defs><sdl:seg id="70" /><sdl:seg id="71" /></sdl:seg-defs></trans-unit>
+<trans-unit id="ea62a0df-734e-4220-9b8a-ec1676263cf8" translate="no"><source><x id="154" />
+<x id="155" /><x id="156" /></source></trans-unit>
+<trans-unit id="1714cee5-4944-48f6-ba77-2d12096fcb58"><source>For example: http://192.168.4.119:7001/tc</source><seg-source><mrk mtype="seg" mid="72">For example: http://192.168.4.119:7001/tc</mrk></seg-source><target><mrk mtype="seg" mid="72" /></target><sdl:seg-defs><sdl:seg id="72" /></sdl:seg-defs></trans-unit>
+<trans-unit id="8adb094d-0603-4fb4-870d-04483b28a5a3" translate="no"><source><x id="157" />
+<x id="158" /><x id="159" /></source></trans-unit>
+<trans-unit id="1292f8e9-26ac-42ff-b913-bf2c0383d17a"><source>SSO Enabled - Select Yes from the drop-down box, if you want this connection to be SSO enabled.</source><seg-source><mrk mtype="seg" mid="73">SSO Enabled - Select Yes from the drop-down box, if you want this connection to be SSO enabled.</mrk></seg-source><target><mrk mtype="seg" mid="73" /></target><sdl:seg-defs><sdl:seg id="73" /></sdl:seg-defs></trans-unit>
+<trans-unit id="cdab6667-c407-499c-a1c5-bd659163d5c3" translate="no"><source><x id="160" />
+<x id="161" /><x id="162" /></source></trans-unit>
+<trans-unit id="a13f0f9e-dd0a-4545-9e34-2042e363e219"><source>SSO Application Id - Teamcenter SSO Application ID for Teamcenter.</source><seg-source><mrk mtype="seg" mid="74">SSO Application Id - Teamcenter SSO Application ID for Teamcenter.</mrk></seg-source><target><mrk mtype="seg" mid="74" /></target><sdl:seg-defs><sdl:seg id="74" /></sdl:seg-defs></trans-unit>
+<trans-unit id="1e87c0c3-ef46-4bfd-8c16-8d8d644074f7" translate="no"><source><x id="163" />
+<x id="164" /><x id="165" /></source></trans-unit>
+<trans-unit id="4c31adc1-3ad1-4561-b515-a147bf19d02d"><source>Save Reports - This option is enabled for RDB connections when at least one of the connections in the system is pointing to Teamcenter 2007 or Teamcenter 8 and above. This is provided so that RDB reports can be deployed to Teamcenter so that they can be launched from Teamcenter rich/thin client. When this option is set to “Yes” for a connection, a check box for Deploy to TC is displayed on “Save definition” dialog and another check box for TC Mobility is displayed on both Schedule Now popup and Delivery Options of Output tab in Scheduler component.</source><seg-source><mrk mtype="seg" mid="75">Save Reports - This option is enabled for RDB connections when at least one of the connections in the system is pointing to Teamcenter 2007 or Teamcenter 8 and above.</mrk> <mrk mtype="seg" mid="76">This is provided so that RDB reports can be deployed to Teamcenter so that they can be launched from Teamcenter rich/thin client.</mrk> <mrk mtype="seg" mid="77">When this option is set to “Yes” for a connection, a check box for Deploy to TC is displayed on “Save definition” dialog and another check box for TC Mobility is displayed on both Schedule Now popup and Delivery Options of Output tab in Scheduler component.</mrk></seg-source><target><mrk mtype="seg" mid="75" /> <mrk mtype="seg" mid="76" /> <mrk mtype="seg" mid="77" /></target><sdl:seg-defs><sdl:seg id="75" /><sdl:seg id="76" /><sdl:seg id="77" /></sdl:seg-defs></trans-unit>
+<trans-unit id="84d3ad5d-9b90-4111-af09-99b8a3b133e8" translate="no"><source><x id="166" />
+<x id="167" /><x id="168" /></source></trans-unit>
+<trans-unit id="c3ff9974-4a04-4080-aed4-25b4f180623d"><source>Security Class URL - TcRA eQube uses its own mechanism to encrypt/decrypt password that it stores. You may specify a valid class name here to override the default encryption/decryption mechanism.</source><seg-source><mrk mtype="seg" mid="78">Security Class URL - TcRA eQube uses its own mechanism to encrypt/decrypt password that it stores.</mrk> <mrk mtype="seg" mid="79">You may specify a valid class name here to override the default encryption/decryption mechanism.</mrk></seg-source><target><mrk mtype="seg" mid="78" /> <mrk mtype="seg" mid="79" /></target><sdl:seg-defs><sdl:seg id="78" /><sdl:seg id="79" /></sdl:seg-defs></trans-unit>
+<trans-unit id="7d4afa3c-935c-471e-a32c-8fed8e419ce4" translate="no"><source><x id="169" />
+<x id="170" /><x id="171" /></source></trans-unit>
+<trans-unit id="2fc2854e-fc40-4b10-ac51-7ba2cbe2e5ea"><source>More Connection Properties - Select this check box if you want to provide the following details.</source><seg-source><mrk mtype="seg" mid="80">More Connection Properties - Select this check box if you want to provide the following details.</mrk></seg-source><target><mrk mtype="seg" mid="80" /></target><sdl:seg-defs><sdl:seg id="80" /></sdl:seg-defs></trans-unit>
+<trans-unit id="e3158057-6099-4a84-a1c9-49edba1065c0" translate="no"><source><x id="172" />
+<x id="173" /><x id="174" /></source></trans-unit>
+<trans-unit id="d93f3995-17f4-4f3a-a7e5-6a140d929873"><source>Fetch Attributes - Select True while creating the model, if you want to fetch the attributes for each object from the model file. If you select False, the attributes are fetched during runtime while working with MLVs.</source><seg-source><mrk mtype="seg" mid="81">Fetch Attributes - Select True while creating the model, if you want to fetch the attributes for each object from the model file.</mrk> <mrk mtype="seg" mid="82">If you select False, the attributes are fetched during runtime while working with MLVs.</mrk></seg-source><target><mrk mtype="seg" mid="81" /> <mrk mtype="seg" mid="82" /></target><sdl:seg-defs><sdl:seg id="81" /><sdl:seg id="82" /></sdl:seg-defs></trans-unit>
+<trans-unit id="7750c10c-3c98-491a-9561-bdf99641a37f" translate="no"><source><x id="175" />
+<x id="176" /><x id="177" /></source></trans-unit>
+<trans-unit id="5d58db00-6619-4cee-98f4-f238cf0b20bd"><source>Class Display Name - Select Yes from the drop-down box, if you want to fetch display names for every class, if it exists in the application. Select No to fetch this information from the connection.</source><seg-source><mrk mtype="seg" mid="83">Class Display Name - Select Yes from the drop-down box, if you want to fetch display names for every class, if it exists in the application.</mrk> <mrk mtype="seg" mid="84">Select No to fetch this information from the connection.</mrk></seg-source><target><mrk mtype="seg" mid="83" /> <mrk mtype="seg" mid="84" /></target><sdl:seg-defs><sdl:seg id="83" /><sdl:seg id="84"><sdl:rep id="5d58db00-6619-4cee-98f4-f238cf0b20bd-84" /></sdl:seg></sdl:seg-defs></trans-unit>
+<trans-unit id="8cdcd562-37a0-4fd7-ab1a-cc4ec8f88964" translate="no"><source><x id="178" />
+<x id="179" /><x id="180" /></source></trans-unit>
+<trans-unit id="4ed00992-1d2c-496f-9c6a-eea6186bd86c"><source>Attribute Display Name - Select Yes from the drop-down box, if you want to fetch display names of attributes for every class, if it exists in the application. Select No to fetch this information from the connection. The third setting is OnDemand, this means that the attributes will be fetched only if that class is used in Mapper, during MLV creations.</source><seg-source><mrk mtype="seg" mid="85">Attribute Display Name - Select Yes from the drop-down box, if you want to fetch display names of attributes for every class, if it exists in the application.</mrk> <mrk mtype="seg" mid="86">Select No to fetch this information from the connection.</mrk> <mrk mtype="seg" mid="87">The third setting is OnDemand, this means that the attributes will be fetched only if that class is used in Mapper, during MLV creations.</mrk></seg-source><target><mrk mtype="seg" mid="85" /> <mrk mtype="seg" mid="86" /> <mrk mtype="seg" mid="87" /></target><sdl:seg-defs><sdl:seg id="85" /><sdl:seg id="86"><sdl:rep id="5d58db00-6619-4cee-98f4-f238cf0b20bd-84" /></sdl:seg><sdl:seg id="87" /></sdl:seg-defs></trans-unit>
+<trans-unit id="700d37b4-8868-4546-a15b-82386ef00f33" translate="no"><source><x id="181" />
+<x id="182" /><x id="183" /></source></trans-unit>
+<trans-unit id="5aefc760-42f7-4b89-85e4-6047474ed012"><source>Attribute Dynamic - Some attributes have this property in TC Enterprise, for other applications this can be ignored. Select Yes from the drop-down box, if you want to fetch display names of attributes for every class, if it exists in the application. Select No to fetch this information from the connection.</source><seg-source><mrk mtype="seg" mid="88">Attribute Dynamic - Some attributes have this property in TC Enterprise, for other applications this can be ignored.</mrk> <mrk mtype="seg" mid="89">Select Yes from the drop-down box, if you want to fetch display names of attributes for every class, if it exists in the application.</mrk> <mrk mtype="seg" mid="90">Select No to fetch this information from the connection.</mrk></seg-source><target><mrk mtype="seg" mid="88" /> <mrk mtype="seg" mid="89" /> <mrk mtype="seg" mid="90" /></target><sdl:seg-defs><sdl:seg id="88" /><sdl:seg id="89" /><sdl:seg id="90"><sdl:rep id="5d58db00-6619-4cee-98f4-f238cf0b20bd-84" /></sdl:seg></sdl:seg-defs></trans-unit>
+<trans-unit id="c063d06c-3841-4cbc-9869-e47c92573e88" translate="no"><source><x id="184" />
+<x id="185" /><x id="186" /></source></trans-unit>
+<trans-unit id="47ad230c-7896-47b4-8c1d-f6b8b06c8ff0"><source>Learn More</source><seg-source><mrk mtype="seg" mid="91">Learn More</mrk></seg-source><target><mrk mtype="seg" mid="91" /></target><sdl:seg-defs><sdl:seg id="91" /></sdl:seg-defs></trans-unit>
+<trans-unit id="0dac71e1-28be-4cda-aa00-e157bd0f2abe" translate="no"><source><x id="187" />
+<x id="188" /><x id="189" /></source></trans-unit>
+<trans-unit id="2f18c5f1-0d8b-4551-a7a7-90d3262b56d9"><source>Excel</source><seg-source><mrk mtype="seg" mid="92">Excel</mrk></seg-source><target><mrk mtype="seg" mid="92" /></target><sdl:seg-defs><sdl:seg id="92" /></sdl:seg-defs></trans-unit>
+<trans-unit id="0eb6d6e9-0ceb-42b5-b337-6ca43cce2b2b" translate="no"><source><x id="190" />
+<x id="191" /></source></trans-unit>
+<trans-unit id="8d7a825f-492e-4057-8c52-290d5633709c"><source>CSV Connection</source><seg-source><mrk mtype="seg" mid="93">CSV Connection</mrk></seg-source><target><mrk mtype="seg" mid="93" /></target><sdl:seg-defs><sdl:seg id="93" /></sdl:seg-defs></trans-unit>
+<trans-unit id="bf1dd2c4-36d8-401a-af41-516385ef3b14" translate="no"><source><x id="192" />
+<x id="193" /></source></trans-unit>
+<trans-unit id="e5a51d72-473a-4171-bc0b-cfaf958181b0"><source>JDBC</source><seg-source><mrk mtype="seg" mid="94">JDBC</mrk></seg-source><target><mrk mtype="seg" mid="94" /></target><sdl:seg-defs><sdl:seg id="94" /></sdl:seg-defs></trans-unit>
+<trans-unit id="89fcf52e-b012-429b-a73e-90cb6328bcf7" translate="no"><source><x id="194" />
+<x id="195" /></source></trans-unit>
+<trans-unit id="fd2a137c-d52e-4eda-9ffc-f8d5dcb031fa"><source>IBMDB2</source><seg-source><mrk mtype="seg" mid="95">IBMDB2</mrk></seg-source><target><mrk mtype="seg" mid="95" /></target><sdl:seg-defs><sdl:seg id="95" /></sdl:seg-defs></trans-unit>
+<trans-unit id="02a17073-1b14-4caf-b2eb-9003a71f0259" translate="no"><source><x id="196" />
+<x id="197" /></source></trans-unit>
+<trans-unit id="ff709864-033b-4235-ad7e-8f47b39e597b"><source>LDAP Plugin for Microsoft Active Directory Server</source><seg-source><mrk mtype="seg" mid="96">LDAP Plugin for Microsoft Active Directory Server</mrk></seg-source><target><mrk mtype="seg" mid="96" /></target><sdl:seg-defs><sdl:seg id="96" /></sdl:seg-defs></trans-unit>
+<trans-unit id="f5c9faae-3d1b-48c9-a0bc-95b53eca499f" translate="no"><source><x id="198" />
+<x id="199" /></source></trans-unit>
+<trans-unit id="620c3f69-a6de-4259-a5ff-92aece513b22"><source>LDAP Plugin for Sun One</source><seg-source><mrk mtype="seg" mid="97">LDAP Plugin for Sun One</mrk></seg-source><target><mrk mtype="seg" mid="97" /></target><sdl:seg-defs><sdl:seg id="97" /></sdl:seg-defs></trans-unit>
+<trans-unit id="fbbf00b6-8277-4572-a7ce-e7b3e66e4700" translate="no"><source><x id="200" />
+<x id="201" /></source></trans-unit>
+<trans-unit id="ecdb0674-2e3c-44b2-b9d4-80473fa7a61e"><source>Microsoft Project Server 2007</source><seg-source><mrk mtype="seg" mid="98">Microsoft Project Server 2007</mrk></seg-source><target><mrk mtype="seg" mid="98" /></target><sdl:seg-defs><sdl:seg id="98" /></sdl:seg-defs></trans-unit>
+<trans-unit id="7fdacef1-765c-4771-ad4f-457ea490614e" translate="no"><source><x id="202" />
+<x id="203" /></source></trans-unit>
+<trans-unit id="3961b65c-1752-43a3-83a7-95a6da9b57bb"><source>MS Project File</source><seg-source><mrk mtype="seg" mid="99">MS Project File</mrk></seg-source><target><mrk mtype="seg" mid="99" /></target><sdl:seg-defs><sdl:seg id="99" /></sdl:seg-defs></trans-unit>
+<trans-unit id="0c6dda2c-c1ca-40ec-a421-a6d361b8b820" translate="no"><source><x id="204" />
+<x id="205" /></source></trans-unit>
+<trans-unit id="e7eed43b-8f5c-4ca5-9025-16c8861323c0"><source>MS-Access</source><seg-source><mrk mtype="seg" mid="100">MS-Access</mrk></seg-source><target><mrk mtype="seg" mid="100" /></target><sdl:seg-defs><sdl:seg id="100" /></sdl:seg-defs></trans-unit>
+<trans-unit id="7a245d75-7291-4364-b30f-31737c37ea8a" translate="no"><source><x id="206" />
+<x id="207" /></source></trans-unit>
+<trans-unit id="e96a56e5-051f-41af-8d94-c7ddb679b33b"><source>SQL Server</source><seg-source><mrk mtype="seg" mid="101">SQL Server</mrk></seg-source><target><mrk mtype="seg" mid="101" /></target><sdl:seg-defs><sdl:seg id="101" /></sdl:seg-defs></trans-unit>
+<trans-unit id="45988ef0-85d9-47fa-b84a-ccccce826554" translate="no"><source><x id="208" />
+<x id="209" /></source></trans-unit>
+<trans-unit id="67412dc2-0ad4-4091-8c52-b686f03c0fcc"><source>Mentor</source><seg-source><mrk mtype="seg" mid="102">Mentor</mrk></seg-source><target><mrk mtype="seg" mid="102" /></target><sdl:seg-defs><sdl:seg id="102" /></sdl:seg-defs></trans-unit>
+<trans-unit id="eea606f2-4c22-4db6-87ef-4db49aa73a67" translate="no"><source><x id="210" />
+<x id="211" /></source></trans-unit>
+<trans-unit id="af7a14c3-8a02-4081-897b-2c71f50aa6af"><source>Oracle</source><seg-source><mrk mtype="seg" mid="103">Oracle</mrk></seg-source><target><mrk mtype="seg" mid="103" /></target><sdl:seg-defs><sdl:seg id="103" /></sdl:seg-defs></trans-unit>
+<trans-unit id="4a2e24f6-a707-4907-98b5-25376af5d04a" translate="no"><source><x id="212" />
+<x id="213" /></source></trans-unit>
+<trans-unit id="d7ada9e5-e10e-4b27-a5e6-aaf16c0950ec"><source>SAP</source><seg-source><mrk mtype="seg" mid="104">SAP</mrk></seg-source><target><mrk mtype="seg" mid="104" /></target><sdl:seg-defs><sdl:seg id="104" /></sdl:seg-defs></trans-unit>
+<trans-unit id="76e9533d-bd5f-4a05-99c7-850b3dc1c30b" translate="no"><source><x id="214" />
+<x id="215" /></source></trans-unit>
+<trans-unit id="166f35fc-f10a-4a69-8927-cc57cbf2ffbd"><source>Teamcenter Project</source><seg-source><mrk mtype="seg" mid="105">Teamcenter Project</mrk></seg-source><target><mrk mtype="seg" mid="105" /></target><sdl:seg-defs><sdl:seg id="105" /></sdl:seg-defs></trans-unit>
+<trans-unit id="b0085808-33ac-4f5d-9cc7-0a268d6fae55" translate="no"><source><x id="216" />
+<x id="217" /></source></trans-unit>
+<trans-unit id="e68b5467-35ac-4f35-915a-17c9ce366307"><source>Teamcenter  Enterprise</source><seg-source><mrk mtype="seg" mid="106">Teamcenter  Enterprise</mrk></seg-source><target><mrk mtype="seg" mid="106" /></target><sdl:seg-defs><sdl:seg id="106" /></sdl:seg-defs></trans-unit>
+<trans-unit id="7cbd5c54-bdba-4249-931a-21b83198cb36" translate="no"><source><x id="218" />
+<x id="219" /></source></trans-unit>
+<trans-unit id="10b88e98-6010-4c59-a966-ce836f6638b3"><source>Teamcenter Sourcing</source><seg-source><mrk mtype="seg" mid="107">Teamcenter Sourcing</mrk></seg-source><target><mrk mtype="seg" mid="107" /></target><sdl:seg-defs><sdl:seg id="107" /></sdl:seg-defs></trans-unit>
+<trans-unit id="3a67fe7a-54d4-4095-b05d-38a18d417126" translate="no"><source><x id="220" />
+<x id="221" /></source></trans-unit>
+<trans-unit id="5c8a67cb-f388-4dad-a8e1-799d2c40dfba"><source>Teamcenter System Engineering</source><seg-source><mrk mtype="seg" mid="108">Teamcenter System Engineering</mrk></seg-source><target><mrk mtype="seg" mid="108" /></target><sdl:seg-defs><sdl:seg id="108" /></sdl:seg-defs></trans-unit>
+<trans-unit id="341eeb81-c90e-4477-a087-ad35f69c3af9" translate="no"><source><x id="222" />
+<x id="223" /></source></trans-unit>
+<trans-unit id="660bf0eb-bab3-43f2-8bcd-82235f40877d"><source>Teamcenter Engineering 4-Tier</source><seg-source><mrk mtype="seg" mid="109">Teamcenter Engineering 4-Tier</mrk></seg-source><target><mrk mtype="seg" mid="109" /></target><sdl:seg-defs><sdl:seg id="109"><sdl:rep id="660bf0eb-bab3-43f2-8bcd-82235f40877d-109" /></sdl:seg></sdl:seg-defs></trans-unit>
+<trans-unit id="19b6b557-c653-4cb7-bd17-08d026c0d7ab" translate="no"><source><x id="224" />
+<x id="225" /></source></trans-unit>
+<trans-unit id="55e7aff8-5a21-444f-a569-79ae5ff7e40d"><source>Teamcenter Engineering 2-Tier</source><seg-source><mrk mtype="seg" mid="110">Teamcenter Engineering 2-Tier</mrk></seg-source><target><mrk mtype="seg" mid="110" /></target><sdl:seg-defs><sdl:seg id="110"><sdl:rep id="660bf0eb-bab3-43f2-8bcd-82235f40877d-109" /></sdl:seg></sdl:seg-defs></trans-unit>
+<trans-unit id="1bb11f3e-0965-44f7-8f22-72319302c350" translate="no"><source><x id="226" />
+<x id="227" /></source></trans-unit>
+<trans-unit id="8a49c02a-fb35-4c47-8417-50e065117c51"><source>Teamcenter 2007 4-Tier</source><seg-source><mrk mtype="seg" mid="111">Teamcenter 2007 4-Tier</mrk></seg-source><target><mrk mtype="seg" mid="111" /></target><sdl:seg-defs><sdl:seg id="111"><sdl:rep id="8a49c02a-fb35-4c47-8417-50e065117c51-111" /></sdl:seg></sdl:seg-defs></trans-unit>
+<trans-unit id="36a9215c-7a67-47ea-97b9-52cc39f9ec80" translate="no"><source><x id="228" />
+<x id="229" /></source></trans-unit>
+<trans-unit id="8c5de145-6fc6-41d9-bba7-aba82acdf1b1"><source>Teamcenter 2007 2-Tier</source><seg-source><mrk mtype="seg" mid="112">Teamcenter 2007 2-Tier</mrk></seg-source><target><mrk mtype="seg" mid="112" /></target><sdl:seg-defs><sdl:seg id="112"><sdl:rep id="8a49c02a-fb35-4c47-8417-50e065117c51-111" /></sdl:seg></sdl:seg-defs></trans-unit>
+<trans-unit id="9958343f-3de9-4992-a45d-a3904648a1c2" translate="no"><source><x id="230" />
+<x id="231" /></source></trans-unit>
+<trans-unit id="b5ba1858-340f-4236-9cba-206ea7372bdf"><source>Teamcenter 4-Tier</source><seg-source><mrk mtype="seg" mid="113">Teamcenter 4-Tier</mrk></seg-source><target><mrk mtype="seg" mid="113" /></target><sdl:seg-defs><sdl:seg id="113"><sdl:rep id="b5ba1858-340f-4236-9cba-206ea7372bdf-113" /></sdl:seg></sdl:seg-defs></trans-unit>
+<trans-unit id="148f7a5d-3f0f-4c4a-aab9-1ec037b4d0af" translate="no"><source><x id="232" />
+<x id="233" /></source></trans-unit>
+<trans-unit id="61618f6d-ca3c-42a0-b982-76eaea4d0bda"><source>Teamcenter 4-tier Load Balancer</source><seg-source><mrk mtype="seg" mid="114">Teamcenter 4-tier Load Balancer</mrk></seg-source><target><mrk mtype="seg" mid="114" /></target><sdl:seg-defs><sdl:seg id="114"><sdl:rep id="61618f6d-ca3c-42a0-b982-76eaea4d0bda-114" /></sdl:seg></sdl:seg-defs></trans-unit>
+<trans-unit id="528365ba-a5ac-4756-a57d-27272cf3495d" translate="no"><source><x id="234" />
+<x id="235" /></source></trans-unit>
+<trans-unit id="2bb307e5-0586-420f-9a10-fac5ab468bfc"><source>Teamcenter 2-Tier</source><seg-source><mrk mtype="seg" mid="115">Teamcenter 2-Tier</mrk></seg-source><target><mrk mtype="seg" mid="115" /></target><sdl:seg-defs><sdl:seg id="115"><sdl:rep id="b5ba1858-340f-4236-9cba-206ea7372bdf-113" /></sdl:seg></sdl:seg-defs></trans-unit>
+<trans-unit id="d3d1b247-2eae-4bbe-82be-87e85bc432ab" translate="no"><source><x id="236" />
+<x id="237" /></source></trans-unit>
+<trans-unit id="62bb9578-8315-4565-aebc-f841fbfcb941"><source>Teamcenter 2-tier Load Balancer</source><seg-source><mrk mtype="seg" mid="116">Teamcenter 2-tier Load Balancer</mrk></seg-source><target><mrk mtype="seg" mid="116" /></target><sdl:seg-defs><sdl:seg id="116"><sdl:rep id="61618f6d-ca3c-42a0-b982-76eaea4d0bda-114" /></sdl:seg></sdl:seg-defs></trans-unit>
+<trans-unit id="541e4b58-5dae-4055-9954-a21786293766" translate="no"><source><x id="238" />
+<x id="239" /></source></trans-unit>
+<trans-unit id="b1e659d9-c9c8-4463-9ae7-4c1579edbf0d"><source>Teamcenter System Engineering-Remote Plugin</source><seg-source><mrk mtype="seg" mid="117">Teamcenter System Engineering-Remote Plugin</mrk></seg-source><target><mrk mtype="seg" mid="117" /></target><sdl:seg-defs><sdl:seg id="117" /></sdl:seg-defs></trans-unit>
+<trans-unit id="cd287363-a368-4cc3-9ef9-407f2abdfb84" translate="no"><source><x id="240" />
+<x id="241" /></source></trans-unit>
+<trans-unit id="eddce771-06e4-4fa6-b74e-902f12a4e6c5"><source>Remote Teamcenter SOA</source><seg-source><mrk mtype="seg" mid="118">Remote Teamcenter SOA</mrk></seg-source><target><mrk mtype="seg" mid="118" /></target><sdl:seg-defs><sdl:seg id="118" /></sdl:seg-defs></trans-unit>
+<trans-unit id="af0884e4-0a9c-47dc-a2ce-6ec744a377b7" translate="no"><source><x id="242" />
+<x id="243" /></source></trans-unit>
+<trans-unit id="5c6fc58b-6c4a-4c63-a21a-121c8e929729"><source>Multiple Schema</source><seg-source><mrk mtype="seg" mid="119">Multiple Schema</mrk></seg-source><target><mrk mtype="seg" mid="119" /></target><sdl:seg-defs><sdl:seg id="119" /></sdl:seg-defs></trans-unit>
+<trans-unit id="daed3cd9-d9c0-4fec-a567-04b0984c7dc4" translate="no"><source><x id="244" />
+<x id="245" /></source></trans-unit>
+<trans-unit id="07e70943-8bff-45c5-bfdc-f887db720362"><source>Custom</source><seg-source><mrk mtype="seg" mid="120">Custom</mrk></seg-source><target><mrk mtype="seg" mid="120" /></target><sdl:seg-defs><sdl:seg id="120" /></sdl:seg-defs></trans-unit>
+<trans-unit id="6d4e2086-4c22-4618-b34a-ad27f4336686" translate="no"><source><x id="246" />
+</source></trans-unit></body></file></xliff>
