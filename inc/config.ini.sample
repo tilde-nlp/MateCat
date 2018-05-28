@@ -86,7 +86,7 @@ LXQ_PARTNERID = false
 
 ;----------------------------------------
 [production]
-RELATIVE_HOST_NAME = "http://localhost/" ; Relative host path for running cat as submodule
+RELATIVE_HOST_NAME = "http://@@@host@@@/" ; Relative host path for running cat as submodule
 CLI_HTTP_HOST = "http://localhost" ; Set the hostname for batch processes ( they do not know the global variable $_SERVER )
 DB_SERVER = "localhost"
 DB_DATABASE = "matecat"
@@ -98,7 +98,7 @@ QUEUE_BROKER_ADDRESS = "tcp://localhost:61613"
 QUEUE_DQF_ADDRESS = "tcp://localhost:61613"
 QUEUE_JMX_ADDRESS = "http://localhost:8161"
 SSE_BASE_URL = "http://localhost/sse"          ;no trailing slash here
-STORAGE_DIR = "/home/matecat/cattool/storage"         ;provide an absolute path
+STORAGE_DIR = "/home/@@@user@@@/cattool/storage"         ;provide an absolute path
 
 SMTP_HOST = 'localhost'
 SMTP_PORT = '25'
