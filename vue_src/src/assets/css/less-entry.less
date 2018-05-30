@@ -131,6 +131,32 @@ h4 {
   }
 }
 
+.confirmation-container {
+  .border-box;
+  .p-16;
+  .pb-48;
+  transition: all unit(@golden / 10, s) ease-in-out;
+  border: solid 2px @color-grey;
+  height: auto;
+  .margin-center(720px);
+  .text{
+    .h4;
+    text-align: center;
+  }
+  .confirm {
+    float: left;
+  }
+  .cancel {
+    float: right;
+    background-color: @color-grey;
+    &:hover {
+      outline: none !important;
+      box-shadow: none;
+      background-color: @color-red-darker;
+    }
+  }
+}
+
 
 /* CUSTOM STYLES */
 

@@ -97,6 +97,20 @@
         </transition-group>
       </div>
     </div>
+    <transition
+      name="fade"
+      mode="out-in"
+    >
+      <confirmation
+        v-if="showFileDeleteConfirm"
+        confirm-text="Dzēst"
+        cancel-text="Atcelt"
+        @confirm="deleteFile"
+        @cancel="cancelFileDelete"
+      >
+        Vai tiešām vēlaties dzēst failu?
+      </confirmation>
+    </transition>
   </div>
 </template>
 
@@ -104,8 +118,12 @@
 import FileService from '../axios/file'
 import _ from 'lodash'
 import Vue from 'vue'
+import {Confirmation} from '@shibetec/vue-toolbox'
 export default {
   name: 'FileList',
+  components: {
+    'confirmation': Confirmation
+  },
   data: function () {
     return {
       uploadFiles: [],
@@ -114,7 +132,9 @@ export default {
       fileForm: '',
       dragAndDropCapable: false,
       dragActive: false,
-      uploadProgress: {}
+      uploadProgress: {},
+      showFileDeleteConfirm: false,
+      activeFileDeleteKey: null
     }
   },
   mounted: function () {
@@ -130,6 +150,10 @@ export default {
         this.uploadFiles = null
         this.uploadFiles = _.map(response.data.data, el => {
           return {
+            id: el.id,
+            password: el.password,
+            jobId: el.jobs[0].id,
+            jobPassword: el.jobs[0].password,
             name: el.name,
             wordCount: el.standard_analysis_wc
           }
@@ -226,10 +250,33 @@ export default {
       this.$refs.fileUploader.click()
     },
     removeFile: function (key) {
-      this.uploadFiles.splice(key, 1)
+      this.activeFileDeleteKey = key
+      this.showFileDeleteConfirm = false
+      this.showFileDeleteConfirm = true
     },
     share: function (key) {
       // this.uploadFiles.splice(key, 1)
+    },
+    deleteFile: function () {
+      if (this.activeFileDeleteKey === null) return
+      // TODO Delete file for real
+      const data = {
+        new_status: 'cancelled',
+        res: 'job',
+        id: this.uploadFiles[this.activeFileDeleteKey].jobId,
+        password: this.uploadFiles[this.activeFileDeleteKey].jobPassword
+      }
+      FileService.delete(data)
+        .then(r => {
+          console.log(r)
+        })
+      this.uploadFiles.splice(this.activeFileDeleteKey, 1)
+      this.activeFileDeleteKey = null
+      this.showFileDeleteConfirm = false
+    },
+    cancelFileDelete: function () {
+      this.activeFileDeleteKey = null
+      this.showFileDeleteConfirm = false
     },
     /*
       Determines if the drag and drop functionality is in the

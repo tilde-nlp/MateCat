@@ -1,4 +1,5 @@
 import {HTTP} from './base'
+import {FormGenerator} from './form-generator'
 
 export default {
   upload: function (data) {
@@ -18,5 +19,8 @@ export default {
   },
   getList: function (data) {
     return HTTP.post('?action=getProjects', data)
+  },
+  delete: function (data) {
+    return HTTP.post('?action=changeJobsStatus', FormGenerator.generateForm(data))
   }
 }
