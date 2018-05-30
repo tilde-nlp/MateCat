@@ -61,9 +61,9 @@
             >
               <div class="segments column">-</div>
               <div class="words column">{{ file.wordCount }}</div>
-              <div class="translated column">-</div>
-              <div class="created column">-</div>
-              <div class="created-by column">-</div>
+              <div class="translated column">{{ file.progress }} %</div>
+              <div class="created column">{{ file.created }}</div>
+              <div class="created-by column">{{ file.owner }}</div>
               <div class="last-modified column">-</div>
               <div class="controls column">
                 <button
@@ -119,6 +119,7 @@ import FileService from '../axios/file'
 import _ from 'lodash'
 import Vue from 'vue'
 import {Confirmation} from '@shibetec/vue-toolbox'
+import {DateConverter} from '../utils/date-converter'
 export default {
   name: 'FileList',
   components: {
@@ -149,13 +150,17 @@ export default {
         console.log(response.data)
         this.uploadFiles = null
         this.uploadFiles = _.map(response.data.data, el => {
+          console.log(el)
           return {
             id: el.id,
             password: el.password,
             jobId: el.jobs[0].id,
             jobPassword: el.jobs[0].password,
             name: el.name,
-            wordCount: el.standard_analysis_wc
+            wordCount: el.jobs[0].stats.TOTAL,
+            owner: el.jobs[0].owner,
+            progress: parseFloat(el.jobs[0].stats.TRANSLATED / el.jobs[0].stats.TOTAL * 100).toFixed(2),
+            created: DateConverter.timeStampToDate(el.jobs[0].create_timestamp)
           }
         })
       })
@@ -259,7 +264,6 @@ export default {
     },
     deleteFile: function () {
       if (this.activeFileDeleteKey === null) return
-      // TODO Delete file for real
       const data = {
         new_status: 'cancelled',
         res: 'job',
@@ -376,6 +380,7 @@ export default {
           .then(analyzeRes => {
             console.log('Analyze complete')
             console.log(analyzeRes)
+            this.uploadFiles[currentUpload.index].wordCount = parseInt(analyzeRes.data.data.summary.TOTAL_RAW_WC)
             this.$loading.endLoading('file_' + currentUpload.index)
             Vue.delete(this.uploadProgress, currentUpload.index)
           })
