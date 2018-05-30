@@ -1,9 +1,9 @@
 'use strict'
 
 const path = require('path')
-const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const ExtractPlugin = require('extract-text-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 function resolve (dir) {
@@ -11,10 +11,17 @@ function resolve (dir) {
 }
 
 module.exports = {
-  mode: 'development',
+  mode: 'production',
   entry: [
     './src/app.js'
   ],
+  output: {
+    path: resolve('../public/vue_dist'),
+    filename: 'main.js',
+    libraryTarget: 'umd',
+    library: 'HugoCat',
+    umdNamedDefine: true
+  },
   resolve: {
     extensions: ['.js', '.vue'],
     alias: {
@@ -22,15 +29,9 @@ module.exports = {
       'src': resolve('src'),
       'c': resolve('src/components'),
       'less-entry': resolve('src/assets/css/less-entry.less'),
-      'scss-entry': resolve('src/assets/css/scss-entry.scss'),
       'pages': resolve('src/pages'),
       'assets': resolve('src/assets')
     }
-  },
-  devServer: {
-    hot: true,
-    open: true,
-    overlay: true
   },
   module: {
     rules: [
@@ -41,7 +42,10 @@ module.exports = {
       },
       {
         test: /\.vue$/,
-        loader: 'vue-loader'
+        loader: 'vue-loader',
+        options: {
+          extractCSS: true
+        }
       },
       {
         test: /\.js$/,
@@ -79,41 +83,43 @@ module.exports = {
       },
       {
         test: /\.less$/,
-        use: [
-          'vue-style-loader',
-          'css-loader',
-          'less-loader'
-        ]
+        use: ExtractPlugin.extract({
+          fallback: 'vue-style-loader',
+          use: [
+            {loader: 'css-loader'},
+            {loader: 'less-loader'}
+          ]
+        })
       },
       {
         test: /\.css$/,
-        use: [
-          {
-            loader: 'vue-style-loader'
-          },
-          {
-            loader: 'css-loader',
-            options: {
-              modules: true,
-              localIdentName: '[local]_[hash:base64:8]'
+        use: ExtractPlugin.extract({
+          fallback: 'vue-style-loader',
+          use: [
+            {
+              loader: 'css-loader',
+              options: {
+                modules: true,
+                localIdentName: '[local]_[hash:base64:8]'
+              }
             }
-          }
-        ]
+          ]
+        })
       }
     ]
   },
   plugins: [
     new VueLoaderPlugin(),
+    new ExtractPlugin('main.css'),
     new CopyWebpackPlugin([{
       from: resolve('static'),
-      to: resolve('dist/static'),
+      to: resolve('../public/vue_dist/static'),
       toType: 'dir'
     }]),
-    new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'index.html',
-      inject: true
+      inject: false
     })
   ]
 }

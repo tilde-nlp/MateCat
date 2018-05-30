@@ -13,7 +13,7 @@
 @size-s: 16px;    @spacing-s: 0.1px;  @lh-s: 24px;
 @size-xs: 14px;   @spacing-xs: 1px; @lh-xs: 20px;
 
-@font-regular: 'Playfair Display', serif;
+@font-regular: 'Merriweather', serif;
 
 .font-base {
   -webkit-font-smoothing: antialiased;
@@ -128,5 +128,96 @@ h4 {
   &:hover,
   &.active {
     fill: @color-red-darker;
+  }
+}
+
+
+/* CUSTOM STYLES */
+
+#fileUploader {
+  display: none;
+}
+
+.file-dropoff {
+  transition: all unit(@golden / 10, s) ease-in-out;
+  border: solid 2px @color-grey;
+  &.active {
+    border: solid 2px @color-red;
+  }
+  height: @spacer-64;
+  .file-upload-button {
+    .mr-32;
+    vertical-align: middle;
+    width: @spacer-128;
+  }
+  .file-dropoff-note {
+    display: inline-block;
+    vertical-align: middle;
+    .size-m;
+  }
+}
+
+.file-list-container {
+  .mt-16;
+  .size-s;
+  text-align: left;
+  .status {
+    width: @spacer-192;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .segments {
+    width: 74px;
+  }
+  .words {
+    width: 74px;
+  }
+  .translated {
+    width: 74px;
+  }
+  .created {
+    width: 160px;
+  }
+  .created-by {
+    width: 220px;
+  }
+  .last-modified {
+    width: 160px;
+  }
+  .controls {
+    width: 201px;
+  }
+  .file-list-header {
+    .mb-8;
+    div {
+      display: inline-block;
+    }
+  }
+  @file-row-height: 50px;
+  .file-list {
+    .file-row {
+      .border-box;
+      display: block;
+      border-bottom: solid 1px @color-light-darker;
+      height: @file-row-height;
+      .va-middle;
+      .pb-8;
+      .column {
+        height: @file-row-height;
+        line-height: @file-row-height;
+        display: inline-block;
+      }
+    }
+    .additional-row {
+      display: inline-block;
+      height: @file-row-height;
+      line-height: @file-row-height;
+      .va-top;
+    }
+  }
+  .file-list-button {
+    .w-128;
+    display: inline-block;
   }
 }

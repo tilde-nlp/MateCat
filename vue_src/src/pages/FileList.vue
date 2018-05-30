@@ -57,7 +57,7 @@
             </div>
             <div
               v-else
-              class="ib"
+              class="additional-row"
             >
               <div class="segments column">-</div>
               <div class="words column">{{ file.wordCount }}</div>
@@ -71,16 +71,24 @@
                   @click="translate"
                 >Rediģēt
                 </button>
-                <svgicon
-                  class="svg-icon"
-                  name="share"
-                  height="30"
-                />
-                <span @click="removeFile(key)">
+                <span
+                  class="icon-span"
+                  @click="share(key)"
+                >
                   <svgicon
-                    class="svg-icon"
+                    class="svg-icon va-middle"
+                    name="share"
+                    height="32"
+                  />
+                </span>
+                <span
+                  class="icon-span"
+                  @click="removeFile(key)"
+                >
+                  <svgicon
+                    class="svg-icon va-middle"
                     name="close"
-                    height="30"
+                    height="32"
                   />
                 </span>
               </div>
@@ -220,6 +228,9 @@ export default {
     removeFile: function (key) {
       this.uploadFiles.splice(key, 1)
     },
+    share: function (key) {
+      // this.uploadFiles.splice(key, 1)
+    },
     /*
       Determines if the drag and drop functionality is in the
       window
@@ -326,83 +337,3 @@ export default {
   }
 }
 </script>
-
-<style lang="less" scoped>
-  @import (reference) "~less-entry";
-
-  #fileUploader {
-    display: none;
-  }
-
-  .file-dropoff {
-    transition: all unit(@golden / 10, s) ease-in-out;
-    border: solid 1px @color-grey-darker;
-    &.active {
-      border: solid 1px @color-red;
-    }
-    height: @spacer-64;
-    .file-upload-button {
-      .mr-32;
-      vertical-align: middle;
-      width: @spacer-128;
-    }
-    .file-dropoff-note {
-      display: inline-block;
-      vertical-align: middle;
-      .size-m;
-    }
-  }
-
-  .file-list-container {
-    .mt-16;
-    .size-s;
-    text-align: left;
-    .status {
-      width: @spacer-192;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-    .segments {
-      width: 74px;
-    }
-    .words {
-      width: 74px;
-    }
-    .translated {
-      width: 74px;
-    }
-    .created {
-      width: 160px;
-    }
-    .created-by {
-      width: 220px;
-    }
-    .last-modified {
-      width: 160px;
-    }
-    .controls {
-      width: 200px;
-    }
-    .file-list-header {
-      .mb-8;
-      div {
-        display: inline-block;
-      }
-    }
-    .file-list {
-      .file-row {
-        display: block;
-        border-bottom: solid 1px @color-light-darker;
-        .pb-8;
-        .column {
-          display: inline-block;
-        }
-      }
-    }
-    .file-list-button {
-      .w-128;
-      display: inline-block;
-    }
-  }
-</style>
