@@ -6,5 +6,8 @@ export default {
   },
   setTranslation: function (data) {
     return HTTP.post('?action=setTranslation', FormGenerator.generateForm(data))
+  },
+  getContribution: function (data) {
+    return HTTP.post('?action=getContribution', FormGenerator.generateForm(data))
   }
 }

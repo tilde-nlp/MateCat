@@ -41,7 +41,7 @@
             class="icon-container"
             @click="incomplete(segment)">
             <svgicon
-              :class="{active: segment.status === 'incomplete'}"
+              :class="{active: segment.status === 'draft'}"
               class="svg-icon"
               name="question"
               height="30"
@@ -94,6 +94,9 @@ export default {
             version: el.version
           }
         })
+        this.segments.forEach(item => {
+          if (item.status === '') this.getContribution(item)
+        })
       })
   },
   methods: {
@@ -107,9 +110,7 @@ export default {
       segment.translation = segment.original
     },
     done: function (segment) {
-      const index = _.findKey(this.segments, item => {
-        return item.id === segment.id
-      })
+      const context = this.getContext(segment)
       const data = {
         id_segment: segment.id,
         id_job: this.$route.params.jobId,
@@ -122,8 +123,8 @@ export default {
         autosave: false,
         version: segment.version,
         propagate: true,
-        context_before: (typeof (this.segments[index - 1]) === 'undefined') ? '' : this.segments[index - 1].original,
-        context_after: (typeof (this.segments[index + 1]) === 'undefined') ? '' : this.segments[index + 1].original,
+        context_before: context.before,
+        context_after: context.after,
         action: 'setTranslation'
       }
       SegmentsService.setTranslation(data)
@@ -133,13 +134,41 @@ export default {
         })
     },
     incomplete: function (segment) {
-      segment.status = 'incomplete'
+      segment.status = 'draft'
     },
     trash: function (segment) {
       segment.translation = ''
     },
     goBack: function () {
       this.$router.push({name: 'file-list'})
+    },
+    getContribution: function (segment) {
+      const context = this.getContext(segment)
+      const data = {
+        action: 'getContribution',
+        password: this.$route.params.password,
+        is_concordance: 0,
+        id_segment: segment.id,
+        text: segment.original,
+        id_job: this.$route.params.jobId,
+        num_results: 3,
+        context_before: context.before,
+        context_after: context.after
+      }
+      SegmentsService.getContribution(data)
+        .then(r => {
+          const match = r.data.data.matches[0]
+          segment.translation = match.translation
+        })
+    },
+    getContext: function (segment) {
+      const index = _.findKey(this.segments, item => {
+        return item.id === segment.id
+      })
+      return {
+        before: (typeof (this.segments[index - 1]) === 'undefined') ? '' : this.segments[index - 1].original,
+        after: (typeof (this.segments[index + 1]) === 'undefined') ? '' : this.segments[index + 1].original
+      }
     }
   }
 }
