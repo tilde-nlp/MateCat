@@ -1,5 +1,6 @@
 <template>
   <div class="page-container">
+    <button @click="goBack">Atpakaļ</button>
     <div class="translator-container">
       <div class="section">
         Some tools and stuff
@@ -68,7 +69,8 @@ export default {
   name: 'Translator',
   data: function () {
     return {
-      segments: []
+      segments: [],
+      fileId: ''
     }
   },
   mounted: function () {
@@ -81,13 +83,15 @@ export default {
     }
     SegmentsService.getSegments(data)
       .then(r => {
+        this.fileId = Object.keys(r.data.data.files)[0]
         this.segments = _.map(Object.values(r.data.data.files)[0].segments, el => {
           return {
             id: el.sid,
             original: el.segment,
             translation: el.translation,
-            status: '',
-            active: false
+            status: (el.status === 'TRANSLATED' ? 'done' : ''),
+            active: false,
+            version: el.version
           }
         })
       })
@@ -103,13 +107,39 @@ export default {
       segment.translation = segment.original
     },
     done: function (segment) {
-      segment.status = 'done'
+      const index = _.findKey(this.segments, item => {
+        return item.id === segment.id
+      })
+      const data = {
+        id_segment: segment.id,
+        id_job: this.$route.params.jobId,
+        id_first_file: this.fileId,
+        password: this.$route.params.password,
+        status: 'translated',
+        translation: segment.translation,
+        segment: segment.original,
+        time_to_edit: 1,
+        autosave: false,
+        version: segment.version,
+        propagate: true,
+        context_before: (typeof (this.segments[index - 1]) === 'undefined') ? '' : this.segments[index - 1].original,
+        context_after: (typeof (this.segments[index + 1]) === 'undefined') ? '' : this.segments[index + 1].original,
+        action: 'setTranslation'
+      }
+      SegmentsService.setTranslation(data)
+        .then(r => {
+          console.log(r)
+          segment.status = 'done'
+        })
     },
     incomplete: function (segment) {
       segment.status = 'incomplete'
     },
     trash: function (segment) {
       segment.translation = ''
+    },
+    goBack: function () {
+      this.$router.push({name: 'file-list'})
     }
   }
 }
