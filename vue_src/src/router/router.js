@@ -9,7 +9,7 @@ import {Auth} from '../utils/auth'
 Vue.use(VueRouter)
 const routes = [
   {path: '/', component: FileList, name: 'file-list', beforeEnter: beforeRouteEnter},
-  {path: '/translate', component: Translator, name: 'translate', beforeEnter: beforeRouteEnter},
+  {path: '/translate/:jobId/:password', component: Translator, name: 'translate', beforeEnter: beforeRouteEnter},
   {path: '/login', component: LoginPage, name: 'login'},
   {path: '*', redirect: {name: 'file-list'}}
 ]

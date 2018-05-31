@@ -68,7 +68,7 @@
               <div class="controls column">
                 <button
                   class="file-list-button"
-                  @click="translate"
+                  @click="translate(key)"
                 >Rediģēt
                 </button>
                 <span
@@ -305,8 +305,8 @@ export default {
         'FormData' in window &&
         'FileReader' in window
     },
-    translate: function () {
-      this.$router.push({name: 'translate'})
+    translate: function (key) {
+      this.$router.push({name: 'translate', params: {jobId: this.uploadFiles[key].jobId, password: this.uploadFiles[key].jobPassword}})
     },
     upload: function (file, index) {
       // eslint-disable-next-line no-undef
