@@ -63,48 +63,34 @@
 
 <script>
 import _ from 'lodash'
+import SegmentsService from '../axios/segments'
 export default {
   name: 'Translator',
   data: function () {
     return {
-      segments: [
-        {
-          id: 1,
-          original: 'The quick brown fox jumps over lazy dog.',
-          translation: '',
-          status: '',
-          active: false
-        },
-        {
-          id: 2,
-          original: 'The quick brown fox jumps over lazy dog.',
-          translation: '',
-          status: '',
-          active: false
-        },
-        {
-          id: 3,
-          original: 'The quick brown fox jumps over lazy dog.',
-          translation: '',
-          status: '',
-          active: false
-        },
-        {
-          id: 4,
-          original: 'The quick brown fox jumps over lazy dog.',
-          translation: '',
-          status: '',
-          active: false
-        },
-        {
-          id: 5,
-          original: 'The quick brown fox jumps over lazy dog.',
-          translation: '',
-          status: '',
-          active: false
-        }
-      ]
+      segments: []
     }
+  },
+  mounted: function () {
+    const data = {
+      action: 'getSegments',
+      jid: this.$route.params.jobId,
+      password: this.$route.params.password,
+      where: 'center',
+      step: 200
+    }
+    SegmentsService.getSegments(data)
+      .then(r => {
+        this.segments = _.map(Object.values(r.data.data.files)[0].segments, el => {
+          return {
+            id: el.sid,
+            original: el.segment,
+            translation: el.translation,
+            status: '',
+            active: false
+          }
+        })
+      })
   },
   methods: {
     activateSegment: function (segment) {

@@ -171,6 +171,7 @@ sudo sed -i "s/\/home\/matecat\/storage/\/home\/$MATECAT_USER\/cattool\/storage/
 
 # Compile
 # sudo -u $MATECAT_USER -H sh -c "cd /home/$MATECAT_USER/cattool/support_scripts/grunt;npm install"
+sudo -u $MATECAT_USER -H sh -c "cd /home/$MATECAT_USER/cattool/vue_src;npm install"
 # sudo -u $MATECAT_USER -H sh -c "cd /home/$MATECAT_USER/cattool/support_scripts/grunt;grunt deploy"
 
 # Configure Node.js server app
