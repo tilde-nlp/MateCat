@@ -1,7 +1,40 @@
 @import "~@shibetec/vue-toolbox/dist/less/shibetec-less";
 
+.css-circle(@radius, @color) {
+  border-radius: 50%;
+  width: @radius;
+  height: @radius;
+  background-color: @color;
+  display: inline-block;
+}
+
+.css-circle-rotating(@radius, @color-from, @color-mid, @color-to, @time: unit(@e, s)) {
+  width: @radius;
+  height: @radius;
+  border-radius: 50%;
+  display: inline-block;
+
+  background-image: -moz-radial-gradient(45px 45px 45deg, circle cover, @color-from 0%, @color-mid 100%, @color-to 95%);
+  background-image: -webkit-radial-gradient(45px 45px, circle cover, @color-from, @color-mid);
+  background-image: radial-gradient(45px 45px 45deg, circle cover, @color-from 0%, @color-mid 100%, @color-to 95%);
+
+  animation-name: spin;
+  animation-duration: @time;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 @color-red: #b71c1c;
 @color-red-darker: #931C1C;
+@color-green: #51b729;
+@color-green-darker: #3e8124;
+@color-yellow: #dbd54a;
+@color-yellow-darker: #b7b149;
 @border-radius: unit(@e * @golden, px);
 
 /* FONT VARIABLES */
@@ -132,9 +165,13 @@ h4 {
 }
 
 .confirmation-container {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: fade(@color-white, 90%);
   .border-box;
   .p-16;
-  .pb-48;
   transition: all unit(@golden / 10, s) ease-in-out;
   border: solid 2px @color-grey;
   height: auto;
@@ -142,12 +179,16 @@ h4 {
   .text{
     .h4;
     text-align: center;
+    margin-bottom: @spacer-32;
   }
   .confirm {
     float: left;
+    max-width: @spacer-128;
+    margin-right: @spacer-96;
   }
   .cancel {
     float: right;
+    max-width: @spacer-128;
     background-color: @color-grey;
     &:hover {
       outline: none !important;
@@ -230,9 +271,21 @@ h4 {
       .va-middle;
       .pb-8;
       .column {
-        height: @file-row-height;
         line-height: @file-row-height;
         display: inline-block;
+        .status-circle {
+          .va-middle;
+          .mr-8;
+          &.file-new {
+            .css-circle(@spacer-24, @color-red);
+          }
+          &.file-draft {
+            .css-circle(@spacer-24, @color-yellow);
+          }
+          &.file-complete {
+            .css-circle(@spacer-24, @color-green);
+          }
+        }
       }
     }
     .additional-row {

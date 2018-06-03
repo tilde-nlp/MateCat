@@ -44,54 +44,57 @@
             :key="key"
             class="file-row"
           >
-            <div class="status column">{{ file.name }}</div>
+            <div class="status column">
+              <div
+                :class="{'file-new': parseFloat(file.progress) === 0, 'file-draft': parseFloat(file.progress) > 0 && parseFloat(file.progress) < 100, 'file-complete': parseFloat(file.progress) === 100}"
+                class="status-circle"
+              />
+              {{ file.name }}</div>
             <div
-              v-if="$loading.isLoading('file_' + key)"
-              class="ib"
-            >
-              Augšupielādējas
-              <img
-                :src="$assetPath + 'ajax-loader.gif'"
-                class="ib ml-16"
-              >
-            </div>
-            <div
-              v-else
               class="additional-row"
             >
-              <div class="segments column">{{ file.segmentCount }}</div>
-              <div class="words column">{{ file.wordCount }}</div>
-              <div class="translated column">{{ file.progress }} %</div>
-              <div class="created column">{{ file.created }}</div>
-              <div class="created-by column">{{ file.owner }}</div>
-              <div class="last-modified column">-</div>
-              <div class="controls column">
-                <button
-                  class="file-list-button"
-                  @click="translate(key)"
-                >{{ file.progress > 0 ? 'Rediģēt' : 'Tulkot' }}
-                </button>
-                <span
-                  class="icon-span"
-                  @click="share(key)"
+              <span v-if="$loading.isLoading('file_' + key)">
+                {{ file.loadingStatus === 'UPLOADING' ? 'Augšupielādējas' : 'Analizējas' }}
+                <img
+                  :src="$assetPath + 'ajax-loader.gif'"
+                  class="ib ml-16"
                 >
-                  <svgicon
-                    class="svg-icon va-middle"
-                    name="share"
-                    height="32"
-                  />
-                </span>
-                <span
-                  class="icon-span"
-                  @click="removeFile(key)"
-                >
-                  <svgicon
-                    class="svg-icon va-middle"
-                    name="close"
-                    height="32"
-                  />
-                </span>
-              </div>
+              </span>
+              <span v-else>
+                <div class="segments column">{{ file.segmentCount }}</div>
+                <div class="words column">{{ file.wordCount }}</div>
+                <div class="translated column">{{ file.progress }} %</div>
+                <div class="created column">{{ file.created }}</div>
+                <div class="created-by column">{{ file.owner }}</div>
+                <div class="last-modified column">-</div>
+                <div class="controls column">
+                  <button
+                    class="file-list-button"
+                    @click="translate(key)"
+                  >{{ file.progress > 0 ? 'Rediģēt' : 'Tulkot' }}
+                  </button>
+                  <span
+                    class="icon-span"
+                    @click="share(key)"
+                  >
+                    <svgicon
+                      class="svg-icon va-middle"
+                      name="share"
+                      height="32"
+                    />
+                  </span>
+                  <span
+                    class="icon-span"
+                    @click="removeFile(key)"
+                  >
+                    <svgicon
+                      class="svg-icon va-middle"
+                      name="close"
+                      height="32"
+                    />
+                  </span>
+                </div>
+              </span>
             </div>
           </div>
         </transition-group>
@@ -175,6 +178,7 @@ export default {
             segmentCount: '...',
             owner: el.jobs[0].owner,
             progress: 0,
+            loadingStatus: '',
             created: DateConverter.timeStampToDate(el.jobs[0].create_timestamp)
           }
         })
@@ -225,7 +229,8 @@ export default {
           }
           this.uploadFiles.push({
             name: e.dataTransfer.files[i].name,
-            wordCount: 0
+            wordCount: 0,
+            loadingStatus: 'UPLOADING'
           })
           this.$loading.startLoading('file_' + index)
           this.upload(e.dataTransfer.files[i])
@@ -364,6 +369,7 @@ export default {
           this.uploadProgress[index].projectId = projectRes.data.data.id_project
           this.uploadProgress[index].password = projectRes.data.data.password
           this.uploadProgress[index].link = this.$CONFIG.baseUrl + 'api/v2/projects/' + projectRes.data.data.id_project + '/' + projectRes.data.data.password + '/creation_status'
+          this.uploadFiles[index].loadingProgress = 'ANALYZE'
           return FileService.checkStatus(this.uploadProgress[index].link)
         })
         .then(this.statusResponse)
@@ -400,11 +406,16 @@ export default {
           pid: currentUpload.projectId,
           ppassword: currentUpload.password
         }
-        FileService.analyze(data)
-          .then(this.analyzeResponse)
+        setTimeout(() => {
+          FileService.analyze(data)
+            .then(this.analyzeResponse)
+        }, 1000)
       } else {
         this.uploadFiles[currentUpload.index].wordCount = parseInt(res.data.data.summary.TOTAL_RAW_WC)
         this.uploadFiles[currentUpload.index].segmentCount = parseInt(res.data.data.summary.TOTAL_SEGMENTS)
+        this.uploadFiles[currentUpload.index].progress = 0.00
+        this.uploadFiles[currentUpload.index].created = DateConverter.nowDate()
+        this.uploadFiles[currentUpload.index].owner = this.$store.state.profile.email
         this.$loading.endLoading('file_' + currentUpload.index)
         Vue.delete(this.uploadProgress, currentUpload.index)
       }
@@ -424,8 +435,10 @@ export default {
           pid: currentGetter.projectId,
           ppassword: currentGetter.password
         }
-        FileService.analyze(data)
-          .then(this.analyzeResponseForGetter)
+        setTimeout(() => {
+          FileService.analyze(data)
+            .then(this.analyzeResponseForGetter)
+        }, 1000)
       } else {
         for (let i = 0; i < this.uploadFiles.length; i++) {
           if (this.uploadFiles[i].id === projectId) {
@@ -447,8 +460,10 @@ export default {
         }
       }
       if (!res.data.stats.ANALYSIS_COMPLETE) {
-        FileService.checkStatus(link)
-          .then(this.statusResponseGetter)
+        setTimeout(() => {
+          FileService.checkStatus(link)
+            .then(this.statusResponseGetter)
+        }, 1000)
       } else {
         for (let i = 0; i < this.uploadFiles.length; i++) {
           if (this.uploadFiles[i].id === currentGetter.projectId) {
