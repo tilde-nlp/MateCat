@@ -119,6 +119,7 @@
 
 <script>
 import FileService from '../axios/file'
+import LanguageService from '../axios/languages'
 import _ from 'lodash'
 import Vue from 'vue'
 import {Confirmation} from '@shibetec/vue-toolbox'
@@ -139,10 +140,15 @@ export default {
       uploadProgress: {},
       getterProgress: {},
       showFileDeleteConfirm: false,
-      activeFileDeleteKey: null
+      activeFileDeleteKey: null,
+      languages: []
     }
   },
   mounted: function () {
+    LanguageService.getList()
+      .then(r => {
+        this.languages = r.data.languages
+      })
     const data = {
       id_team: this.$store.getters.profile.teamId,
       page: 1,
