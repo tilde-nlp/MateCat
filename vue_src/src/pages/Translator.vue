@@ -1,6 +1,9 @@
 <template>
   <div class="page-container">
-    <button @click="goBack">Atpakaļ</button>
+    <button
+      class="button"
+      @click="goBack"
+    >Atpakaļ</button>
     <div class="translator-container">
       <div class="section">
         Some tools and stuff

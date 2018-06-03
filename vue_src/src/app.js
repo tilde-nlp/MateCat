@@ -9,6 +9,7 @@ import VueLocalStorage from 'vue-localstorage'
 import {loading} from './utils/loading'
 import {Auth} from './utils/auth'
 import GAuth from 'vue-google-oauth2'
+import vSelect from 'vue-select'
 // Load Playfair Display typeface
 require('typeface-playfair-display')
 
@@ -29,6 +30,7 @@ export function main (...config) {
     name: 'localStorage',
     bind: true
   })
+  Vue.component('v-select', vSelect)
   /* eslint-disable no-new */
   new Vue({
     router,

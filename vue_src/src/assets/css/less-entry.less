@@ -89,11 +89,22 @@
   line-height: @lh-s;
   letter-spacing: @spacing-s;
 }
+.size-s-i {
+  -webkit-font-smoothing: antialiased;
+  font-family: @font-regular !important;
+  font-size: @size-s !important;
+  line-height: @lh-s !important;
+  letter-spacing: @spacing-s !important;
+}
 .size-xs {
   .font-base;
   font-size: @size-xs;
   line-height: @lh-xs;
   letter-spacing: @spacing-xs;
+}
+
+.bold {
+  font-weight: bold;
 }
 
 ::-webkit-scrollbar {
@@ -116,7 +127,7 @@
   text-align: center;
 
   height: @spacer-32;
-  width: @spacer-256;
+  width: @spacer-128;
 
   border-radius: @border-radius;
   background-color: @color-red;
@@ -127,10 +138,6 @@
     box-shadow: none;
     background-color: @color-red-darker;
   }
-}
-
-button {
-  .button;
 }
 
 .h1 {
@@ -298,5 +305,32 @@ h4 {
   .file-list-button {
     .w-128;
     display: inline-block;
+  }
+}
+
+.language-selector {
+  width: @spacer-256;
+  display: inline-block;
+  .mr-16;
+  .input-label {
+    .size-s;
+    .bold;
+    .mb-4;
+    display: block;
+  }
+  .select-container {
+    .size-s-i;
+  }
+}
+
+.toolbox-container {
+  .bb-light-darker;
+  .mb-16;
+  .pb-8;
+}
+
+input {
+  &.form-control {
+    width: 1% !important;
   }
 }

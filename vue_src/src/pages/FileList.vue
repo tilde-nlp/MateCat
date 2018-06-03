@@ -1,5 +1,45 @@
 <template>
   <div class="page-container">
+    <div class="toolbox-container">
+      <div class="language-selector">
+        <label
+          class="input-label"
+          for="fromLanguage"
+        >No valodas</label>
+        <div class="select-container">
+          <v-select
+            id="fromLanguage"
+            v-model="fromLang"
+            :options="languages"
+            name="fromLanguage"
+          />
+        </div>
+      </div>
+      <span
+        class="icon-span mr-16"
+        @click="swapLanguages()"
+      >
+        <svgicon
+          class="svg-icon va-middle"
+          name="swap-horizontal"
+          height="32"
+        />
+      </span>
+      <div class="language-selector">
+        <label
+          class="input-label"
+          for="toLanguage"
+        >Uz valodu</label>
+        <div class="select-container">
+          <v-select
+            id="toLanguage"
+            v-model="toLang"
+            :options="languages"
+            name="fromLanguage"
+          />
+        </div>
+      </div>
+    </div>
     <form
       ref="fileForm"
       :class="{active: dragActive}"
@@ -7,7 +47,7 @@
     >
       <span class="vam-helper"/>
       <button
-        class="file-upload-button"
+        class="button file-upload-button"
         @click="addFiles"
       >Izvēlēties failus
       </button>
@@ -21,7 +61,7 @@
       <div
         v-if="dragAndDropCapable"
         class="file-dropoff-note"
-      >Velciet failu šeit
+      >Velciet failus šeit
       </div>
     </form>
     <div class="file-list-container">
@@ -69,7 +109,7 @@
                 <div class="last-modified column">-</div>
                 <div class="controls column">
                   <button
-                    class="file-list-button"
+                    class="button file-list-button"
                     @click="translate(key)"
                   >{{ file.progress > 0 ? 'Rediģēt' : 'Tulkot' }}
                   </button>
@@ -141,13 +181,20 @@ export default {
       getterProgress: {},
       showFileDeleteConfirm: false,
       activeFileDeleteKey: null,
-      languages: []
+      languages: [],
+      fromLang: null,
+      toLang: null
     }
   },
   mounted: function () {
     LanguageService.getList()
       .then(r => {
-        this.languages = r.data.languages
+        this.languages = _.map(r.data.languages, el => {
+          return {
+            label: el.name,
+            value: el.code
+          }
+        })
       })
     const data = {
       id_team: this.$store.getters.profile.teamId,
@@ -478,6 +525,11 @@ export default {
           }
         }
       }
+    },
+    swapLanguages: function () {
+      const oldFromLanguage = this.fromLang
+      this.fromLang = this.toLang
+      this.toLang = oldFromLanguage
     }
   }
 }

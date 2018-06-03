@@ -2,6 +2,7 @@
   <div class="page-container">
     <button
       v-show="!$store.getters.profile"
+      class="button"
       @click="googleSignIn"
     >Pieslēgties ar Google</button>
   </div>
