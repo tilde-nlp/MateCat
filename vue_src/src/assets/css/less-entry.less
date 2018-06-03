@@ -189,11 +189,13 @@ h4 {
     margin-bottom: @spacer-32;
   }
   .confirm {
+    .button;
     float: left;
     max-width: @spacer-128;
     margin-right: @spacer-96;
   }
   .cancel {
+    .button;
     float: right;
     max-width: @spacer-128;
     background-color: @color-grey;
@@ -329,8 +331,22 @@ h4 {
   .pb-8;
 }
 
-input {
-  &.form-control {
-    width: 1% !important;
+.v-select {
+  button {
+    &.clear {
+      display: none;
+    }
+  }
+  input {
+    &.form-control {
+      width: 1% !important;
+    }
+  }
+  &.open {
+    input {
+      &.form-control {
+        width: auto !important;
+      }
+    }
   }
 }

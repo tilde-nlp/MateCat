@@ -183,7 +183,11 @@ export default {
       activeFileDeleteKey: null,
       languages: [],
       fromLang: null,
-      toLang: null
+      toLang: null,
+      defaultFrom: null,
+      defaultTo: null,
+      defaultFromCode: 'en-US',
+      defaultToCode: 'fr-FR'
     }
   },
   mounted: function () {
@@ -195,6 +199,11 @@ export default {
             value: el.code
           }
         })
+        for (let i = 0; i < this.languages.length; i++) {
+          if (this.languages[i].value === this.defaultFromCode) this.fromLang = this.defaultFrom = this.languages[i]
+          if (this.languages[i].value === this.defaultToCode) this.toLang = this.defaultTo = this.languages[i]
+          if (this.fromLang !== null && this.toLang !== null) break
+        }
       })
     const data = {
       id_team: this.$store.getters.profile.teamId,
@@ -391,8 +400,8 @@ export default {
           let convertFormData = new FormData()
           convertFormData.append('action', 'convertFile')
           convertFormData.append('file_name', this.uploadProgress[index].fileName)
-          convertFormData.append('source_lang', 'en-US')
-          convertFormData.append('target_lang', 'fr-FR')
+          convertFormData.append('source_lang', this.fromLang.value)
+          convertFormData.append('target_lang', this.toLang.value)
           convertFormData.append('segmentation_rule', '')
           return FileService.convert(convertFormData)
         })
@@ -402,8 +411,8 @@ export default {
           projectFormData.append('action', 'createProject')
           projectFormData.append('project_name', '')
           projectFormData.append('file_name', this.uploadProgress[index].fileName)
-          projectFormData.append('source_language', 'en-US')
-          projectFormData.append('target_language', 'fr-FR')
+          projectFormData.append('source_language', this.fromLang.value)
+          projectFormData.append('target_language', this.toLang.value)
           projectFormData.append('job_subject', 'general')
           projectFormData.append('disable_tms_engine', 'false')
           projectFormData.append('mt_engine', '1')
@@ -464,6 +473,8 @@ export default {
             .then(this.analyzeResponse)
         }, 1000)
       } else {
+        this.uploadFiles[currentUpload.index].jobId = Object.keys(res.data.data.jobs)[0]
+        this.uploadFiles[currentUpload.index].jobPassword = Object.keys(Object.values(res.data.data.jobs)[0].totals)[0]
         this.uploadFiles[currentUpload.index].wordCount = parseInt(res.data.data.summary.TOTAL_RAW_WC)
         this.uploadFiles[currentUpload.index].segmentCount = parseInt(res.data.data.summary.TOTAL_SEGMENTS)
         this.uploadFiles[currentUpload.index].progress = 0.00
