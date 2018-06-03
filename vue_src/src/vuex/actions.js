@@ -7,8 +7,6 @@ export default {
     state.state = CleanState
     AuthService.checkLogin()
       .then(r => {
-        console.log('User response')
-        console.log(r)
         if (r.data.hasOwnProperty('user')) {
           let profile = r.data.user
           profile['fullName'] = profile.first_name + ' ' + profile.last_name

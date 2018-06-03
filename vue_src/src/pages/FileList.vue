@@ -59,7 +59,7 @@
               v-else
               class="additional-row"
             >
-              <div class="segments column">-</div>
+              <div class="segments column">{{ file.segmentCount }}</div>
               <div class="words column">{{ file.wordCount }}</div>
               <div class="translated column">{{ file.progress }} %</div>
               <div class="created column">{{ file.created }}</div>
@@ -69,7 +69,7 @@
                 <button
                   class="file-list-button"
                   @click="translate(key)"
-                >Rediģēt
+                >{{ file.progress > 0 ? 'Rediģēt' : 'Tulkot' }}
                 </button>
                 <span
                   class="icon-span"
@@ -134,32 +134,47 @@ export default {
       dragAndDropCapable: false,
       dragActive: false,
       uploadProgress: {},
+      getterProgress: {},
       showFileDeleteConfirm: false,
       activeFileDeleteKey: null
     }
   },
   mounted: function () {
-    // eslint-disable-next-line no-undef
-    let formData = new FormData()
-    formData.append('id_team', this.$store.getters.profile.teamId)
-    formData.append('page', '1')
-    formData.append('filter', '0')
-    FileService.getList(formData)
+    const data = {
+      id_team: this.$store.getters.profile.teamId,
+      page: 1,
+      filter: 0
+    }
+    FileService.getList(data)
       .then(response => {
-        console.log('Got file list')
-        console.log(response.data)
         this.uploadFiles = null
         this.uploadFiles = _.map(response.data.data, el => {
-          console.log(el)
+          const index = Object.values(this.getterProgress).length
+          const link = this.$CONFIG.baseUrl + 'api/v1/jobs/' + el.jobs[0].id + '/' + el.jobs[0].password + '/stats'
+          this.getterProgress[index] = {
+            projectId: el.id,
+            password: el.password,
+            index: index,
+            link: link
+          }
+          const data = {
+            pid: el.id,
+            ppassword: el.password
+          }
+          FileService.analyze(data)
+            .then(this.analyzeResponseForGetter)
+          FileService.checkStatus(link)
+            .then(this.statusResponseGetter)
           return {
             id: el.id,
             password: el.password,
             jobId: el.jobs[0].id,
             jobPassword: el.jobs[0].password,
             name: el.name,
-            wordCount: el.jobs[0].stats.TOTAL,
+            wordCount: '...',
+            segmentCount: '...',
             owner: el.jobs[0].owner,
-            progress: parseFloat(el.jobs[0].stats.TRANSLATED / el.jobs[0].stats.TOTAL * 100).toFixed(2),
+            progress: 0,
             created: DateConverter.timeStampToDate(el.jobs[0].create_timestamp)
           }
         })
@@ -242,7 +257,6 @@ export default {
           fileName: '',
           link: ''
         }
-        console.log(this.$refs.fileUploader.files[i])
         this.uploadFiles.push({
           name: this.$refs.fileUploader.files[i].name,
           wordCount: 0
@@ -314,8 +328,6 @@ export default {
       formData.append('files[]', file)
       FileService.upload(formData)
         .then(uploadRes => {
-          console.log('upload response')
-          console.log(uploadRes)
           this.uploadProgress[index].fileName = uploadRes.data[0].name
           // eslint-disable-next-line no-undef
           let convertFormData = new FormData()
@@ -327,8 +339,6 @@ export default {
           return FileService.convert(convertFormData)
         })
         .then(convertRes => {
-          console.log('convert response')
-          console.log(convertRes.data)
           // eslint-disable-next-line no-undef
           let projectFormData = new FormData()
           projectFormData.append('action', 'createProject')
@@ -351,8 +361,6 @@ export default {
           return FileService.createProject(projectFormData)
         })
         .then(projectRes => {
-          console.log('project response')
-          console.log(projectRes.data)
           this.uploadProgress[index].projectId = projectRes.data.data.id_project
           this.uploadProgress[index].password = projectRes.data.data.password
           this.uploadProgress[index].link = this.$CONFIG.baseUrl + 'api/v2/projects/' + projectRes.data.data.id_project + '/' + projectRes.data.data.password + '/creation_status'
@@ -361,8 +369,6 @@ export default {
         .then(this.statusResponse)
     },
     statusResponse: function (res) {
-      console.log('status response')
-      console.log(res)
       if (res.data.status === 202) {
         setTimeout(() => {
           FileService.checkStatus(res.request.responseURL)
@@ -370,20 +376,86 @@ export default {
         }, 1000)
       }
       if (res.data.status === 200) {
-        console.log('Project created')
-        const currentUpload = _.find(this.uploadProgress, 'link', res.request.responseURL)
-        // eslint-disable-next-line no-undef
-        let formData = new FormData()
-        formData.append('pid', currentUpload.projectId)
-        formData.append('ppassword', currentUpload.password)
-        FileService.analyze(formData)
-          .then(analyzeRes => {
-            console.log('Analyze complete')
-            console.log(analyzeRes)
-            this.uploadFiles[currentUpload.index].wordCount = parseInt(analyzeRes.data.data.summary.TOTAL_RAW_WC)
-            this.$loading.endLoading('file_' + currentUpload.index)
-            Vue.delete(this.uploadProgress, currentUpload.index)
-          })
+        const currentUpload = _.find(Object.values(this.uploadProgress), 'link', res.request.responseURL)
+        const data = {
+          pid: currentUpload.projectId,
+          ppassword: currentUpload.password
+        }
+        FileService.analyze(data)
+          .then(this.analyzeResponse)
+      }
+    },
+    analyzeResponse: function (res) {
+      let currentUpload
+      const array = Object.values(this.uploadProgress)
+      const projectId = parseInt(res.data.data.project_id)
+      for (let i = 0; i < array.length; i++) {
+        if (array[i].projectId === projectId) {
+          currentUpload = array[i]
+          break
+        }
+      }
+      if (res.data.data.summary.STATUS !== 'DONE') {
+        const data = {
+          pid: currentUpload.projectId,
+          ppassword: currentUpload.password
+        }
+        FileService.analyze(data)
+          .then(this.analyzeResponse)
+      } else {
+        this.uploadFiles[currentUpload.index].wordCount = parseInt(res.data.data.summary.TOTAL_RAW_WC)
+        this.uploadFiles[currentUpload.index].segmentCount = parseInt(res.data.data.summary.TOTAL_SEGMENTS)
+        this.$loading.endLoading('file_' + currentUpload.index)
+        Vue.delete(this.uploadProgress, currentUpload.index)
+      }
+    },
+    analyzeResponseForGetter: function (res) {
+      let currentGetter
+      const array = Object.values(this.getterProgress)
+      const projectId = parseInt(res.data.data.project_id)
+      for (let i = 0; i < array.length; i++) {
+        if (array[i].projectId === projectId) {
+          currentGetter = array[i]
+          break
+        }
+      }
+      if (res.data.data.summary.STATUS !== 'DONE') {
+        const data = {
+          pid: currentGetter.projectId,
+          ppassword: currentGetter.password
+        }
+        FileService.analyze(data)
+          .then(this.analyzeResponseForGetter)
+      } else {
+        for (let i = 0; i < this.uploadFiles.length; i++) {
+          if (this.uploadFiles[i].id === projectId) {
+            this.uploadFiles[i].wordCount = parseInt(res.data.data.summary.TOTAL_RAW_WC)
+            this.uploadFiles[i].segmentCount = parseInt(res.data.data.summary.TOTAL_SEGMENTS)
+            break
+          }
+        }
+      }
+    },
+    statusResponseGetter: function (res) {
+      let currentGetter
+      const array = Object.values(this.getterProgress)
+      const link = res.request.responseURL
+      for (let i = 0; i < array.length; i++) {
+        if (array[i].link === link) {
+          currentGetter = array[i]
+          break
+        }
+      }
+      if (!res.data.stats.ANALYSIS_COMPLETE) {
+        FileService.checkStatus(link)
+          .then(this.statusResponseGetter)
+      } else {
+        for (let i = 0; i < this.uploadFiles.length; i++) {
+          if (this.uploadFiles[i].id === currentGetter.projectId) {
+            this.uploadFiles[i].progress = parseFloat(res.data.stats.TRANSLATED_PERC).toFixed(2)
+            break
+          }
+        }
       }
     }
   }

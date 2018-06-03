@@ -15,10 +15,10 @@ export default {
     return HTTP.get(link)
   },
   analyze: function (data) {
-    return HTTP.post('?action=getVolumeAnalysis', data)
+    return HTTP.post('?action=getVolumeAnalysis', FormGenerator.generateForm(data))
   },
   getList: function (data) {
-    return HTTP.post('?action=getProjects', data)
+    return HTTP.post('?action=getProjects', FormGenerator.generateForm(data))
   },
   delete: function (data) {
     return HTTP.post('?action=changeJobsStatus', FormGenerator.generateForm(data))

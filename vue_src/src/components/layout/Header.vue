@@ -2,7 +2,7 @@
   <div class="header-container">
     <img :src="$store.state.profile.imageUrl">
     Hello, {{ $store.state.profile.fullName }}
-    <button @click="signOut()">Sign out</button>
+    <button @click="signOut()">Iziet</button>
   </div>
 </template>
 

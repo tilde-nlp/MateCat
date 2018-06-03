@@ -1,5 +1,5 @@
 export default {
-  debug: true,
+  debug: false,
   isLoggedIn: false,
   token: '',
   ready: false,

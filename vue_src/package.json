@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
     "lint.fix": "eslint --ext .js,.vue src --fix",
-    "dev": "rimraf ../public/vue_dist && webpack --config build/dev.webpack.config.js -w",
+    "dev": "rimraf ../public/vue_dist && webpack --config build/dev.webpack.config.js",
     "build": "rimraf ../public/vue_dist && webpack --config build/prod.webpack.config.js",
     "unit": "jest --config test/unit/jest.conf.js",
     "test": "npm run unit",
