@@ -84,7 +84,7 @@ body.manage {
                 margin-left: 17px;
                 display: inline-block;
                 vertical-align: text-bottom;
-                min-width: 70px;
+                min-width: 72px;
                 color: #5a5a5a;
             }
             .ui.form .field :disabled {
@@ -354,13 +354,6 @@ body.manage {
                             padding: 8px 15px;
                             &.outsource-container {
                             }
-                            /*&.after-outsource-container {
-                                @media only screen and (max-width: 1199px) and (min-width: 992px) {
-                                    .outsource-container {
-                                        width: 105%;
-                                    }
-                                }
-                            }*/
                             .outsource.modal .popup {
                                 box-shadow: none;
                             }
@@ -368,15 +361,15 @@ body.manage {
                                 float: left;
                                 min-width: 70px;
                                 color: #969696;
-                                font-size: 13px;
+                                font-size: 12px;
                                 position: relative;
                                 line-height: 28px;
-                                top: 1px;
+                                top: 2px;
+                                margin-right: 5px;
                             }
                             .source-target {
                                 min-width: 140px;
                                 float: left;
-                                margin-right: 10px;
                                 font-weight: bold;
                                 position: relative;
                                 top: 1px;
@@ -443,7 +436,7 @@ body.manage {
                                             background: transparent !important;
                                             box-shadow: none !important;
                                             i {
-                                                margin-right: 10px;
+                                                margin-right: 10px !important;
                                             }
                                         }
                                     }
@@ -459,6 +452,7 @@ body.manage {
                             .outsource-job {
                                 display: inline-block;
                                 min-width: 34%;
+                                padding-left: 5px;
                                 .translated-outsourced {
                                     top: 1px;
                                     bottom: 6px;
@@ -489,7 +483,7 @@ body.manage {
                                     margin-left: 5px;
                                     vertical-align: text-bottom;
                                     color: #969696;
-                                    width: 180px;
+                                    max-width: 150px;
                                     white-space: nowrap;
                                     overflow: hidden;
                                     text-overflow: ellipsis;
@@ -499,26 +493,27 @@ body.manage {
 
                                     @media only screen and (max-width: 1199px) and (min-width: 992px) {
                                         width: fit-content;
-                                        max-width: 178px;
+                                        max-width: 190px;
+                                        &:hover {
+
+                                        }
                                     }
                                     a {
                                         text-decoration: underline;
                                         font-weight: 700;
-                                        /*&:hover {
-                                            text-decoration: none;
-                                        }*/
+
                                     }
                                     &.not-assigned {
                                         width: fit-content;
                                     }
                                 }
                                 &:hover .job-to-translator{
-                                    /*width: inherit;*/
+
                                 }
 
                                 .job-delivery {
                                     display: inline-block;
-                                    margin-right: 10px;
+                                    margin-right: 5px;
                                     margin-left: 5px;
                                     vertical-align: text-bottom;
                                     line-height: 20px;
@@ -596,10 +591,10 @@ body.manage {
                                 }
                             }
                             .job-payable {
-                                padding: 0 5px 0 10px !important;
+                                padding: 0 5px 0 5px !important;
                                 float: left;
                                 text-decoration: underline;
-                                min-width: 105px;
+                                min-width: 106px;
                                 line-height: 30px;
                                 font-weight: 700;
                                 position: relative;
@@ -920,7 +915,7 @@ footer nav ul a:hover {
             margin-right: 5px;
             margin-left: 15px;
             min-width: 0px;
-            max-width: 210px;
+            max-width: 210px !important;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;

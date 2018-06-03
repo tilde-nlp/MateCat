@@ -30,6 +30,12 @@ trait Translated {
     protected $successEmailObject;
     protected $failureEmailObject;
 
+    protected $internal_project_id;
+    protected $internal_job_id;
+    protected $external_project_id;
+
+    protected $config;
+
     public function setSuccessMailSender( AbstractEmail $emailObject ) {
         $this->successEmailObject = $emailObject;
     }
@@ -38,9 +44,45 @@ trait Translated {
         $this->failureEmailObject = $emailObject;
     }
 
-    public function requestQuote( $project_id ) {
+    public function setInternalIdProject( $id ) {
+        $this->internal_project_id = $id;
+        $this->successEmailObject->setInternalIdProject( $id );
+        $this->failureEmailObject->setInternalIdProject( $id );
+    }
 
-        $jobs = ( new \Jobs_JobDao() )->getByProjectId( $project_id, 3600 );
+    public function setInternalJobId( $id ) {
+        $this->successEmailObject->setInternalJobId( $id );
+        $this->failureEmailObject->setInternalJobId( $id );
+        $this->internal_job_id = $id;
+    }
+
+    public function setExternalProjectId( $id ) {
+        $this->external_project_id = $id;
+        $this->successEmailObject->setExternalProjectId( $id );
+        $this->failureEmailObject->setExternalProjectId( $id );
+    }
+
+    public function getInternalIdProject(){
+        return $this->internal_project_id;
+    }
+
+    public function getInternalJobId(){
+        return $this->internal_job_id;
+    }
+
+    public function getExternalProjectId(){
+        return $this->external_project_id;
+    }
+
+    public function requestProjectQuote( $project_id, $_analyzed_report ) {
+
+        $this->setInternalIdProject( $project_id );
+        $eq_words_count = [];
+        foreach ( $_analyzed_report as $job_info ) {
+            $eq_words_count[ $job_info[ 'id_job' ] ] = $job_info[ 'eq_wc' ];
+        }
+
+        $jobs = ( new \Jobs_JobDao() )->getByProjectId( $project_id );
         /** @var $jobs \Jobs_JobStruct[] */
         $project = $jobs[ 0 ]->getProject();
 
@@ -48,85 +90,102 @@ trait Translated {
          * @var $projectData ShapelessConcreteStruct[]
          */
         $projectData = ( new \Projects_ProjectDao() )->setCacheTTL( 60 * 60 * 24 )->getProjectData( $project->id, $project->password );
-        $formatted = new ProjectUrls( $projectData );
+        $formatted   = new ProjectUrls( $projectData );
 
         //Let the Feature Class decide about Urls
         $formatted = $this->projectUrls( $formatted );
 
-        $config = self::getConfig();
+        $this->config = self::getConfig();
 
         foreach ( $jobs as $job ) {
 
-            $quote_url = "http://www.translated.net/hts/index.php?" . http_build_query( [
-                            'f'             => 'quote',
-                            'cid'           => $config[ 'translated_username' ],
-                            'p'             => $config[ 'translated_password' ],
-                            's'             => $job[ 'source' ],
-                            't'             => $job[ 'target' ],
-                            'pn'            => strtoupper( self::get_class_name() ) . "-{$job['id']}-{$job['password']}",
-                            'w'             => $job[ 'total_raw_wc' ],
-                            'df'            => 'matecat',
-                            'matecat_pid'   => $project->id,
-                            'matecat_ppass' => $project->password,
-                            'matecat_pname' => $project->name,
-                            'subject'       => $job[ 'subject' ],
-                            'jt'            => 'T',
-                            'fd'            => 0,
-                            'of'            => 'json'
-                    ], PHP_QUERY_RFC3986 );
-
-            try {
-                $quote_response = json_decode( self::request( $quote_url ) );
-                Utils::raiseJsonExceptionError();
-                if ( $quote_response->code != 1 ) {
-                    throw new Exception( $quote_response->message );
-                }
-            } catch ( Exception $e ) {
-                $this->failureEmailObject->setErrorMessage( $e->getMessage() );
-                $this->failureEmailObject->send();
-
-                return;
-            }
-
-            /** @var $formatted ProjectUrls */
-            $urls = $formatted->render( true )[ 'jobs' ][ $job['id'] ][ 'chunks' ][ $job['password'] ];
-
-            $confirmation_url = "http://www.translated.net/hts/index.php?" . http_build_query( [
-                            'f'    => 'confirm',
-                            'cid'  => $config[ 'translated_username' ],
-                            'p'    => $config[ 'translated_password' ],
-                            'pid'  => $quote_response->pid,
-                            'c'    => 1,
-                            'of'   => "json",
-                            'urls' => json_encode( $urls )
-                    ], PHP_QUERY_RFC3986 );
-
-            try {
-                $response              = self::request( $confirmation_url );
-                $confirmation_response = json_decode( $response );
-                Utils::raiseJsonExceptionError();
-                if ( $confirmation_response->code != 1 ) {
-                    throw new Exception( $confirmation_response->message );
-                }
-                $this->successEmailObject->send();
-            } catch ( Exception $e ) {
-                $this->failureEmailObject->setErrorMessage( $e->getMessage() );
-                $this->failureEmailObject->send();
-
-                return;
-            }
-
-            $confirmationStruct = new TranslatedConfirmationStruct( [
-                    'id_job'        => $job[ 'id' ],
-                    'password'      => $job[ 'password' ],
-                    'delivery_date' => $quote_response->delivery_date,
-                    'price'         => $quote_response->total,
-                    'quote_pid'     => $quote_response->pid
-            ] );
-            $cDao               = new ConfirmationDao;
-            $cDao->insertStruct( $confirmationStruct, [ 'ignore' => true, 'no_nulls' => true ] );
+            $this->requestJobQuote($job, $eq_words_count[$job['id']], $project, $formatted);
 
         }
+
+    }
+
+    public function requestJobQuote(\Jobs_JobStruct $job, $eq_word, $project, $formatted_urls){
+
+        if( $eq_word != 0 ){
+            $eq_word = max( number_format( $eq_word + 0.00000001, 0, "", "" ), 1 );
+        }
+
+        $this->setInternalIdProject( $job->id_project );
+
+        $this->setInternalJobId( $job->id );
+
+        $quote_url = "http://www.translated.net/hts/index.php?" . http_build_query( [
+                        'f'             => 'quote',
+                        'cid'           => $this->config[ 'translated_username' ],
+                        'p'             => $this->config[ 'translated_password' ],
+                        's'             => $job->source,
+                        't'             => $job->target,
+                        'pn'            => $project->name,
+                        'w'             => $eq_word,
+                        'df'            => 'matecat',
+                        'matecat_pid'   => $project->id,
+                        'matecat_ppass' => $project->password,
+                        'matecat_pname' => $project->name,
+                        'subject'       => $job->subject,
+                        'jt'            => 'T',
+                        'fd'            => 0,
+                        'of'            => 'json'
+                ], PHP_QUERY_RFC3986 );
+
+        try {
+            $quote_response = json_decode( self::request( $quote_url ) );
+            Utils::raiseJsonExceptionError();
+            if ( $quote_response->code != 1 ) {
+                throw new Exception( $quote_response->message );
+            }
+        } catch ( Exception $e ) {
+            $this->failureEmailObject->setErrorMessage( $e->getMessage() );
+            $this->failureEmailObject->send();
+
+            return;
+        }
+
+        $this->setExternalProjectId( $quote_response->pid );
+
+        /** @var $formatted ProjectUrls */
+        $urls = $formatted_urls->render( true )[ 'jobs' ][ $job->id ][ 'chunks' ][ $job->password ];
+
+        $confirmation_url = "http://www.translated.net/hts/index.php?" . http_build_query( [
+                        'f'    => 'confirm',
+                        'cid'  => $this->config[ 'translated_username' ],
+                        'p'    => $this->config[ 'translated_password' ],
+                        'pid'  => $quote_response->pid,
+                        'c'    => 1,
+                        'of'   => "json",
+                        'urls' => json_encode( $urls )
+                ], PHP_QUERY_RFC3986 );
+
+        try {
+            $response              = self::request( $confirmation_url );
+            $confirmation_response = json_decode( $response );
+            Utils::raiseJsonExceptionError();
+            if ( $confirmation_response->code != 1 ) {
+                throw new Exception( $confirmation_response->message );
+            }
+            $this->successEmailObject->send();
+        } catch ( Exception $e ) {
+            $this->failureEmailObject->setErrorMessage( $e->getMessage() );
+            $this->failureEmailObject->send();
+
+            return;
+        }
+
+        $confirmationStruct = new TranslatedConfirmationStruct( [
+                'id_job'        => $job->id,
+                'password'      => $job->password,
+                'delivery_date' => $quote_response->delivery_date,
+                'price'         => $quote_response->total,
+                'quote_pid'     => $quote_response->pid
+        ] );
+        $cDao               = new ConfirmationDao;
+        $cDao->insertStruct( $confirmationStruct, [ 'ignore' => true, 'no_nulls' => true ] );
+        return true;
 
     }
 
@@ -154,7 +213,8 @@ trait Translated {
         $mh->multiExec();
 
         if ( $mh->hasError( $token ) ) {
-            throw new Exception( $mh->getError( $token ) );
+            $error = $mh->getError( $token );
+            throw new Exception( $error[ 'error' ] );
         }
 
         return $mh->getSingleContent( $token );
