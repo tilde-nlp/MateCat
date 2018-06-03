@@ -24,7 +24,11 @@
         <div
           class="column divider"
           @click="translate(segment)"
-        >></div>
+        ><svgicon
+          class="svg-icon va-middle"
+          name="chevron-right"
+          height="32"
+        /></div>
         <textarea
           v-model="segment.translation"
           class="column translation"

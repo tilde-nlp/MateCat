@@ -1,7 +1,9 @@
 /* eslint-disable */
 require('./check')
+require('./chevron-right')
 require('./close')
 require('./delete')
+require('./download')
 require('./question')
 require('./share')
 require('./swap-horizontal')

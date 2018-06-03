@@ -22,5 +22,8 @@ export default {
   },
   delete: function (data) {
     return HTTP.post('?action=changeJobsStatus', FormGenerator.generateForm(data))
+  },
+  getUrls: function (data) {
+    return HTTP.get('api/v2/projects/' + data.id_project + '/' + data.password + '/urls')
   }
 }

@@ -147,6 +147,16 @@
                       height="32"
                     />
                   </span>
+                  <span
+                    class="icon-span"
+                    @click="downloadFile(file.translatedUrl)"
+                  >
+                    <svgicon
+                      class="svg-icon va-middle"
+                      name="download"
+                      height="32"
+                    />
+                  </span>
                 </div>
               </span>
             </div>
@@ -263,6 +273,15 @@ export default {
             .then(this.analyzeResponseForGetter)
           FileService.checkStatus(link)
             .then(this.statusResponseGetter)
+          FileService.getUrls({id_project: el.id, password: el.password})
+            .then(r => {
+              for (let i = 0; i < this.uploadFiles.length; i++) {
+                if (this.uploadFiles[i].id === el.id) {
+                  this.uploadFiles[i].translatedUrl = r.data.urls.files[0].translation_download_url
+                  break
+                }
+              }
+            })
           return {
             id: el.id,
             password: el.password,
@@ -574,6 +593,9 @@ export default {
       const oldFromLanguage = this.fromLang
       this.fromLang = this.toLang
       this.toLang = oldFromLanguage
+    },
+    downloadFile: function (link) {
+      window.location.href = link
     }
   }
 }
