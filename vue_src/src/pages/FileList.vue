@@ -39,6 +39,20 @@
           />
         </div>
       </div>
+      <div class="language-selector subject">
+        <label
+          class="input-label"
+          for="subject"
+        >Tēma</label>
+        <div class="select-container">
+          <v-select
+            id="subject"
+            v-model="subject"
+            :options="subjects"
+            name="subject"
+          />
+        </div>
+      </div>
     </div>
     <form
       ref="fileForm"
@@ -187,7 +201,11 @@ export default {
       defaultFrom: null,
       defaultTo: null,
       defaultFromCode: 'en-US',
-      defaultToCode: 'fr-FR'
+      defaultToCode: 'fr-FR',
+      subjects: [],
+      subject: null,
+      defaultSubjectKey: 'general',
+      defaultSubject: null
     }
   },
   mounted: function () {
@@ -203,6 +221,21 @@ export default {
           if (this.languages[i].value === this.defaultFromCode) this.fromLang = this.defaultFrom = this.languages[i]
           if (this.languages[i].value === this.defaultToCode) this.toLang = this.defaultTo = this.languages[i]
           if (this.fromLang !== null && this.toLang !== null) break
+        }
+      })
+    LanguageService.getSubjectsList()
+      .then(r => {
+        this.subjects = _.map(r.data.subjects, el => {
+          return {
+            label: el.display,
+            value: el.key
+          }
+        })
+        for (let i = 0; i < this.subjects.length; i++) {
+          if (this.subjects[i].value === this.defaultSubjectKey) {
+            this.subject = this.defaultSubject = this.subjects[i]
+            break
+          }
         }
       })
     const data = {
@@ -413,7 +446,7 @@ export default {
           projectFormData.append('file_name', this.uploadProgress[index].fileName)
           projectFormData.append('source_language', this.fromLang.value)
           projectFormData.append('target_language', this.toLang.value)
-          projectFormData.append('job_subject', 'general')
+          projectFormData.append('job_subject', this.subject.value)
           projectFormData.append('disable_tms_engine', 'false')
           projectFormData.append('mt_engine', '1')
           projectFormData.append('private_key_list', '{"ownergroup":[],"mine":[],"anonymous":[]}')

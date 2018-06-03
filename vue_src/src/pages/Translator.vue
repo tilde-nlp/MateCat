@@ -82,7 +82,7 @@ export default {
       jid: this.$route.params.jobId,
       password: this.$route.params.password,
       where: 'center',
-      step: 200
+      step: 10
     }
     SegmentsService.getSegments(data)
       .then(r => {
@@ -161,7 +161,7 @@ export default {
       SegmentsService.getContribution(data)
         .then(r => {
           const match = r.data.data.matches[0]
-          segment.translation = match.translation
+          if (typeof (match) !== 'undefined') segment.translation = match.translation
         })
     },
     getContext: function (segment) {
