@@ -1,4 +1,3 @@
-/* eslint-disable no-debugger */
 import VueRouter from 'vue-router'
 import Vue from 'vue'
 import FileList from 'pages/FileList'

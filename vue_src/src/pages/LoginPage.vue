@@ -1,15 +1,15 @@
 <template>
-  <div class="page-container">
+  <div class="margin-center center mt-128">
     <button
       v-show="!$store.getters.profile"
       class="button"
       @click="googleSignIn"
-    >Pieslēgties ar Google</button>
+    >Pieslēgties</button>
   </div>
 </template>
 
 <script>
-import AuthService from '../axios/auth'
+import AuthService from 'services/auth'
 export default {
   name: 'LoginPage',
   created: function () {
@@ -18,33 +18,16 @@ export default {
   methods: {
     googleSignIn: function () {
       this.$gAuth.getAuthCode(authorizationCode => {
-        // on success
-        // eslint-disable-next-line no-undef
-        let formData = new FormData()
-        formData.append('code', authorizationCode)
-        AuthService.login(formData)
+        AuthService.login({code: authorizationCode})
           .then(response => {
-            console.log('Succesful google login')
-            console.log(response)
             this.$store.commit('profile', response.data)
             this.$router.push({name: 'file-list'})
           })
       }, error => {
-        // on fail do something
+        // TODO Handle login error (is it necessary if auth will be switched to Hugo's?)
         console.log(error)
       })
     }
   }
 }
 </script>
-<style lang="less" scoped>
-  @import (reference) "~less-entry";
-  .page-container {
-    max-width: 720px;
-    margin: @spacer-128 auto;
-    text-align: center;
-    .button {
-      line-height: @spacer-32;
-    }
-  }
-</style>

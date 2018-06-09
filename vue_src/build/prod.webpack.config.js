@@ -32,7 +32,8 @@ module.exports = {
       'c': resolve('src/components'),
       'less-entry': resolve('src/assets/css/less-entry.less'),
       'pages': resolve('src/pages'),
-      'assets': resolve('src/assets')
+      'assets': resolve('src/assets'),
+      'services': resolve('src/axios')
     }
   },
   module: {
