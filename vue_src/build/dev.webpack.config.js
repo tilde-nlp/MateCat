@@ -14,6 +14,7 @@ module.exports = {
   entry: [
     './src/app.js'
   ],
+  devtool: 'inline-source-map',
   output: {
     path: resolve('../public/vue_dist'),
     filename: 'main.js',
@@ -37,11 +38,6 @@ module.exports = {
   },
   module: {
     rules: [
-      {
-        test: /\.(js|vue)$/,
-        loader: 'eslint-loader',
-        enforce: 'pre'
-      },
       {
         test: /\.vue$/,
         loader: 'vue-loader'
