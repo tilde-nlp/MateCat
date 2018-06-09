@@ -1,59 +1,10 @@
 <template>
   <div class="page-container">
-    <div class="toolbox-container">
-      <div class="language-selector">
-        <label
-          class="input-label"
-          for="fromLanguage"
-        >No valodas</label>
-        <div class="select-container">
-          <v-select
-            id="fromLanguage"
-            v-model="fromLang"
-            :options="languages"
-            name="fromLanguage"
-          />
-        </div>
-      </div>
-      <span
-        class="icon-span mr-16"
-        @click="swapLanguages()"
-      >
-        <svgicon
-          class="svg-icon va-middle"
-          name="swap-horizontal"
-          height="32"
-        />
-      </span>
-      <div class="language-selector">
-        <label
-          class="input-label"
-          for="toLanguage"
-        >Uz valodu</label>
-        <div class="select-container">
-          <v-select
-            id="toLanguage"
-            v-model="toLang"
-            :options="languages"
-            name="fromLanguage"
-          />
-        </div>
-      </div>
-      <div class="language-selector subject">
-        <label
-          class="input-label"
-          for="subject"
-        >Tēma</label>
-        <div class="select-container">
-          <v-select
-            id="subject"
-            v-model="subject"
-            :options="subjects"
-            name="subject"
-          />
-        </div>
-      </div>
-    </div>
+    <file-list-toolbar
+      @fromLangChange="value => { fromLang = value }"
+      @toLangChange="value => { toLang = value }"
+      @subjectChange="value => { subject = value }"
+    />
     <form
       ref="fileForm"
       :class="{active: dragActive}"
@@ -182,16 +133,17 @@
 </template>
 
 <script>
-import FileService from '../axios/file'
-import LanguageService from '../axios/languages'
+import FileService from 'services/file'
 import _ from 'lodash'
 import Vue from 'vue'
 import {Confirmation} from '@shibetec/vue-toolbox'
-import {DateConverter} from '../utils/date-converter'
+import {DateConverter} from 'utils/date-converter'
+import FileListToolbar from 'components/file-list/FileListToolbar'
 export default {
   name: 'FileList',
   components: {
-    'confirmation': Confirmation
+    'confirmation': Confirmation,
+    'file-list-toolbar': FileListToolbar
   },
   data: function () {
     return {
@@ -205,49 +157,12 @@ export default {
       getterProgress: {},
       showFileDeleteConfirm: false,
       activeFileDeleteKey: null,
-      languages: [],
-      fromLang: null,
-      toLang: null,
-      defaultFrom: null,
-      defaultTo: null,
-      defaultFromCode: 'en-US',
-      defaultToCode: 'fr-FR',
-      subjects: [],
       subject: null,
-      defaultSubjectKey: 'general',
-      defaultSubject: null
+      toLang: null,
+      fromLang: null
     }
   },
   mounted: function () {
-    LanguageService.getList()
-      .then(r => {
-        this.languages = _.map(r.data.languages, el => {
-          return {
-            label: el.name,
-            value: el.code
-          }
-        })
-        for (let i = 0; i < this.languages.length; i++) {
-          if (this.languages[i].value === this.defaultFromCode) this.fromLang = this.defaultFrom = this.languages[i]
-          if (this.languages[i].value === this.defaultToCode) this.toLang = this.defaultTo = this.languages[i]
-          if (this.fromLang !== null && this.toLang !== null) break
-        }
-      })
-    LanguageService.getSubjectsList()
-      .then(r => {
-        this.subjects = _.map(r.data.subjects, el => {
-          return {
-            label: el.display,
-            value: el.key
-          }
-        })
-        for (let i = 0; i < this.subjects.length; i++) {
-          if (this.subjects[i].value === this.defaultSubjectKey) {
-            this.subject = this.defaultSubject = this.subjects[i]
-            break
-          }
-        }
-      })
     const data = {
       id_team: this.$store.getters.profile.teamId,
       page: 1,
@@ -588,11 +503,6 @@ export default {
           }
         }
       }
-    },
-    swapLanguages: function () {
-      const oldFromLanguage = this.fromLang
-      this.fromLang = this.toLang
-      this.toLang = oldFromLanguage
     },
     downloadFile: function (link) {
       window.location.href = link

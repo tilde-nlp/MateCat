@@ -32,6 +32,8 @@ module.exports = {
       'c': resolve('src/components'),
       'less-entry': resolve('src/assets/css/less-entry.less'),
       'pages': resolve('src/pages'),
+      'components': resolve('src/components'),
+      'utils': resolve('src/utils'),
       'assets': resolve('src/assets'),
       'services': resolve('src/axios')
     }

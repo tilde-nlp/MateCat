@@ -29,8 +29,8 @@
 
 <script>
 import {Alert} from '@shibetec/vue-toolbox'
-import Header from './components/layout/Header'
-import './assets/inline-svg'
+import Header from 'components/layout/Header'
+import 'assets/inline-svg'
 export default {
   name: 'App',
   components: {
