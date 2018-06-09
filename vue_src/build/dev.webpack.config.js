@@ -3,7 +3,6 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const ExtractPlugin = require('extract-text-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 function resolve (dir) {
@@ -11,7 +10,7 @@ function resolve (dir) {
 }
 
 module.exports = {
-  mode: 'production',
+  mode: 'development',
   entry: [
     './src/app.js'
   ],
@@ -45,10 +44,7 @@ module.exports = {
       },
       {
         test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          extractCSS: true
-        }
+        loader: 'vue-loader'
       },
       {
         test: /\.js$/,
@@ -86,34 +82,29 @@ module.exports = {
       },
       {
         test: /\.less$/,
-        use: ExtractPlugin.extract({
-          fallback: 'vue-style-loader',
-          use: [
-            {loader: 'css-loader'},
-            {loader: 'less-loader'}
-          ]
-        })
+        use: [
+          {loader: 'vue-style-loader'},
+          {loader: 'css-loader'},
+          {loader: 'less-loader'}
+        ]
       },
       {
         test: /\.css$/,
-        use: ExtractPlugin.extract({
-          fallback: 'vue-style-loader',
-          use: [
-            {
-              loader: 'css-loader',
-              options: {
-                modules: true,
-                localIdentName: '[local]_[hash:base64:8]'
-              }
+        use: [
+          {loader: 'vue-style-loader'},
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true,
+              localIdentName: '[local]_[hash:base64:8]'
             }
-          ]
-        })
+          }
+        ]
       }
     ]
   },
   plugins: [
     new VueLoaderPlugin(),
-    new ExtractPlugin('main.css'),
     new CopyWebpackPlugin([{
       from: resolve('static'),
       to: resolve('../public/vue_dist/static'),
@@ -121,7 +112,7 @@ module.exports = {
     }]),
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: 'index.html',
+      template: 'index_dev.html',
       inject: false
     })
   ]
