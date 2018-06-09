@@ -6,63 +6,14 @@
     >Atpakaļ</button>
     <div class="translator-container">
       <translator-toolbox />
-      <div
+      <translator-segment
         v-for="(segment, index) in segments"
         :key="index"
-        :class="{active: segment.active}"
-        class="section"
-        @click="activateSegment(segment)"
-      >
-        <div class=" column number">{{ index + 1 }}</div>
-        <textarea
-          v-model="segment.original"
-          class="column original"
-          disabled
-        />
-        <div
-          class="column divider"
-          @click="translate(segment)"
-        ><svgicon
-          class="svg-icon va-middle"
-          name="chevron"
-          height="32"
-        /></div>
-        <textarea
-          v-model="segment.translation"
-          class="column translation"
-        />
-        <div class="column controls">
-          <div
-            class="icon-container"
-            @click="done(segment)">
-            <svgicon
-              :class="{active: segment.status === 'done'}"
-              class="svg-icon"
-              name="check-circle"
-              height="30"
-            />
-          </div>
-          <div
-            class="icon-container"
-            @click="incomplete(segment)">
-            <svgicon
-              :class="{active: segment.status === 'draft'}"
-              class="svg-icon"
-              name="question"
-              height="30"
-            />
-          </div>
-          <div
-            class="icon-container"
-            @click="trash(segment)">
-            <svgicon
-              class="svg-icon"
-              name="delete"
-              height="30"
-            />
-          </div>
-        </div>
-      </div>
+        :index="index"
+        :segment-data="segment"
+        @click="setActive"
+        @done="done"
+      />
     </div>
   </div>
 </template>
@@ -71,10 +22,12 @@
 import _ from 'lodash'
 import SegmentsService from 'services/segments'
 import TranslatorToolbox from 'components/translator/TranslatorToolbox'
+import TranslatorSegment from 'components/translator/TranslatorSegment'
 export default {
   name: 'Translator',
   components: {
-    'translator-toolbox': TranslatorToolbox
+    'translator-toolbox': TranslatorToolbox,
+    'translator-segment': TranslatorSegment
   },
   data: function () {
     return {
@@ -109,45 +62,6 @@ export default {
       })
   },
   methods: {
-    activateSegment: function (segment) {
-      _.map(this.segments, e => {
-        e.active = e.id === segment.id
-        return e
-      })
-    },
-    translate: function (segment) {
-      segment.translation = segment.original
-    },
-    done: function (segment) {
-      const context = this.getContext(segment)
-      const data = {
-        id_segment: segment.id,
-        id_job: this.$route.params.jobId,
-        id_first_file: this.fileId,
-        password: this.$route.params.password,
-        status: 'translated',
-        translation: segment.translation,
-        segment: segment.original,
-        time_to_edit: 1,
-        autosave: false,
-        version: segment.version,
-        propagate: true,
-        context_before: context.before,
-        context_after: context.after,
-        action: 'setTranslation'
-      }
-      SegmentsService.setTranslation(data)
-        .then(r => {
-          console.log(r)
-          segment.status = 'done'
-        })
-    },
-    incomplete: function (segment) {
-      segment.status = 'draft'
-    },
-    trash: function (segment) {
-      segment.translation = ''
-    },
     goBack: function () {
       this.$router.push({name: 'file-list'})
     },
@@ -178,56 +92,36 @@ export default {
         before: (typeof (this.segments[index - 1]) === 'undefined') ? '' : this.segments[index - 1].original,
         after: (typeof (this.segments[index + 1]) === 'undefined') ? '' : this.segments[index + 1].original
       }
+    },
+    done: function (segment) {
+      const context = this.getContext(segment)
+      const data = {
+        id_segment: segment.id,
+        id_job: this.$route.params.jobId,
+        id_first_file: this.fileId,
+        password: this.$route.params.password,
+        status: 'translated',
+        translation: segment.translation,
+        segment: segment.original,
+        time_to_edit: 1,
+        autosave: false,
+        version: segment.version,
+        propagate: true,
+        context_before: context.before,
+        context_after: context.after,
+        action: 'setTranslation'
+      }
+      SegmentsService.setTranslation(data)
+        .then(() => {
+          segment.status = 'done'
+        })
+    },
+    setActive: function (id) {
+      _.map(this.segments, e => {
+        e.active = e.id === id
+        return e
+      })
     }
   }
 }
 </script>
-
-<style lang="less" scoped>
-  @import (reference) "~less-entry";
-  @section-height: @spacer-128;
-  .section {
-    background-color: @color-light-darker;
-    transition: all unit(@golden / 10, s) ease-in-out;
-    &.active {
-      background-color: @color-light;
-    }
-    .mt-8;
-    .mb-8;
-    height: @section-height;
-    line-height: @section-height;
-    .column {
-      display: inline-block;
-      vertical-align: middle;
-      .border-box;
-      height: @section-height;
-      &.number {
-        .size-s;
-        line-height: @section-height;
-        border-right: solid 2px @color-white;
-        .pl-4;
-        .pr-4;
-      }
-      &.original {
-        .size-s;
-        .w-512;
-      }
-      &.divider {
-        .size-m;
-        font-weight: bolder;
-        line-height: @section-height;
-        cursor: pointer;
-      }
-      &.translation {
-        .size-s;
-        .w-512;
-      }
-      &.controls {
-        .icon-container {
-          height: 30px;
-          line-height: 30px;
-        }
-      }
-    }
-  }
-</style>

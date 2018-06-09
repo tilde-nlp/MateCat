@@ -354,15 +354,16 @@ h4 {
 
 .translator-section {
   background-color: fade(@color-grey-light, 98%);
-  padding: @spacer-8 @spacer-32;
   transition: all unit(@golden / 10, s) ease-in-out;
+  margin-bottom: @spacer-8;
+  max-width: 1130px;
   &.toolbox {
     input {
       transition: all unit(@golden / 10, s) ease-in-out;
       width: @spacer-256;
       &:first-child,
       &:nth-child(2) {
-        width: 480px;
+        width: 400px;
       }
       height: 32px;
       border-radius: 3px;
