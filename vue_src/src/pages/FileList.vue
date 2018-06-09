@@ -5,30 +5,9 @@
       @toLangChange="value => { toLang = value }"
       @subjectChange="value => { subject = value }"
     />
-    <form
-      ref="fileForm"
-      :class="{active: dragActive}"
-      class="file-dropoff"
-    >
-      <span class="vam-helper"/>
-      <button
-        class="button file-upload-button"
-        @click="addFiles"
-      >Izvēlēties failus
-      </button>
-      <input
-        id="fileUploader"
-        ref="fileUploader"
-        type="file"
-        multiple
-        @change="handleFileUpload"
-      >
-      <div
-        v-if="dragAndDropCapable"
-        class="file-dropoff-note"
-      >Velciet failus šeit
-      </div>
-    </form>
+    <file-list-selector
+      @fileAdded="processNewFile"
+    />
     <div class="file-list-container">
       <div class="file-list-header">
         <div class="status">Statuss</div>
@@ -139,20 +118,18 @@ import Vue from 'vue'
 import {Confirmation} from '@shibetec/vue-toolbox'
 import {DateConverter} from 'utils/date-converter'
 import FileListToolbar from 'components/file-list/FileListToolbar'
+import FileListSelector from 'components/file-list/FileListSelector'
 export default {
   name: 'FileList',
   components: {
     'confirmation': Confirmation,
-    'file-list-toolbar': FileListToolbar
+    'file-list-toolbar': FileListToolbar,
+    'file-list-selector': FileListSelector
   },
   data: function () {
     return {
       uploadFiles: [],
       pendingFiles: [],
-      fileUploader: '',
-      fileForm: '',
-      dragAndDropCapable: false,
-      dragActive: false,
       uploadProgress: {},
       getterProgress: {},
       showFileDeleteConfirm: false,
@@ -212,96 +189,8 @@ export default {
           }
         })
       })
-    /*
-      Determine if drag and drop functionality is capable in the browser
-    */
-    this.dragAndDropCapable = this.determineDragAndDropCapable()
-
-    /*
-      If drag and drop capable, then we continue to bind events to our elements.
-    */
-    if (this.dragAndDropCapable) {
-      /*
-        Listen to all of the drag events and bind an event listener to each
-        for the fileform.
-      */
-      ['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(evt => {
-        /*
-          For each event add an event listener that prevents the default action
-          (opening the file in the browser) and stop the propagation of the event (so
-          no other elements open the file in the browser)
-        */
-        this.$refs.fileForm.addEventListener(evt, (e) => {
-          e.preventDefault()
-          e.stopPropagation()
-        }, false)
-      })
-
-      /*
-        Add an event listener for drop to the form
-      */
-      this.$refs.fileForm.addEventListener('drop', e => {
-        this.dragActive = false
-        /*
-          Capture the files from the drop event and add them to our local files
-          array.
-        */
-        for (let i = 0; i < e.dataTransfer.files.length; i++) {
-          const index = this.uploadFiles.length
-          this.uploadProgress[index] = {
-            index: index,
-            status: 'Augšupielādējas',
-            projectId: '',
-            password: '',
-            fileName: '',
-            link: ''
-          }
-          this.uploadFiles.push({
-            name: e.dataTransfer.files[i].name,
-            wordCount: 0,
-            loadingStatus: 'UPLOADING'
-          })
-          this.$loading.startLoading('file_' + index)
-          this.upload(e.dataTransfer.files[i])
-        }
-      })
-      /*
-        Add form active state when file is hovered.
-      */
-      this.$refs.fileForm.addEventListener('dragover', e => {
-        this.dragActive = true
-      })
-      /*
-        Remove form active state when drag left.
-      */
-      this.$refs.fileForm.addEventListener('dragleave', e => {
-        this.dragActive = false
-      })
-    }
   },
   methods: {
-    handleFileUpload: function () {
-      for (let i = 0; i < this.$refs.fileUploader.files.length; i++) {
-        const index = this.uploadFiles.length
-        this.uploadProgress[index] = {
-          index: index,
-          status: 'Augšupielādējas',
-          projectId: '',
-          password: '',
-          fileName: '',
-          link: ''
-        }
-        this.uploadFiles.push({
-          name: this.$refs.fileUploader.files[i].name,
-          wordCount: 0
-        })
-        this.$loading.startLoading('file_' + index)
-        this.upload(this.$refs.fileUploader.files[i], index)
-      }
-    },
-    addFiles: function () {
-      this.$refs.fileUploader.click()
-    },
     removeFile: function (key) {
       this.activeFileDeleteKey = key
       this.showFileDeleteConfirm = false
@@ -329,29 +218,6 @@ export default {
     cancelFileDelete: function () {
       this.activeFileDeleteKey = null
       this.showFileDeleteConfirm = false
-    },
-    /*
-      Determines if the drag and drop functionality is in the
-      window
-    */
-    determineDragAndDropCapable: function () {
-      /*
-        Create a test element to see if certain events
-        are present that let us do drag and drop.
-      */
-      let div = document.createElement('div')
-
-      /*
-        Check to see if the `draggable` event is in the element
-        or the `ondragstart` and `ondrop` events are in the element. If
-        they are, then we have what we need for dragging and dropping files.
-        We also check to see if the window has `FormData` and `FileReader` objects
-        present so we can do our AJAX uploading
-      */
-      return (('draggable' in div) ||
-        ('ondragstart' in div && 'ondrop' in div)) &&
-        'FormData' in window &&
-        'FileReader' in window
     },
     translate: function (key) {
       this.$router.push({name: 'translate', params: {jobId: this.uploadFiles[key].jobId, password: this.uploadFiles[key].jobPassword}})
@@ -506,6 +372,24 @@ export default {
     },
     downloadFile: function (link) {
       window.location.href = link
+    },
+    processNewFile: function (file) {
+      const index = this.uploadFiles.length
+      this.uploadProgress[index] = {
+        index: index,
+        status: 'Augšupielādējas',
+        projectId: '',
+        password: '',
+        fileName: '',
+        link: ''
+      }
+      this.uploadFiles.push({
+        name: file.name,
+        wordCount: 0,
+        loadingStatus: 'UPLOADING'
+      })
+      this.$loading.startLoading('file_' + index)
+      this.upload(file, index)
     }
   }
 }
