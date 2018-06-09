@@ -6,10 +6,10 @@ export default {
     return HTTP.post('lib/Utils/fileupload/', data)
   },
   convert: function (data) {
-    return HTTP.post('?action=convertFile', data)
+    return HTTP.post('?action=convertFile', FormGenerator.generateForm(data))
   },
   createProject: function (data) {
-    return HTTP.post('?action=createProject&time=1527158705351,jid=undefined', data)
+    return HTTP.post('?action=createProject&time=1527158705351,jid=undefined', FormGenerator.generateForm(data))
   },
   checkStatus: function (link) {
     return HTTP.get(link)
