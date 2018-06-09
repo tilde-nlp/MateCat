@@ -352,56 +352,119 @@ h4 {
   }
 }
 
-.translator-section {
-  background-color: fade(@color-grey-light, 98%);
-  transition: all unit(@golden / 10, s) ease-in-out;
-  margin-bottom: @spacer-8;
-  max-width: 1130px;
-  &.toolbox {
-    input {
-      transition: all unit(@golden / 10, s) ease-in-out;
-      width: @spacer-256;
-      &:first-child,
-      &:nth-child(2) {
-        width: 400px;
+.translator-container {
+  max-width: 1200px;
+  .segments-container {
+    height: 620px;
+    overflow-y: scroll;
+  }
+  .translator-section {
+    background-color: fade(@color-grey-light, 98%);
+    transition: all unit(@golden / 10, s) ease-in-out;
+    margin-bottom: @spacer-8;
+    max-width: 100%;
+    &.segment-section {
+      padding-left: 0;
+      @section-height: 200px;
+      .section {
+        font-size: 0;
       }
-      height: 32px;
-      border-radius: 3px;
-      border: solid @color-grey 1px;
-      padding: 0 8px;
-      box-sizing: border-box;
-      .size-s;
-      &::-webkit-input-placeholder {
-        color: @color-light-darker;
-      }
-      &::-moz-placeholder {
-        color: @color-light-darker;
-      }
-      &:-ms-input-placeholder {
-        color: @color-light-darker;
-      }
-      &:focus,
-      &:hover {
-        outline: none;
-        border: solid @color-red-darker 1px;
+      .column {
+        display: inline-block;
+        height: @section-height;
+        vertical-align: top;
+        &.number {
+          .size-s;
+          line-height: @section-height;
+          border-right: solid 2px @color-white;
+          padding: 0 @spacer-4;
+          background-color: fade(@color-grey-light, 98%);
+          width: @spacer-48;
+          text-align: center;
+        }
+        &.content {
+          transition: all unit(@golden / 10, s) ease-in-out;
+          padding: 0 @spacer-16;
+          &.active {
+            background-color: @color-light;
+            box-shadow: inset 0 0 3px @color-grey;
+            border-radius: 5px;
+          }
+          .tags-row {
+            height: @spacer-32;
+          }
+          textarea {
+            height: @section-height - @spacer-32 - @spacer-16;
+            margin-bottom: @spacer-8;
+            width: 498px;
+            resize: none;
+          }
+        }
+        &.divider {
+          height: @section-height - @spacer-32 - 11px;
+          line-height: @section-height - @spacer-32 - 11px;
+          margin: 0 @spacer-8 11px @spacer-8;
+          vertical-align: bottom;
+          background-color: fade(@color-grey-light, 98%);
+        }
+        &.controls {
+          margin-left: @spacer-8;
+          .icon-container {
+            &:first-child {
+              margin-top: @spacer-32;
+            }
+            margin-bottom: @spacer-8;
+            display: block;
+          }
+        }
       }
     }
-  }
-  .icon-container {
-    .border-box;
-    transition: all unit(@golden / 10, s) ease-in-out;
-    height: @spacer-32;
-    line-height: @spacer-32;
-    display: inline-block;
-    border: 1px solid grey;
-    border-radius: 3px;
-    cursor: pointer;
-    vertical-align: top;
-    &:hover {
-      color: @color-red-darker;
-      -webkit-box-shadow: 1px -1px 5px 0px rgba(0,0,0,0.75);
-      -moz-box-shadow: 1px -1px 5px 0px rgba(0,0,0,0.75);
-      box-shadow: 1px -1px 5px 0px rgba(0,0,0,0.75);
+    &.toolbox {
+      input {
+        transition: all unit(@golden / 10, s) ease-in-out;
+        width: @spacer-256;
+        &:first-child,
+        &:nth-child(2) {
+          width: 400px;
+        }
+        height: 32px;
+        border-radius: 3px;
+        border: solid @color-grey 1px;
+        padding: 0 8px;
+        box-sizing: border-box;
+        .size-s;
+        &::-webkit-input-placeholder {
+          color: @color-light-darker;
+        }
+        &::-moz-placeholder {
+          color: @color-light-darker;
+        }
+        &:-ms-input-placeholder {
+          color: @color-light-darker;
+        }
+        &:focus,
+        &:hover {
+          outline: none;
+          border: solid @color-red-darker 1px;
+        }
+      }
+    }
+    .icon-container {
+      .border-box;
+      transition: all unit(@golden / 10, s) ease-in-out;
+      height: @spacer-32;
+      line-height: @spacer-32;
+      display: inline-block;
+      border: 1px solid grey;
+      border-radius: 3px;
+      cursor: pointer;
+      vertical-align: top;
+      &:hover {
+        color: @color-red-darker;
+        -webkit-box-shadow: 1px -1px 5px 0px rgba(0,0,0,0.75);
+        -moz-box-shadow: 1px -1px 5px 0px rgba(0,0,0,0.75);
+        box-shadow: 1px -1px 5px 0px rgba(0,0,0,0.75);
+      }
     }
   }
 }

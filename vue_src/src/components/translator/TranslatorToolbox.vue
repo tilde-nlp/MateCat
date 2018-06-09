@@ -1,6 +1,6 @@
 <template>
   <div class="translator-section toolbox">
-    <div class="pt-8 mb-16 ml-32 mr-32">
+    <div class="pt-8 mb-16 ml-32 mr-16">
       <div
         class="icon-container">
         <svgicon
@@ -108,7 +108,7 @@
         </div>
       </div>
     </div>
-    <div class="ml-32 pb-8 mr-32">
+    <div class="ml-32 pb-8 mr-16">
       <input
         type="text"
         placeholder="Atlasīt no sākotnējā teksta"

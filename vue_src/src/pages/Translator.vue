@@ -6,14 +6,16 @@
     >Atpakaļ</button>
     <div class="translator-container">
       <translator-toolbox />
-      <translator-segment
-        v-for="(segment, index) in segments"
-        :key="index"
-        :index="index"
-        :segment-data="segment"
-        @click="setActive"
-        @done="done"
-      />
+      <div class="segments-container">
+        <translator-segment
+          v-for="(segment, index) in segments"
+          :key="index"
+          :index="index"
+          :segment-data="segment"
+          @click="setActive"
+          @done="done"
+        />
+      </div>
     </div>
   </div>
 </template>
