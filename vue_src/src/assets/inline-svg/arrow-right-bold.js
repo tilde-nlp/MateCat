@@ -1,10 +1,10 @@
 /* eslint-disable */
 var icon = require('vue-svgicon')
 icon.register({
-  'chevron-right': {
+  'arrow-right-bold': {
     width: 24,
     height: 24,
     viewBox: '0 0 24.00 24.00',
-    data: '<path pid="0" d="M8.585 16.584l4.586-4.586-4.586-4.586L10 5.998l6 6-6 6-1.414-1.414z"/>'
+    data: '<path pid="0" _fill="#050708" d="M4 15V9h8V4.161L19.839 12 12 19.839V15H4z"/>'
   }
 })

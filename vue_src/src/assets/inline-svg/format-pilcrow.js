@@ -1,10 +1,10 @@
 /* eslint-disable */
 var icon = require('vue-svgicon')
 icon.register({
-  'check': {
+  'format-pilcrow': {
     width: 24,
     height: 24,
     viewBox: '0 0 24.00 24.00',
-    data: '<path pid="0" d="M21 7L9 19l-5.5-5.5 1.414-1.414L9 16.172 19.586 5.586 21 7z"/>'
+    data: '<path pid="0" d="M10 11a4 4 0 1 1 0-8h8v2h-2v16h-2V5h-2v16h-2V11z"/>'
   }
 })

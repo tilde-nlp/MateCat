@@ -8,25 +8,18 @@
   display: inline-block;
 }
 
-.css-circle-rotating(@radius, @color-from, @color-mid, @color-to, @time: unit(@e, s)) {
-  width: @radius;
-  height: @radius;
-  border-radius: 50%;
-  display: inline-block;
-
-  background-image: -moz-radial-gradient(45px 45px 45deg, circle cover, @color-from 0%, @color-mid 100%, @color-to 95%);
-  background-image: -webkit-radial-gradient(45px 45px, circle cover, @color-from, @color-mid);
-  background-image: radial-gradient(45px 45px 45deg, circle cover, @color-from 0%, @color-mid 100%, @color-to 95%);
-
-  animation-name: spin;
-  animation-duration: @time;
-  animation-iteration-count: infinite;
-  animation-timing-function: ease-in-out;
-}
-
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+.flip-h {
+  -moz-transform: scaleX(-1);
+  -o-transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+  filter: FlipH;
+  -ms-filter: "FlipH";
 }
 
 @color-red: #b71c1c;
@@ -35,6 +28,7 @@
 @color-green-darker: #3e8124;
 @color-yellow: #dbd54a;
 @color-yellow-darker: #b7b149;
+@color-grey-light: #e2e5ee;
 @border-radius: unit(@e * @golden, px);
 
 /* FONT VARIABLES */
@@ -167,22 +161,26 @@ h4 {
   fill: @color-grey-darker;
   &:hover,
   &.active {
-    fill: @color-red-darker;
+    fill: @color-red;
   }
 }
 
-.confirmation-container {
-  position: fixed;
-  top: 100px;
-  left: 50%;
-  transform: translateX(-50%);
+.modal-container {
   background-color: fade(@color-white, 90%);
   .border-box;
   .p-16;
   transition: all unit(@golden / 10, s) ease-in-out;
   border: solid 2px @color-grey;
   height: auto;
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
   .margin-center(720px);
+}
+
+.confirmation-container {
+  .modal-container;
   .text{
     .h4;
     text-align: center;
@@ -350,6 +348,59 @@ h4 {
       &.form-control {
         width: auto !important;
       }
+    }
+  }
+}
+
+.translator-section {
+  background-color: fade(@color-grey-light, 98%);
+  padding: @spacer-8 @spacer-32;
+  transition: all unit(@golden / 10, s) ease-in-out;
+  &.toolbox {
+    input {
+      transition: all unit(@golden / 10, s) ease-in-out;
+      width: @spacer-256;
+      &:first-child,
+      &:nth-child(2) {
+        width: 480px;
+      }
+      height: 32px;
+      border-radius: 3px;
+      border: solid @color-grey 1px;
+      padding: 0 8px;
+      box-sizing: border-box;
+      .size-s;
+      &::-webkit-input-placeholder {
+        color: @color-light-darker;
+      }
+      &::-moz-placeholder {
+        color: @color-light-darker;
+      }
+      &:-ms-input-placeholder {
+        color: @color-light-darker;
+      }
+      &:focus,
+      &:hover {
+        outline: none;
+        border: solid @color-red-darker 1px;
+      }
+    }
+  }
+  .icon-container {
+    .border-box;
+    transition: all unit(@golden / 10, s) ease-in-out;
+    height: @spacer-32;
+    line-height: @spacer-32;
+    display: inline-block;
+    border: 1px solid grey;
+    border-radius: 3px;
+    cursor: pointer;
+    vertical-align: top;
+    &:hover {
+      color: @color-red-darker;
+      -webkit-box-shadow: 1px -1px 5px 0px rgba(0,0,0,0.75);
+      -moz-box-shadow: 1px -1px 5px 0px rgba(0,0,0,0.75);
+      box-shadow: 1px -1px 5px 0px rgba(0,0,0,0.75);
     }
   }
 }

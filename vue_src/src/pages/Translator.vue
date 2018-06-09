@@ -5,9 +5,7 @@
       @click="goBack"
     >Atpakaļ</button>
     <div class="translator-container">
-      <div class="section">
-        Some tools and stuff
-      </div>
+      <translator-toolbox />
       <div
         v-for="(segment, index) in segments"
         :key="index"
@@ -26,7 +24,7 @@
           @click="translate(segment)"
         ><svgicon
           class="svg-icon va-middle"
-          name="chevron-right"
+          name="chevron"
           height="32"
         /></div>
         <textarea
@@ -40,7 +38,7 @@
             <svgicon
               :class="{active: segment.status === 'done'}"
               class="svg-icon"
-              name="check"
+              name="check-circle"
               height="30"
             />
           </div>
@@ -71,9 +69,13 @@
 
 <script>
 import _ from 'lodash'
-import SegmentsService from '../axios/segments'
+import SegmentsService from 'services/segments'
+import TranslatorToolbox from 'components/translator/TranslatorToolbox'
 export default {
   name: 'Translator',
+  components: {
+    'translator-toolbox': TranslatorToolbox
+  },
   data: function () {
     return {
       segments: [],
