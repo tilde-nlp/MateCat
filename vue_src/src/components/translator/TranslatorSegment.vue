@@ -36,7 +36,7 @@
             @click="() => {$emit('done', segment)}">
             <svgicon
               :class="{active: segment.status === 'done'}"
-              class="svg-icon"
+              class="svg-icon icon-green"
               name="check-circle"
               height="30"
             />
@@ -46,7 +46,7 @@
             @click="incomplete()">
             <svgicon
               :class="{active: segment.status === 'draft'}"
-              class="svg-icon"
+              class="svg-icon icon-yellow"
               name="question"
               height="30"
             />

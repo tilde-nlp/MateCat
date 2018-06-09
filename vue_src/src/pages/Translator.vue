@@ -1,9 +1,10 @@
 <template>
   <div class="page-container">
     <button
-      class="button"
+      class="button mb-16"
       @click="goBack"
     >Atpakaļ</button>
+    <div class="clear" />
     <div class="translator-container">
       <translator-toolbox />
       <div class="segments-container">
@@ -17,6 +18,7 @@
         />
       </div>
     </div>
+    <translator-assistant />
   </div>
 </template>
 
@@ -25,11 +27,13 @@ import _ from 'lodash'
 import SegmentsService from 'services/segments'
 import TranslatorToolbox from 'components/translator/TranslatorToolbox'
 import TranslatorSegment from 'components/translator/TranslatorSegment'
+import TranslatorAssistant from 'components/translator/TranslatorAssistant'
 export default {
   name: 'Translator',
   components: {
     'translator-toolbox': TranslatorToolbox,
-    'translator-segment': TranslatorSegment
+    'translator-segment': TranslatorSegment,
+    'translator-assistant': TranslatorAssistant
   },
   data: function () {
     return {
