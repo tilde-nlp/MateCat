@@ -493,7 +493,7 @@ class createProjectController extends ajaxController {
 
     private function __validateUserMTEngine() {
 
-        if ( array_search( $this->mt_engine, [ 0, 1 ] ) === false ) {
+        if ( array_search( $this->mt_engine, [ 0, 1, 2 ] ) === false ) {
 
             if ( !$this->userIsLogged ) {
                 $this->result[ 'errors' ][] = [ "code" => -2, "message" => "Invalid MT Engine." ];
