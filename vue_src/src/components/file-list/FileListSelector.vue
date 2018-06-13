@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="file-selector-container">
     <form
       ref="fileForm"
       :class="{active: dragActive}"

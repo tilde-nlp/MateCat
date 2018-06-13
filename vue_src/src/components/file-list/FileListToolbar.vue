@@ -21,7 +21,7 @@
     >
       <svgicon
         class="svg-icon va-middle"
-        name="swap-horizontal"
+        name="switch"
         height="32"
       />
     </span>
