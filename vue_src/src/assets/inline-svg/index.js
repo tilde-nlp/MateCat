@@ -1,4 +1,5 @@
 /* eslint-disable */
+require('./add-file')
 require('./arrow-right-bold')
 require('./check-circle')
 require('./check')

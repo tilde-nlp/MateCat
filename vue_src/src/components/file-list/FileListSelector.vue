@@ -4,13 +4,9 @@
       ref="fileForm"
       :class="{active: dragActive}"
       class="file-dropoff"
+      @click="addFiles"
     >
       <span class="vam-helper"/>
-      <button
-        class="button file-upload-button"
-        @click="addFiles"
-      >Izvēlēties failus
-      </button>
       <input
         id="fileUploader"
         ref="fileUploader"
@@ -18,10 +14,15 @@
         multiple
         @change="handleFileUpload"
       >
+      <svgicon
+        class="svg-icon va-middle"
+        name="add-file"
+        height="30"
+      />
       <div
         v-if="dragAndDropCapable"
         class="file-dropoff-note"
-      >Velciet failus šeit
+      >Augšupielādēt vai ievilkt failu
       </div>
     </form>
   </div>
