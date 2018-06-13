@@ -1,13 +1,30 @@
 <template>
   <div class="page-container">
-    <file-list-toolbar
-      @fromLangChange="value => { fromLang = value }"
-      @toLangChange="value => { toLang = value }"
-      @subjectChange="value => { subject = value }"
-    />
-    <file-list-selector
-      @fileAdded="processNewFile"
-    />
+    <div
+      class="link slider-opener"
+      @click="() => {sliderOpen = !sliderOpen}"
+    >
+      Failu pievienošana
+      <svgicon
+        :class="{open: sliderOpen}"
+        class="svg-icon va-middle"
+        name="chevron"
+        height="30"
+      />
+    </div>
+    <div
+      :class="{open: sliderOpen}"
+      class="slider-container"
+    >
+      <file-list-toolbar
+        @fromLangChange="value => { fromLang = value }"
+        @toLangChange="value => { toLang = value }"
+        @subjectChange="value => { subject = value }"
+      />
+      <file-list-selector
+        @fileAdded="processNewFile"
+      />
+    </div>
     <file-list-container
       :file-list="files"
     />
@@ -37,7 +54,8 @@ export default {
       getterProgress: {},
       subject: null,
       toLang: null,
-      fromLang: null
+      fromLang: null,
+      sliderOpen: false
     }
   },
   mounted: function () {

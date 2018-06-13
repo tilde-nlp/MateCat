@@ -1,5 +1,21 @@
 <template>
   <div>
+    <div class="pull-right">
+      <div class="input-label ib-i mr-4">Lapa</div>
+      <div class="select-container">
+        <select class="input select ib w-64">
+          <option>1</option>
+        </select>
+        <div class="select-arrow"/>
+      </div>
+      <div class="input-label ib-i ml-16 mr-4">Lapas izmērs</div>
+      <div class="select-container">
+        <select class="input select ib w-64">
+          <option>1</option>
+        </select>
+        <div class="select-arrow"/>
+      </div>
+    </div>
     <div class="file-list-container">
       <div class="file-list-header">
         <div class="status">Statuss</div>
@@ -100,6 +116,24 @@
         Vai tiešām vēlaties dzēst failu?
       </confirmation>
     </transition>
+    <div class="pager-container">
+      <div class="pager-button pull-left">
+        <svgicon
+          class="svg-icon va-middle"
+          name="right"
+          height="32"
+        />
+        Atpakaļ
+      </div>
+      <div class="pager-button pull-right">
+        Tālāk
+        <svgicon
+          class="svg-icon va-middle r-180"
+          name="right"
+          height="32"
+        />
+      </div>
+    </div>
   </div>
 </template>
 

@@ -22,6 +22,10 @@
   -ms-filter: "FlipH";
 }
 
+.r-180 {
+  transform: rotate(180deg);
+}
+
 .transition {
   transition: all unit(@golden / 10, s) ease-in-out;
 }
@@ -174,6 +178,16 @@ h4 {
 
 body {
   .size-s;
+}
+
+.link {
+  color: @color-red;
+  .size-s;
+  .bold;
+  cursor: pointer;
+  &:hover {
+    color: @color-red-darker;
+  }
 }
 
 .svg-icon {
@@ -359,15 +373,63 @@ body {
   }
   display: inline-block;
   .mr-16;
-  .input-label {
-    .size-s;
-    .bold;
-    .mb-4;
-    display: block;
-  }
   .select-container {
     .size-s-i;
   }
+}
+
+.triangle {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid fade(@color-red, 80%);
+  border-bottom: 5px solid transparent;
+  transform: rotate(0deg);
+  transform-origin: center 25%;
+}
+
+.input {
+  height: @spacer-40;
+  border: solid @color-blueish 1px;
+  border-radius: 0;
+  line-height: @spacer-40;
+  padding: 0 @spacer-8;
+  &.select {
+    background-color: @color-white;
+    position: relative;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+}
+
+.select-container {
+  position: relative;
+  display: inline-block;
+}
+
+.select-arrow {
+  position: absolute;
+  top: 18px;
+  right: 10px;
+  float: right;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 4px 4px 0;
+  border-color: @color-red transparent transparent;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+.input-label {
+  .size-s;
+  .bold;
+  .mb-4;
+  display: block;
 }
 
 .toolbox-container {
@@ -587,6 +649,43 @@ body {
     .shortcut-info {
       display: inline-block;
       width: @spacer-256;
+    }
+  }
+}
+
+.slider-container {
+  .transition;
+  max-height: 0;
+  overflow: hidden;
+  &.open {
+    max-height: 233px;
+  }
+}
+
+.slider-opener {
+  .svg-icon {
+    .transition;
+    transform: rotate(90deg);
+    &.open {
+      transform: rotate(-90deg);
+    }
+  }
+}
+
+.pager-container {
+  .mt-32;
+  .pager-button {
+    .border-box;
+    padding: 0 @spacer-8;
+    .transition;
+    width: 116px;
+    height: @spacer-48;
+    line-height: @spacer-48;
+    background-color: @color-white;
+    border: solid 1px @color-grey-light;
+    cursor: pointer;
+    &:hover {
+      border: solid 1px @color-blueish;
     }
   }
 }
