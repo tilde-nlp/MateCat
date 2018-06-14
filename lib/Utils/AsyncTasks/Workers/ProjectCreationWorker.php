@@ -29,11 +29,22 @@ class ProjectCreationWorker extends AbstractWorker {
         /**
          * @var $queueElement QueueElement
          */
+        $this->log_text('Worker logs are go');
         $this->_checkForReQueueEnd( $queueElement );
         $this->_checkDatabaseConnection();
         $this->_createProject( $queueElement );
         $this->_publishResults();
 
+    }
+
+    protected function log_text($data) {
+        file_put_contents('/var/tmp/worker.log', $data, FILE_APPEND);
+        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
+    }
+
+    protected function log($data) {
+        file_put_contents('/var/tmp/worker.log', var_dump($data), FILE_APPEND);
+        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
     }
 
     protected function _checkForReQueueEnd( QueueElement $queueElement ) {

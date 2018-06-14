@@ -69,6 +69,9 @@ class FilesStorage {
             if ( $item->isDir() ) {
                 mkdir( $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName() );
             } else {
+                if (strcmp($iterator->getSubPathName(), '.htaccess') !== 0
+                    && strcmp($iterator->getSubPathName(), '.keep') !== 0
+                    && strcmp($iterator->getSubPathName(), '.gitignore') !== 0)
                 copy( $item, $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName() );
             }
         }

@@ -1,5 +1,10 @@
 <?php
 
+use TeamModel;
+use Teams\MembershipDao;
+use Teams\TeamStruct;
+use Users_UserDao;
+
 header("Cache-Control: no-store, no-cache, must-revalidate");  // HTTP/1.1
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
@@ -24,7 +29,7 @@ class oauthResponseHandlerController extends viewController{
 			'error'         => array( 'filter' => FILTER_SANITIZE_STRING)
 		);
 
-		$__postInput = filter_input_array( INPUT_GET, $filterArgs );
+		$__postInput = filter_input_array( INPUT_POST, $filterArgs );
 
 		$this->code  = $__postInput[ 'code' ];
 		$this->error = $__postInput[ 'error' ];
@@ -59,6 +64,24 @@ class oauthResponseHandlerController extends viewController{
         $model->setAccessToken( $this->client->getAccessToken() );
 
         $model->signIn() ;
+        $membersDao = new MembershipDao();
+        $userTeams  = array_map(
+            function ( $team ) use ( $membersDao, $model ) {
+                $teamModel = new TeamModel( $team );
+                $teamModel->updateMembersProjectsCount();
+
+                /** @var $team TeamStruct */
+                return $team;
+            },
+            $membersDao->findUserTeams( $model->getUser() )
+        );
+        $user = new \stdClass();
+        $user->fullName = $this->remoteUser->name;
+        $user->imageUrl = $this->remoteUser->picture;
+        $user->teamId = $userTeams[0]->id;
+
+        echo json_encode($user);
+        die();
     }
 
     protected function _initRemoteUser() {

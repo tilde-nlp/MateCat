@@ -9,7 +9,8 @@ class INIT {
             'DB_SERVER',
             'DB_DATABASE',
             'DB_USER',
-            'DB_PASS'
+            'DB_PASS',
+            'RELATIVE_HOST_NAME'
     );
 
     /**
@@ -33,6 +34,7 @@ class INIT {
     public static $PROTOCOL;
     public static $DEBUG               = true;
     public static $PRINT_ERRORS        = false;
+    public static $RELATIVE_HOST_NAME;
     public static $DB_SERVER;
     public static $DB_DATABASE;
     public static $DB_USER;

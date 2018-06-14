@@ -1,3 +1,25 @@
+$color-red: #b71c1c;
+$color-blue: #557c8f;
+
+.tilde-button {
+    font-size: 16px;
+    overflow: hidden;
+    width: 200px;
+    cursor: pointer;
+    background: $color-red;
+    color: #fff;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    border-radius: 3px;
+}
+.upload-container {
+    width: 200px;
+    display: inline-block;
+}
+.upload-aftertext {
+    display: inline-block;
+}
 body {
     margin: 0;
     padding: 0;
@@ -1624,24 +1646,23 @@ h2.payoff {
 
 /*UI buttons*/
 .fileinput-button {
-    font-size: 1.1em;
+    font-size: 16px;
     overflow: hidden;
-    margin: 0 auto;
     width: 200px;
     cursor: pointer;
-    padding: 12px 0px 4px 0;
-    background: #09beec;
+    background: $color-red;
     color: #fff;
-    font-weight: bold;
-    margin-bottom: 30px !important;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    border-radius: 3px;
 }
 
 .upload-footer .fileinput-button {
     position: relative;
 }
-
 .fileinput-button:hover {
-    background-color: #12b4df;
+    background-color: $color-blue;
     box-shadow: 0 0 0 #e0e0e0, 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.24) !important;
 }
 .fileinput-button:active {
@@ -1887,8 +1908,7 @@ a {
     position: relative;
     border: 1px dashed #ccc;
     margin-top: 30px;
-    /*	min-height:150px;*/
-    min-height: 270px;
+    height: 70px;
     -moz-border-radius: 4px;
     border-radius: 4px;
     background: #fbfbfb;
@@ -1924,7 +1944,7 @@ span.gdrive-icon {
 }
 
 .drag {
-    text-align: center;
+    text-align: left;
     overflow: hidden;
 }
 

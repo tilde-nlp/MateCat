@@ -391,6 +391,11 @@ class UploadHandler {
                     );
                     Log::doLog( $res );
                 } else {
+                    // Inconsistent behaviour: sometimes project folder is created other times it isn't.
+                    // Check for project folder existence and mkdir it if necessary.
+                    if (!is_dir($this->options[ 'upload_dir' ])) {
+                        mkdir($this->options[ 'upload_dir' ], 0775, true);
+                    }
                     $res = move_uploaded_file( $uploaded_file, $file_path );
                     Log::doLog( $res );
                 }

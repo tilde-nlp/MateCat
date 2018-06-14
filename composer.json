@@ -4,7 +4,7 @@
         "robmorgan/phinx": "^0.4.6"
     },
     "require": {
-        "php": ">=5.3.0",
+        "php": ">=7.0",
         "phpoffice/phpexcel": "~1.8.1",
         "klein/klein": "^2.1",
         "psr/log": "~1.0",
