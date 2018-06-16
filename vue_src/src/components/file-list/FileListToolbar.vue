@@ -4,7 +4,7 @@
       <label
         class="input-label"
         for="fromLanguage"
-      >No valodas</label>
+      >No</label>
       <div class="select-container">
         <v-select
           id="fromLanguage"
@@ -15,36 +15,7 @@
         />
       </div>
     </div>
-    <span
-      class="icon-span mr-16"
-      @click="swapLanguages()"
-    >
-      <svgicon
-        class="svg-icon va-middle"
-        name="switch"
-        height="32"
-      />
-    </span>
-    <div class="language-selector">
-      <label
-        class="input-label"
-        for="toLanguage"
-      >Uz valodu</label>
-      <div class="select-container">
-        <v-select
-          id="toLanguage"
-          v-model="toLang"
-          :options="languages"
-          name="fromLanguage"
-          @input="value => {$emit('toLangChange', value)}"
-        />
-      </div>
-    </div>
     <div class="language-selector subject">
-      <label
-        class="input-label"
-        for="subject"
-      >Tēma</label>
       <div class="select-container">
         <v-select
           id="subject"
@@ -52,6 +23,31 @@
           :options="subjects"
           name="subject"
           @input="value => {$emit('subjectChange', value)}"
+        />
+      </div>
+    </div>
+    <span
+      class="icon-span mr-16"
+      @click="swapLanguages()"
+    >
+      <svgicon
+        class="svg-icon va-middle"
+        name="switch"
+        height="24"
+      />
+    </span>
+    <div class="language-selector">
+      <label
+        class="input-label"
+        for="toLanguage"
+      >Uz</label>
+      <div class="select-container">
+        <v-select
+          id="toLanguage"
+          v-model="toLang"
+          :options="languages"
+          name="fromLanguage"
+          @input="value => {$emit('toLangChange', value)}"
         />
       </div>
     </div>

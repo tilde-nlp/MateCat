@@ -1,29 +1,61 @@
 <template>
   <div class="page-container">
-    <div
-      class="link slider-opener"
-      @click="() => {sliderOpen = !sliderOpen}"
-    >
-      Failu pievienošana
-      <svgicon
-        :class="{open: sliderOpen}"
-        class="svg-icon va-middle"
-        name="chevron"
-        height="30"
-      />
-    </div>
-    <div
-      :class="{open: sliderOpen}"
-      class="slider-container"
-    >
-      <file-list-toolbar
-        @fromLangChange="value => { fromLang = value }"
-        @toLangChange="value => { toLang = value }"
-        @subjectChange="value => { subject = value }"
-      />
-      <file-list-selector
-        @fileAdded="processNewFile"
-      />
+    <div class="bg-grey-light">
+      <section class="section">
+        <!-- BREADCRUMBS -->
+        <div class="bread-crumbs">
+          <div class="bc-nav">Sākums</div>
+          /
+          <div class="bc-nav inactive">Tulkošanas asistents</div>
+        </div>
+        <!-- BREADCRUMBS END -->
+        <!-- TITLE -->
+        <div class="h2 mt-24 mb-24">Tulkošanas asistents</div>
+        <!-- TITLE END -->
+      </section>
+      <div class="bb-blueish"/>
+      <section class="section">
+        <!-- FILE UPLOAD TOGGLE -->
+        <div
+          class="slider-opener"
+          @click="() => {sliderOpen = !sliderOpen}"
+        >
+          <svgicon
+            class="svg-icon va-middle"
+            name="file"
+            height="24"
+          />
+          <div class="link ib">Tulkot failus</div>
+          <svgicon
+            :class="{open: sliderOpen}"
+            class="svg-icon va-middle chevron"
+            name="chevron"
+            height="24"
+          />
+        </div>
+        <!-- FILE UPLOAD TOGGLE END -->
+      </section>
+      <div class="bb-blueish"/>
+      <section class="section">
+        <!-- FILE UPLOAD CONTAINER -->
+        <div
+          :class="{open: sliderOpen}"
+          class="slider-container"
+        >
+          <file-list-toolbar
+            @fromLangChange="value => { fromLang = value }"
+            @toLangChange="value => { toLang = value }"
+            @subjectChange="value => { subject = value }"
+          />
+          <file-list-selector
+            @fileAdded="processNewFile"
+          />
+        </div>
+        <!-- FILE UPLOAD CONTAINER END -->
+      </section>
+      <div
+        v-if="sliderOpen"
+        class="bb-blueish mt-24"/>
     </div>
     <file-list-container
       :file-list="files"

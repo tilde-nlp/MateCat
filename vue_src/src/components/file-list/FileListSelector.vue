@@ -1,10 +1,12 @@
 <template>
-  <div class="file-selector-container">
-    <form
-      ref="fileForm"
-      :class="{active: dragActive}"
+  <form
+    ref="fileForm"
+    :class="{active: dragActive}"
+    class="file-selector-container"
+    @click="addFiles"
+  >
+    <div
       class="file-dropoff"
-      @click="addFiles"
     >
       <span class="vam-helper"/>
       <input
@@ -17,15 +19,15 @@
       <svgicon
         class="svg-icon va-middle"
         name="add-file"
-        height="30"
+        height="24"
       />
       <div
         v-if="dragAndDropCapable"
         class="file-dropoff-note"
-      >Augšupielādēt vai ievilkt failu
+      >Augšupielādēt vai ievilkt failus
       </div>
-    </form>
-  </div>
+    </div>
+  </form>
 </template>
 
 <script>
