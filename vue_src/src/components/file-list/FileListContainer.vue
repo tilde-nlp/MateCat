@@ -105,24 +105,6 @@
         Vai tiešām vēlaties dzēst failu?
       </confirmation>
     </transition>
-    <div class="pager-container">
-      <div class="pager-button pull-left">
-        <svgicon
-          class="svg-icon va-middle"
-          name="right"
-          height="32"
-        />
-        Atpakaļ
-      </div>
-      <div class="pager-button pull-right">
-        Tālāk
-        <svgicon
-          class="svg-icon va-middle r-180"
-          name="right"
-          height="32"
-        />
-      </div>
-    </div>
   </div>
 </template>
 

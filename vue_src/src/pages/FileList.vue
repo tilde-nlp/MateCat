@@ -58,10 +58,15 @@
         class="bb-blueish mt-24"/>
     </div>
     <div class="section-bg">
-      <div class="section">
+      <div class="section mb-48">
         <file-list-container
           :file-list="files"
         />
+      </div>
+    </div>
+    <div class="section-bg">
+      <div class="section mb-128">
+        <file-list-pager/>
       </div>
     </div>
   </div>
@@ -75,12 +80,14 @@ import {DateConverter} from 'utils/date-converter'
 import FileListToolbar from 'components/file-list/FileListToolbar'
 import FileListSelector from 'components/file-list/FileListSelector'
 import FileListContainer from 'components/file-list/FileListContainer'
+import FileListPager from 'components/file-list/FileListPager'
 export default {
   name: 'FileList',
   components: {
     'file-list-toolbar': FileListToolbar,
     'file-list-selector': FileListSelector,
-    'file-list-container': FileListContainer
+    'file-list-container': FileListContainer,
+    'file-list-pager': FileListPager
   },
   data: function () {
     return {

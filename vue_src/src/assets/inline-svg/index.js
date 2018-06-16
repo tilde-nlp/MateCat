@@ -1,6 +1,7 @@
 /* eslint-disable */
 require('./add-file')
 require('./arrow-right-bold')
+require('./arrow')
 require('./check-circle')
 require('./check')
 require('./chevron')
