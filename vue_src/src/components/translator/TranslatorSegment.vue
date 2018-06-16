@@ -7,7 +7,11 @@
     <div class="w-512 bg-grey-light b-blueish p-8 border-box ib">
       {{ segment.original }}
     </div>
-    <div class="segment-copy-icon">
+    <div
+      title="Kopēt orģinālu uz tulkojumu"
+      class="segment-copy-icon"
+      @click="copySourceToTarget"
+    >
       <svgicon
         class="svg-icon flip-h"
         name="arrow"
@@ -79,7 +83,7 @@ export default {
     this.segment = this.segmentData
   },
   methods: {
-    translate: function () {
+    copySourceToTarget: function () {
       this.segment.translation = this.segment.original
     },
     incomplete: function () {

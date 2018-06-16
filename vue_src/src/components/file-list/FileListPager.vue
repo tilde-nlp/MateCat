@@ -77,6 +77,7 @@ export default {
       this.$emit('pageChanged', this.currentPage)
     },
     goToPage: function (page) {
+      if (page === this.currentPage) return
       this.currentPage = page
       this.$emit('pageChanged', this.currentPage)
     }

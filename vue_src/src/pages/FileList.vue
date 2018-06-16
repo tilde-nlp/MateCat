@@ -215,6 +215,7 @@ export default {
           return FileService.checkStatus(this.uploadProgress[index].link)
         })
         .then(this.statusResponse)
+        .catch(this.statusResponseError)
     },
     statusResponse: function (res) {
       // If file is not done processing keep calling checkStatus until it is
@@ -235,7 +236,7 @@ export default {
     },
     analyzeResponse: function (res) {
       const currentUpload = _.find(Object.values(this.uploadProgress), {projectId: parseInt(res.data.data.project_id)})
-      if (res.data.data.summary.STATUS !== 'DONE') {
+      if (res.data.data.summary.STATUS !== 'DONE' && res.data.data.summary.STATUS !== 'EMPTY') {
         setTimeout(() => {
           FileService.analyze({
             pid: currentUpload.projectId,
@@ -257,7 +258,7 @@ export default {
     },
     analyzeResponseForGetter: function (res) {
       let currentGetter = _.find(Object.values(this.getterProgress), {projectId: parseInt(res.data.data.project_id)})
-      if (res.data.data.summary.STATUS !== 'DONE') {
+      if (res.data.data.summary.STATUS !== 'DONE' && res.data.data.summary.STATUS !== 'EMPTY') {
         setTimeout(() => {
           FileService.analyze({
             pid: currentGetter.projectId,
@@ -300,6 +301,10 @@ export default {
       })
       this.$loading.startLoading('file_' + index)
       this.upload(file, index)
+    },
+    statusResponseError: function (err) {
+      console.log(err.response)
+      this.$Alerts.add('File status error')
     }
   }
 }
