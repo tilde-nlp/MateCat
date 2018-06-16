@@ -6,12 +6,44 @@
   right: 0;
 }
 
+.w-127 {
+  width: 127px;
+}
+
+.w-102 {
+  width: 102px;
+}
+
+.w-89 {
+  width: 89px;
+}
+
+.w-127-i {
+  width: 127px !important;
+}
+
+.w-102-i {
+  width: 102px !important;
+}
+
+.w-89-i {
+  width: 89px !important;
+}
+
 .w-135 {
   width: 135px;
 }
 
-.w-510 {
-  width: 510px;
+.w-528 {
+  width: 528px;
+}
+
+.w-512 {
+  width: 512px;
+}
+
+.h-276 {
+  height: 276px;
 }
 
 @file-row-height: @spacer-48;
@@ -128,6 +160,10 @@
   border-bottom: solid 1px @color-blueish;
 }
 
+.bt-blueish {
+  border-top: solid 1px @color-blueish;
+}
+
 .b-blueish {
   border: solid 1px @color-blueish;
 }
@@ -138,7 +174,6 @@
 
 .page-container {
   max-width: 100%;
-  min-width: 1280px;
 }
 
 .section-bg {
@@ -146,7 +181,7 @@
   width: 100%;
   .section {
     position: relative;
-    .margin-center(1184px);
+    .margin-center(1104px);
   }
 }
 
@@ -431,6 +466,7 @@ body {
 }
 
 .input {
+  .border-box;
   height: @spacer-40;
   border: solid @color-blueish 1px;
   border-radius: 0;
@@ -560,10 +596,7 @@ select::-ms-expand {
 .translator-container {
   max-width: 1200px;
   display: inline-block;
-  .segments-container {
-    height: 620px;
-    overflow-y: scroll;
-  }
+
   .translator-section {
     background-color: fade(@color-grey-light, 98%);
     transition: all unit(@golden / 10, s) ease-in-out;
@@ -833,7 +866,7 @@ select::-ms-expand {
     &.x-wide {
       .w-128;
       .link {
-        width: 76px;
+        width: unset;
         position: relative;
         left: -13px;
       }
@@ -923,4 +956,53 @@ select::-ms-expand {
       }
     }
   }
+}
+
+.segments-container {
+  height: 886px;
+  overflow-y: scroll;
+}
+
+.segment-controls {
+  .h-64;
+  .w-100p;
+  .border-box;
+  .pl-8;
+  padding-top: 12px;
+  .bt-blueish;
+}
+
+.segment-translation {
+  .h-192;
+  .p-8;
+  .border-box;
+}
+
+.segment-translation-container {
+  .w-512;
+  .b-blueish;
+  .border-box;
+  .absolute-right;
+  top: 8px;
+  right: 8px;
+  .bg-white;
+}
+
+.segment-container {
+  .transition;
+  .h-276;
+  .mb-32;
+  .relative;
+  .border-box;
+  .p-8;
+  &.active {
+    .bg-grey-light;
+  }
+}
+
+.segment-copy-icon {
+  .ib;
+  .va-top;
+  .mt-32;
+  margin-left: 11px;
 }

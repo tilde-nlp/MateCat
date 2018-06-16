@@ -1,66 +1,58 @@
 <template>
-  <div class="translator-section segment-section">
-    <div
-      class="section"
-      @click="() => {$emit('click', segment.id)}"
-    >
-      <div class="column number">{{ index + 1 }}</div>
-      <div
-        :class="{active: segment.active}"
-        class="column content"
-      >
-        <div class="column translation">
-          <div class="tags-row" />
-          <textarea
-            v-model="segment.original"
-            disabled
-          />
-        </div>
-        <div
-          class="column divider icon-container"
-          @click="translate()"
-        ><svgicon
-          class="svg-icon va-middle"
-          name="chevron"
-          height="32"
-        /></div>
-        <div class="column translation">
-          <div class="tags-row" />
-          <textarea
-            v-model="segment.translation"
-          />
-        </div>
-        <div class="column controls">
-          <div
-            class="icon-container"
-            @click="() => {$emit('done', segment)}">
-            <svgicon
-              :class="{active: segment.status === 'done'}"
-              class="svg-icon icon-green"
-              name="check-circle"
-              height="30"
-            />
-          </div>
-          <div
-            class="icon-container"
-            @click="incomplete()">
-            <svgicon
-              :class="{active: segment.status === 'draft'}"
-              class="svg-icon icon-yellow"
-              name="question"
-              height="30"
-            />
-          </div>
-          <div
-            class="icon-container"
-            @click="trash()">
+  <div
+    :class="{active: segment.active}"
+    class="segment-container"
+    @click="() => {$emit('click', segment.id)}"
+  >
+    <div class="w-512 bg-grey-light b-blueish p-8 border-box ib">
+      {{ segment.original }}
+    </div>
+    <div class="segment-copy-icon">
+      <svgicon
+        class="svg-icon flip-h"
+        name="arrow"
+        height="24"
+      />
+    </div>
+    <div class="segment-translation-container">
+      <div class="segment-translation">{{ segment.translation }}</div>
+      <div class="segment-controls">
+        <!-- CONFIRM -->
+        <div class="white-button xs x-wide w-127-i">
+          <div class="white-button-icon">
             <svgicon
               class="svg-icon"
-              name="delete"
-              height="30"
+              name="check"
+              height="24"
             />
           </div>
+          <div class="link normal ib">Apstiprināt</div>
         </div>
+        <!-- CONFIRM END -->
+        <!-- DRAFT -->
+        <div class="white-button xs x-wide w-102-i">
+          <div class="white-button-icon">
+            <svgicon
+              class="svg-icon"
+              name="pencil"
+              height="24"
+            />
+          </div>
+          <div class="link normal ib">Rediģēt</div>
+        </div>
+        <!-- DRAFT END -->
+        <!-- CONFIRM -->
+        <div class="white-button xs x-wide w-89-i">
+          <div class="white-button-icon">
+            <svgicon
+              class="svg-icon"
+              name="close"
+              height="24"
+            />
+          </div>
+          <div class="link normal ib">Dzēst</div>
+        </div>
+        <!-- CONFIRM END -->
       </div>
     </div>
   </div>

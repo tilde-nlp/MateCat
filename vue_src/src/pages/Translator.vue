@@ -54,18 +54,27 @@
       </section>
       <div class="bb-blueish mt-16"/>
     </div>
-    <div class="translator-container">
-
-      <!--<div class="segments-container">-->
-      <!--<translator-segment-->
-      <!--v-for="(segment, index) in segments"-->
-      <!--:key="index"-->
-      <!--:index="index"-->
-      <!--:segment-data="segment"-->
-      <!--@click="setActive"-->
-      <!--@done="done"-->
-      <!--/>-->
-      <!--</div>-->
+    <div class="section-bg bg-white">
+      <section class="section mb-128">
+        <div class="mt-32 mb-8">
+          <div class="w-528 size-s bold pl-8">
+            Sākotnējais teksts
+          </div>
+          <div class="w-528 absolute-right size-s bold">
+            Tulkotais teksts
+          </div>
+        </div>
+        <div class="segments-container">
+          <translator-segment
+            v-for="(segment, index) in segments"
+            :key="index"
+            :index="index"
+            :segment-data="segment"
+            @click="setActive"
+            @done="done"
+          />
+        </div>
+      </section>
     </div>
     <!--<translator-assistant />-->
   </div>

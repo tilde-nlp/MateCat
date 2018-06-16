@@ -167,7 +167,7 @@
           height="24"
         />
         <input
-          class="input w-510 w-placeholder"
+          class="input w-528 w-placeholder"
           type="text"
           placeholder="Atlasīt no sākotnējā teksta"
         >
@@ -179,7 +179,7 @@
           height="24"
         />
         <input
-          class="input w-510 w-placeholder"
+          class="input w-528 w-placeholder"
           type="text"
           placeholder="Atlasīt no tulkotā teksta"
         >
