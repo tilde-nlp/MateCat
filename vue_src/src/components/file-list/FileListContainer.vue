@@ -1,32 +1,17 @@
 <template>
   <div>
-    <div class="pull-right">
-      <div class="input-label ib-i mr-4">Lapa</div>
-      <div class="select-container">
-        <select class="input select ib w-64">
-          <option>1</option>
-        </select>
-        <div class="select-arrow"/>
-      </div>
-      <div class="input-label ib-i ml-16 mr-4">Lapas izmērs</div>
-      <div class="select-container">
-        <select class="input select ib w-64">
-          <option>1</option>
-        </select>
-        <div class="select-arrow"/>
-      </div>
-    </div>
     <div class="file-list-container">
+      <!-- FILE LIST HEADER -->
       <div class="file-list-header">
         <div class="status">Statuss</div>
         <div class="segments">Segmenti</div>
         <div class="words">Vārdi</div>
         <div class="translated">Iztulkots</div>
         <div class="created">Ielādes datums</div>
-        <div class="created-by">Izveidoja</div>
-        <div class="last-modified">Pēdējās izmaiņas</div>
         <div class="controls">&nbsp;</div>
       </div>
+      <!-- FILE LIST HEADER END -->
+      <!-- FILE LIST -->
       <div class="file-list">
         <transition-group
           name="fade"
@@ -37,9 +22,10 @@
             class="file-row"
           >
             <div class="status column">
-              <div
-                :class="{'file-new': parseFloat(file.progress) === 0, 'file-draft': parseFloat(file.progress) > 0 && parseFloat(file.progress) < 100, 'file-complete': parseFloat(file.progress) === 100}"
-                class="status-circle"
+              <svgicon
+                class="svg-icon va-middle"
+                name="file"
+                height="24"
               />
               {{ file.name }}</div>
             <div
@@ -57,50 +43,53 @@
                 <div class="words column">{{ file.wordCount }}</div>
                 <div class="translated column">{{ file.progress }} %</div>
                 <div class="created column">{{ file.created }}</div>
-                <div class="created-by column">{{ file.owner }}</div>
-                <div class="last-modified column">-</div>
                 <div class="controls column">
-                  <button
-                    class="button file-list-button"
+                  <!-- TRANSLATE -->
+                  <div
+                    class="icon-span mr-24"
                     @click="translate(key)"
-                  >{{ file.progress > 0 ? 'Rediģēt' : 'Tulkot' }}
-                  </button>
-                  <span
-                    class="icon-span"
-                    @click="share(key)"
                   >
                     <svgicon
                       class="svg-icon va-middle"
-                      name="share"
-                      height="32"
+                      name="translation-assist"
+                      height="24"
                     />
-                  </span>
-                  <span
+                    <div class="link ib">Tulkot</div>
+                  </div>
+                  <!-- TRANSLATE END -->
+                  <!-- DOWNLOAD -->
+                  <div
+                    class="icon-span mr-24"
+                    @click="downloadFile(file.translatedUrl)"
+                  >
+                    <svgicon
+                      class="svg-icon va-middle"
+                      name="download"
+                      height="24"
+                    />
+                    <div class="link ib">Lejupielādēt</div>
+                  </div>
+                  <!-- DOWNLOAD END -->
+                  <!-- DELETE -->
+                  <div
                     class="icon-span"
                     @click="removeFile(key)"
                   >
                     <svgicon
                       class="svg-icon va-middle"
                       name="close"
-                      height="32"
+                      height="24"
                     />
-                  </span>
-                  <span
-                    class="icon-span"
-                    @click="downloadFile(file.translatedUrl)"
-                  >
-                    <svgicon
-                      class="svg-icon va-middle"
-                      name="download"
-                      height="32"
-                    />
-                  </span>
+                    <div class="link ib">Dzēst</div>
+                  </div>
+                  <!-- DELETE END -->
                 </div>
               </span>
             </div>
           </div>
         </transition-group>
       </div>
+      <!-- FILE LIST END -->
     </div>
     <transition
       name="fade"

@@ -1,20 +1,22 @@
 <template>
-  <div class="section-bg bg-grey-light">
-    <section class="section">
-      <div class="header-container">
-        <span class="vam-helper" />
-        <img
-          :src="$store.state.profile.imageUrl"
-          class="profile-img"
-        >
-        <div class="h-title">{{ $store.state.profile.fullName }}</div>
-        <button
-          class="button"
-          @click="signOut()"
-        >Iziet</button>
-      </div>
-    </section>
-    <div class="bb-blueish"/>
+  <div class="page-container">
+    <div class="section-bg bg-grey-light">
+      <section class="section">
+        <div class="header-container">
+          <span class="vam-helper" />
+          <img
+            :src="$store.state.profile.imageUrl"
+            class="profile-img"
+          >
+          <div class="h-title">{{ $store.state.profile.fullName }}</div>
+          <button
+            class="button"
+            @click="signOut()"
+          >Iziet</button>
+        </div>
+      </section>
+      <div class="bb-blueish"/>
+    </div>
   </div>
 </template>
 

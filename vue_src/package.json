@@ -18,7 +18,7 @@
   "main": "dist/main.js",
   "dependencies": {},
   "devDependencies": {
-    "@shibetec/vue-toolbox": "^0.9.21",
+    "@shibetec/vue-toolbox": "^0.9.23",
     "@vue/test-utils": "^1.0.0-beta.16",
     "auth0-js": "^9.5.1",
     "axios": "^0.18.0",

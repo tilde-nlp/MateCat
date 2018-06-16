@@ -1,34 +1,6 @@
 @import "~@shibetec/vue-toolbox/dist/less/shibetec-less";
 
-.css-circle(@radius, @color) {
-  border-radius: 50%;
-  width: @radius;
-  height: @radius;
-  background-color: @color;
-  display: inline-block;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.flip-h {
-  -moz-transform: scaleX(-1);
-  -o-transform: scaleX(-1);
-  -webkit-transform: scaleX(-1);
-  transform: scaleX(-1);
-  filter: FlipH;
-  -ms-filter: "FlipH";
-}
-
-.r-180 {
-  transform: rotate(180deg);
-}
-
-.transition {
-  transition: all unit(@golden / 10, s) ease-in-out;
-}
+@file-row-height: @spacer-48;
 
 @color-red: #b71c1c;
 @color-red-darker: #931C1C;
@@ -159,7 +131,8 @@
   position: relative;
   width: 100%;
   .section {
-    padding: 0 88px;
+    position: relative;
+    .margin-center(1104px);
   }
 }
 
@@ -320,26 +293,26 @@ body {
 
 
 .file-list-container {
-  .mt-16;
-  .size-s;
+  .mt-32;
+  .size-xs;
   text-align: left;
   .status {
-    width: @spacer-192;
+    width: 300px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
   .segments {
-    width: 74px;
+    .w-96;
   }
   .words {
-    width: 74px;
+    .w-96;
   }
   .translated {
-    width: 74px;
+    .w-96;;
   }
   .created {
-    width: 160px;
+    .w-192;
   }
   .created-by {
     width: 220px;
@@ -348,21 +321,25 @@ body {
     width: 160px;
   }
   .controls {
-    width: 238px;
+    width: 301px;
   }
   .file-list-header {
-    .mb-8;
+    .pb-4;
+    .bold;
+    .bb-blueish;
     div {
       display: inline-block;
+      .va-top;
     }
   }
-  @file-row-height: 50px;
   .file-list {
     .file-row {
+      .size-s;
       .border-box;
       display: block;
       border-bottom: solid 1px @color-light-darker;
       height: @file-row-height;
+      line-height: @file-row-height;
       .va-middle;
       .pb-8;
       .column {
@@ -695,14 +672,6 @@ select::-ms-expand {
   .h-48;
   line-height: @spacer-48;
   cursor: pointer;
-  &:hover {
-    .link {
-      color: @color-red-darker;
-    }
-    .svg-icon {
-      fill: @color-red-darker;
-    }
-  }
   .chevron {
     .transition;
     transform: rotate(90deg);
@@ -778,5 +747,23 @@ select::-ms-expand {
     .bold;
     .ml-16;
     .mr-24;
+  }
+}
+
+.icon-span {
+  .ib;
+  height: @file-row-height;
+  line-height: @file-row-height;
+}
+
+.icon-span,
+.slider-opener {
+  &:hover {
+    .link {
+      color: @color-red-darker;
+    }
+    .svg-icon {
+      fill: @color-red-darker;
+    }
   }
 }

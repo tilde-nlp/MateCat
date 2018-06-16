@@ -57,9 +57,13 @@
         v-if="sliderOpen"
         class="bb-blueish mt-24"/>
     </div>
-    <file-list-container
-      :file-list="files"
-    />
+    <div class="section-bg">
+      <div class="section">
+        <file-list-container
+          :file-list="files"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
