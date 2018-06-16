@@ -66,7 +66,10 @@
     </div>
     <div class="section-bg">
       <div class="section mb-128">
-        <file-list-pager/>
+        <file-list-pager
+          :pages="totalPages"
+          @pageChanged="fetchFileList"
+        />
       </div>
     </div>
   </div>
@@ -98,23 +101,26 @@ export default {
       subject: null,
       toLang: null,
       fromLang: null,
-      sliderOpen: false
+      sliderOpen: false,
+      recordsPerPage: 10,
+      totalPages: 1
     }
   },
   mounted: function () {
-    this.fetchFileList()
+    this.fetchFileList(1)
   },
   methods: {
-    fetchFileList: function () {
+    fetchFileList: function (page) {
       // Get first page of files
       const data = {
         id_team: this.$store.getters.profile.teamId,
-        page: 1,
+        page: page,
         filter: 0
       }
       FileService.getList(data)
         .then(response => {
           this.files = null
+          this.totalPages = Math.ceil(parseInt(response.data.pnumber) / this.recordsPerPage)
           this.files = _.map(response.data.data, el => {
             // Set file data we already have
             const index = Object.values(this.getterProgress).length
@@ -139,7 +145,9 @@ export default {
             FileService.getUrls({id_project: el.id, password: el.password})
               .then(r => {
                 const file = _.find(this.files, { id: el.id })
-                file.translatedUrl = r.data.urls.files[0].translation_download_url
+                if (typeof (r.data.urls.files[0]) !== 'undefined') {
+                  file.translatedUrl = r.data.urls.files[0].translation_download_url
+                }
               })
             // Return incomplete file data
             return {
