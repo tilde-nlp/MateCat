@@ -1,11 +1,20 @@
 <template>
-  <div class="header-container">
-    <img :src="$store.state.profile.imageUrl">
-    Hello, {{ $store.state.profile.fullName }}
-    <button
-      class="button"
-      @click="signOut()"
-    >Iziet</button>
+  <div class="section-bg bg-grey-light">
+    <section class="section">
+      <div class="header-container">
+        <span class="vam-helper" />
+        <img
+          :src="$store.state.profile.imageUrl"
+          class="profile-img"
+        >
+        <div class="h-title">{{ $store.state.profile.fullName }}</div>
+        <button
+          class="button"
+          @click="signOut()"
+        >Iziet</button>
+      </div>
+    </section>
+    <div class="bb-blueish"/>
   </div>
 </template>
 
@@ -28,18 +37,3 @@ export default {
   }
 }
 </script>
-
-<style lang="less" scoped>
-  @import (reference) "~less-entry";
-
-  .header-container {
-    width: 100%;
-    position: relative;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-    margin-bottom: @spacer-32;
-    .size-m;
-    .dark;
-  }
-</style>

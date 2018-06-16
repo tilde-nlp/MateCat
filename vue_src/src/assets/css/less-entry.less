@@ -153,7 +153,11 @@
 .page-container {
   max-width: 100%;
   min-width: 1280px;
+}
 
+.section-bg {
+  position: relative;
+  width: 100%;
   .section {
     padding: 0 88px;
   }
@@ -746,5 +750,33 @@ select::-ms-expand {
       .dark;
       cursor: default;
     }
+  }
+}
+
+.header-container {
+  .bg-grey-light;
+  width: 100%;
+  .h-64;
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: right;
+  .size-s;
+  .dark;
+  line-height: @spacer-64;
+  .profile-img {
+    max-width: @spacer-48;
+    max-height: @spacer-48;
+    .va-middle;
+  }
+  .h-title {
+    .size-s;
+    .h-64;
+    line-height: @spacer-64;
+    .ib;
+    .va-top;
+    .bold;
+    .ml-16;
+    .mr-24;
   }
 }

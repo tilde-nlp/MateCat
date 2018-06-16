@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <div class="bg-grey-light">
+    <div class="section-bg bg-grey-light">
       <section class="section">
         <!-- BREADCRUMBS -->
         <div class="bread-crumbs">
