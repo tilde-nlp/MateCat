@@ -30,6 +30,7 @@ export function main (...config) {
     name: 'localStorage',
     bind: true
   })
+  Vue.use(require('vue-shortkey'))
   Vue.component('v-select', vSelect)
   /* eslint-disable no-new */
   new Vue({

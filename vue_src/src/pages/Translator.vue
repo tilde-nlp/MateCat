@@ -71,7 +71,7 @@
             :index="index"
             :segment-data="segment"
             @click="setActive"
-            @done="done"
+            @setStatus="setStatus"
           />
         </div>
       </section>
@@ -158,14 +158,14 @@ export default {
         after: (typeof (this.segments[index + 1]) === 'undefined') ? '' : this.segments[index + 1].original
       }
     },
-    done: function (segment) {
+    setStatus: function (segment, status) {
       const context = this.getContext(segment)
       const data = {
         id_segment: segment.id,
         id_job: this.$route.params.jobId,
         id_first_file: this.fileId,
         password: this.$route.params.password,
-        status: 'translated',
+        status: status,
         translation: segment.translation,
         segment: segment.original,
         time_to_edit: 1,
@@ -178,7 +178,7 @@ export default {
       }
       SegmentsService.setTranslation(data)
         .then(() => {
-          segment.status = 'done'
+          segment.status = status === 'translated' ? 'done' : ''
         })
     },
     setActive: function (id) {
