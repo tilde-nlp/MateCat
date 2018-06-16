@@ -17,7 +17,7 @@
       <section class="section">
         <!-- FILE UPLOAD TOGGLE -->
         <div
-          class="slider-opener"
+          class="head-control"
           @click="() => {sliderOpen = !sliderOpen}"
         >
           <svgicon

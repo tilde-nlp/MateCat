@@ -1,126 +1,189 @@
 <template>
-  <div class="translator-section toolbox">
-    <div class="pt-8 mb-16 ml-32 mr-16">
-      <div
-        class="icon-container">
-        <svgicon
-          class="svg-icon"
-          name="undo"
-          height="30"
-        />
-      </div>
-      <div
-        class="icon-container mr-24">
-        <svgicon
-          class="svg-icon flip-h"
-          name="undo"
-          height="30"
-        />
-      </div>
-      <div
-        class="icon-container">
-        <svgicon
-          class="svg-icon"
-          name="check"
-          height="30"
-        />
-      </div>
-      <div
-        class="icon-container w-48 center">
-        Split
-      </div>
-      <div
-        class="icon-container w-48 center mr-24">
-        Join
-      </div>
-      <div
-        class="icon-container">
-        <svgicon
-          class="svg-icon"
-          name="close-circle"
-          height="30"
-        />
-      </div>
-      <div
-        class="icon-container">
-        <svgicon
-          class="svg-icon"
-          name="arrow-right-bold"
-          height="30"
-        />
-      </div>
-      <div
-        class="icon-container">
-        <svgicon
-          class="svg-icon flip-h"
-          name="chevron"
-          height="30"
-        />
-      </div>
-      <div
-        class="icon-container  mr-24">
-        <svgicon
-          class="svg-icon"
-          name="chevron"
-          height="30"
-        />
-      </div>
-      <div
-        class="icon-container mr-24">
-        <svgicon
-          class="svg-icon"
-          name="format-pilcrow"
-          height="30"
-        />
-      </div>
-      <div
-        class="icon-container mr-24">
-        <svgicon
-          class="svg-icon"
-          name="format-color"
-          height="30"
-        />
-      </div>
-      <div
-        class="icon-container pl-4 pr-4">
-        Izmantot tulkojumu ar 100% atbilstību
-      </div>
-      <div
-        class="icon-container pl-4 pr-4">
-        Izmantot MT
-      </div>
-      <div class="ib pull-right">
-        <div
-          class="icon-container">
+  <div>
+    <div class="mt-16">
+      <!-- UNDO -->
+      <div class="white-button xs">
+        <div class="white-button-icon">
           <svgicon
             class="svg-icon"
-            name="file-outline"
-            height="30"
+            name="arrow"
+            height="24"
           />
         </div>
-        <div
-          class="icon-container">
+      </div>
+      <!-- UNDO END -->
+      <!-- REDO -->
+      <div class="white-button xs">
+        <div class="white-button-icon">
+          <svgicon
+            class="svg-icon flip-h"
+            name="arrow"
+            height="24"
+          />
+        </div>
+      </div>
+      <!-- REDO END -->
+      <!-- CONFIRM -->
+      <div class="white-button xs mr-32-i">
+        <div class="white-button-icon">
           <svgicon
             class="svg-icon"
-            name="file-outline"
-            height="30"
+            name="check"
+            height="24"
           />
         </div>
+      </div>
+      <!-- CONFIRM END -->
+      <!-- SPLIT -->
+      <div class="white-button xs">
+        <div class="white-button-icon">
+          <svgicon
+            class="svg-icon"
+            name="arrow"
+            height="24"
+          />
+        </div>
+      </div>
+      <!-- SPLIT END -->
+      <!-- JOIN -->
+      <div class="white-button xs">
+        <div class="white-button-icon">
+          <svgicon
+            class="svg-icon"
+            name="arrow"
+            height="24"
+          />
+        </div>
+      </div>
+      <!-- JOIN END -->
+      <!-- CANCEL -->
+      <div class="white-button xs">
+        <div class="white-button-icon">
+          <svgicon
+            class="svg-icon"
+            name="close"
+            height="24"
+          />
+        </div>
+      </div>
+      <!-- CANCEL END -->
+      <!-- FORWARD -->
+      <div class="white-button xs mr-32-i">
+        <div class="white-button-icon">
+          <svgicon
+            class="svg-icon flip-h"
+            name="arrow"
+            height="24"
+          />
+        </div>
+      </div>
+      <!-- FORWARD END -->
+      <!-- BACK -->
+      <div class="white-button xs">
+        <div class="white-button-icon">
+          <svgicon
+            class="svg-icon flip-h"
+            name="chevron"
+            height="24"
+          />
+        </div>
+      </div>
+      <!-- BACK END -->
+      <!-- FORWARD? -->
+      <div class="white-button xs">
+        <div class="white-button-icon">
+          <svgicon
+            class="svg-icon"
+            name="chevron"
+            height="24"
+          />
+        </div>
+      </div>
+      <!-- FORWARD? END -->
+      <!-- TEXT? -->
+      <div class="white-button xs">
+        <div class="white-button-icon">
+          <svgicon
+            class="svg-icon"
+            name="text"
+            height="24"
+          />
+        </div>
+      </div>
+      <!-- TEXT? END -->
+      <!-- T -->
+      <div class="white-button xs">
+        <div class="white-button-icon">
+          <svgicon
+            class="svg-icon"
+            name="text"
+            height="24"
+          />
+        </div>
+      </div>
+      <!-- T END -->
+      <!-- MT TRANSLATE -->
+      <div class="white-button xs wide">
+        <div class="link normal ib">Tulkot ar MT</div>
+      </div>
+      <!-- MT TRANSLATE END -->
+      <!-- TRANSLATE 100% -->
+      <div class="white-button xs wide">
+        <div class="link normal ib">Tulkot 100%</div>
+      </div>
+      <!-- TRANSLATE 100% END -->
+      <div class="absolute-right">
+        <!-- ORIGINAL DOWNLOAD -->
+        <div class="white-button xs x-wide">
+          <div class="white-button-icon">
+            <svgicon
+              class="svg-icon"
+              name="download"
+              height="24"
+            />
+          </div>
+          <div class="link normal ib">Orģināls</div>
+        </div>
+        <!-- ORIGINAL DOWNLOAD END -->
+        <!-- ORIGINAL DOWNLOAD -->
+        <div class="white-button xs x-wide button-red">
+          <div class="white-button-icon">
+            <svgicon
+              class="svg-icon icon-white"
+              name="download"
+              height="24"
+            />
+          </div>
+          <div class="link normal ib">Tulkojums</div>
+        </div>
+        <!-- ORIGINAL DOWNLOAD END -->
       </div>
     </div>
-    <div class="ml-32 pb-8 mr-16">
-      <input
-        type="text"
-        placeholder="Atlasīt no sākotnējā teksta"
-      >
-      <input
-        type="text"
-        placeholder="Atlasīt no tulkotā teksta"
-      >
-      <input
-        type="text"
-        placeholder="Izvēlēties atlases kritērijus"
-      >
+    <div class="relative mt-16">
+      <div class="relative ib">
+        <svgicon
+          class="svg-icon icon-blueish-darker-still placeholder"
+          name="search"
+          height="24"
+        />
+        <input
+          class="input w-510 w-placeholder"
+          type="text"
+          placeholder="Atlasīt no sākotnējā teksta"
+        >
+      </div>
+      <div class="absolute-right">
+        <svgicon
+          class="svg-icon icon-blueish-darker-still placeholder"
+          name="search"
+          height="24"
+        />
+        <input
+          class="input w-510 w-placeholder"
+          type="text"
+          placeholder="Atlasīt no tulkotā teksta"
+        >
+      </div>
     </div>
   </div>
 </template>
