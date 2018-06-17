@@ -10,7 +10,8 @@ class INIT {
             'DB_DATABASE',
             'DB_USER',
             'DB_PASS',
-            'RELATIVE_HOST_NAME'
+            'RELATIVE_HOST_NAME',
+            'JWT_KEY'
     );
 
     /**
@@ -35,6 +36,7 @@ class INIT {
     public static $DEBUG               = true;
     public static $PRINT_ERRORS        = false;
     public static $RELATIVE_HOST_NAME;
+    public static $JWT_KEY;
     public static $DB_SERVER;
     public static $DB_DATABASE;
     public static $DB_USER;
