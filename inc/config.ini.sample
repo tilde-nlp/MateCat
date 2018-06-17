@@ -88,6 +88,7 @@ LXQ_PARTNERID = false
 [production]
 RELATIVE_HOST_NAME = "http://@@@host@@@/" ; Relative host path for running cat as submodule
 JWT_KEY = ""
+AUTH_REDIRECT = ""
 
 CLI_HTTP_HOST = "http://localhost" ; Set the hostname for batch processes ( they do not know the global variable $_SERVER )
 DB_SERVER = "localhost"

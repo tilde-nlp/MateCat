@@ -9,8 +9,6 @@ export default {
       .then(r => {
         if (r.data.hasOwnProperty('user')) {
           let profile = r.data.user
-          profile['fullName'] = profile.first_name + ' ' + profile.last_name
-          profile['imageUrl'] = r.data.metadata.gplus_picture
           profile['teamId'] = r.data.teams[0].id
           state.commit('profile', r.data.user)
         }

@@ -120,7 +120,8 @@ export default {
       FileService.getList(data)
         .then(response => {
           this.files = null
-          this.totalPages = Math.ceil(parseInt(response.data.pnumber) / this.recordsPerPage)
+          const pages = Math.ceil(parseInt(response.data.pnumber) / this.recordsPerPage)
+          this.totalPages = isNaN(pages) ? 1 : pages
           this.files = _.map(response.data.data, el => {
             // Set file data we already have
             const index = Object.values(this.getterProgress).length
