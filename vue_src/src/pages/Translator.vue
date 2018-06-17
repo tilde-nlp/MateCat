@@ -55,7 +55,7 @@
       <div class="bb-blueish mt-16"/>
     </div>
     <div class="section-bg bg-white">
-      <section class="section mb-128">
+      <section class="section">
         <div class="mt-32 mb-8">
           <div class="w-528 size-s bold pl-8">
             Sākotnējais teksts
@@ -121,9 +121,9 @@ export default {
             version: el.version
           }
         })
-        this.segments.forEach(item => {
-          if (item.status === '') this.getContribution(item)
-        })
+        // this.segments.forEach(item => {
+        //   if (item.status === '') this.getContribution(item)
+        // })
       })
   },
   methods: {
