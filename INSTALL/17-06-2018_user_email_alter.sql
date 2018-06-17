@@ -1,3 +1,5 @@
+USE `matecat`;
+
 ALTER TABLE `users`
 	ALTER `email` DROP DEFAULT;
 ALTER TABLE `users`
