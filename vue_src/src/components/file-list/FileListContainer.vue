@@ -31,17 +31,53 @@
             <div
               class="additional-row"
             >
-              <span v-if="$loading.isLoading('file_' + key)">
-                {{ file.loadingStatus === 'UPLOADING' ? 'Augšupielādējas' : 'Analizējas' }}
-                <img
-                  :src="$assetPath + 'ajax-loader.gif'"
-                  class="ib ml-16"
+              <span
+                v-if="file.isEmpty"
+                class="red"
+              >
+                Failu neizdevās ielādēt, lūdzu izdzēsiet to un mēģinat atkārtoti.
+                <!-- DELETE -->
+                <div
+                  class="icon-span ml-77"
+                  @click="fastDeleteFile(key)"
                 >
+                  <svgicon
+                    class="svg-icon va-middle"
+                    name="close"
+                    height="24"
+                  />
+                  <div class="link ib">Dzēst</div>
+                </div>
+                <!-- DELETE END -->
               </span>
               <span v-else>
-                <div class="segments column">{{ file.segmentCount }}</div>
-                <div class="words column">{{ file.wordCount }}</div>
-                <div class="translated column">{{ file.progress }} %</div>
+                <div class="segments column">
+                  <svgicon
+                    v-if="file.segmentCount < 0"
+                    class="svg-loading va-middle"
+                    name="loading"
+                    height="24"
+                  />
+                  <span v-else>{{ file.segmentCount }}</span>
+                </div>
+                <div class="words column">
+                  <svgicon
+                    v-if="file.wordCount < 0"
+                    class="svg-loading va-middle"
+                    name="loading"
+                    height="24"
+                  />
+                  <span v-else>{{ file.wordCount }}</span>
+                </div>
+                <div class="translated column">
+                  <svgicon
+                    v-if="file.progress < 0"
+                    class="svg-loading va-middle"
+                    name="loading"
+                    height="24"
+                  />
+                  <span v-else>{{ file.progress }} %</span>
+                </div>
                 <div class="created column">{{ file.created }}</div>
                 <div class="controls column">
                   <!-- TRANSLATE -->
@@ -59,6 +95,17 @@
                   <!-- TRANSLATE END -->
                   <!-- DOWNLOAD -->
                   <div
+                    v-if="file.translatedUrl < 0"
+                    class="icon-span mr-24 w-109"
+                  >
+                    <svgicon
+                      class="svg-loading va-middle"
+                      name="loading"
+                      height="24"
+                    />
+                  </div>
+                  <div
+                    v-else
                     class="icon-span mr-24"
                     @click="downloadFile(file.translatedUrl)"
                   >
@@ -142,6 +189,10 @@ export default {
     },
     share: function (key) {
       // TODO Implement file sharing
+    },
+    fastDeleteFile: function (key) {
+      this.activeFileDeleteKey = key
+      this.deleteFile()
     },
     deleteFile: function () {
       if (this.activeFileDeleteKey === null) return

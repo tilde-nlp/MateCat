@@ -48,7 +48,7 @@
             @subjectChange="value => { subject = value }"
           />
           <file-list-selector
-            @fileAdded="processNewFile"
+            @fileAdded="sendToUploadQueue"
           />
         </div>
         <!-- FILE UPLOAD CONTAINER END -->
@@ -78,12 +78,12 @@
 <script>
 import FileService from 'services/file'
 import _ from 'lodash'
-import Vue from 'vue'
 import {DateConverter} from 'utils/date-converter'
 import FileListToolbar from 'components/file-list/FileListToolbar'
 import FileListSelector from 'components/file-list/FileListSelector'
 import FileListContainer from 'components/file-list/FileListContainer'
 import FileListPager from 'components/file-list/FileListPager'
+import {FileConstructor} from 'utils/file-constructor'
 export default {
   name: 'FileList',
   components: {
@@ -95,15 +95,17 @@ export default {
   data: function () {
     return {
       files: [],
-      pendingFiles: [],
-      uploadProgress: {},
-      getterProgress: {},
       subject: null,
       toLang: null,
       fromLang: null,
       sliderOpen: false,
       recordsPerPage: 10,
-      totalPages: 1
+      totalPages: 1,
+      tmpFileId: 0,
+      lastUpload: new Date().getTime(),
+      uploadThrottleTime: 1000,
+      uploadQueue: [],
+      uploadQueueInterval: null
     }
   },
   mounted: function () {
@@ -123,60 +125,42 @@ export default {
           const pages = Math.ceil(parseInt(response.data.pnumber) / this.recordsPerPage)
           this.totalPages = isNaN(pages) ? 1 : pages
           this.files = _.map(response.data.data, el => {
-            // Set file data we already have
-            const index = Object.values(this.getterProgress).length
             const link = this.$CONFIG.baseUrl + 'api/v1/jobs/' + el.jobs[0].id + '/' + el.jobs[0].password + '/stats'
-            this.getterProgress[index] = {
-              projectId: el.id,
-              password: el.password,
-              index: index,
-              link: link
-            }
-            const data = {
-              pid: el.id,
-              ppassword: el.password
-            }
-            // Call file analyze in case it's not yet finished
-            FileService.analyze(data)
-              .then(this.analyzeResponseForGetter)
+            // Call file download urls
+            this.getFileUrls(el.id, el.password)
             // Call file status check to get missing data
             FileService.checkStatus(link)
-              .then(this.statusResponseGetter)
-            // Call file download urls
-            FileService.getUrls({id_project: el.id, password: el.password})
-              .then(r => {
-                const file = _.find(this.files, { id: el.id })
-                if (typeof (r.data.urls.files[0]) !== 'undefined') {
-                  file.translatedUrl = r.data.urls.files[0].translation_download_url
-                }
-              })
+              .then(this.statsResponse)
+            // Call file analyze in case it's not yet finished
+            FileService.analyze({
+              pid: el.id,
+              ppassword: el.password
+            })
+              .then(this.analyzeResponse)
             // Return incomplete file data
-            return {
+            return FileConstructor.get({
               id: el.id,
               password: el.password,
               jobId: el.jobs[0].id,
               jobPassword: el.jobs[0].password,
               name: el.name,
-              wordCount: '...',
-              segmentCount: '...',
               owner: el.jobs[0].owner,
-              progress: 0,
-              loadingStatus: '',
-              created: DateConverter.timeStampToDate(el.jobs[0].create_timestamp)
-            }
+              created: DateConverter.timeStampToDate(el.jobs[0].create_timestamp),
+              tmpFileId: this.tmpFileId++,
+              statsLink: link
+            })
           })
         })
     },
-    upload: function (file, index) {
+    upload: function (file, fileName, fileTmpId) {
       // eslint-disable-next-line no-undef
       let formData = new FormData()
       formData.append('files[]', file)
       FileService.upload(formData)
         .then(uploadRes => {
-          this.uploadProgress[index].fileName = uploadRes.data[0].name
           const convertData = {
             action: 'convertFile',
-            file_name: this.uploadProgress[index].fileName,
+            file_name: fileName,
             source_lang: this.fromLang.value,
             target_lang: this.toLang.value,
             segmentation_rule: ''
@@ -186,11 +170,11 @@ export default {
         .then(convertRes => {
           // TODO What to do with convertData?
           let langDetect = {}
-          langDetect[this.uploadProgress[index].fileName] = 'detect'
+          langDetect[fileName] = 'detect'
           const createData = {
             action: 'createProject',
             project_name: '',
-            file_name: this.uploadProgress[index].fileName,
+            file_name: fileName,
             source_language: this.fromLang.value,
             target_language: this.toLang.value,
             job_subject: this.subject.value,
@@ -209,11 +193,11 @@ export default {
           return FileService.createProject(createData)
         })
         .then(projectRes => {
-          this.uploadProgress[index].projectId = projectRes.data.data.id_project
-          this.uploadProgress[index].password = projectRes.data.data.password
-          this.uploadProgress[index].link = this.$CONFIG.baseUrl + 'api/v2/projects/' + projectRes.data.data.id_project + '/' + projectRes.data.data.password + '/creation_status'
-          this.files[index].loadingProgress = 'ANALYZE'
-          return FileService.checkStatus(this.uploadProgress[index].link)
+          const file = _.find(this.files, {tmpFileId: fileTmpId})
+          file.id = projectRes.data.data.id_project
+          file.password = projectRes.data.data.password
+          file.statusLink = this.$CONFIG.baseUrl + 'api/v2/projects/' + projectRes.data.data.id_project + '/' + projectRes.data.data.password + '/creation_status'
+          return FileService.checkStatus(file.statusLink)
         })
         .then(this.statusResponse)
         .catch(this.statusResponseError)
@@ -224,88 +208,91 @@ export default {
         setTimeout(() => {
           FileService.checkStatus(res.request.responseURL)
             .then(this.statusResponse)
-        }, 1000)
+        }, 2000)
       }
       if (res.data.status === 200) {
-        const currentUpload = _.find(Object.values(this.uploadProgress), {link: res.request.responseURL})
+        const file = _.find(this.files, {statusLink: res.request.responseURL})
+        this.getFileUrls(file.id, file.password)
         FileService.analyze({
-          pid: currentUpload.projectId,
-          ppassword: currentUpload.password
+          pid: file.id,
+          ppassword: file.password
         })
           .then(this.analyzeResponse)
       }
     },
     analyzeResponse: function (res) {
-      const currentUpload = _.find(Object.values(this.uploadProgress), {projectId: parseInt(res.data.data.project_id)})
-      if (res.data.data.summary.STATUS !== 'DONE' && res.data.data.summary.STATUS !== 'EMPTY') {
+      const file = _.find(this.files, {id: parseInt(res.data.data.project_id)})
+      if (res.data.data.summary.STATUS === 'DONE') {
+        file.wordCount = parseInt(res.data.data.summary.TOTAL_RAW_WC)
+        file.segmentCount = parseInt(res.data.data.summary.TOTAL_SEGMENTS)
+        if (file.jobId < 0) {
+          file.jobId = Object.keys(res.data.data.jobs)[0]
+          file.jobPassword = Object.keys(Object.values(res.data.data.jobs)[0].totals)[0]
+          file.progress = 0.00
+          file.created = DateConverter.nowDate()
+          file.owner = this.$store.state.profile.email
+        }
+        return
+      }
+      if (res.data.data.summary.STATUS !== 'EMPTY') {
         setTimeout(() => {
           FileService.analyze({
-            pid: currentUpload.projectId,
-            ppassword: currentUpload.password
+            pid: file.id,
+            ppassword: file.password
           })
             .then(this.analyzeResponse)
-        }, 1000)
-      } else {
-        this.files[currentUpload.index].jobId = Object.keys(res.data.data.jobs)[0]
-        this.files[currentUpload.index].jobPassword = Object.keys(Object.values(res.data.data.jobs)[0].totals)[0]
-        this.files[currentUpload.index].wordCount = parseInt(res.data.data.summary.TOTAL_RAW_WC)
-        this.files[currentUpload.index].segmentCount = parseInt(res.data.data.summary.TOTAL_SEGMENTS)
-        this.files[currentUpload.index].progress = 0.00
-        this.files[currentUpload.index].created = DateConverter.nowDate()
-        this.files[currentUpload.index].owner = this.$store.state.profile.email
-        this.$loading.endLoading('file_' + currentUpload.index)
-        Vue.delete(this.uploadProgress, currentUpload.index)
+        }, 2000)
+        return
       }
+      // TODO What to do with EMPTY file?
+      file.isEmpty = true
     },
-    analyzeResponseForGetter: function (res) {
-      let currentGetter = _.find(Object.values(this.getterProgress), {projectId: parseInt(res.data.data.project_id)})
-      if (res.data.data.summary.STATUS !== 'DONE' && res.data.data.summary.STATUS !== 'EMPTY') {
-        setTimeout(() => {
-          FileService.analyze({
-            pid: currentGetter.projectId,
-            ppassword: currentGetter.password
-          })
-            .then(this.analyzeResponseForGetter)
-        }, 1000)
-      } else {
-        let currentFile = _.find(this.files, {id: currentGetter.projectId})
-        currentFile.wordCount = parseInt(res.data.data.summary.TOTAL_RAW_WC)
-        currentFile.segmentCount = parseInt(res.data.data.summary.TOTAL_SEGMENTS)
-      }
-    },
-    statusResponseGetter: function (res) {
-      const currentGetter = _.find(Object.values(this.getterProgress), {link: res.request.responseURL})
+    statsResponse: function (res) {
+      const file = _.find(this.files, {statsLink: res.request.responseURL})
+      if (file.isEmpty) return
       if (!res.data.stats.ANALYSIS_COMPLETE) {
         setTimeout(() => {
-          FileService.checkStatus(currentGetter.link)
-            .then(this.statusResponseGetter)
-        }, 1000)
+          FileService.checkStatus(res.request.responseURL)
+            .then(this.statsResponse)
+        }, 2000)
       } else {
-        const currentFile = _.find(this.files, {id: currentGetter.projectId})
-        currentFile.progress = parseFloat(res.data.stats.TRANSLATED_PERC).toFixed(2)
+        file.progress = parseFloat(res.data.stats.TRANSLATED_PERC).toFixed(2)
       }
-    },
-    processNewFile: function (file) {
-      const index = this.files.length
-      this.uploadProgress[index] = {
-        index: index,
-        status: 'Augšupielādējas',
-        projectId: '',
-        password: '',
-        fileName: '',
-        link: ''
-      }
-      this.files.push({
-        name: file.name,
-        wordCount: 0,
-        loadingStatus: 'UPLOADING'
-      })
-      this.$loading.startLoading('file_' + index)
-      this.upload(file, index)
     },
     statusResponseError: function (err) {
-      console.log(err.response)
+      console.log(err)
       this.$Alerts.add('File status error')
+    },
+    getFileUrls: function (id, password) {
+      FileService.getUrls({id_project: id, password: password})
+        .then(r => {
+          const file = _.find(this.files, { id: id })
+          if (typeof (r.data.urls.files[0]) !== 'undefined') {
+            file.translatedUrl = r.data.urls.files[0].translation_download_url
+          }
+        })
+    },
+    sendToUploadQueue: function (file) {
+      let fileTmpId = this.tmpFileId++
+      this.files.unshift(FileConstructor.get(
+        {
+          name: file.name,
+          created: DateConverter.nowDate(),
+          tmpFileId: fileTmpId
+        }
+      ))
+      this.uploadQueue.push({
+        file: file,
+        tmpId: fileTmpId
+      })
+      if (this.uploadQueueInterval !== null) return
+      this.uploadQueueInterval = setInterval(() => {
+        const record = this.uploadQueue.splice(0, 1)[0]
+        this.upload(record.file, record.file.name, record.tmpId)
+        if (this.uploadQueue.length < 1) {
+          clearInterval(this.uploadQueueInterval)
+        }
+      }, this.uploadThrottleTime)
     }
   }
 }
