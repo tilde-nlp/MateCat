@@ -23,7 +23,8 @@
           >
             <div class="status column">
               <svgicon
-                class="svg-icon va-middle"
+                :class="{'icon-green': file.progress >= 100}"
+                class="svg-icon va-middle static"
                 name="file"
                 height="24"
               />
@@ -207,6 +208,7 @@ export default {
           this.files.splice(this.activeFileDeleteKey, 1)
           this.activeFileDeleteKey = null
           this.showFileDeleteConfirm = false
+          this.$emit('deleted')
         })
     },
     cancelFileDelete: function () {

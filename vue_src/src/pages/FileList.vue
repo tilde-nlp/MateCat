@@ -61,6 +61,7 @@
       <div class="section mb-48">
         <file-list-container
           :file-list="files"
+          @deleted="fetchFileList(currentPage, true)"
         />
       </div>
     </div>
@@ -101,6 +102,8 @@ export default {
       sliderOpen: false,
       recordsPerPage: 10,
       totalPages: 1,
+      totalFiles: 0,
+      currentPage: 1,
       tmpFileId: 0,
       lastUpload: new Date().getTime(),
       uploadThrottleTime: 1000,
@@ -112,8 +115,9 @@ export default {
     this.fetchFileList(1)
   },
   methods: {
-    fetchFileList: function (page) {
-      // Get first page of files
+    fetchFileList: function (page, updateList) {
+      updateList = updateList || false
+      this.currentPage = page
       const data = {
         id_team: this.$store.getters.profile.teamId,
         page: page,
@@ -121,10 +125,16 @@ export default {
       }
       FileService.getList(data)
         .then(response => {
-          this.files = null
-          const pages = Math.ceil(parseInt(response.data.pnumber) / this.recordsPerPage)
-          this.totalPages = isNaN(pages) ? 1 : pages
+          if (!updateList) {
+            this.files = null
+          }
+          this.totalFiles = parseInt(response.data.pnumber)
+          this.updatePagesCount()
           this.files = _.map(response.data.data, el => {
+            if (updateList) {
+              const exists = _.find(this.files, {id: el.id})
+              if (exists) return exists
+            }
             const link = this.$CONFIG.baseUrl + 'api/v1/jobs/' + el.jobs[0].id + '/' + el.jobs[0].password + '/stats'
             // Call file download urls
             this.getFileUrls(el.id, el.password)
@@ -274,6 +284,9 @@ export default {
     },
     sendToUploadQueue: function (file) {
       let fileTmpId = this.tmpFileId++
+      if (this.files.length === this.recordsPerPage) {
+        this.files.splice(-1, 1)
+      }
       this.files.unshift(FileConstructor.get(
         {
           name: file.name,
@@ -281,6 +294,8 @@ export default {
           tmpFileId: fileTmpId
         }
       ))
+      this.totalFiles++
+      this.updatePagesCount()
       this.uploadQueue.push({
         file: file,
         tmpId: fileTmpId
@@ -291,8 +306,13 @@ export default {
         this.upload(record.file, record.file.name, record.tmpId)
         if (this.uploadQueue.length < 1) {
           clearInterval(this.uploadQueueInterval)
+          this.uploadQueueInterval = null
         }
       }, this.uploadThrottleTime)
+    },
+    updatePagesCount: function () {
+      const pages = Math.ceil(this.totalFiles / this.recordsPerPage)
+      this.totalPages = isNaN(pages) ? 1 : pages
     }
   }
 }

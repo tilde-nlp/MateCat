@@ -273,6 +273,9 @@ body {
 .svg-icon {
   display: inline-block;
   cursor: pointer;
+  &.static {
+    cursor: default;
+  }
   .transition;
   fill: @color-red;
   &:hover,
@@ -885,6 +888,7 @@ select::-ms-expand {
 
 .icon-span {
   .ib;
+  cursor: pointer;
   height: @file-row-height;
   line-height: @file-row-height;
 }
