@@ -19,10 +19,10 @@ MYSQL_ROOT_PWD="matecatRuuc"
 MATECAT_USER="dark"
 # SERVERNAME must match with google-s Authorized origins and Authorized redirect URIs
 SERVERNAME="local.matecat.com"
-RELATIVE_HOST_NAME="http:\/\/local.matecat.com\/"
+RELATIVE_HOST_NAME="http://local.matecat.com/"
 JWT_KEY=""
-AUTH_REDIRECT="https:\/\/hugo.lv\/lv\/Account\/Login?ReturnUrl="
-STORAGE_DIR="\/home\/dark\/cattool\/storage\/"
+AUTH_REDIRECT="https://hugo.lv/lv/Account/Login?ReturnUrl="
+STORAGE_DIR="/home/dark/cattool/storage/"
 BRANCH="code-merge"
 
 sudo apt-get update
@@ -161,10 +161,10 @@ sudo -u $MATECAT_USER -H sh -c "cd /home/$MATECAT_USER/cattool;php -r \"unlink('
 # install matecat prereqs
 sudo -u $MATECAT_USER -H sh -c "cd /home/$MATECAT_USER/cattool;php composer.phar install"
 sudo -u $MATECAT_USER -H sh -c "cp /home/$MATECAT_USER/cattool/inc/config.ini.sample /home/$MATECAT_USER/cattool/inc/config.ini"
-sudo sed -i "s/@@@relative_host_name@@@/$RELATIVE_HOST_NAME/g" /home/$MATECAT_USER/cattool/inc/config.ini
-sudo sed -i "s/@@@jwt_key@@@/$JWT_KEY/g" /home/$MATECAT_USER/cattool/inc/config.ini
-sudo sed -i "s/@@@auth_redirect@@@/$AUTH_REDIRECT/g" /home/$MATECAT_USER/cattool/inc/config.ini
-sudo sed -i "s/@@@storage_dir@@@/$STORAGE_DIR/g" /home/$MATECAT_USER/cattool/inc/config.ini
+sudo sed -i "s|@@@relative_host_name@@@|$RELATIVE_HOST_NAME|g" /home/$MATECAT_USER/cattool/inc/config.ini
+sudo sed -i "s|@@@jwt_key@@@|$JWT_KEY|g" /home/$MATECAT_USER/cattool/inc/config.ini
+sudo sed -i "s|@@@auth_redirect@@@|$AUTH_REDIRECT|g" /home/$MATECAT_USER/cattool/inc/config.ini
+sudo sed -i "s|@@@storage_dir@@@|$STORAGE_DIR|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo -u $MATECAT_USER -H sh -c "cp /home/$MATECAT_USER/cattool/inc/task_manager_config.ini.sample /home/$MATECAT_USER/cattool/inc/task_manager_config.ini"
 
 # DEV_ONLY (this is only necessary for development build)
@@ -245,7 +245,7 @@ sudo systemctl start matecat-filter.service
 
 sudo sed -i "s/FILTERS_ADDRESS.*/FILTERS_ADDRESS = http:\/\/localhost:8732/g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s/FILTERS_MASHAPE_KEY.*/FILTERS_MASHAPE_KEY = /g" /home/$MATECAT_USER/cattool/inc/config.ini
-sudo chown -R www-data:$MATECAT_USER /home/$MATECAT_USER/cattool/storage/
+sudo chown -R www-data:$MATECAT_USER $STORAGE_DIR
 
 
 
