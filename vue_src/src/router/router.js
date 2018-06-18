@@ -2,7 +2,6 @@ import VueRouter from 'vue-router'
 import Vue from 'vue'
 import FileList from 'pages/FileList'
 import Translator from 'pages/Translator'
-import LoginPage from 'pages/LoginPage'
 import {store} from '../vuex/store'
 import {Auth} from '../utils/auth'
 import {CONFIG} from '../CONFIG'
@@ -10,7 +9,6 @@ Vue.use(VueRouter)
 const routes = [
   {path: '/', component: FileList, name: 'file-list', beforeEnter: beforeRouteEnter},
   {path: '/translate/:jobId/:password', component: Translator, name: 'translate', beforeEnter: beforeRouteEnter},
-  {path: '/login', component: LoginPage, name: 'login'},
   {path: '*', redirect: {name: 'file-list'}}
 ]
 function beforeRouteEnter (to, from, next) {

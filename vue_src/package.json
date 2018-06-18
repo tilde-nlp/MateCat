@@ -58,7 +58,6 @@
     "uglifyjs-webpack-plugin": "^1.2.5",
     "url-loader": "^1.0.1",
     "vue": "^2.5.16",
-    "vue-google-oauth2": "^1.0.7",
     "vue-jest": "^2.5.0",
     "vue-loader": "^15.0.11",
     "vue-localstorage": "^0.6.2",

@@ -24,9 +24,6 @@ JWT_KEY=""
 AUTH_REDIRECT="https:\/\/hugo.lv\/lv\/Account\/Login?ReturnUrl="
 STORAGE_DIR="\/home\/dark\/cattool\/storage\/"
 BRANCH="code-merge"
-OAUTH_CLIENT_ID=227694033019-lcbnpb3o1vhn4h3jc4diu3e4fp6pgdlr.apps.googleusercontent.com
-OAUTH_CLIENT_SECRET=pBoNzPbHipJ0UcOL2vTOP5So
-OAUTH_CLIENT_APP_NAME=Matecat
 
 sudo apt-get update
 # ----- Apache2
@@ -103,11 +100,6 @@ sudo systemctl restart redis-server.service
 sudo apt-get install -y curl
 curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 sudo apt-get install -y nodejs
-# https://github.com/npm/npm/issues/14257#issuecomment-318268415
-# sudo apt-get install -y npm
-# sudo npm init -y
-# sudo npm install grunt
-# sudo npm install -g grunt-cli
 
 # TODO: check this, node should start server.js which is not downloaded yet!
 # https://nodesource.com/blog/running-your-node-js-app-with-systemd-part-1/
@@ -175,10 +167,8 @@ sudo sed -i "s/@@@auth_redirect@@@/$AUTH_REDIRECT/g" /home/$MATECAT_USER/cattool
 sudo sed -i "s/@@@storage_dir@@@/$STORAGE_DIR/g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo -u $MATECAT_USER -H sh -c "cp /home/$MATECAT_USER/cattool/inc/task_manager_config.ini.sample /home/$MATECAT_USER/cattool/inc/task_manager_config.ini"
 
-# Compile
-# sudo -u $MATECAT_USER -H sh -c "cd /home/$MATECAT_USER/cattool/support_scripts/grunt;npm install"
+# DEV_ONLY (this is only necessary for development build)
 sudo -u $MATECAT_USER -H sh -c "cd /home/$MATECAT_USER/cattool/vue_src;npm install"
-# sudo -u $MATECAT_USER -H sh -c "cd /home/$MATECAT_USER/cattool/support_scripts/grunt;grunt deploy"
 
 # Configure Node.js server app
 sudo -u $MATECAT_USER -H sh -c "cp /home/$MATECAT_USER/cattool/nodejs/config.ini.sample /home/$MATECAT_USER/cattool/nodejs/config.ini"
@@ -202,12 +192,8 @@ sudo chown -R www-data /home/$MATECAT_USER/cattool/storage/
 
 # ----- Google auth
 sudo -u $MATECAT_USER -H sh -c "cp /home/$MATECAT_USER/cattool/inc/oauth_config.ini.sample /home/$MATECAT_USER/cattool/inc/oauth_config.ini"
-sudo sed -i "s/OAUTH_CLIENT_ID.*/OAUTH_CLIENT_ID       = $OAUTH_CLIENT_ID/g" /home/$MATECAT_USER/cattool/inc/oauth_config.ini
-sudo sed -i "s/OAUTH_CLIENT_SECRET.*/OAUTH_CLIENT_SECRET   = $OAUTH_CLIENT_SECRET/g" /home/$MATECAT_USER/cattool/inc/oauth_config.ini
-sudo sed -i "s/OAUTH_CLIENT_APP_NAME.*/OAUTH_CLIENT_APP_NAME = $OAUTH_CLIENT_APP_NAME/g" /home/$MATECAT_USER/cattool/inc/oauth_config.ini
 # create empty file, because matecat tries to open in to save encryption key
 sudo -u $MATECAT_USER -H sh -c "touch /home/$MATECAT_USER/cattool/inc/oauth-token-key.txt"
-# sudo -u $MATECAT_USER -H sh -c "touch /home/$MATECAT_USER/cattool/inc/login_secret.dat"
 # repeat chown on [storage] directory - matecat can't write logs (log.txt)
 sudo chown www-data:www-data /home/$MATECAT_USER/cattool/inc/oauth-token-key.txt /home/$MATECAT_USER/cattool/inc/login_secret.dat
 
