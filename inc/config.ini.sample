@@ -86,9 +86,9 @@ LXQ_PARTNERID = false
 
 ;----------------------------------------
 [production]
-RELATIVE_HOST_NAME = "http://@@@host@@@/" ; Relative host path for running cat as submodule
-JWT_KEY = ""
-AUTH_REDIRECT = ""
+RELATIVE_HOST_NAME = "@@@relative_host_name@@@" ; Relative host path for running cat as submodule
+JWT_KEY = "@@@jwt_key@@@"
+AUTH_REDIRECT = "@@@auth_redirect@@@"
 
 CLI_HTTP_HOST = "http://localhost" ; Set the hostname for batch processes ( they do not know the global variable $_SERVER )
 DB_SERVER = "localhost"
@@ -101,7 +101,7 @@ QUEUE_BROKER_ADDRESS = "tcp://localhost:61613"
 QUEUE_DQF_ADDRESS = "tcp://localhost:61613"
 QUEUE_JMX_ADDRESS = "http://localhost:8161"
 SSE_BASE_URL = "http://localhost/sse"          ;no trailing slash here
-STORAGE_DIR = "/home/@@@user@@@/cattool/storage"         ;provide an absolute path
+STORAGE_DIR = "@@@user@@@"         ;provide an absolute path
 
 SMTP_HOST = 'localhost'
 SMTP_PORT = '25'
