@@ -75,7 +75,7 @@ class AuthCookie {
                     $user = $dao->getByEmail( $jwtId );
                 }
 
-                return array('email' => $user->email, 'uid' => $user->uid);
+                return array('username' => $user->email, 'uid' => $user->uid);
             } catch ( DomainException $e ) {
                 Log::doLog( $e->getMessage() . " " . $_COOKIE[ INIT::$AUTHCOOKIENAME ] );
                 self::destroyAuthentication();
