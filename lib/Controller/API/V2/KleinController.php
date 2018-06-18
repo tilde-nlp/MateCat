@@ -149,12 +149,7 @@ abstract class KleinController implements IController {
             $this->user = $this->api_record->getUser();
         } else { //check if there is an opened cookie
 
-            $user_credentials = [];
-            if( isset( $_SESSION[ 'uid' ] ) ){
-                $user_credentials[ 'uid' ] = $_SESSION[ 'uid' ];
-            } else {
-                $user_credentials = AuthCookie::getCredentials(); //validated cookie
-            }
+            $user_credentials = AuthCookie::getCredentials();
 
             $dao = new Users_UserDao();
             $dao->setCacheTTL( 3600 );

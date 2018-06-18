@@ -1,5 +1,12 @@
 <?php
 
+use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\ValidationData;
+use Users\JwtSignup;
+use Users_UserDao;
+use Users_UserStruct;
+
 class AuthCookie {
 
     //get user name in cookie, if present
@@ -45,10 +52,30 @@ class AuthCookie {
      * @return mixed
      */
     private static function getData() {
-        if ( isset( $_COOKIE[ INIT::$AUTHCOOKIENAME ] ) and !empty( $_COOKIE[ INIT::$AUTHCOOKIENAME ] ) ) {
+        if ( isset( $_COOKIE[ 'jwt' ] ) and !empty( $_COOKIE[ 'jwt' ] ) ) {
 
             try {
-                return SimpleJWT::getValidPayload( $_COOKIE[ INIT::$AUTHCOOKIENAME ] );
+                $token = (new Parser())->parse((string) $_COOKIE[ 'jwt' ]);
+                $signer = new Sha256();
+                $data = new ValidationData();
+
+                if (!$token->verify($signer, INIT::$JWT_KEY)
+//                || !$token->validate($data)
+                ) {
+                    return false;
+                }
+
+                $jwtId = $token->getClaim('sub') . ':-:' . $token->getClaim('grp');
+
+                $dao  = new Users_UserDao();
+                $user = $dao->getByEmail( $jwtId );
+                if ($user == null) {
+                    $signup = new JwtSignup( $jwtId );
+                    $signup->process();
+                    $user = $dao->getByEmail( $jwtId );
+                }
+
+                return array('email' => $user->email, 'uid' => $user->uid);
             } catch ( DomainException $e ) {
                 Log::doLog( $e->getMessage() . " " . $_COOKIE[ INIT::$AUTHCOOKIENAME ] );
                 self::destroyAuthentication();

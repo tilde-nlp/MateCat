@@ -1,24 +1,82 @@
 <template>
   <div class="page-container">
-    <button
-      class="button mb-16"
-      @click="goBack"
-    >Atpakaļ</button>
-    <div class="clear" />
-    <div class="translator-container">
-      <translator-toolbox />
-      <div class="segments-container">
-        <translator-segment
-          v-for="(segment, index) in segments"
-          :key="index"
-          :index="index"
-          :segment-data="segment"
-          @click="setActive"
-          @done="done"
-        />
-      </div>
+    <div class="section-bg bg-grey-light">
+      <section class="section">
+        <!-- BREADCRUMBS -->
+        <div class="bread-crumbs">
+          <div class="bc-nav">Sākums</div>
+          /
+          <div class="bc-nav inactive">Tulkošanas asistents</div>
+        </div>
+        <!-- BREADCRUMBS END -->
+        <!-- TITLE -->
+        <div class="h2 mt-24 mb-24">Tulkošanas asistents</div>
+        <!-- TITLE END -->
+      </section>
+      <div class="bb-blueish"/>
+      <section class="section">
+        <!-- BACK -->
+        <div
+          class="head-control w-192"
+          @click="goBack"
+        >
+          <svgicon
+            class="svg-icon va-middle"
+            name="arrow"
+            height="24"
+          />
+          <div class="link ib">Atpakaļ uz sarakstu</div>
+        </div>
+        <!-- BACK END -->
+        <!-- SETTINGS TOGGLE -->
+        <div
+          class="head-control w-135 settings"
+          @click="() => { settingsOpen = !settingsOpen }"
+        >
+          <svgicon
+            class="svg-icon va-middle"
+            name="cog"
+            height="24"
+          />
+          <div class="link ib">Uzstādījumi</div>
+          <svgicon
+            :class="{open: settingsOpen}"
+            class="svg-icon va-middle chevron"
+            name="chevron"
+            height="24"
+          />
+        </div>
+        <!-- SETTINGS TOGGLE END -->
+      </section>
+      <div class="bb-blueish"/>
+      <section class="section">
+        <translator-toolbox />
+      </section>
+      <div class="bb-blueish mt-16"/>
     </div>
-    <translator-assistant />
+    <div class="section-bg bg-white">
+      <section class="section">
+        <div class="mt-32 mb-8">
+          <div class="w-528 size-s bold pl-8">
+            Sākotnējais teksts
+          </div>
+          <div class="w-528 absolute-right size-s bold">
+            Tulkotais teksts
+          </div>
+        </div>
+        <div class="segments-container">
+          <translator-segment
+            v-for="(segment, index) in segments"
+            :key="index"
+            :index="index"
+            :segment-data="segment"
+            @click="setActive"
+            @setStatus="setStatus"
+          />
+        </div>
+      </section>
+    </div>
+    <!--<translator-assistant />-->
   </div>
 </template>
 
@@ -38,7 +96,8 @@ export default {
   data: function () {
     return {
       segments: [],
-      fileId: ''
+      fileId: '',
+      settingsOpen: false
     }
   },
   mounted: function () {
@@ -62,9 +121,9 @@ export default {
             version: el.version
           }
         })
-        this.segments.forEach(item => {
-          if (item.status === '') this.getContribution(item)
-        })
+        // this.segments.forEach(item => {
+        //   if (item.status === '') this.getContribution(item)
+        // })
       })
   },
   methods: {
@@ -99,14 +158,14 @@ export default {
         after: (typeof (this.segments[index + 1]) === 'undefined') ? '' : this.segments[index + 1].original
       }
     },
-    done: function (segment) {
+    setStatus: function (segment, status) {
       const context = this.getContext(segment)
       const data = {
         id_segment: segment.id,
         id_job: this.$route.params.jobId,
         id_first_file: this.fileId,
         password: this.$route.params.password,
-        status: 'translated',
+        status: status,
         translation: segment.translation,
         segment: segment.original,
         time_to_edit: 1,
@@ -119,7 +178,7 @@ export default {
       }
       SegmentsService.setTranslation(data)
         .then(() => {
-          segment.status = 'done'
+          segment.status = status === 'translated' ? 'done' : ''
         })
     },
     setActive: function (id) {

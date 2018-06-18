@@ -1,10 +1,5 @@
 <template>
   <div>
-    <transition
-      name="fade"
-      mode="out-in">
-      <c-header v-if="$store.state.profile"/>
-    </transition>
     <div class="alerts">
       <transition-group
         name="fade"

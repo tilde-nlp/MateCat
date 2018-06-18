@@ -1,32 +1,17 @@
 <template>
   <div>
-    <div class="pull-right">
-      <div class="input-label ib-i mr-4">Lapa</div>
-      <div class="select-container">
-        <select class="input select ib w-64">
-          <option>1</option>
-        </select>
-        <div class="select-arrow"/>
-      </div>
-      <div class="input-label ib-i ml-16 mr-4">Lapas izmērs</div>
-      <div class="select-container">
-        <select class="input select ib w-64">
-          <option>1</option>
-        </select>
-        <div class="select-arrow"/>
-      </div>
-    </div>
     <div class="file-list-container">
+      <!-- FILE LIST HEADER -->
       <div class="file-list-header">
         <div class="status">Statuss</div>
         <div class="segments">Segmenti</div>
         <div class="words">Vārdi</div>
         <div class="translated">Iztulkots</div>
         <div class="created">Ielādes datums</div>
-        <div class="created-by">Izveidoja</div>
-        <div class="last-modified">Pēdējās izmaiņas</div>
         <div class="controls">&nbsp;</div>
       </div>
+      <!-- FILE LIST HEADER END -->
+      <!-- FILE LIST -->
       <div class="file-list">
         <transition-group
           name="fade"
@@ -37,70 +22,122 @@
             class="file-row"
           >
             <div class="status column">
-              <div
-                :class="{'file-new': parseFloat(file.progress) === 0, 'file-draft': parseFloat(file.progress) > 0 && parseFloat(file.progress) < 100, 'file-complete': parseFloat(file.progress) === 100}"
-                class="status-circle"
+              <svgicon
+                :class="{'icon-green': file.progress >= 100}"
+                class="svg-icon va-middle static"
+                name="file"
+                height="24"
               />
               {{ file.name }}</div>
             <div
               class="additional-row"
             >
-              <span v-if="$loading.isLoading('file_' + key)">
-                {{ file.loadingStatus === 'UPLOADING' ? 'Augšupielādējas' : 'Analizējas' }}
-                <img
-                  :src="$assetPath + 'ajax-loader.gif'"
-                  class="ib ml-16"
+              <span
+                v-if="file.isEmpty"
+                class="red"
+              >
+                Failu neizdevās ielādēt, lūdzu izdzēsiet to un mēģinat atkārtoti.
+                <!-- DELETE -->
+                <div
+                  class="icon-span ml-77"
+                  @click="fastDeleteFile(key)"
                 >
+                  <svgicon
+                    class="svg-icon va-middle"
+                    name="close"
+                    height="24"
+                  />
+                  <div class="link ib">Dzēst</div>
+                </div>
+                <!-- DELETE END -->
               </span>
               <span v-else>
-                <div class="segments column">{{ file.segmentCount }}</div>
-                <div class="words column">{{ file.wordCount }}</div>
-                <div class="translated column">{{ file.progress }} %</div>
+                <div class="segments column">
+                  <svgicon
+                    v-if="file.segmentCount < 0"
+                    class="svg-loading va-middle"
+                    name="loading"
+                    height="24"
+                  />
+                  <span v-else>{{ file.segmentCount }}</span>
+                </div>
+                <div class="words column">
+                  <svgicon
+                    v-if="file.wordCount < 0"
+                    class="svg-loading va-middle"
+                    name="loading"
+                    height="24"
+                  />
+                  <span v-else>{{ file.wordCount }}</span>
+                </div>
+                <div class="translated column">
+                  <svgicon
+                    v-if="file.progress < 0"
+                    class="svg-loading va-middle"
+                    name="loading"
+                    height="24"
+                  />
+                  <span v-else>{{ file.progress }} %</span>
+                </div>
                 <div class="created column">{{ file.created }}</div>
-                <div class="created-by column">{{ file.owner }}</div>
-                <div class="last-modified column">-</div>
                 <div class="controls column">
-                  <button
-                    class="button file-list-button"
+                  <!-- TRANSLATE -->
+                  <div
+                    class="icon-span mr-24"
                     @click="translate(key)"
-                  >{{ file.progress > 0 ? 'Rediģēt' : 'Tulkot' }}
-                  </button>
-                  <span
-                    class="icon-span"
-                    @click="share(key)"
                   >
                     <svgicon
                       class="svg-icon va-middle"
-                      name="share"
-                      height="32"
+                      name="translation-assist"
+                      height="24"
                     />
-                  </span>
-                  <span
+                    <div class="link ib">Tulkot</div>
+                  </div>
+                  <!-- TRANSLATE END -->
+                  <!-- DOWNLOAD -->
+                  <div
+                    v-if="file.translatedUrl < 0"
+                    class="icon-span mr-24 w-109"
+                  >
+                    <svgicon
+                      class="svg-loading va-middle"
+                      name="loading"
+                      height="24"
+                    />
+                  </div>
+                  <div
+                    v-else
+                    class="icon-span mr-24"
+                    @click="downloadFile(file.translatedUrl)"
+                  >
+                    <svgicon
+                      class="svg-icon va-middle"
+                      name="download"
+                      height="24"
+                    />
+                    <div class="link ib">Lejupielādēt</div>
+                  </div>
+                  <!-- DOWNLOAD END -->
+                  <!-- DELETE -->
+                  <div
                     class="icon-span"
                     @click="removeFile(key)"
                   >
                     <svgicon
                       class="svg-icon va-middle"
                       name="close"
-                      height="32"
+                      height="24"
                     />
-                  </span>
-                  <span
-                    class="icon-span"
-                    @click="downloadFile(file.translatedUrl)"
-                  >
-                    <svgicon
-                      class="svg-icon va-middle"
-                      name="download"
-                      height="32"
-                    />
-                  </span>
+                    <div class="link ib">Dzēst</div>
+                  </div>
+                  <!-- DELETE END -->
                 </div>
               </span>
             </div>
           </div>
         </transition-group>
       </div>
+      <!-- FILE LIST END -->
     </div>
     <transition
       name="fade"
@@ -116,24 +153,6 @@
         Vai tiešām vēlaties dzēst failu?
       </confirmation>
     </transition>
-    <div class="pager-container">
-      <div class="pager-button pull-left">
-        <svgicon
-          class="svg-icon va-middle"
-          name="right"
-          height="32"
-        />
-        Atpakaļ
-      </div>
-      <div class="pager-button pull-right">
-        Tālāk
-        <svgicon
-          class="svg-icon va-middle r-180"
-          name="right"
-          height="32"
-        />
-      </div>
-    </div>
   </div>
 </template>
 
@@ -172,6 +191,10 @@ export default {
     share: function (key) {
       // TODO Implement file sharing
     },
+    fastDeleteFile: function (key) {
+      this.activeFileDeleteKey = key
+      this.deleteFile()
+    },
     deleteFile: function () {
       if (this.activeFileDeleteKey === null) return
       const data = {
@@ -185,6 +208,7 @@ export default {
           this.files.splice(this.activeFileDeleteKey, 1)
           this.activeFileDeleteKey = null
           this.showFileDeleteConfirm = false
+          this.$emit('deleted')
         })
     },
     cancelFileDelete: function () {
