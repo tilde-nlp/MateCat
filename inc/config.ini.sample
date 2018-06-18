@@ -101,7 +101,7 @@ QUEUE_BROKER_ADDRESS = "tcp://localhost:61613"
 QUEUE_DQF_ADDRESS = "tcp://localhost:61613"
 QUEUE_JMX_ADDRESS = "http://localhost:8161"
 SSE_BASE_URL = "http://localhost/sse"          ;no trailing slash here
-STORAGE_DIR = "@@@user@@@"         ;provide an absolute path
+STORAGE_DIR = "@@@storage_dir@@@"         ;provide an absolute path
 
 SMTP_HOST = 'localhost'
 SMTP_PORT = '25'
