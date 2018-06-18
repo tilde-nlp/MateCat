@@ -195,7 +195,7 @@ sudo -u $MATECAT_USER -H sh -c "cp /home/$MATECAT_USER/cattool/inc/oauth_config.
 # create empty file, because matecat tries to open in to save encryption key
 sudo -u $MATECAT_USER -H sh -c "touch /home/$MATECAT_USER/cattool/inc/oauth-token-key.txt"
 # repeat chown on [storage] directory - matecat can't write logs (log.txt)
-sudo chown www-data:www-data /home/$MATECAT_USER/cattool/inc/oauth-token-key.txt /home/$MATECAT_USER/cattool/inc/login_secret.dat
+sudo chown www-data:www-data /home/$MATECAT_USER/cattool/inc/oauth-token-key.txt
 
 
 # ----- FILTERS
