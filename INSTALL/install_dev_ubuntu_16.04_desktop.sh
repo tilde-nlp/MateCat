@@ -19,10 +19,11 @@ MYSQL_ROOT_PWD="matecatRuuc"
 MATECAT_USER="dark"
 # SERVERNAME must match with google-s Authorized origins and Authorized redirect URIs
 SERVERNAME="local.matecat.com"
-RELATIVE_HOST_NAME="http://local.matecat.com/"
+RELATIVE_HOST_NAME="http:\/\/local.matecat.com\/"
 JWT_KEY=""
-AUTH_REDIRECT=""
-STORAGE_DIR="/home/dark/cattool/storage/"
+AUTH_REDIRECT="https:\/\/hugo.lv\/lv\/Account\/Login?ReturnUrl="
+STORAGE_DIR="\/home\/dark\/cattool\/storage\/"
+BRANCH="code-merge"
 OAUTH_CLIENT_ID=227694033019-lcbnpb3o1vhn4h3jc4diu3e4fp6pgdlr.apps.googleusercontent.com
 OAUTH_CLIENT_SECRET=pBoNzPbHipJ0UcOL2vTOP5So
 OAUTH_CLIENT_APP_NAME=Matecat
@@ -96,8 +97,6 @@ sudo systemctl start activemq.service
 
 # ----- Redis
 sudo apt-get install -y redis-server
-# TODO: this seems to open access to redis from network, is this really needed?
-sudo sed -i 's/bind 127.0.0.1/bind 0.0.0.0/g' /etc/redis/redis.conf
 sudo systemctl restart redis-server.service
 
 # ----- Node.js
@@ -147,7 +146,9 @@ sudo apt-get -y install git
 
 # delete contents. Git cant clone in to non-empty directory on repeated installs
 sudo rm -rf /home/$MATECAT_USER/cattool
-sudo -i -u $MATECAT_USER git clone git@github.com:YourLittleHelper/MateCat.git cattool
+sudo -i -u $MATECAT_USER git clone git@github.com:tilde-nlp/MateCat.git cattool
+sudo -u $MATECAT_USER -H sh -c "cd /home/$MATECAT_USER/cattool; git fetch --all"
+sudo -u $MATECAT_USER -H sh -c "cd /home/$MATECAT_USER/cattool; git checkout $BRANCH"
 mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/lib/Model/matecat.sql
 mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/17-06-2018_user_email_alter.sql
 
@@ -173,8 +174,6 @@ sudo sed -i "s/@@@jwt_key@@@/$JWT_KEY/g" /home/$MATECAT_USER/cattool/inc/config.
 sudo sed -i "s/@@@auth_redirect@@@/$AUTH_REDIRECT/g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s/@@@storage_dir@@@/$STORAGE_DIR/g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo -u $MATECAT_USER -H sh -c "cp /home/$MATECAT_USER/cattool/inc/task_manager_config.ini.sample /home/$MATECAT_USER/cattool/inc/task_manager_config.ini"
-# this does nothing
-sudo sed -i "s/\/home\/matecat\/storage/\/home\/$MATECAT_USER\/cattool\/storage/g" /home/$MATECAT_USER/cattool/inc/config.ini
 
 # Compile
 # sudo -u $MATECAT_USER -H sh -c "cd /home/$MATECAT_USER/cattool/support_scripts/grunt;npm install"
