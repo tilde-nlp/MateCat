@@ -19,6 +19,10 @@ MYSQL_ROOT_PWD="matecatRuuc"
 MATECAT_USER="dark"
 # SERVERNAME must match with google-s Authorized origins and Authorized redirect URIs
 SERVERNAME="local.matecat.com"
+RELATIVE_HOST_NAME="http://local.matecat.com/"
+JWT_KEY=""
+AUTH_REDIRECT=""
+STORAGE_DIR="/home/dark/cattool/storage/"
 OAUTH_CLIENT_ID=227694033019-lcbnpb3o1vhn4h3jc4diu3e4fp6pgdlr.apps.googleusercontent.com
 OAUTH_CLIENT_SECRET=pBoNzPbHipJ0UcOL2vTOP5So
 OAUTH_CLIENT_APP_NAME=Matecat
@@ -145,6 +149,7 @@ sudo apt-get -y install git
 sudo rm -rf /home/$MATECAT_USER/cattool
 sudo -i -u $MATECAT_USER git clone git@github.com:YourLittleHelper/MateCat.git cattool
 mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/lib/Model/matecat.sql
+mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/17-06-2018_user_email_alter.sql
 
 # Apache matecat vhost
 sudo cp /home/$MATECAT_USER/cattool/INSTALL/matecat-vhost.conf.sample /etc/apache2/sites-available/matecat-vhost.conf
@@ -163,8 +168,10 @@ sudo -u $MATECAT_USER -H sh -c "cd /home/$MATECAT_USER/cattool;php -r \"unlink('
 # install matecat prereqs
 sudo -u $MATECAT_USER -H sh -c "cd /home/$MATECAT_USER/cattool;php composer.phar install"
 sudo -u $MATECAT_USER -H sh -c "cp /home/$MATECAT_USER/cattool/inc/config.ini.sample /home/$MATECAT_USER/cattool/inc/config.ini"
-sudo sed -i "s/@@@host@@@/$SERVERNAME/g" /home/$MATECAT_USER/cattool/inc/config.ini
-sudo sed -i "s/@@@user@@@/$MATECAT_USER/g" /home/$MATECAT_USER/cattool/inc/config.ini 
+sudo sed -i "s/@@@relative_host_name@@@/$RELATIVE_HOST_NAME/g" /home/$MATECAT_USER/cattool/inc/config.ini
+sudo sed -i "s/@@@jwt_key@@@/$JWT_KEY/g" /home/$MATECAT_USER/cattool/inc/config.ini
+sudo sed -i "s/@@@auth_redirect@@@/$AUTH_REDIRECT/g" /home/$MATECAT_USER/cattool/inc/config.ini
+sudo sed -i "s/@@@storage_dir@@@/$STORAGE_DIR/g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo -u $MATECAT_USER -H sh -c "cp /home/$MATECAT_USER/cattool/inc/task_manager_config.ini.sample /home/$MATECAT_USER/cattool/inc/task_manager_config.ini"
 # this does nothing
 sudo sed -i "s/\/home\/matecat\/storage/\/home\/$MATECAT_USER\/cattool\/storage/g" /home/$MATECAT_USER/cattool/inc/config.ini
