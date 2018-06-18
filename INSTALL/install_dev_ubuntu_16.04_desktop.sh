@@ -187,7 +187,7 @@ echo "@reboot /bin/bash /home/$MATECAT_USER/cattool/daemons/restartAnalysis.sh" 
 # install new cron file
 sudo crontab mycron
 sudo rm mycron
-sudo chown -R www-data /home/$MATECAT_USER/cattool/storage/
+sudo chown -R www-data $STORAGE_DIR
 # ----- Matecat done
 
 # ----- Google auth
