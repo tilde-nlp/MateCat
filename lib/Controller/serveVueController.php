@@ -5,7 +5,6 @@ class serveVueController {
     public function doAction() {
         $config = new \stdClass();
         $config->baseUrl = INIT::$RELATIVE_HOST_NAME;
-        $config->googleClientId = INIT::$OAUTH_CLIENT_ID;
         $config->authRedirect = INIT::$AUTH_REDIRECT;
         $index = file_get_contents('public/vue_dist/index.html');
         $index = str_replace('HugoCat.main({})', 'HugoCat.main('. json_encode($config) .')', $index);
