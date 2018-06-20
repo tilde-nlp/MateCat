@@ -90,10 +90,11 @@ export default {
       fileId: '',
       settingsOpen: false,
       activeSegment: '',
-      fontSize: 15
+      fontSize: null
     }
   },
   mounted: function () {
+    this.fontSize = this.$cookie.get('fontSize') === null ? 15 : parseInt(this.$cookie.get('fontSize'))
     const data = {
       action: 'getSegments',
       jid: this.$route.params.jobId,
@@ -195,6 +196,7 @@ export default {
           this.fontSize--
           break
       }
+      this.$cookie.set('fontSize', this.fontSize, 720)
     }
   }
 }

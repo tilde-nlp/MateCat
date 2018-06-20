@@ -32,6 +32,7 @@ export function main (config) {
     bind: true
   })
   Vue.use(require('vue-shortkey'))
+  Vue.use(require('vue-cookie'))
   Vue.component('v-select', vSelect)
   /* eslint-disable no-new */
   new Vue({
