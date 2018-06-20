@@ -1,18 +1,10 @@
 <template>
-  <div class="page-container">
+  <div
+    v-shortkey="{ add: ['ctrl', 'arrowright'], sub: ['ctrl', 'arrowleft'] }"
+    class="page-container"
+    @shortkey="fontControl"
+  >
     <div class="section-bg bg-grey-light">
-      <section class="section">
-        <!-- BREADCRUMBS -->
-        <div class="bread-crumbs">
-          <div class="bc-nav">Sākums</div>
-          /
-          <div class="bc-nav inactive">Tulkošanas asistents</div>
-        </div>
-        <!-- BREADCRUMBS END -->
-        <!-- TITLE -->
-        <div class="h2 mt-24 mb-24">Tulkošanas asistents</div>
-        <!-- TITLE END -->
-      </section>
       <div class="bb-blueish"/>
       <section class="section">
         <!-- BACK -->
@@ -50,26 +42,25 @@
       </section>
       <div class="bb-blueish"/>
       <section class="section">
-        <translator-toolbox />
+        <translator-toolbox
+          :class="{open: settingsOpen}"
+          class="slider-container"
+          @confirm="() => setStatus('translated')"
+        />
       </section>
-      <div class="bb-blueish mt-16"/>
+      <div
+        v-if="settingsOpen"
+        class="bb-blueish mt-16"/>
     </div>
     <div class="section-bg bg-white">
       <section class="section">
-        <div class="mt-32 mb-8">
-          <div class="w-528 size-s bold pl-8">
-            Sākotnējais teksts
-          </div>
-          <div class="w-528 absolute-right size-s bold">
-            Tulkotais teksts
-          </div>
-        </div>
         <div class="segments-container">
           <translator-segment
             v-for="(segment, index) in segments"
             :key="index"
             :index="index"
             :segment-data="segment"
+            :font-size="fontSize"
             @click="setActive"
             @setStatus="setStatus"
           />
@@ -97,7 +88,9 @@ export default {
     return {
       segments: [],
       fileId: '',
-      settingsOpen: false
+      settingsOpen: false,
+      activeSegment: '',
+      fontSize: 15
     }
   },
   mounted: function () {
@@ -158,19 +151,20 @@ export default {
         after: (typeof (this.segments[index + 1]) === 'undefined') ? '' : this.segments[index + 1].original
       }
     },
-    setStatus: function (segment, status) {
-      const context = this.getContext(segment)
+    setStatus: function (status) {
+      if (this.activeSegment === null) return
+      const context = this.getContext(this.activeSegment)
       const data = {
-        id_segment: segment.id,
+        id_segment: this.activeSegment.id,
         id_job: this.$route.params.jobId,
         id_first_file: this.fileId,
         password: this.$route.params.password,
-        status: status,
-        translation: segment.translation,
-        segment: segment.original,
+        status: this.activeSegment,
+        translation: this.activeSegment.translation,
+        segment: this.activeSegment.original,
         time_to_edit: 1,
         autosave: false,
-        version: segment.version,
+        version: this.activeSegment.version,
         propagate: true,
         context_before: context.before,
         context_after: context.after,
@@ -178,14 +172,29 @@ export default {
       }
       SegmentsService.setTranslation(data)
         .then(() => {
-          segment.status = status === 'translated' ? 'done' : ''
+          this.activeSegment.status = status === 'translated' ? 'done' : ''
         })
     },
     setActive: function (id) {
       _.map(this.segments, e => {
-        e.active = e.id === id
+        if (e.id === id) {
+          e.active = true
+          this.activeSegment = e
+        } else {
+          e.active = false
+        }
         return e
       })
+    },
+    fontControl: function (event) {
+      switch (event.srcKey) {
+        case 'add':
+          this.fontSize++
+          break
+        case 'sub':
+          this.fontSize--
+          break
+      }
     }
   }
 }

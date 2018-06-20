@@ -2,29 +2,39 @@
   <div>
     <div class="mt-16">
       <!-- UNDO -->
-      <div class="white-button xs">
+      <div
+        title="Undo: Ctrl + Z"
+        class="white-button xs">
         <div class="white-button-icon">
           <svgicon
             class="svg-icon"
-            name="arrow"
+            name="undo"
             height="24"
           />
         </div>
       </div>
       <!-- UNDO END -->
       <!-- REDO -->
-      <div class="white-button xs">
+      <div
+        title="Redo: Ctrl + R"
+        class="white-button xs">
         <div class="white-button-icon">
           <svgicon
             class="svg-icon flip-h"
-            name="arrow"
+            name="undo"
             height="24"
           />
         </div>
       </div>
       <!-- REDO END -->
       <!-- CONFIRM -->
-      <div class="white-button xs mr-32-i">
+      <div
+        v-shortkey.once="['ctrl', 'enter']"
+        title="Confirm: Ctrl + Enter"
+        class="white-button xs mr-32-i"
+        @click="() => {$emit('confirm')}"
+        @shortkey="() => {$emit('confirm')}"
+      >
         <div class="white-button-icon">
           <svgicon
             class="svg-icon"
@@ -35,40 +45,48 @@
       </div>
       <!-- CONFIRM END -->
       <!-- SPLIT -->
-      <div class="white-button xs">
+      <div
+        title="Split: Ctrl + S"
+        class="white-button xs">
         <div class="white-button-icon">
           <svgicon
             class="svg-icon"
-            name="arrow"
+            name="split"
             height="24"
           />
         </div>
       </div>
       <!-- SPLIT END -->
       <!-- JOIN -->
-      <div class="white-button xs">
+      <div
+        title="Join: Ctrl + J"
+        class="white-button xs">
         <div class="white-button-icon">
           <svgicon
             class="svg-icon"
-            name="arrow"
+            name="join"
             height="24"
           />
         </div>
       </div>
       <!-- JOIN END -->
       <!-- CANCEL -->
-      <div class="white-button xs">
+      <div
+        title="Delete: Ctrl + D"
+        class="white-button xs">
         <div class="white-button-icon">
           <svgicon
             class="svg-icon"
-            name="close"
+            name="trash"
             height="24"
           />
         </div>
       </div>
       <!-- CANCEL END -->
       <!-- FORWARD -->
-      <div class="white-button xs mr-32-i">
+      <div
+        title="Copy source to target: Ctrl + Insert"
+        class="white-button xs mr-32-i">
         <div class="white-button-icon">
           <svgicon
             class="svg-icon flip-h"
@@ -79,7 +97,9 @@
       </div>
       <!-- FORWARD END -->
       <!-- BACK -->
-      <div class="white-button xs">
+      <div
+        title="Previous unconfirmed segment: Ctrl + Up"
+        class="white-button xs">
         <div class="white-button-icon">
           <svgicon
             class="svg-icon flip-h"
@@ -90,7 +110,9 @@
       </div>
       <!-- BACK END -->
       <!-- FORWARD? -->
-      <div class="white-button xs">
+      <div
+        title="Next unconfirmed segment: Ctrl + Down"
+        class="white-button xs">
         <div class="white-button-icon">
           <svgicon
             class="svg-icon"
@@ -116,7 +138,7 @@
         <div class="white-button-icon">
           <svgicon
             class="svg-icon"
-            name="text"
+            name="font"
             height="24"
           />
         </div>
@@ -132,7 +154,7 @@
         <div class="link normal ib">Tulkot 100%</div>
       </div>
       <!-- TRANSLATE 100% END -->
-      <div class="absolute-right">
+      <div class="translator-toolbox-buttons">
         <!-- ORIGINAL DOWNLOAD -->
         <div class="white-button xs x-wide">
           <div class="white-button-icon">

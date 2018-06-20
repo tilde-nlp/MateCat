@@ -74,6 +74,7 @@
 @color-blueish: #cfd8dc;
 @color-blueish-darker: #78909c;
 @color-blueish-darker-still: #557c8f;
+@color-yellow: #f3ffea;
 @border-radius: unit(@e * @golden, px);
 
 .red {
@@ -177,6 +178,10 @@
   background-color: @color-grey-light;
 }
 
+.bg-yellow {
+  background-color: @color-yellow;
+}
+
 .bg-blueish {
   background-color: @color-blueish;
 }
@@ -206,7 +211,15 @@
   width: 100%;
   .section {
     position: relative;
-    .margin-center(1104px);
+    width: 100%;
+    &.section-toggle {
+      max-height: 0;
+      transition: max-height 2s ease-in-out;
+      overflow: hidden;
+      &.section-open {
+        max-height: 1000px;
+      }
+    }
   }
 }
 
@@ -920,52 +933,42 @@ select::-ms-expand {
 }
 
 .segments-container {
-  height: 575px;
   overflow-y: scroll;
 }
 
-.segment-controls {
-  .h-64;
-  .w-100p;
+.segment {
+  width: calc(~"50% - 24px");
+  .ib;
   .border-box;
-  .pl-8;
-  padding-top: 12px;
-  .bt-blueish;
+  .va-top;
+}
+
+.segment-original {
+  .segment;
+  .bg-grey-light;
+  .b-blueish;
+  .p-8;
 }
 
 .segment-translation {
-  .h-192;
-  .p-8;
-  .border-box;
-}
-
-.segment-translation-container {
-  .w-512;
-  .b-blueish;
-  .border-box;
-  .absolute-right;
-  top: 8px;
-  right: 8px;
-  .bg-white;
+  .segment;
 }
 
 .segment-container {
   .transition;
-  .h-276;
-  .mb-32;
   .relative;
   .border-box;
   .p-8;
   &.active {
-    .bg-grey-light;
+    .bg-yellow;
   }
 }
 
 .segment-copy-icon {
   .ib;
   .va-top;
-  .mt-32;
-  margin-left: 11px;
+  .mt-4;
+  .w-24;
 }
 
 .segment-edit {
@@ -973,4 +976,14 @@ select::-ms-expand {
   height: 100%;
   width: 100%;
   resize: none;
+  &:disabled {
+    .bg-yellow;
+  }
+}
+
+.translator-toolbox-buttons {
+  display: inline-block;
+  position: relative;
+  top: 0px;
+  margin-left: 69px;
 }
