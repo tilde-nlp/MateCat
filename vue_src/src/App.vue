@@ -1,36 +1,40 @@
 <template>
   <div>
-    <div class="alerts">
-      <transition-group
-        name="fade"
-        mode="out-in">
-        <alert
-          v-for="alert in alerts"
-          :key="alert.id"
-          @ok="removeAlert(alert.id)"
-        >{{ alert.text }}</alert>
-      </transition-group>
-    </div>
     <transition
-      name="fade"
+      name="ffade"
       mode="out-in">
-      <img
+      <div
         v-if="$loading.isLoading('app')"
-        :src="$assetPath + 'ajax-loader.gif'">
-      <router-view v-else />
+        :key="1"
+        class="splash-screen"
+      >
+        <img
+          :src="$assetPath + 'splash-logo.svg'"
+          class="splash-image mt-48 mb-16"
+          height="200"
+        >
+        <img
+          :src="$assetPath + 'loading.svg'"
+          class="splash-image"
+          height="48"
+        >
+
+      </div>
+      <router-view
+        v-else
+        :key="2"
+      />
     </transition>
   </div>
 </template>
 
 <script>
 import {Alert} from '@shibetec/vue-toolbox'
-import Header from 'components/layout/Header'
 import 'assets/inline-svg'
 export default {
   name: 'App',
   components: {
-    'alert': Alert,
-    'c-header': Header
+    'alert': Alert
   },
   data: function () {
     return {

@@ -54,7 +54,7 @@
       </div>
     </div>
     <div class="section-bg">
-      <div class="section mb-128">
+      <div class="section">
         <file-list-pager
           :pages="totalPages"
           @pageChanged="fetchFileList"

@@ -14,8 +14,9 @@
       <!-- FILE LIST -->
       <div class="file-list">
         <transition-group
-          name="fade"
-          mode="out-in">
+          name="ffade"
+          mode="out-in"
+        >
           <div
             v-for="(file, key) in files"
             :key="key"

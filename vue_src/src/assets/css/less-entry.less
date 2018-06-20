@@ -1009,3 +1009,32 @@ select::-ms-expand {
   top: 0;
   width: 100%;
 }
+
+.splash-screen {
+  .margin-center;
+  text-align: center;
+  .splash-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.sfade-enter-active {
+  transition: opacity 0.5s ease-in-out;
+}
+.sfade-leave-active {
+  transition: opacity 1s ease-in-out;
+
+}
+.sfade-enter, .sfade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+
+.ffade-enter-active, .ffade-leave-active {
+  transition: opacity 0.2718s ease-in-out;
+}
+.ffade-enter, .ffade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
