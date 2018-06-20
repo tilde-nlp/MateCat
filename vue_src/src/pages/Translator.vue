@@ -53,7 +53,7 @@
         class="bb-blueish mt-16"/>
     </div>
     <div class="section-bg bg-white">
-      <section class="section">
+      <section class="section font-size-0">
         <div class="segments-container">
           <translator-segment
             v-for="(segment, index) in segments"
@@ -64,6 +64,35 @@
             @click="setActive"
             @setStatus="setStatus"
           />
+        </div>
+        <div
+          v-if="activeSegment.suggestions"
+          class="segment-suggestions"
+        >
+          <transition-group
+            name="ffade"
+            mode="out-in"
+          >
+            <div
+              v-for="(suggestion, index) in activeSegment.suggestions"
+              :key="index"
+              class="segment-suggestion"
+              @click="() => { activeSegment.translation = suggestion.translation }"
+            >
+              <div class="">
+                <div
+                  :class="{ 'red': suggestion.isMT }"
+                  class="size-xs grey bold ib mr-8"
+                >{{ suggestion.createdBy }}</div>
+                {{ suggestion.isMT }}
+                <div
+                  v-if="!suggestion.isMT"
+                  class="size-xs grey ib"
+                >{{ suggestion.match }} %</div>
+                <div class="size-xs">{{ suggestion.translation }}</div>
+              </div>
+            </div>
+          </transition-group>
         </div>
       </section>
     </div>
@@ -112,12 +141,10 @@ export default {
             translation: el.translation,
             status: (el.status === 'TRANSLATED' ? 'done' : ''),
             active: false,
-            version: el.version
+            version: el.version,
+            suggestions: []
           }
         })
-        // this.segments.forEach(item => {
-        //   if (item.status === '') this.getContribution(item)
-        // })
       })
   },
   methods: {
@@ -133,14 +160,22 @@ export default {
         id_segment: segment.id,
         text: segment.original,
         id_job: this.$route.params.jobId,
-        num_results: 3,
+        num_results: 5,
         context_before: context.before,
         context_after: context.after
       }
       SegmentsService.getContribution(data)
         .then(r => {
-          const match = r.data.data.matches[0]
-          if (typeof (match) !== 'undefined') segment.translation = match.translation
+          segment.suggestions = null
+          segment.suggestions = _.map(r.data.data.matches, el => {
+            const isMT = el.created_by === 'MT'
+            return {
+              createdBy: el.created_by,
+              match: isMT ? 69 : parseInt(el.match),
+              translation: el.translation,
+              isMT: isMT
+            }
+          })
         })
     },
     getContext: function (segment) {
@@ -181,6 +216,7 @@ export default {
         if (e.id === id) {
           e.active = true
           this.activeSegment = e
+          if (e.suggestions.length === 0) this.getContribution(e)
         } else {
           e.active = false
         }

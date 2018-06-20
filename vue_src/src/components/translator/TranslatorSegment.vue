@@ -1,7 +1,7 @@
 <template>
   <div
     :class="{active: segment.active}"
-    class="segment-container"
+    class="segment-container font-size-0"
     @click="() => {$emit('click', segment.id)}"
   >
     <div
@@ -24,7 +24,9 @@
     </div>
     <div class="segment-translation">
       <textarea-autosize
+        ref="ta"
         v-model="segment.translation"
+        :min-height="1"
         :style="{ 'font-size': fontSizeString }"
         :disabled="segment.status === 'done'"
         placeholder="Sākt tulkot..."
@@ -52,12 +54,18 @@ export default {
   },
   data: function () {
     return {
-      segment: {}
+      segment: {},
+      ta: ''
     }
   },
   computed: {
     fontSizeString: function () {
       return this.fontSize + 'px'
+    }
+  },
+  watch: {
+    fontSize () {
+      this.$refs.ta.resize()
     }
   },
   mounted: function () {
