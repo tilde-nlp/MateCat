@@ -10,6 +10,7 @@ import {loading} from './utils/loading'
 import {Auth} from './utils/auth'
 import vSelect from 'vue-select'
 import {CONFIG} from './CONFIG'
+import VueTextareaAutosize from 'vue-textarea-autosize'
 // Load Playfair Display typeface
 require('typeface-playfair-display')
 
@@ -33,6 +34,7 @@ export function main (config) {
   })
   Vue.use(require('vue-shortkey'))
   Vue.use(require('vue-cookie'))
+  Vue.use(VueTextareaAutosize)
   Vue.component('v-select', vSelect)
   /* eslint-disable no-new */
   new Vue({

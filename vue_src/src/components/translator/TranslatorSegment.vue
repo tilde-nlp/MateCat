@@ -23,10 +23,11 @@
       />
     </div>
     <div class="segment-translation">
-      <textarea
+      <textarea-autosize
         v-model="segment.translation"
         :style="{ 'font-size': fontSizeString }"
         :disabled="segment.status === 'done'"
+        placeholder="Sākt tulkot..."
         class="segment-edit"
       />
     </div>
