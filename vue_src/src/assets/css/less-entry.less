@@ -791,6 +791,7 @@ select::-ms-expand {
   &.xs {
     .w-40;
     .h-40;
+    .mt-4;
     margin-right: 2px;
     &:last-child {
       .mr-0;
@@ -981,9 +982,22 @@ select::-ms-expand {
   }
 }
 
-.translator-toolbox-buttons {
+.segment-search-container {
+  width: calc(~"50% - 24px");
   display: inline-block;
+  padding: 0 @spacer-4 0 @spacer-8;
   position: relative;
-  top: 0px;
-  margin-left: 69px;
+  .border-box;
+  .mr-24;
+  &.right {
+    padding: 0 @spacer-8 0 0;
+    margin-right: 0;
+
+  }
+}
+
+.translator-toolbox-buttons {
+  position: absolute;
+  top: 0;
+  right: 0;
 }

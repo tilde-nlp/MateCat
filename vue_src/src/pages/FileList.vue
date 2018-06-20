@@ -1,18 +1,6 @@
 <template>
   <div class="page-container">
     <div class="section-bg bg-grey-light">
-      <section class="section">
-        <!-- BREADCRUMBS -->
-        <div class="bread-crumbs">
-          <div class="bc-nav">Sākums</div>
-          /
-          <div class="bc-nav inactive">Tulkošanas asistents</div>
-        </div>
-        <!-- BREADCRUMBS END -->
-        <!-- TITLE -->
-        <div class="h2 mt-24 mb-24">Tulkošanas asistents</div>
-        <!-- TITLE END -->
-      </section>
       <div class="bb-blueish"/>
       <section class="section">
         <!-- FILE UPLOAD TOGGLE -->

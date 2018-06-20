@@ -150,58 +150,58 @@
       </div>
       <!-- MT TRANSLATE END -->
       <!-- TRANSLATE 100% -->
-      <div class="white-button xs wide">
+      <div class="white-button xs wide mr-32-i">
         <div class="link normal ib">Tulkot 100%</div>
       </div>
       <!-- TRANSLATE 100% END -->
-      <div class="translator-toolbox-buttons">
-        <!-- ORIGINAL DOWNLOAD -->
-        <div class="white-button xs x-wide">
-          <div class="white-button-icon">
-            <svgicon
-              class="svg-icon"
-              name="download"
-              height="24"
-            />
-          </div>
-          <div class="link normal ib">Orģināls</div>
+      <!--<div class="translator-toolbox-buttons">-->
+      <!-- ORIGINAL DOWNLOAD -->
+      <div class="white-button xs x-wide">
+        <div class="white-button-icon">
+          <svgicon
+            class="svg-icon"
+            name="download"
+            height="24"
+          />
         </div>
-        <!-- ORIGINAL DOWNLOAD END -->
-        <!-- ORIGINAL DOWNLOAD -->
-        <div class="white-button xs x-wide button-red">
-          <div class="white-button-icon">
-            <svgicon
-              class="svg-icon icon-white"
-              name="download"
-              height="24"
-            />
-          </div>
-          <div class="link normal ib">Tulkojums</div>
-        </div>
-        <!-- ORIGINAL DOWNLOAD END -->
+        <div class="link normal ib">Orģināls</div>
       </div>
+      <!-- ORIGINAL DOWNLOAD END -->
+      <!-- ORIGINAL DOWNLOAD -->
+      <div class="white-button xs x-wide button-red">
+        <div class="white-button-icon">
+          <svgicon
+            class="svg-icon icon-white"
+            name="download"
+            height="24"
+          />
+        </div>
+        <div class="link normal ib">Tulkojums</div>
+      </div>
+      <!-- ORIGINAL DOWNLOAD END -->
+      <!--</div>-->
     </div>
     <div class="relative mt-16">
-      <div class="relative ib">
+      <div class="segment-search-container">
         <svgicon
           class="svg-icon icon-blueish-darker-still placeholder"
           name="search"
           height="24"
         />
         <input
-          class="input w-528 w-placeholder"
+          class="input w-100p w-placeholder"
           type="text"
           placeholder="Atlasīt no sākotnējā teksta"
         >
       </div>
-      <div class="absolute-right">
+      <div class="segment-search-container right">
         <svgicon
           class="svg-icon icon-blueish-darker-still placeholder"
           name="search"
           height="24"
         />
         <input
-          class="input w-528 w-placeholder"
+          class="input w-100p w-placeholder"
           type="text"
           placeholder="Atlasīt no tulkotā teksta"
         >
