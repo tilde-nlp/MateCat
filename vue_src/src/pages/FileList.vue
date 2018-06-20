@@ -96,7 +96,7 @@ export default {
       lastUpload: new Date().getTime(),
       uploadThrottleTime: 1000,
       uploadQueue: [],
-      uploadQueueInterval: null
+      uploadQueueActive: false
     }
   },
   mounted: function () {
@@ -195,9 +195,12 @@ export default {
           file.id = projectRes.data.data.id_project
           file.password = projectRes.data.data.password
           file.statusLink = this.$CONFIG.baseUrl + 'api/v2/projects/' + projectRes.data.data.id_project + '/' + projectRes.data.data.password + '/creation_status'
-          return FileService.checkStatus(file.statusLink)
+          setTimeout(() => {
+            FileService.checkStatus(file.statusLink)
+              .then(this.statusResponse)
+              .catch(this.statusResponseError)
+          }, 1500)
         })
-        .then(this.statusResponse)
         .catch(this.statusResponseError)
     },
     statusResponse: function (res) {
@@ -229,6 +232,7 @@ export default {
           file.progress = 0.00
           file.created = DateConverter.nowDate()
           file.owner = this.$store.state.profile.email
+          this.nextFileUpload()
         }
         return
       }
@@ -244,6 +248,7 @@ export default {
       }
       // TODO What to do with EMPTY file?
       file.isEmpty = true
+      this.nextFileUpload()
     },
     statsResponse: function (res) {
       const file = _.find(this.files, {statsLink: res.request.responseURL})
@@ -288,15 +293,18 @@ export default {
         file: file,
         tmpId: fileTmpId
       })
-      if (this.uploadQueueInterval !== null) return
-      this.uploadQueueInterval = setInterval(() => {
-        const record = this.uploadQueue.splice(0, 1)[0]
-        this.upload(record.file, record.file.name, record.tmpId)
-        if (this.uploadQueue.length < 1) {
-          clearInterval(this.uploadQueueInterval)
-          this.uploadQueueInterval = null
-        }
-      }, this.uploadThrottleTime)
+      if (!this.uploadQueueActive) {
+        this.nextFileUpload()
+      }
+    },
+    nextFileUpload: function () {
+      if (this.uploadQueue.length < 1) {
+        this.uploadQueueActive = false
+        return
+      }
+      this.uploadQueueActive = true
+      const record = this.uploadQueue.splice(0, 1)[0]
+      this.upload(record.file, record.file.name, record.tmpId)
     },
     updatePagesCount: function () {
       const pages = Math.ceil(this.totalFiles / this.recordsPerPage)

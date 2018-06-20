@@ -40,6 +40,7 @@
                 Failu neizdevās ielādēt, lūdzu izdzēsiet to un mēģinat atkārtoti.
                 <!-- DELETE -->
                 <div
+                  v-if="file.jobId > 0"
                   class="icon-span ml-77"
                   @click="fastDeleteFile(key)"
                 >
