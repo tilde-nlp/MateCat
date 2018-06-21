@@ -1,5 +1,7 @@
 <?php
 
+use AuthCookie;
+
 class setCurrentSegmentController extends ajaxController {
 
     private $id_job;
@@ -53,6 +55,10 @@ class setCurrentSegmentController extends ajaxController {
             //no action on errors
             return;
         }
+
+        $user = AuthCookie::getCredentials();
+        $JobsDao = new Jobs_JobDao();
+        $JobsDao->setActiveSegment($user['uid'], $this->id_job, $this->id_segment);
 
         $segmentStruct             = TranslationsSplit_SplitStruct::getStruct();
         $segmentStruct->id_segment = $this->id_segment;

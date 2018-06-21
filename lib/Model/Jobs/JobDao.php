@@ -241,6 +241,24 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
 
     }
 
+    public function setActiveSegment( $user_id, $job_id, $segment_id ) {
+        $sql = " INSERT INTO  user_job_segment (user_id, job_id, segment_id) VALUES(:user_id, :job_id, :segment_id) ON DUPLICATE KEY UPDATE segment_id = :segment_id  ";
+
+        $stmt = $this->con->getConnection()->prepare( $sql ) ;
+        $stmt->execute(array('user_id' => $user_id, 'job_id' => $job_id, 'segment_id' => $segment_id ) ) ;
+
+        return $stmt->rowCount();
+    }
+
+    public static function getActiveSegment( $user_id, $job_id, $ttl = 0 ) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT segment_id FROM user_job_segment WHERE user_id = ? AND job_id = ?");
+        return $thisDao->setCacheTTL( $ttl )->_fetchObject( $stmt, new LoudArray(), [ $user_id, $job_id ] );
+
+    }
+
     /**
      * @param Projects_ProjectStruct $project
      * @param Users_UserStruct $user

@@ -10,5 +10,8 @@ export default {
   },
   getContribution: function (data) {
     return HTTP.post(CONFIG.baseUrl + '?action=getContribution', FormGenerator.generateForm(data))
+  },
+  setCurrent: function (data) {
+    return HTTP.post(CONFIG.baseUrl + '?action=setCurrentSegment&time=' + new Date().getTime() + ',jid=' + data.id_job + ',sid=' + data.id_segment, FormGenerator.generateForm(data))
   }
 }

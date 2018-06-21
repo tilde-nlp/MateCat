@@ -106,6 +106,7 @@ import SegmentsService from 'services/segments'
 import TranslatorToolbox from 'components/translator/TranslatorToolbox'
 import TranslatorSegment from 'components/translator/TranslatorSegment'
 import TranslatorAssistant from 'components/translator/TranslatorAssistant'
+import JobsService from 'services/jobs.js'
 export default {
   name: 'Translator',
   components: {
@@ -119,32 +120,49 @@ export default {
       fileId: '',
       settingsOpen: false,
       activeSegment: '',
-      fontSize: null
+      fontSize: null,
+      lastSegmentId: 0
     }
   },
   mounted: function () {
     this.fontSize = this.$cookie.get('fontSize') === null ? 15 : parseInt(this.$cookie.get('fontSize'))
-    const data = {
-      action: 'getSegments',
-      jid: this.$route.params.jobId,
-      password: this.$route.params.password,
-      where: 'center',
-      step: 10
-    }
-    SegmentsService.getSegments(data)
+    JobsService.getInfo({
+      id: this.$route.params.jobId,
+      password: this.$route.params.password
+    })
+      .then(jobRes => {
+        this.lastSegmentId = parseInt(jobRes.data.active_segment_id)
+        let data = {
+          action: 'getSegments',
+          jid: this.$route.params.jobId,
+          password: this.$route.params.password,
+          where: 'center',
+          step: 5
+        }
+        if (this.lastSegmentId > 0) {
+          data['segment'] = this.lastSegmentId
+        }
+        return SegmentsService.getSegments(data)
+      })
       .then(r => {
         this.fileId = Object.keys(r.data.data.files)[0]
         this.segments = _.map(Object.values(r.data.data.files)[0].segments, el => {
           return {
-            id: el.sid,
+            id: parseInt(el.sid),
             original: el.segment,
             translation: el.translation,
             status: (el.status === 'TRANSLATED' ? 'done' : ''),
-            active: false,
+            active: parseInt(el.sid) === this.lastSegmentId,
             version: el.version,
-            suggestions: []
+            suggestions: [],
+            jobId: this.$route.params.jobId,
+            jobPassword: this.$route.params.password
           }
         })
+        if (this.lastSegmentId > 0) {
+          this.activeSegment = _.find(this.segments, {id: this.lastSegmentId})
+          this.getContribution(this.activeSegment)
+        }
       })
   },
   methods: {
@@ -217,6 +235,13 @@ export default {
           e.active = true
           this.activeSegment = e
           if (e.suggestions.length === 0) this.getContribution(e)
+          const data = {
+            action: 'setCurrentSegment',
+            password: e.jobPassword,
+            id_segment: e.id,
+            id_job: e.jobId
+          }
+          SegmentsService.setCurrent(data)
         } else {
           e.active = false
         }
