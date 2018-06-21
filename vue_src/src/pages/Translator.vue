@@ -145,15 +145,17 @@ export default {
         jid: this.$route.params.jobId,
         password: this.$route.params.password,
         where: 'center',
-        step: 7
+        step: 5
       }
       if (this.lastSegmentId > 0) {
         data['segment'] = this.lastSegmentId
       }
+      console.log('fetchin segments with data: ')
+      console.log(data)
       SegmentsService.getSegments(data)
         .then(r => {
           this.fileId = Object.keys(r.data.data.files)[0]
-          const newSegments = _.map(Object.values(r.data.data.files)[0].segments, el => {
+          this.segments = _.map(Object.values(r.data.data.files)[0].segments, el => {
             return {
               id: parseInt(el.sid),
               original: el.segment,
@@ -166,11 +168,18 @@ export default {
               jobPassword: this.$route.params.password
             }
           })
-          this.segments = _.merge(this.segments, newSegments)
-          if (this.lastSegmentId > 0) {
-            this.activeSegment = _.find(this.segments, {id: this.lastSegmentId})
-            this.getContribution(this.activeSegment)
-          }
+          // console.log('new segments')
+          // console.log(newSegments)
+          // console.log('old segments')
+          // console.log(this.segments)
+          // // this.segments = _.merge(this.segments, newSegments)
+          // this.segments = newSegments
+          // console.log('merged segments')
+          // console.log(this.segments)
+          // if (this.lastSegmentId > 0) {
+          //   this.activeSegment = _.find(this.segments, {id: this.lastSegmentId})
+          //   this.getContribution(this.activeSegment)
+          // }
         })
     },
     getContribution: function (segment) {
@@ -247,12 +256,12 @@ export default {
             id_job: e.jobId
           }
           SegmentsService.setCurrent(data)
-          const index = _.findKey(this.segments, item => {
-            return item.id === id
-          })
-          if (this.segments.length - index < 4 || this.segments.length - index > 7) {
-            this.fetchSegments()
-          }
+          // const index = _.findKey(this.segments, item => {
+          //   return item.id === id
+          // })
+          // if (this.segments.length - index < 4 || this.segments.length - index > 7) {
+          //   this.fetchSegments()
+          // }
         } else {
           e.active = false
         }
