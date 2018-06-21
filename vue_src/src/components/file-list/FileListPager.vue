@@ -1,65 +1,63 @@
 <template>
-  <div>
-    <div class="pager-container">
-      <transition
-        name="fade"
-      >
-        <transition
-          name="ffade"
-          mode="out-in"
-        >
-          <div
-            v-if="currentPage > 1"
-            class="white-button big left"
-            @click="previousPage"
-          >
-            <div class="white-button-icon">
-              <svgicon
-                class="svg-icon va-middle"
-                name="arrow"
-                height="24"
-              />
-            </div>
-            <div class="link normal ib left">Atpakaļ</div>
-          </div>
-        </transition>
-      </transition>
-      <div class="pages">
-        <transition-group
-          name="ffade"
-          mode="out-in"
-        >
-          <div
-            v-for="n in pageControls"
-            :class="{active: currentPage === n}"
-            :key="n"
-            class="white-button small"
-            @click="goToPage(n)"
-          >
-            <div class="link center normal">{{ n }}</div>
-          </div>
-        </transition-group>
-      </div>
+  <div class="pager-container">
+    <transition
+      name="fade"
+    >
       <transition
         name="ffade"
         mode="out-in"
       >
         <div
-          v-if="currentPage < pages"
-          class="white-button big right"
-          @click="nextPage"
+          v-if="currentPage > 1"
+          class="white-button big left"
+          @click="previousPage"
         >
-          <div class="link normal ib right">Tālāk</div>
           <div class="white-button-icon">
             <svgicon
-              class="svg-icon va-middle r-180"
+              class="svg-icon va-middle"
               name="arrow"
               height="24"
             />
           </div>
+          <div class="link normal ib left">Atpakaļ</div>
         </div>
       </transition>
+    </transition>
+    <div class="pages">
+      <transition-group
+        name="ffade"
+        mode="out-in"
+      >
+        <div
+          v-for="n in pageControls"
+          :class="{active: currentPage === n}"
+          :key="n"
+          class="white-button small"
+          @click="goToPage(n)"
+        >
+          <div class="link center normal">{{ n }}</div>
+        </div>
+      </transition-group>
     </div>
+    <transition
+      name="ffade"
+      mode="out-in"
+    >
+      <div
+        v-if="currentPage < pages"
+        class="white-button big right"
+        @click="nextPage"
+      >
+        <div class="link normal ib right">Tālāk</div>
+        <div class="white-button-icon">
+          <svgicon
+            class="svg-icon va-middle r-180"
+            name="arrow"
+            height="24"
+          />
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 

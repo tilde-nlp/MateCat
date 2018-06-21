@@ -45,16 +45,13 @@
         v-if="sliderOpen"
         class="bb-blueish mt-24"/>
     </div>
-    <div class="section-bg">
-      <div class="section mb-48">
+    <div class="section-bg scroll-section">
+      <div class="section">
         <file-list-container
           :file-list="files"
+          class="mb-48"
           @deleted="fetchFileList(currentPage, true)"
         />
-      </div>
-    </div>
-    <div class="section-bg">
-      <div class="section">
         <file-list-pager
           :pages="totalPages"
           @pageChanged="fetchFileList"

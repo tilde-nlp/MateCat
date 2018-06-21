@@ -206,10 +206,6 @@
   border-bottom: solid 1px @color-blueish-darker;
 }
 
-.page-container {
-  max-width: 100%;
-}
-
 .section-bg {
   position: relative;
   width: 100%;
@@ -454,7 +450,7 @@
     }
   }
   .file-list {
-    height: 480px;
+    max-height: 480px;
     .file-row {
       .size-s;
       .border-box;
@@ -731,6 +727,8 @@ select::-ms-expand {
 }
 
 .pager-container {
+  position: relative;
+  height: 98px;
   .pages {
     .ib;
     width: 100%;
@@ -924,6 +922,10 @@ select::-ms-expand {
 }
 
 .segment-suggestions {
+  transition: top unit(@golden * 0.1, s) ease-in-out;
+  position: absolute;
+  right: 0;
+  z-index: 2;
   .w-512;
   .ib;
   .va-top;
@@ -1057,12 +1059,21 @@ select::-ms-expand {
 }
 
 #cat-app {
-  .w-100p;
+  width: calc(~"100% + 9px");
+  .m-0;
   .h-100p;
   .m-0;
   .p-0;
   .size-s;
-  position: relative;
+  position: absolute;
+  top: 0;
+  .page-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    overflow-y: hidden;
+  }
 }
 
 .modal-container {
@@ -1094,4 +1105,9 @@ select::-ms-expand {
       .bold;
     }
   }
+}
+
+.scroll-section {
+  max-height: 100%;
+  overflow-y: scroll;
 }

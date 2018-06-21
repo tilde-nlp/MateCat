@@ -1,48 +1,128 @@
 <template>
-  <div>
-    <div class="file-list-container">
-      <!-- FILE LIST HEADER -->
-      <div class="file-list-header">
-        <div class="status">Statuss</div>
-        <div class="segments">Segmenti</div>
-        <div class="words">Vārdi</div>
-        <div class="translated">Iztulkots</div>
-        <div class="created">Ielādes datums</div>
-        <div class="controls">&nbsp;</div>
-      </div>
-      <!-- FILE LIST HEADER END -->
-      <!-- FILE LIST -->
-      <div class="file-list">
-        <transition-group
-          name="ffade"
-          mode="out-in"
+  <div class="file-list-container">
+    <!-- FILE LIST HEADER -->
+    <div class="file-list-header">
+      <div class="status">Statuss</div>
+      <div class="segments">Segmenti</div>
+      <div class="words">Vārdi</div>
+      <div class="translated">Iztulkots</div>
+      <div class="created">Ielādes datums</div>
+      <div class="controls">&nbsp;</div>
+    </div>
+    <!-- FILE LIST HEADER END -->
+    <!-- FILE LIST -->
+    <div class="file-list">
+      <transition-group
+        name="ffade"
+        mode="out-in"
+      >
+        <div
+          v-for="(file, key) in files"
+          :key="key"
+          class="file-row"
         >
+          <div class="status column">
+            <svgicon
+              :class="{'icon-green': file.progress >= 100}"
+              class="svg-icon va-middle static"
+              name="file"
+              height="24"
+            />
+            {{ file.name }}</div>
           <div
-            v-for="(file, key) in files"
-            :key="key"
-            class="file-row"
+            class="additional-row"
           >
-            <div class="status column">
-              <svgicon
-                :class="{'icon-green': file.progress >= 100}"
-                class="svg-icon va-middle static"
-                name="file"
-                height="24"
-              />
-              {{ file.name }}</div>
-            <div
-              class="additional-row"
+            <span
+              v-if="file.isEmpty"
+              class="red"
             >
-              <span
-                v-if="file.isEmpty"
-                class="red"
+              Failu neizdevās ielādēt, lūdzu izdzēsiet to un mēģinat atkārtoti.
+              <!-- DELETE -->
+              <div
+                v-if="file.jobId > 0"
+                class="icon-span ml-77"
+                @click="fastDeleteFile(key)"
               >
-                Failu neizdevās ielādēt, lūdzu izdzēsiet to un mēģinat atkārtoti.
+                <svgicon
+                  class="svg-icon va-middle"
+                  name="close"
+                  height="24"
+                />
+                <div class="link ib">Dzēst</div>
+              </div>
+              <!-- DELETE END -->
+            </span>
+            <span v-else>
+              <div class="segments column">
+                <svgicon
+                  v-if="file.segmentCount < 0"
+                  class="svg-loading va-middle"
+                  name="loading"
+                  height="24"
+                />
+                <span v-else>{{ file.segmentCount }}</span>
+              </div>
+              <div class="words column">
+                <svgicon
+                  v-if="file.wordCount < 0"
+                  class="svg-loading va-middle"
+                  name="loading"
+                  height="24"
+                />
+                <span v-else>{{ file.wordCount }}</span>
+              </div>
+              <div class="translated column">
+                <svgicon
+                  v-if="file.progress < 0"
+                  class="svg-loading va-middle"
+                  name="loading"
+                  height="24"
+                />
+                <span v-else>{{ file.progress }} %</span>
+              </div>
+              <div class="created column">{{ file.created }}</div>
+              <div class="controls column">
+                <!-- TRANSLATE -->
+                <div
+                  class="icon-span mr-24"
+                  @click="translate(key)"
+                >
+                  <svgicon
+                    class="svg-icon va-middle"
+                    name="translation-assist"
+                    height="24"
+                  />
+                  <div class="link ib">Tulkot</div>
+                </div>
+                <!-- TRANSLATE END -->
+                <!-- DOWNLOAD -->
+                <div
+                  v-if="file.translatedUrl < 0"
+                  class="icon-span mr-24 w-109"
+                >
+                  <svgicon
+                    class="svg-loading va-middle"
+                    name="loading"
+                    height="24"
+                  />
+                </div>
+                <div
+                  v-else
+                  class="icon-span mr-24"
+                  @click="downloadFile(file.translatedUrl)"
+                >
+                  <svgicon
+                    class="svg-icon va-middle"
+                    name="download"
+                    height="24"
+                  />
+                  <div class="link ib">Lejupielādēt</div>
+                </div>
+                <!-- DOWNLOAD END -->
                 <!-- DELETE -->
                 <div
-                  v-if="file.jobId > 0"
-                  class="icon-span ml-77"
-                  @click="fastDeleteFile(key)"
+                  class="icon-span"
+                  @click="removeFile(key)"
                 >
                   <svgicon
                     class="svg-icon va-middle"
@@ -52,95 +132,13 @@
                   <div class="link ib">Dzēst</div>
                 </div>
                 <!-- DELETE END -->
-              </span>
-              <span v-else>
-                <div class="segments column">
-                  <svgicon
-                    v-if="file.segmentCount < 0"
-                    class="svg-loading va-middle"
-                    name="loading"
-                    height="24"
-                  />
-                  <span v-else>{{ file.segmentCount }}</span>
-                </div>
-                <div class="words column">
-                  <svgicon
-                    v-if="file.wordCount < 0"
-                    class="svg-loading va-middle"
-                    name="loading"
-                    height="24"
-                  />
-                  <span v-else>{{ file.wordCount }}</span>
-                </div>
-                <div class="translated column">
-                  <svgicon
-                    v-if="file.progress < 0"
-                    class="svg-loading va-middle"
-                    name="loading"
-                    height="24"
-                  />
-                  <span v-else>{{ file.progress }} %</span>
-                </div>
-                <div class="created column">{{ file.created }}</div>
-                <div class="controls column">
-                  <!-- TRANSLATE -->
-                  <div
-                    class="icon-span mr-24"
-                    @click="translate(key)"
-                  >
-                    <svgicon
-                      class="svg-icon va-middle"
-                      name="translation-assist"
-                      height="24"
-                    />
-                    <div class="link ib">Tulkot</div>
-                  </div>
-                  <!-- TRANSLATE END -->
-                  <!-- DOWNLOAD -->
-                  <div
-                    v-if="file.translatedUrl < 0"
-                    class="icon-span mr-24 w-109"
-                  >
-                    <svgicon
-                      class="svg-loading va-middle"
-                      name="loading"
-                      height="24"
-                    />
-                  </div>
-                  <div
-                    v-else
-                    class="icon-span mr-24"
-                    @click="downloadFile(file.translatedUrl)"
-                  >
-                    <svgicon
-                      class="svg-icon va-middle"
-                      name="download"
-                      height="24"
-                    />
-                    <div class="link ib">Lejupielādēt</div>
-                  </div>
-                  <!-- DOWNLOAD END -->
-                  <!-- DELETE -->
-                  <div
-                    class="icon-span"
-                    @click="removeFile(key)"
-                  >
-                    <svgicon
-                      class="svg-icon va-middle"
-                      name="close"
-                      height="24"
-                    />
-                    <div class="link ib">Dzēst</div>
-                  </div>
-                  <!-- DELETE END -->
-                </div>
-              </span>
-            </div>
+              </div>
+            </span>
           </div>
-        </transition-group>
-      </div>
-      <!-- FILE LIST END -->
+        </div>
+      </transition-group>
     </div>
+    <!-- FILE LIST END -->
     <transition
       name="ffade"
       mode="out-in"
