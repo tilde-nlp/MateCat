@@ -5,15 +5,34 @@
         class="input-label"
         for="fromLanguage"
       >No</label>
-      <div class="select-container">
-        <v-select
-          id="fromLanguage"
-          v-model="fromLang"
-          :options="languages"
-          name="fromLanguage"
-          @input="value => {$emit('fromLangChange', value)}"
-        />
+      <div
+        id="fromLanguage"
+      >
+        <div
+          :class="{active: fromLang === 'lv-LV'}"
+          class="button languages"
+          @click="setFromLang('lv-LV')"
+        >Latviešu</div>
+        <div
+          :class="{active: fromLang === 'en-US'}"
+          class="button languages"
+          @click="setFromLang('en-US')"
+        >Angļu</div>
+        <div
+          :class="{active: fromLang === 'ru-RU'}"
+          class="button languages"
+          @click="setFromLang('ru-RU')"
+        >Krievu</div>
       </div>
+      <!--<div class="select-container">-->
+      <!--<v-select-->
+      <!--id="fromLanguage"-->
+      <!--v-model="fromLang"-->
+      <!--:options="languages"-->
+      <!--name="fromLanguage"-->
+      <!--@input="value => {$emit('fromLangChange', value)}"-->
+      <!--/>-->
+      <!--</div>-->
     </div>
     <div class="language-selector subject">
       <div class="select-container">
@@ -41,20 +60,40 @@
         class="input-label"
         for="toLanguage"
       >Uz</label>
-      <div class="select-container">
-        <v-select
-          id="toLanguage"
-          v-model="toLang"
-          :options="languages"
-          name="fromLanguage"
-          @input="value => {$emit('toLangChange', value)}"
-        />
+      <div
+        id="toLanguage"
+      >
+        <div
+          :class="{active: toLang === 'lv-LV'}"
+          class="button languages"
+          @click="setToLang('lv-LV')"
+        >Latviešu</div>
+        <div
+          :class="{active: toLang === 'en-US'}"
+          class="button languages"
+          @click="setToLang('en-US')"
+        >Angļu</div>
+        <div
+          :class="{active: toLang === 'ru-RU'}"
+          class="button languages"
+          @click="setToLang('ru-RU')"
+        >Krievu</div>
       </div>
+      <!--<div class="select-container">-->
+      <!--<v-select-->
+      <!--id="toLanguage"-->
+      <!--v-model="toLang"-->
+      <!--:options="languages"-->
+      <!--name="fromLanguage"-->
+      <!--@input="value => {$emit('toLangChange', value)}"-->
+      <!--/>-->
+      <!--</div>-->
     </div>
   </div>
 </template>
 
 <script>
+// ru-RU en-US lv-LV
 import LanguageService from 'services/languages'
 import _ from 'lodash'
 export default {
@@ -62,29 +101,31 @@ export default {
   data: function () {
     return {
       languages: [],
-      fromLang: null,
-      toLang: null,
+      fromLang: '',
+      toLang: '',
       defaultFromCode: 'en-US',
-      defaultToCode: 'fr-FR',
+      defaultToCode: 'lv-LV',
       subjects: [],
       subject: null,
       defaultSubjectKey: 'general'
     }
   },
   mounted: function () {
-    LanguageService.getList()
-      .then(r => {
-        // Get relevant data for languages dropdown
-        this.languages = _.map(r.data.languages, el => {
-          return {
-            label: el.name,
-            value: el.code
-          }
-        })
-        // Set default languages
-        this.fromLang = _.find(this.languages, { value: this.defaultFromCode })
-        this.toLang = _.find(this.languages, { value: this.defaultToCode })
-      })
+    // LanguageService.getList()
+    //   .then(r => {
+    //     // Get relevant data for languages dropdown
+    //     this.languages = _.map(r.data.languages, el => {
+    //       return {
+    //         label: el.name,
+    //         value: el.code
+    //       }
+    //     })
+    //     // Set default languages
+    //     this.fromLang = _.find(this.languages, { value: this.defaultFromCode })
+    //     this.toLang = _.find(this.languages, { value: this.defaultToCode })
+    //   })
+    this.setFromLang(this.defaultToCode)
+    this.setToLang(this.defaultFromCode)
     LanguageService.getSubjectsList()
       .then(r => {
         // Get relevant data for subjects dropdown
@@ -103,6 +144,14 @@ export default {
       const oldFromLanguage = this.fromLang
       this.fromLang = this.toLang
       this.toLang = oldFromLanguage
+    },
+    setFromLang: function (code) {
+      this.fromLang = code
+      this.$emit('fromLangChange', code)
+    },
+    setToLang: function (code) {
+      this.toLang = code
+      this.$emit('toLangChange', code)
     }
   }
 }
