@@ -142,7 +142,7 @@
       <!-- FILE LIST END -->
     </div>
     <transition
-      name="fade"
+      name="ffade"
       mode="out-in"
     >
       <confirmation

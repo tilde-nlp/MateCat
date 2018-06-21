@@ -159,14 +159,26 @@ export default {
           const convertData = {
             action: 'convertFile',
             file_name: fileName,
-            source_lang: this.fromLang.value,
-            target_lang: this.toLang.value,
+            source_lang: this.fromLang,
+            target_lang: this.toLang,
             segmentation_rule: ''
           }
           return FileService.convert(convertData)
         })
         .then(convertRes => {
-          // TODO What to do with convertData?
+          if (convertRes.data.code === -6) {
+            const fileIndex = _.findKey(this.files, {tmpFileId: fileTmpId})
+            if (fileIndex > -1) {
+              this.files.splice(parseInt(fileIndex), 1)
+            }
+            const queueIndex = _.findKey(this.uploadQueue, {tmpId: fileTmpId})
+            if (queueIndex > -1) {
+              this.uploadQueue.splice(parseInt(queueIndex), 1)
+            }
+            if (this.uploadQueue.length < 1) this.uploadQueueActive = false
+            this.updatePagesCount()
+            return Promise.reject(new Error('Kļūda ielādējot failu: ' + convertRes.data.errors[0].debug))
+          }
           let langDetect = {}
           langDetect[fileName] = 'detect'
           const createData = {
@@ -263,8 +275,12 @@ export default {
       }
     },
     statusResponseError: function (err) {
-      console.log(err)
-      this.$Alerts.add('File status error')
+      this.nextFileUpload()
+      if (err.message === 'Request failed with status code 403') {
+        this.$Alerts.add('Atgadijās neparedzēta kļūda. Lūdzu mēģiniet vēlreiz. Ja problēma atkārtojas, lūdzams sazināties ar sistēmas administratoru.')
+        return
+      }
+      this.$Alerts.add(err.message)
     },
     getFileUrls: function (id, password) {
       FileService.getUrls({id_project: id, password: password})

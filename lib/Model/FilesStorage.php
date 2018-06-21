@@ -503,7 +503,7 @@ class FilesStorage {
         \Log::doLog( $dest ); 
 
         $res &= $this->link( $convertedFilePath, $dest );
-
+        // TODO Is this something that creates empty files?
         if( !$res ){
             throw new UnexpectedValueException( 'Internal Error: Failed to create/copy the file on disk from cache.', -13 );
         }

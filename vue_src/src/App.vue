@@ -1,5 +1,16 @@
 <template>
-  <div>
+  <div id="cat-app">
+    <div class="alerts">
+      <transition-group
+        name="ffade"
+        mode="out-in">
+        <alert
+          v-for="alert in alerts"
+          :key="alert.id"
+          @ok="removeAlert(alert.id)"
+        >{{ alert.text }}</alert>
+      </transition-group>
+    </div>
     <transition
       name="ffade"
       mode="out-in">
@@ -18,7 +29,6 @@
           class="splash-image"
           height="48"
         >
-
       </div>
       <router-view
         v-else
