@@ -56,30 +56,42 @@
         :style="{top: settingsOpen ? '190px' : '50px'}"
         class="segment-suggestions"
       >
-        <transition-group
+        <transition
           name="ffade"
-          mode="out-in"
-        >
-          <div
-            v-for="(suggestion, index) in activeSegment.suggestions"
-            :key="index"
-            class="segment-suggestion"
-            @click="() => { activeSegment.translation = suggestion.translation }"
+          mode="out-in">
+          <img
+            v-if="!activeSegment.suggestionsLoaded"
+            :src="$assetPath + 'loading.svg'"
+            class="splash-image"
+            height="48"
           >
-            <div class="">
+          <div v-else>
+            <transition-group
+              name="ffade"
+              mode="out-in"
+            >
               <div
-                :class="{ 'red': suggestion.isMT }"
-                class="size-xs grey bold ib mr-8"
-              >{{ suggestion.createdBy }}</div>
-              {{ suggestion.isMT }}
-              <div
-                v-if="!suggestion.isMT"
-                class="size-xs grey ib"
-              >{{ suggestion.match }} %</div>
-              <div class="size-xs">{{ suggestion.translation }}</div>
-            </div>
+                v-for="(suggestion, index) in activeSegment.suggestions"
+                :key="index"
+                class="segment-suggestion"
+                @click="() => { activeSegment.translation = suggestion.translation }"
+              >
+                <div class="">
+                  <div
+                    :class="{ 'red': suggestion.isMT }"
+                    class="size-xs grey bold ib mr-8"
+                  >{{ suggestion.createdBy }}</div>
+                  {{ suggestion.isMT }}
+                  <div
+                    v-if="!suggestion.isMT"
+                    class="size-xs grey ib"
+                  >{{ suggestion.match }} %</div>
+                  <div class="size-xs">{{ suggestion.translation }}</div>
+                </div>
+              </div>
+            </transition-group>
           </div>
-        </transition-group>
+        </transition>
       </div>
     </div>
     <div class="section-bg bg-white scroll-section">
@@ -151,8 +163,6 @@ export default {
       if (this.lastSegmentId > 0) {
         data['segment'] = this.lastSegmentId
       }
-      console.log('fetchin segments with data: ')
-      console.log(data)
       SegmentsService.getSegments(data)
         .then(r => {
           this.fileId = Object.keys(r.data.data.files)[0]
@@ -162,13 +172,19 @@ export default {
               original: el.segment,
               translation: el.translation,
               status: (el.status === 'TRANSLATED' ? 'done' : ''),
-              active: parseInt(el.sid) === this.lastSegmentId,
+              active: false,
               version: el.version,
               suggestions: [],
+              suggestionsLoaded: false,
               jobId: this.$route.params.jobId,
               jobPassword: this.$route.params.password
             }
           })
+          if (this.lastSegmentId > 0) {
+            this.setActive(this.lastSegmentId)
+          } else {
+            this.setActive(this.segments[0].id)
+          }
           // console.log('new segments')
           // console.log(newSegments)
           // console.log('old segments')
@@ -208,6 +224,7 @@ export default {
               isMT: isMT
             }
           })
+          segment.suggestionsLoaded = true
         })
     },
     getContext: function (segment) {
