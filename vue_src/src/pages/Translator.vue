@@ -132,42 +132,46 @@ export default {
     })
       .then(jobRes => {
         this.lastSegmentId = parseInt(jobRes.data.active_segment_id)
-        let data = {
-          action: 'getSegments',
-          jid: this.$route.params.jobId,
-          password: this.$route.params.password,
-          where: 'center',
-          step: 5
-        }
-        if (this.lastSegmentId > 0) {
-          data['segment'] = this.lastSegmentId
-        }
-        return SegmentsService.getSegments(data)
-      })
-      .then(r => {
-        this.fileId = Object.keys(r.data.data.files)[0]
-        this.segments = _.map(Object.values(r.data.data.files)[0].segments, el => {
-          return {
-            id: parseInt(el.sid),
-            original: el.segment,
-            translation: el.translation,
-            status: (el.status === 'TRANSLATED' ? 'done' : ''),
-            active: parseInt(el.sid) === this.lastSegmentId,
-            version: el.version,
-            suggestions: [],
-            jobId: this.$route.params.jobId,
-            jobPassword: this.$route.params.password
-          }
-        })
-        if (this.lastSegmentId > 0) {
-          this.activeSegment = _.find(this.segments, {id: this.lastSegmentId})
-          this.getContribution(this.activeSegment)
-        }
+        this.fetchSegments()
       })
   },
   methods: {
     goBack: function () {
       this.$router.push({name: 'file-list'})
+    },
+    fetchSegments: function () {
+      let data = {
+        action: 'getSegments',
+        jid: this.$route.params.jobId,
+        password: this.$route.params.password,
+        where: 'center',
+        step: 7
+      }
+      if (this.lastSegmentId > 0) {
+        data['segment'] = this.lastSegmentId
+      }
+      SegmentsService.getSegments(data)
+        .then(r => {
+          this.fileId = Object.keys(r.data.data.files)[0]
+          const newSegments = _.map(Object.values(r.data.data.files)[0].segments, el => {
+            return {
+              id: parseInt(el.sid),
+              original: el.segment,
+              translation: el.translation,
+              status: (el.status === 'TRANSLATED' ? 'done' : ''),
+              active: parseInt(el.sid) === this.lastSegmentId,
+              version: el.version,
+              suggestions: [],
+              jobId: this.$route.params.jobId,
+              jobPassword: this.$route.params.password
+            }
+          })
+          this.segments = _.merge(this.segments, newSegments)
+          if (this.lastSegmentId > 0) {
+            this.activeSegment = _.find(this.segments, {id: this.lastSegmentId})
+            this.getContribution(this.activeSegment)
+          }
+        })
     },
     getContribution: function (segment) {
       const context = this.getContext(segment)
@@ -226,13 +230,14 @@ export default {
       }
       SegmentsService.setTranslation(data)
         .then(() => {
-          this.activeSegment.status = status === 'translated' ? 'done' : ''
+          this.activeSegment.status = (status === 'translated' ? 'done' : '')
         })
     },
     setActive: function (id) {
       _.map(this.segments, e => {
         if (e.id === id) {
           e.active = true
+          this.lastSegmentId = e.id
           this.activeSegment = e
           if (e.suggestions.length === 0) this.getContribution(e)
           const data = {
@@ -242,6 +247,12 @@ export default {
             id_job: e.jobId
           }
           SegmentsService.setCurrent(data)
+          const index = _.findKey(this.segments, item => {
+            return item.id === id
+          })
+          if (this.segments.length - index < 4 || this.segments.length - index > 7) {
+            this.fetchSegments()
+          }
         } else {
           e.active = false
         }
