@@ -43,10 +43,6 @@ export default {
       type: Object,
       required: true
     },
-    index: {
-      type: Number,
-      required: true
-    },
     fontSize: {
       type: Number,
       default: 15

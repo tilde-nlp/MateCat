@@ -98,9 +98,8 @@
       <section class="section font-size-0">
         <div class="segments-container">
           <translator-segment
-            v-for="(segment, index) in segments"
+            v-for="(segment, index) in segmentsList"
             :key="index"
-            :index="index"
             :segment-data="segment"
             :font-size="fontSize"
             @click="setActive"
@@ -115,6 +114,7 @@
 
 <script>
 import _ from 'lodash'
+import Vue from 'vue'
 import SegmentsService from 'services/segments'
 import TranslatorToolbox from 'components/translator/TranslatorToolbox'
 import TranslatorSegment from 'components/translator/TranslatorSegment'
@@ -135,6 +135,12 @@ export default {
       activeSegment: '',
       fontSize: null,
       lastSegmentId: 0
+    }
+  },
+  computed: {
+    segmentsList: function () {
+      const l = _.sortBy(this.segments, ['id'], ['asc'])
+      return l
     }
   },
   mounted: function () {
@@ -185,18 +191,6 @@ export default {
           } else {
             this.setActive(this.segments[0].id)
           }
-          // console.log('new segments')
-          // console.log(newSegments)
-          // console.log('old segments')
-          // console.log(this.segments)
-          // // this.segments = _.merge(this.segments, newSegments)
-          // this.segments = newSegments
-          // console.log('merged segments')
-          // console.log(this.segments)
-          // if (this.lastSegmentId > 0) {
-          //   this.activeSegment = _.find(this.segments, {id: this.lastSegmentId})
-          //   this.getContribution(this.activeSegment)
-          // }
         })
     },
     getContribution: function (segment) {
@@ -274,17 +268,53 @@ export default {
             id_job: e.jobId
           }
           SegmentsService.setCurrent(data)
-          // const index = _.findKey(this.segments, item => {
-          //   return item.id === id
-          // })
-          // if (this.segments.length - index < 4 || this.segments.length - index > 7) {
-          //   this.fetchSegments()
-          // }
         } else {
           e.active = false
         }
         return e
       })
+      const activeIndex = parseInt(_.findKey(this.segments, {active: true}))
+      if (activeIndex === 0 || this.segments.length - activeIndex - 1 === 0) {
+        let data = {
+          action: 'getSegments',
+          jid: this.$route.params.jobId,
+          password: this.$route.params.password,
+          where: activeIndex === 0 ? 'before' : 'after',
+          step: 5,
+          segment: this.segments[activeIndex].id
+        }
+        SegmentsService.getSegments(data)
+          .then(r => {
+            if (Object.values(r.data.data.files).length < 1) return
+            let newArray = []
+            _.map(Object.values(r.data.data.files)[0].segments, el => {
+              const item = {
+                id: parseInt(el.sid),
+                original: el.segment,
+                translation: el.translation,
+                status: (el.status === 'TRANSLATED' ? 'done' : ''),
+                active: false,
+                version: el.version,
+                suggestions: [],
+                suggestionsLoaded: false,
+                jobId: this.$route.params.jobId,
+                jobPassword: this.$route.params.password
+              }
+              if (activeIndex === 0) {
+                newArray.push(item)
+              } else {
+                this.segments.push(item)
+              }
+            })
+            if (activeIndex === 0) {
+              newArray = newArray.concat(this.segments)
+              this.segments = null
+              Vue.nextTick(() => {
+                this.segments = newArray
+              })
+            }
+          })
+      }
     },
     fontControl: function (event) {
       switch (event.srcKey) {
