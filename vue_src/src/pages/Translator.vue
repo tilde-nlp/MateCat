@@ -27,10 +27,10 @@
         >
           <svgicon
             class="svg-icon va-middle"
-            name="cog"
+            name="toolbar"
             height="24"
           />
-          <div class="link ib">Uzstādījumi</div>
+          <div class="link ib">Rīkjosla</div>
           <svgicon
             :class="{open: settingsOpen}"
             class="svg-icon va-middle chevron"
@@ -51,63 +51,7 @@
       <div
         v-if="settingsOpen"
         class="bb-blueish mt-16"/>
-      <div
-        v-if="activeSegment.suggestions"
-        :style="{top: settingsOpen ? '190px' : '50px'}"
-        class="segment-suggestions"
-      >
-        <transition
-          name="ffade"
-          mode="out-in">
-          <img
-            v-if="!activeSegment.suggestionsLoaded"
-            :src="$assetPath + 'loading.svg'"
-            class="splash-image"
-            height="48"
-          >
-          <div v-else>
-            <transition-group
-              name="ffade"
-              mode="out-in"
-            >
-              <div
-                v-for="(suggestion, index) in activeSegment.suggestions"
-                :key="index"
-                class="segment-suggestion"
-                @click="() => { activeSegment.translation = suggestion.translation }"
-              >
-                <div class="">
-                  <div
-                    :class="{ 'red': suggestion.isMT }"
-                    class="size-xs grey bold ib mr-8"
-                  >{{ suggestion.createdBy }}</div>
-                  <div
-                    v-if="!suggestion.isMT"
-                    class="size-xs grey ib"
-                  >{{ suggestion.match }} %</div>
-                  <div class="size-xs">{{ suggestion.translation }}</div>
-                </div>
-              </div>
-            </transition-group>
-          </div>
-        </transition>
-      </div>
     </div>
-    <div class="section-bg bg-white scroll-section">
-      <section class="section font-size-0">
-        <div class="segments-container">
-          <translator-segment
-            v-for="(segment, index) in segmentsList"
-            :key="index"
-            :segment-data="segment"
-            :font-size="fontSize"
-            @click="setActive"
-            @setStatus="setStatus"
-          />
-        </div>
-      </section>
-    </div>
-    <!--<translator-assistant />-->
   </div>
 </template>
 

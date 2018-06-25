@@ -4,7 +4,7 @@
       <!-- UNDO -->
       <div
         title="Undo: Ctrl + Z"
-        class="white-button xs">
+        class="white-button xs ml-8">
         <div class="white-button-icon">
           <svgicon
             class="svg-icon"
@@ -122,64 +122,38 @@
         </div>
       </div>
       <!-- FORWARD? END -->
-      <!-- TEXT? -->
-      <div class="white-button xs">
-        <div class="white-button-icon">
-          <svgicon
-            class="svg-icon"
-            name="text"
-            height="24"
-          />
+      <div class="pull-right">
+        <!-- MT TRANSLATE -->
+        <div class="translator-toolbox-link">Tulkot visu ar MT</div>
+        <!-- MT TRANSLATE END -->
+        <!-- TRANSLATE 100% -->
+        <div class="translator-toolbox-link">Tulkot visu 100%</div>
+        <!-- TRANSLATE 100% END -->
+        <!-- ORIGINAL DOWNLOAD -->
+        <div class="tt-icon-link-container">
+          <div class="icon-container">
+            <svgicon
+              class="svg-icon va-middle"
+              name="download"
+              height="24"
+            />
+          </div>
+          <div class="translator-toolbox-link link">Orģināls</div>
         </div>
-      </div>
-      <!-- TEXT? END -->
-      <!-- T -->
-      <div class="white-button xs">
-        <div class="white-button-icon">
-          <svgicon
-            class="svg-icon"
-            name="font"
-            height="24"
-          />
+        <!-- ORIGINAL DOWNLOAD END -->
+        <!-- ORIGINAL DOWNLOAD -->
+        <div class="tt-icon-link-container">
+          <div class="icon-container">
+            <svgicon
+              class="svg-icon va-middle"
+              name="download"
+              height="24"
+            />
+          </div>
+          <div class="translator-toolbox-link link">Tulkojums</div>
         </div>
+        <!-- ORIGINAL DOWNLOAD END -->
       </div>
-      <!-- T END -->
-      <!-- MT TRANSLATE -->
-      <div class="white-button xs wide">
-        <div class="link normal ib">Tulkot ar MT</div>
-      </div>
-      <!-- MT TRANSLATE END -->
-      <!-- TRANSLATE 100% -->
-      <div class="white-button xs wide mr-32-i">
-        <div class="link normal ib">Tulkot 100%</div>
-      </div>
-      <!-- TRANSLATE 100% END -->
-      <!--<div class="translator-toolbox-buttons">-->
-      <!-- ORIGINAL DOWNLOAD -->
-      <div class="white-button xs x-wide">
-        <div class="white-button-icon">
-          <svgicon
-            class="svg-icon"
-            name="download"
-            height="24"
-          />
-        </div>
-        <div class="link normal ib">Orģināls</div>
-      </div>
-      <!-- ORIGINAL DOWNLOAD END -->
-      <!-- ORIGINAL DOWNLOAD -->
-      <div class="white-button xs x-wide button-red">
-        <div class="white-button-icon">
-          <svgicon
-            class="svg-icon icon-white"
-            name="download"
-            height="24"
-          />
-        </div>
-        <div class="link normal ib">Tulkojums</div>
-      </div>
-      <!-- ORIGINAL DOWNLOAD END -->
-      <!--</div>-->
     </div>
     <div class="relative mt-16">
       <div class="segment-search-container">

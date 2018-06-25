@@ -891,7 +891,8 @@ select::-ms-expand {
 
 .icon-span,
 .head-control,
-.white-button {
+.white-button,
+.tt-icon-link-container {
   &:hover {
     .link {
       color: @color-red-darker;
@@ -1011,12 +1012,6 @@ select::-ms-expand {
   }
 }
 
-.translator-toolbox-buttons {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-
 .relative-top {
   position: absolute;
   top: 0;
@@ -1110,4 +1105,20 @@ select::-ms-expand {
 .scroll-section {
   max-height: calc(~"100% - 50px");
   overflow-y: scroll;
+}
+
+.translator-toolbox-link {
+  .link;
+  .ib;
+  line-height: 44px;
+  .mr-24;
+}
+
+.tt-icon-link-container {
+  height: 44px;
+  .ib;
+  .icon-container {
+    .ib;
+    height: 100%;
+  }
 }
