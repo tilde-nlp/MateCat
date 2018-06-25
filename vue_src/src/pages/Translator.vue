@@ -81,7 +81,6 @@
                     :class="{ 'red': suggestion.isMT }"
                     class="size-xs grey bold ib mr-8"
                   >{{ suggestion.createdBy }}</div>
-                  {{ suggestion.isMT }}
                   <div
                     v-if="!suggestion.isMT"
                     class="size-xs grey ib"
@@ -204,7 +203,8 @@ export default {
         id_job: this.$route.params.jobId,
         num_results: 5,
         context_before: context.before,
-        context_after: context.after
+        context_after: context.after,
+        use_letsmt: 1
       }
       SegmentsService.getContribution(data)
         .then(r => {

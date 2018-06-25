@@ -12,7 +12,9 @@ class INIT {
             'DB_PASS',
             'RELATIVE_HOST_NAME',
             'JWT_KEY',
-            'AUTH_REDIRECT'
+            'AUTH_REDIRECT',
+            'LETSMT_BASE_URL',
+            'LETSMT_CLIENT_ID'
     );
 
     /**
@@ -39,6 +41,8 @@ class INIT {
     public static $RELATIVE_HOST_NAME;
     public static $JWT_KEY;
     public static $AUTH_REDIRECT;
+    public static $LETSMT_BASE_URL;
+    public static $LETSMT_CLIENT_ID;
     public static $DB_SERVER;
     public static $DB_DATABASE;
     public static $DB_USER;

@@ -24,6 +24,8 @@ JWT_KEY=""
 AUTH_REDIRECT="https://hugo.lv/lv/Account/Login?ReturnUrl="
 STORAGE_DIR="/home/dark/cattool/storage/"
 BRANCH="code-merge"
+LETSMT_BASE_URL = "https://www.letsmt.eu/ws/service.svc/json/"
+LETSMT_CLIENT_ID = "u-778efd68-5d39-4443-958d-688239fdd5a1"
 
 sudo apt-get update
 # ----- Apache2
@@ -166,6 +168,8 @@ sudo sed -i "s|@@@relative_host_name@@@|$RELATIVE_HOST_NAME|g" /home/$MATECAT_US
 sudo sed -i "s|@@@jwt_key@@@|$JWT_KEY|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@auth_redirect@@@|$AUTH_REDIRECT|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@storage_dir@@@|$STORAGE_DIR|g" /home/$MATECAT_USER/cattool/inc/config.ini
+sudo sed -i "s|@@@letsmt_base_url@@@|$LETSMT_BASE_URL|g" /home/$MATECAT_USER/cattool/inc/config.ini
+sudo sed -i "s|@@@letsmt_client_id@@@|$LETSMT_CLIENT_ID|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo -u $MATECAT_USER -H sh -c "cp /home/$MATECAT_USER/cattool/inc/task_manager_config.ini.sample /home/$MATECAT_USER/cattool/inc/task_manager_config.ini"
 
 # DEV_ONLY (this is only necessary for development build)

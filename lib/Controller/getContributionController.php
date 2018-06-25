@@ -17,6 +17,7 @@ class getContributionController extends ajaxController {
     private $id_translator;
     private $password;
     private $tm_keys;
+    private $use_letsmt;
 
     protected $context_before;
     protected $context_after;
@@ -43,6 +44,7 @@ class getContributionController extends ajaxController {
                 'from_target'    => [ 'filter' => FILTER_VALIDATE_BOOLEAN ],
                 'context_before' => [ 'filter' => FILTER_UNSAFE_RAW ],
                 'context_after'  => [ 'filter' => FILTER_UNSAFE_RAW ],
+                'use_letsmt'  => [ 'filter' => FILTER_SANITIZE_NUMBER_FLOATA],
         ];
 
         $this->__postInput = filter_input_array( INPUT_POST, $filterArgs );
@@ -59,6 +61,7 @@ class getContributionController extends ajaxController {
         $this->concordance_search = $this->__postInput[ 'is_concordance' ];
         $this->switch_languages   = $this->__postInput[ 'from_target' ];
         $this->password           = $this->__postInput[ 'password' ];
+        $this->use_letsmt           = $this->__postInput[ 'use_letsmt' ] > 0;
 
         if ( $this->id_translator == 'unknown_translator' ) {
             $this->id_translator = "";
@@ -186,6 +189,8 @@ class getContributionController extends ajaxController {
          * so we want not to perform TMS Call
          *
          */
+        // Override for Tilde
+        $config[ 'get_mt' ]  = false;
         if ( isset( $_TMS ) ) {
 
             /**
@@ -236,7 +241,6 @@ class getContributionController extends ajaxController {
         }
 
         if ( $this->id_mt_engine > 1 /* Request MT Directly */ ) {
-
             /**
              * @var $mt_engine Engines_MMT
              */
@@ -261,14 +265,29 @@ class getContributionController extends ajaxController {
             }
 
         }
+
+        if ($this->use_letsmt && $this->source == 'en-US' && $this->target == 'lv-LV') {
+            $LetsMTLite = new \LetsMTLite(INIT::$LETSMT_BASE_URL, INIT::$LETSMT_CLIENT_ID);
+            $systems = $LetsMTLite->getSystems();
+            $systemId = $systems->System[0]->ID;
+            $letsmtTranslation = $LetsMTLite->translate($systemId, $this->text);
+        }
+
         $matches = array();
 
         if ( !empty( $tms_match ) ) {
             $matches = $tms_match;
         }
 
-        if ( !empty( $mt_result ) ) {
-            $matches[ ] = $mt_result;
+        if ( !empty( $letsmtTranslation ) ) {
+            $matches[ ] = array(
+                'created_by' => 'MT',
+                'match' => '70',
+                'translation' => $letsmtTranslation,
+                'raw_segment' => $this->text,
+                'raw_translation' => $letsmtTranslation
+
+            );
             usort( $matches, array( "getContributionController", "__compareScore" ) );
             //this is necessary since usort sorts is ascending order, thus inverting the ranking
             $matches = array_reverse( $matches );
@@ -540,6 +559,10 @@ class getContributionController extends ajaxController {
         uksort( $regularExpressions, '_sortByLenDesc' );
 
         return $regularExpressions;
+    }
+
+    protected function lmtTranslate($source) {
+
     }
 }
 
