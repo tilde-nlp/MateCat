@@ -6,5 +6,8 @@ export default {
   },
   getSubjectsList: function () {
     return HTTP.get(CONFIG.baseUrl + '?action=getSubjects')
+  },
+  getMTSystems: function () {
+    return HTTP.get(CONFIG.baseUrl + '?action=mtSystems')
   }
 }

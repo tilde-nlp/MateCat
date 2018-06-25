@@ -155,8 +155,8 @@
         <!-- ORIGINAL DOWNLOAD END -->
       </div>
     </div>
-    <div class="relative mt-16">
-      <div class="segment-search-container">
+    <div class="tt-triple-container">
+      <div class="triple-block segment-search-container">
         <svgicon
           class="svg-icon icon-blueish-darker-still placeholder"
           name="search"
@@ -168,7 +168,7 @@
           placeholder="Atlasīt no sākotnējā teksta"
         >
       </div>
-      <div class="segment-search-container right">
+      <div class="triple-block segment-search-container">
         <svgicon
           class="svg-icon icon-blueish-darker-still placeholder"
           name="search"
@@ -179,6 +179,13 @@
           type="text"
           placeholder="Atlasīt no tulkotā teksta"
         >
+      </div>
+      <div class="triple-block right">
+        <div class="size-s">Iztulkoti 20% no 2309 segmentiem</div>
+        <div>
+          <div class="progress-bar"/>
+          <div class="progress-bar-empty"/>
+        </div>
       </div>
     </div>
   </div>
