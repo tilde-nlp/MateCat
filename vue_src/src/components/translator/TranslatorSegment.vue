@@ -1,27 +1,33 @@
 <template>
   <div
-    :class="{active: segment.active}"
+    :class="{active: segment.active, confirmed: segment.status === 'done'}"
     class="segment-container font-size-0"
     @click="() => {$emit('click', segment.id)}"
   >
-    <div class="number-col bl-light-darker">
-      <div class="ma">{{ nr }}</div>
-    </div>
-    <div
-      :style="{ 'font-size': fontSizeString }"
-      class="segment-original">
-      {{ segment.original }}
-    </div>
-    <div class="segment-translation bt-light-darker br-light-darker">
-      <textarea-autosize
-        ref="ta"
-        v-model="segment.translation"
-        :min-height="1"
+    <div class="double-block">
+      <div class="number-col bl-light-darker">
+        <div class="ma">{{ nr }}</div>
+      </div>
+      <div
         :style="{ 'font-size': fontSizeString }"
-        :disabled="segment.status === 'done'"
-        :placeholder="segment.active ? 'Sākt tulkot...' : ''"
-        class="segment-edit"
-      />
+        class="segment-col first">
+        {{ segment.original }}
+      </div>
+    </div>
+    <div class="double-block">
+      <div class="segment-col last">
+        <textarea
+          v-autosize
+          ref="ta"
+          v-model="segment.translation"
+          :min-height="1"
+          :style="{ 'font-size': fontSizeString }"
+          :disabled="segment.status === 'done'"
+          :placeholder="segment.active ? 'Sākt tulkot...' : ''"
+          rows="1"
+          class="segment-edit"
+        />
+      </div>
     </div>
   </div>
 </template>

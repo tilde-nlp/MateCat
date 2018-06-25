@@ -33,19 +33,41 @@
               v-model="system"
               :options="systems"
               name="mt"
-              @input="value => {$emit('mtChange', value)}"
+              @input="value => {$emit('mtSystemChange', value)}"
             />
           </div>
           <div>
             <label
               class="input-label"
             >Ieteikumi</label>
-            <div class="suggestion">
-              <div class="suggestion-nr">1</div>
-              <div class="suggestion-text">
-                It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
-              </div>
-              <div class="suggestion-match">50%</div>
+            <img
+              v-if="!activeSegment.suggestionsLoaded"
+              :src="$assetPath + 'loading.svg'"
+              class="splash-image"
+              height="48"
+            >
+            <div
+              v-else-if="activeSegment.suggestions.length < 1">
+              Nav ieteikumu
+            </div>
+            <div v-else>
+              <transition-group
+                name="ffade"
+                mode="out-in"
+              >
+                <div
+                  v-for="(suggestion, index) in activeSegment.suggestions"
+                  :key="index"
+                  class="suggestion"
+                  @click="() => { activeSegment.translation = suggestion.translation }"
+                >
+                  <div class="suggestion-nr">{{ index + 1 }}</div>
+                  <div class="suggestion-text">
+                    {{ suggestion.translation }}
+                  </div>
+                  <div class="suggestion-match">{{ suggestion.match }}</div>
+                </div>
+              </transition-group>
             </div>
           </div>
         </div>
@@ -61,6 +83,12 @@ import LanguagesService from 'services/languages.js'
 import _ from 'lodash'
 export default {
   name: 'TranslatorAssistant',
+  props: {
+    activeSegment: {
+      type: Object,
+      required: true
+    }
+  },
   data: function () {
     return {
       activeTab: 'translate',
@@ -78,6 +106,7 @@ export default {
           }
         })
         this.system = this.systems[0]
+        this.$emit('mtSystemChange', this.system)
       })
   }
 }

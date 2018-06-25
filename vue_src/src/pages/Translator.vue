@@ -64,10 +64,10 @@
             </div>
           </div>
           <div class="double-block">
-            <div class="segment-col header">
+            <div class="segment-col header last">
               Tulkojums: lv
             </div>
-            <div class="number-col header">
+            <div class="tools-col header">
               &nbsp;
             </div>
           </div>
@@ -86,7 +86,10 @@
             />
           </div>
         </div>
-        <translator-assistant/>
+        <translator-assistant
+          :active-segment="activeSegment"
+          @mtSystemChange="val => { system = val.value }"
+        />
       </section>
     </div>
   </div>
@@ -112,9 +115,10 @@ export default {
       segments: [],
       fileId: '',
       settingsOpen: false,
-      activeSegment: '',
+      activeSegment: {},
       fontSize: null,
-      lastSegmentId: 0
+      lastSegmentId: 0,
+      system: ''
     }
   },
   computed: {
@@ -185,7 +189,7 @@ export default {
         num_results: 5,
         context_before: context.before,
         context_after: context.after,
-        use_letsmt: 1
+        letsmt_system: this.system
       }
       SegmentsService.getContribution(data)
         .then(r => {
@@ -194,7 +198,7 @@ export default {
             const isMT = el.created_by === 'MT'
             return {
               createdBy: el.created_by,
-              match: isMT ? 69 : parseInt(el.match),
+              match: isMT ? 'MT' : parseInt(el.match) + '%',
               translation: el.translation,
               isMT: isMT
             }
