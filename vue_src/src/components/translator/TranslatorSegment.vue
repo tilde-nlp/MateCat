@@ -4,32 +4,22 @@
     class="segment-container font-size-0"
     @click="() => {$emit('click', segment.id)}"
   >
+    <div class="number-col bl-light-darker">
+      <div class="ma">{{ nr }}</div>
+    </div>
     <div
       :style="{ 'font-size': fontSizeString }"
       class="segment-original">
       {{ segment.original }}
     </div>
-    <div
-      v-shortkey.once="['ctrl', 'insert']"
-      title="Kopēt orģinālu uz tulkojumu"
-      class="segment-copy-icon"
-      @click="copySourceToTarget"
-      @shortkey="copySourceToTarget"
-    >
-      <svgicon
-        class="svg-icon flip-h"
-        name="arrow"
-        height="24"
-      />
-    </div>
-    <div class="segment-translation">
+    <div class="segment-translation bt-light-darker br-light-darker">
       <textarea-autosize
         ref="ta"
         v-model="segment.translation"
         :min-height="1"
         :style="{ 'font-size': fontSizeString }"
         :disabled="segment.status === 'done'"
-        placeholder="Sākt tulkot..."
+        :placeholder="segment.active ? 'Sākt tulkot...' : ''"
         class="segment-edit"
       />
     </div>
@@ -46,6 +36,10 @@ export default {
     fontSize: {
       type: Number,
       default: 15
+    },
+    nr: {
+      type: Number,
+      required: true
     }
   },
   data: function () {

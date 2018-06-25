@@ -54,67 +54,39 @@
     </div>
     <div class="section-bg bg-white h-100p">
       <section class="section triple-block-container h-100p">
-        <div class="triple-block">
-          <div class="number-col bl-light-darker header">
-            #
-          </div>
-          <div class="segment-col header">
-            Orģināls: en
-          </div>
-        </div>
-        <div class="triple-block">
-          <div class="segment-col header">
-            Tulkojums: lv
-          </div>
-          <div class="number-col header">
-            &nbsp;
-          </div>
-        </div>
-        <div class="triple-block h-100p">
-          <div class="segment-col assistant">
-            <div class="tabber">
-              <div class="tabber-section active">
-                Tulkojumi
-              </div>
-              <div class="tabber-section">
-                Taustiņkombinācijas
-              </div>
-              <div class="tabber-section">
-                Glosārijs
-              </div>
+        <div class="triple-block double">
+          <div class="double-block">
+            <div class="number-col bl-light-darker header">
+              <div class="ma">#</div>
             </div>
-            <div class="tab">
-              <label
-                class="input-label"
-                for="mt"
-              >Mašīntulks</label>
-              <div class="select-container">
-                <v-select
-                  id="mt"
-                  v-model="system"
-                  :options="systems"
-                  name="mt"
-                  @input="value => {$emit('mtChange', value)}"
-                />
-              </div>
-              <div>
-                <label
-                  class="input-label"
-                >Ieteikumi</label>
-                <div class="suggestion">
-                  <div class="suggestion-nr">1</div>
-                  <div class="suggestion-text">
-                    It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
-                  </div>
-                  <div class="suggestion-match">50%</div>
-                </div>
-              </div>
+            <div class="segment-col header first">
+              Orģināls: en
             </div>
           </div>
-          <div class="number-col">
-            &nbsp;
+          <div class="double-block">
+            <div class="segment-col header">
+              Tulkojums: lv
+            </div>
+            <div class="number-col header">
+              &nbsp;
+            </div>
+          </div>
+          <div
+            :style="{'max-height': '600px'}"
+            class="segments-container"
+          >
+            <translator-segment
+              v-for="(segment, index) in segmentsList"
+              :key="index"
+              :segment-data="segment"
+              :font-size="fontSize"
+              :nr="index + 1"
+              @click="setActive"
+              @setStatus="setStatus"
+            />
           </div>
         </div>
+        <translator-assistant/>
       </section>
     </div>
   </div>
@@ -128,7 +100,6 @@ import TranslatorToolbox from 'components/translator/TranslatorToolbox'
 import TranslatorSegment from 'components/translator/TranslatorSegment'
 import TranslatorAssistant from 'components/translator/TranslatorAssistant'
 import JobsService from 'services/jobs.js'
-import LanguagesService from 'services/languages.js'
 export default {
   name: 'Translator',
   components: {
@@ -143,9 +114,7 @@ export default {
       settingsOpen: false,
       activeSegment: '',
       fontSize: null,
-      lastSegmentId: 0,
-      systems: [],
-      system: null
+      lastSegmentId: 0
     }
   },
   computed: {
@@ -163,16 +132,6 @@ export default {
       .then(jobRes => {
         this.lastSegmentId = parseInt(jobRes.data.active_segment_id)
         this.fetchSegments()
-      })
-    LanguagesService.getMTSystems()
-      .then(langsRes => {
-        this.systems = _.map(langsRes.data, el => {
-          return {
-            label: el.Title.Text,
-            value: el.ID
-          }
-        })
-        this.system = this.systems[0]
       })
   },
   methods: {
