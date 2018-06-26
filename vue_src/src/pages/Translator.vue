@@ -90,6 +90,7 @@
         <translator-assistant
           :active-segment="activeSegment"
           :job-data="jobData"
+          :max-height="suggestionsListHeight"
           @mtSystemChange="val => { system = val.value }"
         />
       </section>
@@ -122,6 +123,7 @@ export default {
       fontSize: null,
       system: '',
       segmentListHeight: 600,
+      suggestionsListHeight: 500,
       jobData: {
         id: 0,
         password: '',
@@ -177,6 +179,8 @@ export default {
       const appHeight = document.getElementById('cat-app').clientHeight
       this.segmentListHeight = appHeight - 48 - 32
       if (this.settingsOpen) this.segmentListHeight -= 140
+      this.suggestionsListHeight = appHeight - 48 - 32 - 167
+      if (this.settingsOpen) this.suggestionsListHeight -= 140
     },
     checkStats: function () {
       const link = this.$CONFIG.baseUrl + 'api/v1/jobs/' + this.jobData.id + '/' + this.jobData.password + '/stats'
@@ -273,7 +277,10 @@ export default {
               match: isMT ? 'MT' : parseInt(el.match) + '%',
               rawMatch: parseInt(el.match),
               translation: el.translation,
-              isMT: isMT
+              isMT: isMT,
+              segment: el.segment,
+              lastUpdatedBy: el.last_updated_by,
+              usageCount: el.usage_count
             }
           })
           segment.suggestionsLoaded = true
@@ -395,7 +402,6 @@ export default {
             console.log(r.data.urls.files[0])
             Vue.set(this.jobData, 'translatedUrl', r.data.urls.files[0].translation_download_url)
             Vue.set(this.jobData, 'originalUrl', r.data.urls.files[0].original_download_url)
-            console.log(this.jobData)
           }
         })
     }

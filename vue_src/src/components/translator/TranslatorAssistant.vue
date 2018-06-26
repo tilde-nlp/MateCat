@@ -37,9 +37,7 @@
             />
           </div>
           <div class="mt-24">
-            <label
-              class="input-label"
-            >Ieteikumi</label>
+            <label class="input-label">Ieteikumi</label>
             <img
               v-if="!activeSegment.suggestionsLoaded"
               :src="$assetPath + 'loading.svg'"
@@ -50,7 +48,11 @@
               v-else-if="activeSegment.suggestions.length < 1">
               Nav ieteikumu
             </div>
-            <div v-else>
+            <div
+              v-else
+              :style="{'max-height': maxHeight + 'px'}"
+              class="suggestions-container"
+            >
               <transition-group
                 name="ffade"
                 mode="out-in"
@@ -66,7 +68,17 @@
                     :class="{'high-match': suggestion.rawMatch > 69, 'mid-match': suggestion.rawMatch > 49 && suggestion.rawMatch < 70, 'mt-match': suggestion.isMT}"
                     class="suggestion-text"
                   >
-                    {{ suggestion.translation }}
+                    <span v-if="suggestion.isMT">{{ suggestion.translation }}</span>
+                    <div v-else>
+                      <div>
+                        <div class="ib mr-24">Izveidoja: <div class="input-label ib-i">{{ suggestion.createdBy }}</div></div>
+                        <div class="ib">Lietošanas biežums: <div class="input-label ib-i">{{ suggestion.usageCount }}</div></div>
+                      </div>
+                      <div class="input-label mb-4-i">Orģināls</div>
+                      <div class="mb-8 bb-light-darker">{{ suggestion.segment }}</div>
+                      <div class="input-label mb-4-i">Tulkojums</div>
+                      <div>{{ suggestion.translation }}</div>
+                    </div>
                   </div>
                   <div
                     :class="{'high-match': suggestion.rawMatch > 69, 'mid-match': suggestion.rawMatch > 49 && suggestion.rawMatch < 70, 'mt-match': suggestion.isMT}"
@@ -92,6 +104,10 @@ export default {
   props: {
     activeSegment: {
       type: Object,
+      required: true
+    },
+    maxHeight: {
+      type: Number,
       required: true
     }
   },
