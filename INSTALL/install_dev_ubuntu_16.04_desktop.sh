@@ -24,8 +24,8 @@ JWT_KEY=""
 AUTH_REDIRECT="https://hugo.lv/lv/Account/Login?ReturnUrl="
 STORAGE_DIR="/home/dark/cattool/storage/"
 BRANCH="code-merge"
-LETSMT_BASE_URL = "https://www.letsmt.eu/ws/service.svc/json/"
-LETSMT_CLIENT_ID = "u-778efd68-5d39-4443-958d-688239fdd5a1"
+LETSMT_BASE_URL="https://www.letsmt.eu/ws/service.svc/json/"
+LETSMT_CLIENT_ID="u-778efd68-5d39-4443-958d-688239fdd5a1"
 
 sudo apt-get update
 # ----- Apache2
