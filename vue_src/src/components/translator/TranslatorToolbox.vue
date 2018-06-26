@@ -130,7 +130,10 @@
         <div class="translator-toolbox-link">Tulkot visu 100%</div>
         <!-- TRANSLATE 100% END -->
         <!-- ORIGINAL DOWNLOAD -->
-        <div class="tt-icon-link-container">
+        <div
+          class="tt-icon-link-container"
+          @click="downloadFile(jobData.originalUrl)"
+        >
           <div class="icon-container">
             <svgicon
               class="svg-icon va-middle"
@@ -142,7 +145,10 @@
         </div>
         <!-- ORIGINAL DOWNLOAD END -->
         <!-- ORIGINAL DOWNLOAD -->
-        <div class="tt-icon-link-container">
+        <div
+          class="tt-icon-link-container"
+          @click="downloadFile(jobData.translatedUrl)"
+        >
           <div class="icon-container">
             <svgicon
               class="svg-icon va-middle"
@@ -207,6 +213,11 @@ export default {
     jobData: {
       type: Object,
       required: true
+    }
+  },
+  methods: {
+    downloadFile: function (link) {
+      window.location.href = link
     }
   }
 }

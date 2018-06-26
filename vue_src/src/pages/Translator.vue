@@ -131,7 +131,9 @@ export default {
         target: '',
         lastSegmentId: 0,
         progress: 0,
-        segments: 0
+        segments: 0,
+        translatedUrl: '',
+        originalUrl: ''
       }
     }
   },
@@ -157,6 +159,7 @@ export default {
         this.jobData.target = jobRes.data.target
         this.fetchSegments()
         this.checkStats()
+        this.getFileUrls()
       })
     this.$nextTick(function () {
       window.addEventListener('resize', this.setSegmentListHeight)
@@ -383,6 +386,18 @@ export default {
           break
       }
       this.$cookie.set('fontSize', this.fontSize, 720)
+    },
+    getFileUrls: function () {
+      FileService.getUrls({id_project: this.jobData.projectId, password: this.jobData.ppassword})
+        .then(r => {
+          if (typeof (r.data.urls.files[0]) !== 'undefined') {
+            console.log('GetUrlsResponse: ')
+            console.log(r.data.urls.files[0])
+            Vue.set(this.jobData, 'translatedUrl', r.data.urls.files[0].translation_download_url)
+            Vue.set(this.jobData, 'originalUrl', r.data.urls.files[0].original_download_url)
+            console.log(this.jobData)
+          }
+        })
     }
   }
 }
