@@ -8,7 +8,7 @@ import {CONFIG} from '../CONFIG'
 Vue.use(VueRouter)
 const routes = [
   {path: '/', component: FileList, name: 'file-list', beforeEnter: beforeRouteEnter},
-  {path: '/translate/:jobId/:password', component: Translator, name: 'translate', beforeEnter: beforeRouteEnter},
+  {path: '/translate/:projectId/:ppassword/:jobId/:password', component: Translator, name: 'translate', beforeEnter: beforeRouteEnter},
   {path: '*', redirect: {name: 'file-list'}}
 ]
 function beforeRouteEnter (to, from, next) {

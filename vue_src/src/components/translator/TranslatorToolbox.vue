@@ -156,35 +156,45 @@
       </div>
     </div>
     <div class="tt-triple-container">
-      <div class="triple-block segment-search-container">
-        <svgicon
-          class="svg-icon icon-blueish-darker-still placeholder"
-          name="search"
-          height="24"
-        />
-        <input
-          class="input w-100p w-placeholder"
-          type="text"
-          placeholder="Atlasīt no sākotnējā teksta"
-        >
+      <div class="triple-block">
+        <div class="segment-search-container">
+          <svgicon
+            class="svg-icon icon-blueish-darker-still placeholder"
+            name="search"
+            height="24"
+          />
+          <input
+            class="input w-100p w-placeholder"
+            type="text"
+            placeholder="Atlasīt no sākotnējā teksta"
+          >
+        </div>
       </div>
-      <div class="triple-block segment-search-container">
-        <svgicon
-          class="svg-icon icon-blueish-darker-still placeholder"
-          name="search"
-          height="24"
-        />
-        <input
-          class="input w-100p w-placeholder"
-          type="text"
-          placeholder="Atlasīt no tulkotā teksta"
-        >
+      <div class="triple-block">
+        <div class="segment-search-container">
+          <svgicon
+            class="svg-icon icon-blueish-darker-still placeholder"
+            name="search"
+            height="24"
+          />
+          <input
+            class="input w-100p w-placeholder"
+            type="text"
+            placeholder="Atlasīt no tulkotā teksta"
+          >
+        </div>
       </div>
       <div class="triple-block right">
-        <div class="size-s">Iztulkoti 20% no 2309 segmentiem</div>
-        <div>
-          <div class="progress-bar"/>
-          <div class="progress-bar-empty"/>
+        <div class="size-s mr-8">Iztulkoti {{ jobData.progress }}% no {{ jobData.segments }} segmentiem</div>
+        <div class="ml-32 mr-8">
+          <div
+            :style="{width: jobData.progress + '%' }"
+            class="progress-bar"
+          />
+          <div
+            :style="{width: (100 - jobData.progress) + '%' }"
+            class="progress-bar-empty"
+          />
         </div>
       </div>
     </div>
@@ -192,6 +202,12 @@
 </template>
 <script>
 export default {
-  name: 'TranslatorToolbox'
+  name: 'TranslatorToolbox',
+  props: {
+    jobData: {
+      type: Object,
+      required: true
+    }
+  }
 }
 </script>

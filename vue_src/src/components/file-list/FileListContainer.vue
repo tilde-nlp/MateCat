@@ -216,7 +216,7 @@ export default {
       this.showFileDeleteConfirm = false
     },
     translate: function (key) {
-      this.$router.push({name: 'translate', params: {jobId: this.files[key].jobId, password: this.files[key].jobPassword}})
+      this.$router.push({name: 'translate', params: {projectId: this.files[key].id, ppassword: this.files[key].password, jobId: this.files[key].jobId, password: this.files[key].jobPassword}})
     },
     downloadFile: function (link) {
       window.location.href = link

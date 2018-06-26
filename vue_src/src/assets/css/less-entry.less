@@ -346,7 +346,7 @@
   &.placeholder {
     position: absolute;
     top: 9px;
-    left: 16px;
+    left: 10px;
   }
 }
 
@@ -1165,19 +1165,22 @@ select::-ms-expand {
 .tt-triple-container {
   .mt-16;
   .triple-block-container;
-  &.segment-search-container {
-    padding: 0 @spacer-4 0 @spacer-8;
-  }
   .progress-bar {
+    .transition;
     .ib;
     border-bottom: solid @color-green-darker 4px;
-    width: 15%;
   }
   .progress-bar-empty {
+    .transition;
     .ib;
     border-bottom: solid @color-light-darker 4px;
-    width: 85%;
   }
+}
+
+.segment-search-container {
+  .relative;
+  .ml-8;
+  .mr-16;
 }
 
 .number-col {

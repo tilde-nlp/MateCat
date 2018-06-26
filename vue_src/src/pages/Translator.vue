@@ -44,6 +44,7 @@
       <section class="section">
         <translator-toolbox
           :class="{open: settingsOpen}"
+          :job-data="jobData"
           class="slider-container"
           @confirm="() => setStatus('translated')"
         />
@@ -60,12 +61,12 @@
               <div class="ma">#</div>
             </div>
             <div class="segment-col header first">
-              Orģināls: en
+              Orģināls: {{ jobData.source }}
             </div>
           </div>
           <div class="double-block">
             <div class="segment-col header last">
-              Tulkojums: lv
+              Tulkojums: {{ jobData.target }}
             </div>
             <div class="tools-col header">
               &nbsp;
@@ -88,6 +89,7 @@
         </div>
         <translator-assistant
           :active-segment="activeSegment"
+          :job-data="jobData"
           @mtSystemChange="val => { system = val.value }"
         />
       </section>
@@ -103,6 +105,7 @@ import TranslatorToolbox from 'components/translator/TranslatorToolbox'
 import TranslatorSegment from 'components/translator/TranslatorSegment'
 import TranslatorAssistant from 'components/translator/TranslatorAssistant'
 import JobsService from 'services/jobs.js'
+import FileService from 'services/file.js'
 export default {
   name: 'Translator',
   components: {
@@ -117,8 +120,18 @@ export default {
       settingsOpen: false,
       activeSegment: {},
       fontSize: null,
-      lastSegmentId: 0,
-      system: ''
+      system: '',
+      jobData: {
+        id: 0,
+        password: '',
+        projectId: 0,
+        ppassword: '',
+        source: '',
+        target: '',
+        lastSegmentId: 0,
+        progress: 0,
+        segments: 0
+      }
     }
   },
   computed: {
@@ -128,30 +141,73 @@ export default {
     }
   },
   mounted: function () {
+    this.jobData.id = this.$route.params.jobId
+    this.jobData.password = this.$route.params.password
+    this.jobData.projectId = this.$route.params.projectId
+    this.jobData.ppassword = this.$route.params.ppassword
     this.fontSize = this.$cookie.get('fontSize') === null ? 15 : parseInt(this.$cookie.get('fontSize'))
     JobsService.getInfo({
-      id: this.$route.params.jobId,
-      password: this.$route.params.password
+      id: this.jobData.id,
+      password: this.jobData.password
     })
       .then(jobRes => {
-        this.lastSegmentId = parseInt(jobRes.data.active_segment_id)
+        this.jobData.lastSegmentId = parseInt(jobRes.data.active_segment_id)
+        this.jobData.source = jobRes.data.source
+        this.jobData.target = jobRes.data.target
         this.fetchSegments()
+        this.checkStats()
       })
   },
   methods: {
     goBack: function () {
       this.$router.push({name: 'file-list'})
     },
+    checkStats: function () {
+      const link = this.$CONFIG.baseUrl + 'api/v1/jobs/' + this.jobData.id + '/' + this.jobData.password + '/stats'
+      // Call file status check to get missing data
+      FileService.checkStatus(link)
+        .then(this.statsResponse)
+      FileService.analyze({
+        pid: this.jobData.projectId,
+        ppassword: this.jobData.ppassword
+      })
+        .then(this.analyzeResponse)
+    },
+    statsResponse: function (res) {
+      if (!res.data.stats.ANALYSIS_COMPLETE) {
+        setTimeout(() => {
+          FileService.checkStatus(res.request.responseURL)
+            .then(this.statsResponse)
+        }, 2000)
+      } else {
+        this.jobData.progress = parseFloat(res.data.stats.TRANSLATED_PERC).toFixed(2)
+      }
+    },
+    analyzeResponse: function (res) {
+      if (res.data.data.summary.STATUS === 'DONE') {
+        this.jobData.segments = parseInt(res.data.data.summary.TOTAL_SEGMENTS)
+        return
+      }
+      if (res.data.data.summary.STATUS !== 'EMPTY') {
+        setTimeout(() => {
+          FileService.analyze({
+            pid: this.jobData.projectId,
+            ppassword: this.jobData.ppassword
+          })
+            .then(this.analyzeResponse)
+        }, 2000)
+      }
+    },
     fetchSegments: function () {
       let data = {
         action: 'getSegments',
-        jid: this.$route.params.jobId,
-        password: this.$route.params.password,
+        jid: this.jobData.id,
+        password: this.jobData.password,
         where: 'center',
         step: 5
       }
-      if (this.lastSegmentId > 0) {
-        data['segment'] = this.lastSegmentId
+      if (this.jobData.lastSegmentId > 0) {
+        data['segment'] = this.jobData.lastSegmentId
       }
       SegmentsService.getSegments(data)
         .then(r => {
@@ -166,12 +222,12 @@ export default {
               version: el.version,
               suggestions: [],
               suggestionsLoaded: false,
-              jobId: this.$route.params.jobId,
-              jobPassword: this.$route.params.password
+              jobId: this.jobData.id,
+              jobPassword: this.jobData.password
             }
           })
-          if (this.lastSegmentId > 0) {
-            this.setActive(this.lastSegmentId)
+          if (this.jobData.lastSegmentId > 0) {
+            this.setActive(this.jobData.lastSegmentId)
           } else {
             this.setActive(this.segments[0].id)
           }
@@ -181,11 +237,11 @@ export default {
       const context = this.getContext(segment)
       const data = {
         action: 'getContribution',
-        password: this.$route.params.password,
+        password: this.jobData.password,
         is_concordance: 0,
         id_segment: segment.id,
         text: segment.original,
-        id_job: this.$route.params.jobId,
+        id_job: this.jobData.id,
         num_results: 5,
         context_before: context.before,
         context_after: context.after,
@@ -216,14 +272,14 @@ export default {
       }
     },
     setStatus: function (status) {
-      if (this.activeSegment === null) return
+      if (this.activeSegment === null || this.activeSegment.translation === '') return
       const context = this.getContext(this.activeSegment)
       const data = {
         id_segment: this.activeSegment.id,
-        id_job: this.$route.params.jobId,
+        id_job: this.jobData.id,
         id_first_file: this.fileId,
-        password: this.$route.params.password,
-        status: this.activeSegment,
+        password: this.jobData.password,
+        status: status,
         translation: this.activeSegment.translation,
         segment: this.activeSegment.original,
         time_to_edit: 1,
@@ -237,13 +293,15 @@ export default {
       SegmentsService.setTranslation(data)
         .then(() => {
           this.activeSegment.status = (status === 'translated' ? 'done' : '')
+          this.checkStats()
         })
     },
     setActive: function (id) {
+      if (id === this.activeSegment.id) return
       _.map(this.segments, e => {
         if (e.id === id) {
           e.active = true
-          this.lastSegmentId = e.id
+          this.jobData.lastSegmentId = e.id
           this.activeSegment = e
           if (e.suggestions.length === 0) this.getContribution(e)
           const data = {
@@ -262,8 +320,8 @@ export default {
       if (activeIndex === 0 || this.segments.length - activeIndex - 1 === 0) {
         let data = {
           action: 'getSegments',
-          jid: this.$route.params.jobId,
-          password: this.$route.params.password,
+          jid: this.jobData.id,
+          password: this.jobData.password,
           where: activeIndex === 0 ? 'before' : 'after',
           step: 5,
           segment: this.segments[activeIndex].id
@@ -282,8 +340,8 @@ export default {
                 version: el.version,
                 suggestions: [],
                 suggestionsLoaded: false,
-                jobId: this.$route.params.jobId,
-                jobPassword: this.$route.params.password
+                jobId: this.jobData.id,
+                jobPassword: this.jobData.password
               }
               if (activeIndex === 0) {
                 newArray.push(item)

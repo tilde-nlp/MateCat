@@ -22,9 +22,12 @@ class jobInfoController {
     public function doAction() {
         $user = AuthCookie::getCredentials();
         $JobsDao = new Jobs_JobDao();
-        $data = array_pop($JobsDao->getActiveSegment($user['uid'], $this->id));
+        $lastSegmentData = array_pop($JobsDao->getActiveSegment($user['uid'], $this->id));
+        $jobData = array_pop(Jobs_JobDao::getById($this->id));
         $result = new \stdClass();
-        $result->active_segment_id = $data['segment_id'];
+        $result->active_segment_id = $lastSegmentData['segment_id'];
+        $result->source = $jobData['source'];
+        $result->target = $jobData['target'];
 
         echo json_encode($result);
     }
