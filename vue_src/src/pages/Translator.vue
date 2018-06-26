@@ -56,7 +56,7 @@
     <div class="section-bg bg-white h-100p">
       <section class="section triple-block-container h-100p">
         <div class="triple-block double">
-          <div class="double-block">
+          <div class="double-block br-light-darker">
             <div class="number-col bl-light-darker header">
               <div class="ma">#</div>
             </div>
@@ -268,6 +268,7 @@ export default {
             return {
               createdBy: el.created_by,
               match: isMT ? 'MT' : parseInt(el.match) + '%',
+              rawMatch: parseInt(el.match),
               translation: el.translation,
               isMT: isMT
             }

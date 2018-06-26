@@ -4,18 +4,24 @@
     class="segment-container font-size-0"
     @click="() => {$emit('click', segment.id)}"
   >
-    <div class="double-block">
-      <div class="number-col bl-light-darker">
+    <div class="double-block segment-fix">
+      <div
+        :class="{top: nr === 1}"
+        class="number-col bl-light-darker">
         <div class="ma">{{ nr }}</div>
       </div>
       <div
         :style="{ 'font-size': fontSizeString }"
+        :class="{top: nr === 1}"
         class="segment-col first">
         {{ segment.original }}
       </div>
     </div>
+    <div class="br-light-darker ib w-0 h-100p absolute"/>
     <div class="double-block">
-      <div class="segment-col last">
+      <div
+        :class="{top: nr === 1}"
+        class="segment-col last">
         <textarea
           v-autosize
           ref="ta"
@@ -27,6 +33,12 @@
           rows="1"
           class="segment-edit"
         />
+      </div>
+      <div
+        :class="{top: nr === 1}"
+        class="tools-col"
+      >
+        &nbsp;
       </div>
     </div>
   </div>

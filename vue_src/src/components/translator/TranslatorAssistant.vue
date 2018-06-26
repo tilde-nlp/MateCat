@@ -36,7 +36,7 @@
               @input="value => {$emit('mtSystemChange', value)}"
             />
           </div>
-          <div>
+          <div class="mt-24">
             <label
               class="input-label"
             >Ieteikumi</label>
@@ -62,10 +62,16 @@
                   @click="() => { activeSegment.translation = suggestion.translation }"
                 >
                   <div class="suggestion-nr">{{ index + 1 }}</div>
-                  <div class="suggestion-text">
+                  <div
+                    :class="{'high-match': suggestion.rawMatch > 69, 'mid-match': suggestion.rawMatch > 49 && suggestion.rawMatch < 70, 'mt-match': suggestion.isMT}"
+                    class="suggestion-text"
+                  >
                     {{ suggestion.translation }}
                   </div>
-                  <div class="suggestion-match">{{ suggestion.match }}</div>
+                  <div
+                    :class="{'high-match': suggestion.rawMatch > 69, 'mid-match': suggestion.rawMatch > 49 && suggestion.rawMatch < 70, 'mt-match': suggestion.isMT}"
+                    class="suggestion-match"
+                  >{{ suggestion.match }}</div>
                 </div>
               </transition-group>
             </div>

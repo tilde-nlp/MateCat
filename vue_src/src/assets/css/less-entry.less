@@ -78,7 +78,7 @@
 @color-blueish: #cfd8dc;
 @color-blueish-darker: #78909c;
 @color-blueish-darker-still: #557c8f;
-@color-yellow: #f3ffea;
+@color-yellow-light: #f3ffea;
 @border-radius: unit(@e * @golden, px);
 
 .red {
@@ -187,7 +187,7 @@
 }
 
 .bg-yellow {
-  background-color: @color-yellow;
+  background-color: @color-yellow-light;
 }
 
 .bg-blueish {
@@ -474,7 +474,7 @@
             .css-circle(@spacer-24, @color-red);
           }
           &.file-draft {
-            .css-circle(@spacer-24, @color-yellow);
+            .css-circle(@spacer-24, @color-yellow-light);
           }
           &.file-complete {
             .css-circle(@spacer-24, @color-green);
@@ -1158,8 +1158,10 @@ select::-ms-expand {
 
 .double-block {
   width: 50%;
+  &.segment-fix {
+    width: calc(~"50% - 1px");
+  }
   .split-block;
-  .br-light-darker;
 }
 
 .tt-triple-container {
@@ -1197,6 +1199,10 @@ select::-ms-expand {
   &.header {
     .h-32;
     .bold;
+    .bb-light-darker;
+  }
+  &.top {
+    border-top: none;
   }
 }
 
@@ -1213,6 +1219,10 @@ select::-ms-expand {
   &.header {
     .h-32;
     .bold;
+    .bb-light-darker;
+  }
+  &.top {
+    border-top: none;
   }
 }
 
@@ -1234,6 +1244,7 @@ select::-ms-expand {
   &.header {
     .h-32;
     .bold;
+    .bb-light-darker;
   }
   &.assistant {
     .pl-32;
@@ -1242,6 +1253,9 @@ select::-ms-expand {
     -moz-box-shadow: -5px 0px 5px -2px rgba(0,0,0,0.25);
     box-shadow: -5px 0px 5px -2px rgba(0,0,0,0.25);
     height: 100%;
+  }
+  &.top {
+    border-top: none;
   }
 }
 
@@ -1276,6 +1290,16 @@ select::-ms-expand {
     .va-top;
     .red-darker;
     .bold;
+    color: @color-blueish-darker;
+    &.high-match {
+      color: @color-green;
+    }
+    &.mid-match {
+      color: @color-yellow-darker;
+    }
+    &.mt-match {
+      color: @color-red;
+    }
   }
   .suggestion-text {
     .ml-24;
@@ -1283,9 +1307,18 @@ select::-ms-expand {
     .ib;
     width: calc(~"100% - 65px");
     .size-xs;
-    border-right: solid @color-red-darker 4px;
     .bl-light-darker;
     .p-8;
+    border-right: solid @color-blueish-darker 3px;
+    &.high-match {
+      border-right: solid @color-green 3px;
+    }
+    &.mid-match {
+      border-right: solid @color-yellow-darker 3px;
+    }
+    &.mt-match {
+      border-right: solid @color-red 3px;
+    }
   }
 }
 
