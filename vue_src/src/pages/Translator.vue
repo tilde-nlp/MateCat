@@ -23,7 +23,7 @@
         <!-- SETTINGS TOGGLE -->
         <div
           class="head-control w-135 settings"
-          @click="() => { settingsOpen = !settingsOpen }"
+          @click="() => { settingsOpen = !settingsOpen; setSegmentListHeight() }"
         >
           <svgicon
             class="svg-icon va-middle"
@@ -73,7 +73,7 @@
             </div>
           </div>
           <div
-            :style="{'max-height': '600px'}"
+            :style="{'max-height': segmentListHeight + 'px'}"
             class="segments-container"
           >
             <translator-segment
@@ -121,6 +121,7 @@ export default {
       activeSegment: {},
       fontSize: null,
       system: '',
+      segmentListHeight: 600,
       jobData: {
         id: 0,
         password: '',
@@ -157,10 +158,22 @@ export default {
         this.fetchSegments()
         this.checkStats()
       })
+    this.$nextTick(function () {
+      window.addEventListener('resize', this.setSegmentListHeight)
+      this.setSegmentListHeight()
+    })
+  },
+  beforeDestroy: function () {
+    window.removeEventListener('resize', this.setSegmentListHeight)
   },
   methods: {
     goBack: function () {
       this.$router.push({name: 'file-list'})
+    },
+    setSegmentListHeight: function () {
+      const appHeight = document.getElementById('cat-app').clientHeight
+      this.segmentListHeight = appHeight - 48 - 32
+      if (this.settingsOpen) this.segmentListHeight -= 140
     },
     checkStats: function () {
       const link = this.$CONFIG.baseUrl + 'api/v1/jobs/' + this.jobData.id + '/' + this.jobData.password + '/stats'
