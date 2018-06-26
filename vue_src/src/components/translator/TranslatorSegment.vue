@@ -32,6 +32,7 @@
           :placeholder="segment.active ? 'Sākt tulkot...' : ''"
           rows="1"
           class="segment-edit"
+          @focus="() => {$emit('click', segment.id)}"
         />
       </div>
       <div

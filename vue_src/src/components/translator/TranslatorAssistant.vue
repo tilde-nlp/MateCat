@@ -58,10 +58,12 @@
                 mode="out-in"
               >
                 <div
+                  v-shortkey="['ctrl', parseInt(index + 1)]"
                   v-for="(suggestion, index) in activeSegment.suggestions"
                   :key="index"
                   class="suggestion"
                   @click="() => { activeSegment.translation = suggestion.translation }"
+                  @shortkey="() => { activeSegment.translation = suggestion.translation }"
                 >
                   <div class="suggestion-nr">{{ index + 1 }}</div>
                   <div

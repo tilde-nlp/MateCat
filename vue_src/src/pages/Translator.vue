@@ -317,6 +317,12 @@ export default {
       SegmentsService.setTranslation(data)
         .then(() => {
           this.activeSegment.status = (status === 'translated' ? 'done' : '')
+          if (status === 'translated') {
+            const activeIndex = parseInt(_.findKey(this.segments, {id: this.activeSegment.id}))
+            if (activeIndex + 1 < this.segments.length) {
+              this.setActive(this.segments[activeIndex + 1].id)
+            }
+          }
           this.checkStats()
         })
     },
