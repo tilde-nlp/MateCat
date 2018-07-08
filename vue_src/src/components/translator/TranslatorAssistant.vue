@@ -61,6 +61,7 @@
                   v-shortkey="['ctrl', parseInt(index + 1)]"
                   v-for="(suggestion, index) in activeSegment.suggestions"
                   :key="index"
+                  :class="{'last': index === activeSegment.suggestions.length - 1}"
                   class="suggestion"
                   @click="() => { activeSegment.translation = suggestion.translation }"
                   @shortkey="() => { activeSegment.translation = suggestion.translation }"
@@ -71,14 +72,11 @@
                     class="suggestion-text"
                   >
                     <span v-if="suggestion.isMT">{{ suggestion.translation }}</span>
-                    <div v-else>
-                      <div>
-                        <div class="ib mr-24">Izveidoja: <div class="input-label ib-i">{{ suggestion.createdBy }}</div></div>
-                        <div class="ib">Lietošanas biežums: <div class="input-label ib-i">{{ suggestion.usageCount }}</div></div>
-                      </div>
-                      <div class="input-label mb-4-i">Orģināls</div>
+                    <div
+                      v-else
+                      :title="'Izveidoja: ' + suggestion.createdBy + '; Lietošanas biežums: ' + suggestion.usageCount"
+                    >
                       <div class="mb-8 bb-light-darker">{{ suggestion.segment }}</div>
-                      <div class="input-label mb-4-i">Tulkojums</div>
                       <div>{{ suggestion.translation }}</div>
                     </div>
                   </div>

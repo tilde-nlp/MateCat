@@ -259,6 +259,19 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
 
     }
 
+    public static function getFileName( $job_id, $ttl = 0 ) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT f.filename as name
+FROM jobs j
+INNER JOIN segments s ON s.id = j.job_first_segment
+INNER JOIN files f ON f.id = s.id_file
+WHERE j.id = ?");
+        return $thisDao->setCacheTTL( $ttl )->_fetchObject( $stmt, new LoudArray(), [ $job_id ] );
+
+    }
+
     /**
      * @param Projects_ProjectStruct $project
      * @param Users_UserStruct $user

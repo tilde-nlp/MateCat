@@ -219,6 +219,13 @@
   border-bottom: solid 1px @color-blueish-darker;
 }
 
+.bl-blueish {
+  border-left: solid 1px @color-blueish;
+}
+.br-blueish {
+  border-right: solid 1px @color-blueish;
+}
+
 .section-bg {
   position: relative;
   width: 100%;
@@ -724,9 +731,8 @@ select::-ms-expand {
 }
 
 .head-control {
-  .h-48;
-  line-height: @spacer-48;
-  cursor: pointer;
+  .h-40;
+  line-height: @spacer-40;
   &.settings {
     position: absolute;
     top: 0;
@@ -869,6 +875,36 @@ select::-ms-expand {
     top: -2px;
     &:hover {
       cursor: default;
+    }
+  }
+}
+
+.header {
+  .h-40;
+  line-height: @spacer-40;
+  .relative;
+  .w-100p;
+}
+
+.link-button {
+  .ib;
+  .va-top;
+  .pointer;
+}
+
+.ta-header-button {
+  .h-40;
+  line-height: @spacer-40;
+  .w-40;
+  .ib;
+  .center;
+  .pointer;
+  .svg-icon {
+    .va-middle;
+    fill: @color-blueish-darker-still;
+    &:hover,
+    &.active {
+      fill: @color-blueish-darker-still;
     }
   }
 }
@@ -1186,22 +1222,19 @@ select::-ms-expand {
 .tt-triple-container {
   .mt-16;
   .triple-block-container;
-  .progress-bar {
-    .transition;
-    .ib;
-    border-bottom: solid @color-green-darker 4px;
-  }
-  .progress-bar-empty {
-    .transition;
-    .ib;
-    border-bottom: solid @color-light-darker 4px;
-  }
 }
 
-.segment-search-container {
-  .relative;
-  .ml-8;
-  .mr-16;
+.progress-bar {
+  .transition;
+  .ib;
+  .pull-left;
+  border-bottom: solid @color-green-darker 4px;
+}
+.progress-bar-empty {
+  .transition;
+  .ib;
+  .pull-right;
+  border-bottom: solid @color-light-darker 4px;
 }
 
 .number-col {
@@ -1285,6 +1318,10 @@ select::-ms-expand {
     .bg-grey-light;
   }
   .b-light-darker;
+  border-bottom: none;
+  &.last {
+    .bb-light-darker;
+  }
   .suggestion-nr {
     position: absolute;
     top: 50%;
@@ -1342,8 +1379,8 @@ select::-ms-expand {
 }
 
 .tabber {
-  .mt-16;
-  .mb-24;
+  .mt-8;
+  .mb-16;
   .tabber-section {
     .pointer;
     .transition;
@@ -1400,4 +1437,20 @@ select::-ms-expand {
   .mt-64;
   .size-s;
   .blueish-darker-still;
+}
+
+.translator-toolbox {
+  .relative;
+  .ib;
+  .h-40;
+  line-height: @spacer-40;
+  .w-100p;
+}
+
+.segments-footer {
+  .relative;
+  .w-100p;
+  .h-32;
+  .size-xs;
+  .dark;
 }

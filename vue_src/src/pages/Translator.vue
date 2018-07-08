@@ -6,56 +6,45 @@
   >
     <div class="section-bg bg-grey-light">
       <div class="bb-blueish"/>
-      <section class="section">
-        <!-- BACK -->
-        <div
-          class="head-control w-192"
-          @click="goBack"
-        >
-          <svgicon
-            class="svg-icon va-middle"
-            name="arrow"
-            height="24"
-          />
-          <div class="link ib">Atpakaļ uz sarakstu</div>
-        </div>
-        <!-- BACK END -->
-        <!-- SETTINGS TOGGLE -->
-        <div
-          class="head-control w-135 settings"
-          @click="() => { settingsOpen = !settingsOpen; setSegmentListHeight() }"
-        >
-          <svgicon
-            class="svg-icon va-middle"
-            name="toolbar"
-            height="24"
-          />
-          <div class="link ib">Rīkjosla</div>
-          <svgicon
-            :class="{open: settingsOpen}"
-            class="svg-icon va-middle chevron"
-            name="chevron"
-            height="24"
-          />
-        </div>
-        <!-- SETTINGS TOGGLE END -->
-      </section>
-      <div class="bb-blueish"/>
-      <section class="section">
+      <section class="section header">
         <translator-toolbox
-          :class="{open: settingsOpen}"
           :job-data="jobData"
-          class="slider-container"
           @confirm="() => setStatus('translated')"
         />
       </section>
-      <div
-        v-if="settingsOpen"
-        class="bb-blueish mt-16"/>
+      <div class="bb-blueish"/>
     </div>
     <div class="section-bg bg-white h-100p">
       <section class="section triple-block-container h-100p">
         <div class="triple-block double">
+          <div class="double-block">
+            <div class="relative ml-32 mt-8 mb-8 mr-8">
+              <svgicon
+                class="svg-icon icon-blueish-darker-still placeholder"
+                name="search"
+                height="24"
+              />
+              <input
+                class="input w-100p w-placeholder"
+                type="text"
+                placeholder="Atlasīt no sākotnējā teksta"
+              >
+            </div>
+          </div>
+          <div class="double-block">
+            <div class="relative mt-8 mb-8 mr-32">
+              <svgicon
+                class="svg-icon icon-blueish-darker-still placeholder"
+                name="search"
+                height="24"
+              />
+              <input
+                class="input w-100p w-placeholder"
+                type="text"
+                placeholder="Atlasīt no tulkotā teksta"
+              >
+            </div>
+          </div>
           <div class="double-block br-light-darker">
             <div class="number-col bl-light-darker header">
               <div class="ma">#</div>
@@ -80,10 +69,24 @@
               v-for="(segment, index) in segmentsList"
               :key="index"
               :segment-data="segment"
+              :first-segment-id="jobData.firstSegment"
               :font-size="fontSize"
-              :nr="index + 1"
+              :top-segment="index === 0"
               @click="setActive"
               @setStatus="setStatus"
+            />
+          </div>
+          <div class="segments-footer">
+            <div class="ib ml-8">{{ jobData.fileName }}</div>
+            <div class="pull-right mr-8">Iztulkoti {{ jobData.progress }}% no {{ jobData.segments }} segmentiem</div>
+            <div class="clear-both"/>
+            <div
+              :style="{width: jobData.progress + '%' }"
+              class="progress-bar"
+            />
+            <div
+              :style="{width: (100 - jobData.progress) + '%' }"
+              class="progress-bar-empty"
             />
           </div>
         </div>
@@ -118,7 +121,6 @@ export default {
     return {
       segments: [],
       fileId: '',
-      settingsOpen: false,
       activeSegment: {},
       fontSize: null,
       system: '',
@@ -135,7 +137,10 @@ export default {
         progress: 0,
         segments: 0,
         translatedUrl: '',
-        originalUrl: ''
+        originalUrl: '',
+        fileName: '',
+        firstSegment: 0,
+        lastSegment: 0
       }
     }
   },
@@ -159,6 +164,9 @@ export default {
         this.jobData.lastSegmentId = parseInt(jobRes.data.active_segment_id)
         this.jobData.source = jobRes.data.source
         this.jobData.target = jobRes.data.target
+        this.jobData.firstSegment = parseInt(jobRes.data.firstSegment)
+        this.jobData.lastSegment = parseInt(jobRes.data.lastSegment)
+        this.jobData.fileName = jobRes.data.fileName
         this.fetchSegments()
         this.checkStats()
         this.getFileUrls()
@@ -172,15 +180,10 @@ export default {
     window.removeEventListener('resize', this.setSegmentListHeight)
   },
   methods: {
-    goBack: function () {
-      this.$router.push({name: 'file-list'})
-    },
     setSegmentListHeight: function () {
       const appHeight = document.getElementById('cat-app').clientHeight
-      this.segmentListHeight = appHeight - 48 - 32
-      if (this.settingsOpen) this.segmentListHeight -= 140
-      this.suggestionsListHeight = appHeight - 48 - 32 - 167
-      if (this.settingsOpen) this.suggestionsListHeight -= 140
+      this.segmentListHeight = appHeight - 48 - 32 - 90
+      this.suggestionsListHeight = appHeight - 48 - 6 - 167
     },
     checkStats: function () {
       const link = this.$CONFIG.baseUrl + 'api/v1/jobs/' + this.jobData.id + '/' + this.jobData.password + '/stats'

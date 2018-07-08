@@ -333,8 +333,6 @@ export default {
         .then(r => {
           const file = _.find(this.files, { id: id })
           if (typeof (r.data.urls.files[0]) !== 'undefined') {
-            console.log('GetUrlsResponse: ')
-            console.log(r.data.urls.files[0])
             file.translatedUrl = r.data.urls.files[0].translation_download_url
           }
         })

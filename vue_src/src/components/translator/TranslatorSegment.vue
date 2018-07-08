@@ -6,13 +6,13 @@
   >
     <div class="double-block segment-fix">
       <div
-        :class="{top: nr === 1}"
+        :class="{top: topSegment}"
         class="number-col bl-light-darker">
         <div class="ma">{{ nr }}</div>
       </div>
       <div
         :style="{ 'font-size': fontSizeString }"
-        :class="{top: nr === 1}"
+        :class="{top: topSegment}"
         class="segment-col first">
         {{ segment.original }}
       </div>
@@ -20,7 +20,7 @@
     <div class="br-light-darker ib w-0 h-100p absolute"/>
     <div class="double-block">
       <div
-        :class="{top: nr === 1}"
+        :class="{top: topSegment}"
         class="segment-col last">
         <textarea
           v-autosize
@@ -36,7 +36,7 @@
         />
       </div>
       <div
-        :class="{top: nr === 1}"
+        :class="{top: topSegment}"
         class="tools-col"
       >
         &nbsp;
@@ -56,8 +56,12 @@ export default {
       type: Number,
       default: 15
     },
-    nr: {
+    firstSegmentId: {
       type: Number,
+      required: true
+    },
+    topSegment: {
+      type: Boolean,
       required: true
     }
   },
@@ -70,6 +74,9 @@ export default {
   computed: {
     fontSizeString: function () {
       return this.fontSize + 'px'
+    },
+    nr: function () {
+      return this.segmentData.id - this.firstSegmentId + 1
     }
   },
   watch: {
