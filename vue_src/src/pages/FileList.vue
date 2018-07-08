@@ -13,7 +13,7 @@
             name="file"
             height="24"
           />
-          <div class="link ib">Tulkot failus</div>
+          <div class="link ib">Pievienot failus</div>
           <svgicon
             :class="{open: sliderOpen}"
             class="svg-icon va-middle chevron"
@@ -34,20 +34,66 @@
             @fromLangChange="value => { fromLang = value }"
             @toLangChange="value => { toLang = value }"
             @subjectChange="value => { subject = value }"
+            @translate="nextFileUpload"
           />
           <file-list-selector
             @fileAdded="sendToUploadQueue"
           />
         </div>
         <!-- FILE UPLOAD CONTAINER END -->
+        <!-- FILE QUEUE -->
+        <transition
+          name="ffade"
+          mdde="out-in">
+          <div
+            v-if="uploadQueue.length"
+            class="file-queue-container"
+          >
+            <transition-group
+              name="ffade"
+              mode="out-in">
+              <div
+                v-for="(file, index) in uploadQueue"
+                :key="index"
+                class="">
+                <svgicon
+                  class="svg-icon va-middle static"
+                  name="document"
+                  height="32"
+                />
+                {{ file.name }}
+                <span
+                  v-if="!uploadQueueActive"
+                  class="icon-span is-24"
+                  title="Noņemt failu"
+                  @click="removeFromQueue(index)"
+                >
+                  <svgicon
+                    class="svg-icon va-middle icon-blueish-darker-still"
+                    name="close-circle"
+                    height="24"
+                  />
+                </span>
+              </div>
+            </transition-group>
+          </div>
+        </transition>
+        <!-- FILE QUEUE END -->
       </section>
       <div
         v-if="sliderOpen"
         class="bb-blueish mt-24"/>
     </div>
     <div class="section-bg scroll-section">
-      <div class="section">
+      <section class="section">
+        <div
+          v-if="!files.length"
+          class="empty-file-list"
+        >
+          Lai sāktu izmantot tulkošanas asistentu, augšupielādē kādu failu.
+        </div>
         <file-list-container
+          v-show="totalFiles > 0"
           :file-list="files"
           class="mb-48"
           @deleted="fetchFileList(currentPage, true)"
@@ -56,7 +102,7 @@
           :pages="totalPages"
           @pageChanged="fetchFileList"
         />
-      </div>
+      </section>
     </div>
   </div>
 </template>
@@ -114,6 +160,9 @@ export default {
             this.files = null
           }
           this.totalFiles = parseInt(response.data.pnumber)
+          if (this.totalFiles === 0) {
+            this.sliderOpen = true
+          }
           this.updatePagesCount()
           this.files = _.map(response.data.data, el => {
             if (updateList) {
@@ -291,6 +340,17 @@ export default {
         })
     },
     sendToUploadQueue: function (file) {
+      this.uploadQueue.push(file)
+    },
+    nextFileUpload: function () {
+      if (this.uploadQueue.length < 1) {
+        this.uploadQueueActive = false
+        this.$loading.endLoading('translator')
+        return
+      }
+      this.$loading.startLoading('translator')
+      this.uploadQueueActive = true
+      const file = this.uploadQueue.splice(0, 1)[0]
       let fileTmpId = this.tmpFileId++
       if (this.files.length === this.recordsPerPage) {
         this.files.splice(-1, 1)
@@ -304,26 +364,14 @@ export default {
       ))
       this.totalFiles++
       this.updatePagesCount()
-      this.uploadQueue.push({
-        file: file,
-        tmpId: fileTmpId
-      })
-      if (!this.uploadQueueActive) {
-        this.nextFileUpload()
-      }
-    },
-    nextFileUpload: function () {
-      if (this.uploadQueue.length < 1) {
-        this.uploadQueueActive = false
-        return
-      }
-      this.uploadQueueActive = true
-      const record = this.uploadQueue.splice(0, 1)[0]
-      this.upload(record.file, record.file.name, record.tmpId)
+      this.upload(file, file.name, fileTmpId)
     },
     updatePagesCount: function () {
       const pages = Math.ceil(this.totalFiles / this.recordsPerPage)
       this.totalPages = isNaN(pages) ? 1 : pages
+    },
+    removeFromQueue: function (index) {
+      this.uploadQueue.splice(index, 1)
     }
   }
 }

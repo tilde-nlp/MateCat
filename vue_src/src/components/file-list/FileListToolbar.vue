@@ -24,15 +24,6 @@
           @click="setFromLang('ru-RU')"
         >Krievu</div>
       </div>
-      <!--<div class="select-container">-->
-      <!--<v-select-->
-      <!--id="fromLanguage"-->
-      <!--v-model="fromLang"-->
-      <!--:options="languages"-->
-      <!--name="fromLanguage"-->
-      <!--@input="value => {$emit('fromLangChange', value)}"-->
-      <!--/>-->
-      <!--</div>-->
     </div>
     <div class="language-selector subject">
       <div class="select-container">
@@ -79,16 +70,28 @@
           @click="setToLang('ru-RU')"
         >Krievu</div>
       </div>
-      <!--<div class="select-container">-->
-      <!--<v-select-->
-      <!--id="toLanguage"-->
-      <!--v-model="toLang"-->
-      <!--:options="languages"-->
-      <!--name="fromLanguage"-->
-      <!--@input="value => {$emit('toLangChange', value)}"-->
-      <!--/>-->
-      <!--</div>-->
     </div>
+    <button
+      class="button pull-right"
+      @click="() => { if (!$loading.isLoading('translator')) $emit('translate') }"
+    >
+      <transition
+        name="ffade"
+        mode="out-in">
+        <span v-if="!$loading.isLoading('translator')">Tulkot</span>
+        <div
+          v-else
+          class="translate-loading-fix"
+        >
+          <span class="vam-helper"/>
+          <img
+            :src="$assetPath + 'loading-spinner.svg'"
+            class="va-middle"
+            height="24"
+          >
+        </div>
+      </transition>
+    </button>
   </div>
 </template>
 
@@ -111,19 +114,6 @@ export default {
     }
   },
   mounted: function () {
-    // LanguageService.getList()
-    //   .then(r => {
-    //     // Get relevant data for languages dropdown
-    //     this.languages = _.map(r.data.languages, el => {
-    //       return {
-    //         label: el.name,
-    //         value: el.code
-    //       }
-    //     })
-    //     // Set default languages
-    //     this.fromLang = _.find(this.languages, { value: this.defaultFromCode })
-    //     this.toLang = _.find(this.languages, { value: this.defaultToCode })
-    //   })
     this.setFromLang(this.defaultToCode)
     this.setToLang(this.defaultFromCode)
     LanguageService.getSubjectsList()

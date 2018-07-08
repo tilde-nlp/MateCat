@@ -74,6 +74,7 @@
 @color-green-darker: #3e8124;
 @color-yellow: #dbd54a;
 @color-yellow-darker: #b7b149;
+@color-yellow-l: #fdf7e3;
 @color-grey-light: #eceff1;
 @color-blueish: #cfd8dc;
 @color-blueish-darker: #78909c;
@@ -95,6 +96,10 @@
 
 .yellow-darker {
   color: @color-yellow-darker;
+}
+
+.blueish-darker-still {
+  color: @color-blueish-darker-still;
 }
 
 /* FONT VARIABLES */
@@ -190,6 +195,10 @@
   background-color: @color-yellow-light;
 }
 
+.bg-yellow-l {
+  background-color: @color-yellow-l;
+}
+
 .bg-blueish {
   background-color: @color-blueish;
 }
@@ -231,6 +240,7 @@
   .border-box;
   .pointer;
   .size-s;
+  .bold;
   .white;
   transition: all unit(@golden / 10, s) ease-in-out;
 
@@ -456,12 +466,16 @@
   .file-list {
     max-height: 480px;
     .file-row {
+      .transition;
       .size-s;
       .border-box;
       display: block;
       border-bottom: solid 1px @color-light-darker;
       height: @file-row-height;
       line-height: @file-row-height;
+      &:hover {
+        .bg-yellow-l;
+      }
       .va-middle;
       .pb-8;
       .column {
@@ -704,6 +718,7 @@ select::-ms-expand {
   max-height: 0;
   overflow: hidden;
   &.open {
+    overflow: visible;
     max-height: 233px;
   }
 }
@@ -891,6 +906,10 @@ select::-ms-expand {
   cursor: pointer;
   height: @file-row-height;
   line-height: @file-row-height;
+  &.is-24 {
+    height: @spacer-24;
+    line-height: @spacer-24;
+  }
 }
 
 .icon-span,
@@ -1362,4 +1381,23 @@ select::-ms-expand {
 
 .suggestions-container {
   overflow-y: scroll;
+}
+
+.file-queue-container {
+  .b-blueish;
+  .p-16;
+  .mt-16;
+  .bg-white;
+}
+
+.translate-loading-fix {
+  .relative;
+  top: -3px;
+}
+
+.empty-file-list {
+  .center;
+  .mt-64;
+  .size-s;
+  .blueish-darker-still;
 }
