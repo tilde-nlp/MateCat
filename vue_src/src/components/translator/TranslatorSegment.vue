@@ -29,7 +29,7 @@
           :min-height="1"
           :style="{ 'font-size': fontSizeString }"
           :disabled="segment.status === 'done'"
-          :placeholder="segment.active ? 'Sākt tulkot...' : ''"
+          :placeholder="segment.active && segment.status !== 'done' ? 'Sākt tulkot...' : ''"
           rows="1"
           class="segment-edit"
           @focus="() => {$emit('click', segment.id)}"

@@ -208,12 +208,12 @@ class setTranslationController extends ajaxController {
             throw new Exception( $msg, -1 );
         }
 
-        if ( is_null( $this->translation ) || $this->translation === '' ) {
-            Log::doLog( "Empty Translation \n\n" . var_export( $_POST, true ) );
-
-            // won't save empty translation but there is no need to return an errors
-            throw new Exception( "Empty Translation \n\n" . var_export( $_POST, true ), 0 );
-        }
+//        if ( is_null( $this->translation ) || $this->translation === '' ) {
+//            Log::doLog( "Empty Translation \n\n" . var_export( $_POST, true ) );
+//
+//            // won't save empty translation but there is no need to return an errors
+//            throw new Exception( "Empty Translation \n\n" . var_export( $_POST, true ), 0 );
+//        }
 
     }
 

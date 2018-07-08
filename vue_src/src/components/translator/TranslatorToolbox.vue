@@ -74,8 +74,12 @@
     <!-- CONFIRM END -->
     <!-- CANCEL -->
     <div
+      v-shortkey="['ctrl', 'd']"
       title="Delete: Ctrl + D"
-      class="ta-header-button">
+      class="ta-header-button"
+      @click="() => {$emit('clear')}"
+      @shortkey="() => {$emit('clear')}"
+    >
       <svgicon
         class="svg-icon"
         name="trash"
@@ -107,8 +111,12 @@
     <!-- JOIN END -->
     <!-- COPY SOURCE TO TARGET -->
     <div
+      v-shortkey.once="['ctrl', 'insert']"
       title="Copy source to target: Ctrl + Insert"
-      class="ta-header-button br-blueish">
+      class="ta-header-button br-blueish"
+      @click="() => { $emit('sourceToTarget') }"
+      @shortkey="() => { $emit('sourceToTarget') }"
+    >
       <svgicon
         class="svg-icon flip-h"
         name="arrow"

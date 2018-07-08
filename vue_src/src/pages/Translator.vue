@@ -10,6 +10,8 @@
         <translator-toolbox
           :job-data="jobData"
           @confirm="() => setStatus('translated')"
+          @sourceToTarget="copySourceToTarget"
+          @clear="clearTranslation"
         />
       </section>
       <div class="bb-blueish"/>
@@ -25,7 +27,7 @@
                 height="24"
               />
               <input
-                class="input w-100p w-placeholder"
+                class="search-input"
                 type="text"
                 placeholder="Atlasīt no sākotnējā teksta"
               >
@@ -39,7 +41,7 @@
                 height="24"
               />
               <input
-                class="input w-100p w-placeholder"
+                class="search-input"
                 type="text"
                 placeholder="Atlasīt no tulkotā teksta"
               >
@@ -182,7 +184,7 @@ export default {
   methods: {
     setSegmentListHeight: function () {
       const appHeight = document.getElementById('cat-app').clientHeight
-      this.segmentListHeight = appHeight - 48 - 32 - 90
+      this.segmentListHeight = appHeight - 48 - 26 - 90
       this.suggestionsListHeight = appHeight - 48 - 6 - 167
     },
     checkStats: function () {
@@ -299,7 +301,7 @@ export default {
       }
     },
     setStatus: function (status) {
-      if (this.activeSegment === null || this.activeSegment.translation === '') return
+      if (this.activeSegment === null) return
       const context = this.getContext(this.activeSegment)
       const data = {
         id_segment: this.activeSegment.id,
@@ -407,12 +409,21 @@ export default {
       FileService.getUrls({id_project: this.jobData.projectId, password: this.jobData.ppassword})
         .then(r => {
           if (typeof (r.data.urls.files[0]) !== 'undefined') {
-            console.log('GetUrlsResponse: ')
-            console.log(r.data.urls.files[0])
             Vue.set(this.jobData, 'translatedUrl', r.data.urls.files[0].translation_download_url)
             Vue.set(this.jobData, 'originalUrl', r.data.urls.files[0].original_download_url)
           }
         })
+    },
+    copySourceToTarget: function () {
+      if (this.activeSegment === null) return
+      this.activeSegment.translation = this.activeSegment.original
+      this.setStatus('draft')
+    },
+    clearTranslation: function () {
+      console.log('clearing')
+      if (this.activeSegment === null) return
+      this.activeSegment.translation = ''
+      this.setStatus('draft')
     }
   }
 }

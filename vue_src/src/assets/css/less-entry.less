@@ -362,7 +362,7 @@
   }
   &.placeholder {
     position: absolute;
-    top: 9px;
+    top: 3px;
     left: 10px;
   }
 }
@@ -1041,6 +1041,7 @@ select::-ms-expand {
   }
   &.active {
     .bg-white;
+    border: solid 1px @color-red;
   }
   &:last-child {
     .bb-light-darker;
@@ -1453,4 +1454,11 @@ select::-ms-expand {
   .h-32;
   .size-xs;
   .dark;
+}
+.search-input {
+  .input;
+  .w-100p;
+  .w-placeholder;
+  .h-32;
+  line-height: @spacer-32;
 }
