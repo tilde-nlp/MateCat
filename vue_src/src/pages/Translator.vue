@@ -12,6 +12,8 @@
           @confirm="() => setStatus('translated')"
           @sourceToTarget="copySourceToTarget"
           @clear="clearTranslation"
+          @toPrevious="searchUnconfirmed(-1)"
+          @toNext="searchUnconfirmed(1)"
         />
       </section>
       <div class="bb-blueish"/>
@@ -353,46 +355,54 @@ export default {
       })
       const activeIndex = parseInt(_.findKey(this.segments, {active: true}))
       if (activeIndex === 0 || this.segments.length - activeIndex - 1 === 0) {
-        let data = {
-          action: 'getSegments',
-          jid: this.jobData.id,
-          password: this.jobData.password,
-          where: activeIndex === 0 ? 'before' : 'after',
-          step: 5,
-          segment: this.segments[activeIndex].id
-        }
-        SegmentsService.getSegments(data)
-          .then(r => {
-            if (Object.values(r.data.data.files).length < 1) return
-            let newArray = []
-            _.map(Object.values(r.data.data.files)[0].segments, el => {
-              const item = {
-                id: parseInt(el.sid),
-                original: el.segment,
-                translation: el.translation,
-                status: (el.status === 'TRANSLATED' ? 'done' : ''),
-                active: false,
-                version: el.version,
-                suggestions: [],
-                suggestionsLoaded: false,
-                jobId: this.jobData.id,
-                jobPassword: this.jobData.password
-              }
-              if (activeIndex === 0) {
-                newArray.push(item)
-              } else {
-                this.segments.push(item)
-              }
-            })
+        this.readMoreSegments(activeIndex)
+      }
+    },
+    readMoreSegments: function (activeIndex, callback) {
+      callback = callback || null
+      let data = {
+        action: 'getSegments',
+        jid: this.jobData.id,
+        password: this.jobData.password,
+        where: activeIndex === 0 ? 'before' : 'after',
+        step: 5,
+        segment: this.segments[activeIndex].id
+      }
+      SegmentsService.getSegments(data)
+        .then(r => {
+          if (Object.values(r.data.data.files).length < 1) {
+            if (callback !== null) callback()
+            return
+          }
+          let newArray = []
+          _.map(Object.values(r.data.data.files)[0].segments, el => {
+            const item = {
+              id: parseInt(el.sid),
+              original: el.segment,
+              translation: el.translation,
+              status: (el.status === 'TRANSLATED' ? 'done' : ''),
+              active: false,
+              version: el.version,
+              suggestions: [],
+              suggestionsLoaded: false,
+              jobId: this.jobData.id,
+              jobPassword: this.jobData.password
+            }
             if (activeIndex === 0) {
-              newArray = newArray.concat(this.segments)
-              this.segments = null
-              Vue.nextTick(() => {
-                this.segments = newArray
-              })
+              newArray.push(item)
+            } else {
+              this.segments.push(item)
             }
           })
-      }
+          if (activeIndex === 0) {
+            newArray = newArray.concat(this.segments)
+            this.segments = null
+            Vue.nextTick(() => {
+              this.segments = newArray
+            })
+          }
+          if (callback !== null) callback()
+        })
     },
     fontControl: function (event) {
       switch (event.srcKey) {
@@ -420,10 +430,42 @@ export default {
       this.setStatus('draft')
     },
     clearTranslation: function () {
-      console.log('clearing')
       if (this.activeSegment === null) return
       this.activeSegment.translation = ''
       this.setStatus('draft')
+    },
+    searchUnconfirmed: function (direction, activeIndex) {
+      activeIndex = activeIndex || parseInt(_.findKey(this.segments, {active: true}))
+      let segmentId = 0
+      while (1) {
+        activeIndex += direction
+        if (activeIndex < 0) {
+          activeIndex = 0
+          segmentId = this.segments[activeIndex].id
+          this.readMoreSegments(activeIndex, () => {
+            const newActiveIndex = parseInt(_.findKey(this.segments, {id: segmentId}))
+            if (newActiveIndex !== activeIndex) {
+              this.searchUnconfirmed(direction, newActiveIndex)
+            }
+          })
+          break
+        }
+        if (activeIndex >= this.segments.length) {
+          activeIndex = this.segments.length - 1
+          segmentId = this.segments[activeIndex].id
+          this.readMoreSegments(activeIndex, () => {
+            const newActiveIndex = parseInt(_.findKey(this.segments, {id: segmentId}))
+            if (newActiveIndex !== activeIndex) {
+              this.searchUnconfirmed(direction, newActiveIndex)
+            }
+          })
+          break
+        }
+        if (this.segments[activeIndex].status !== 'done') {
+          this.setActive(this.segments[activeIndex].id)
+          break
+        }
+      }
     }
   }
 }

@@ -37,8 +37,12 @@
     <!-- REDO END -->
     <!-- BACK -->
     <div
+      v-shortkey.once="['ctrl', 'arrowup']"
       title="Previous unconfirmed segment: Ctrl + Up"
-      class="ta-header-button bl-blueish">
+      class="ta-header-button bl-blueish"
+      @click="() => {$emit('toPrevious')}"
+      @shortkey="() => {$emit('toPrevious')}"
+    >
       <svgicon
         class="svg-icon flip-h"
         name="chevron"
@@ -48,8 +52,12 @@
     <!-- BACK END -->
     <!-- FORWARD -->
     <div
+      v-shortkey.once="['ctrl', 'arrowdown']"
       title="Next unconfirmed segment: Ctrl + Down"
-      class="ta-header-button">
+      class="ta-header-button"
+      @click="() => {$emit('toNext')}"
+      @shortkey="() => {$emit('toNext')}"
+    >
       <svgicon
         class="svg-icon"
         name="chevron"
