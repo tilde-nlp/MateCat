@@ -266,6 +266,11 @@
     background-color: @color-red-darker;
   }
 
+  &:disabled {
+    background-color: @color-grey;
+    cursor: default;
+  }
+
   &.languages {
     background-color: @color-white;
     .ib;
@@ -733,6 +738,7 @@ select::-ms-expand {
 .head-control {
   .h-40;
   line-height: @spacer-40;
+  .pointer;
   &.settings {
     position: absolute;
     top: 0;

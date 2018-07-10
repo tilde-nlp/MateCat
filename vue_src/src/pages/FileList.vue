@@ -31,6 +31,7 @@
           class="slider-container"
         >
           <file-list-toolbar
+            :button-enabled="uploadQueue.length > 0"
             @fromLangChange="value => { fromLang = value }"
             @toLangChange="value => { toLang = value }"
             @subjectChange="value => { subject = value }"
@@ -56,11 +57,11 @@
                 v-for="(file, index) in uploadQueue"
                 :key="index"
                 class="">
-                <svgicon
+                <img
+                  :src="$assetPath + 'document.svg'"
                   class="svg-icon va-middle static"
-                  name="document"
                   height="32"
-                />
+                >
                 {{ file.name }}
                 <span
                   v-if="!uploadQueueActive"
@@ -127,6 +128,7 @@ export default {
   data: function () {
     return {
       files: [],
+      uploadQueue: [],
       subject: null,
       toLang: null,
       fromLang: null,
@@ -138,7 +140,6 @@ export default {
       tmpFileId: 0,
       lastUpload: new Date().getTime(),
       uploadThrottleTime: 1000,
-      uploadQueue: [],
       uploadQueueActive: false
     }
   },

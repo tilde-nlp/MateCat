@@ -72,6 +72,8 @@
       </div>
     </div>
     <button
+      :disabled="!buttonEnabled"
+      :title="buttonTitle"
       class="button pull-right"
       @click="() => { if (!$loading.isLoading('translator')) $emit('translate') }"
     >
@@ -101,6 +103,12 @@ import LanguageService from 'services/languages'
 import _ from 'lodash'
 export default {
   name: 'FileListToolbar',
+  props: {
+    buttonEnabled: {
+      type: Boolean,
+      required: true
+    }
+  },
   data: function () {
     return {
       languages: [],
@@ -111,6 +119,11 @@ export default {
       subjects: [],
       subject: null,
       defaultSubjectKey: 'general'
+    }
+  },
+  computed: {
+    buttonTitle: function () {
+      return this.buttonEnabled ? 'Augšupielādēt failus' : 'Vispirms jāievelk faili'
     }
   },
   mounted: function () {

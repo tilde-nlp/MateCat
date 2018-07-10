@@ -4,6 +4,7 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -15,6 +16,7 @@ module.exports = {
     './src/app.js'
   ],
   devtool: 'inline-source-map',
+  stats: 'errors-only',
   output: {
     path: resolve('../public/vue_dist'),
     filename: 'main.js',
@@ -110,6 +112,7 @@ module.exports = {
       filename: 'index.html',
       template: 'index_dev.html',
       inject: false
-    })
+    }),
+    new FriendlyErrorsWebpackPlugin()
   ]
 }
