@@ -61,7 +61,7 @@
             <div class="segment-col header last">
               Tulkojums: {{ jobData.target }}
             </div>
-            <div class="tools-col header">
+            <div class="tools-col header no-border">
               &nbsp;
             </div>
           </div>
@@ -250,7 +250,9 @@ export default {
               suggestions: [],
               suggestionsLoaded: false,
               jobId: this.jobData.id,
-              jobPassword: this.jobData.password
+              jobPassword: this.jobData.password,
+              saveType: '',
+              match: 0
             }
           })
           if (this.jobData.lastSegmentId > 0) {
@@ -386,7 +388,9 @@ export default {
               suggestions: [],
               suggestionsLoaded: false,
               jobId: this.jobData.id,
-              jobPassword: this.jobData.password
+              jobPassword: this.jobData.password,
+              saveType: '',
+              match: 0
             }
             if (activeIndex === 0) {
               newArray.push(item)

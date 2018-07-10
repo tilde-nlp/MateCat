@@ -1,5 +1,9 @@
 @import "~@shibetec/vue-toolbox/dist/less/shibetec-less";
 
+.no-border {
+  border: none;
+}
+
 .absolute-right {
   position: absolute;
   top: 0;
@@ -1266,13 +1270,17 @@ select::-ms-expand {
 }
 
 .tools-col {
+  .absolute;
   .border-box;
   .size-s;
   .ib;
   width: 41px;
   .center;
   .va-top;
-  .br-light-darker;
+  .bl-light-darker;
+  &.no-border {
+    border-left: none;
+  }
   .bt-light-darker;
   .h-100p;
   &.header {
@@ -1282,6 +1290,32 @@ select::-ms-expand {
   }
   &.top {
     border-top: none;
+  }
+  .center;
+  .size-xs;
+  .bold;
+  &.type-mt {
+    .red;
+    border-left: solid 3px @color-red;
+  }
+  &.high-match {
+    color: @color-green;
+  }
+  &.mid-match {
+    color: @color-yellow-darker;
+  }
+  &.type-high {
+    .green;
+    border-left: solid 3px @color-green;
+  }
+  &.type-mid {
+    .yellow-darker;
+    border-left: solid 3px @color-yellow-darker;
+  }
+  &.type-low,
+  &.type-manual {
+    color: @color-blueish-darker;
+    border-left: solid 3px @color-blueish-darker;
   }
 }
 

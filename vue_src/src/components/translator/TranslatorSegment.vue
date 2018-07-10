@@ -36,10 +36,23 @@
         />
       </div>
       <div
-        :class="{top: topSegment}"
+        :class="toolsType"
         class="tools-col"
       >
-        &nbsp;
+        <div
+          v-if="segment.saveType === 'MT'"
+          class="ma"
+        >MT</div>
+        <div
+          v-if="segment.saveType === 'TM'"
+          class="ma"
+        >{{ segment.match }}</div>
+        <svgicon
+          v-if="segment.saveType === 'MANUAL'"
+          class="svg-icon static ma icon-blueish-darker-still"
+          name="pencil"
+          height="24"
+        />
       </div>
     </div>
   </div>
@@ -77,6 +90,16 @@ export default {
     },
     nr: function () {
       return this.segmentData.id - this.firstSegmentId + 1
+    },
+    toolsType: function () {
+      return {
+        top: this.topSegment,
+        'type-mt': this.segment.saveType === 'MT',
+        'type-high': this.segment.saveType === 'TM' && this.segment.match > 69,
+        'type-mid': this.segment.saveType === 'TM' && this.segment.match < 70 && this.segment.match > 49,
+        'type-low': this.segment.saveType === 'TM' && this.segment.match < 50,
+        'type-manual': this.segment.saveType === 'MANUAL'
+      }
     }
   },
   watch: {
