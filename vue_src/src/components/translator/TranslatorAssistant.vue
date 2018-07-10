@@ -63,8 +63,8 @@
                   :key="index"
                   :class="{'last': index === activeSegment.suggestions.length - 1}"
                   class="suggestion"
-                  @click="() => { activeSegment.translation = suggestion.translation }"
-                  @shortkey="() => { activeSegment.translation = suggestion.translation }"
+                  @click="setSuggestion(suggestion)"
+                  @shortkey="setSuggestion(suggestion)"
                 >
                   <div class="suggestion-nr">{{ index + 1 }}</div>
                   <div
@@ -130,6 +130,17 @@ export default {
         this.system = this.systems[0]
         this.$emit('mtSystemChange', this.system)
       })
+  },
+  methods: {
+    setSuggestion: function (suggestion) {
+      this.activeSegment.translation = suggestion.translation
+      if (suggestion.match === 'MT') {
+        this.activeSegment.saveType = 'MT'
+      } else {
+        this.activeSegment.saveType = 'TM'
+        this.activeSegment.match = parseInt(suggestion.match)
+      }
+    }
   }
 }
 </script>

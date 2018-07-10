@@ -19,6 +19,8 @@ class setTranslationController extends ajaxController {
     protected $id_translator;
     protected $time_to_edit;
     protected $translation;
+    protected $save_type;
+    protected $save_match;
 
     /**
      * @var string
@@ -93,6 +95,8 @@ class setTranslationController extends ajaxController {
                 ],
                 'context_before'          => [ 'filter' => FILTER_UNSAFE_RAW ],
                 'context_after'           => [ 'filter' => FILTER_UNSAFE_RAW ],
+                'saveType'           => [ 'filter' => FILTER_SANITIZE_STRING ],
+                'saveMatch'           => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
         ];
 
         $this->__postInput = filter_input_array( INPUT_POST, $filterArgs );
@@ -110,6 +114,8 @@ class setTranslationController extends ajaxController {
         $this->id_segment            = $this->__postInput[ 'id_segment' ];
         $this->time_to_edit          = (int)$this->__postInput[ 'time_to_edit' ]; //cast to int, so the default is 0
         $this->id_translator         = $this->__postInput[ 'id_translator' ];
+        $this->save_type         = $this->__postInput[ 'saveType' ];
+        $this->save_match         = $this->__postInput[ 'saveMatch' ];
         $this->client_target_version = ( empty( $this->__postInput[ 'version' ] ) ? '0' : $this->__postInput[ 'version' ] );
 
         list( $this->translation, $this->split_chunk_lengths ) = CatUtils::parseSegmentSplit( CatUtils::view2rawxliff( $this->__postInput[ 'translation' ] ), ' ' );
@@ -317,6 +323,8 @@ class setTranslationController extends ajaxController {
             $_Translation[ 'suggestion_position' ]    = 0;
             $_Translation[ 'warning' ]                = false;
             $_Translation[ 'translation_date' ]       = date( "Y-m-d H:i:s" );
+            $_Translation[ 'save_type' ]       = $this->save_type;
+            $_Translation[ 'save_match' ]       = $this->save_match;
 
             CatUtils::addSegmentTranslation( $_Translation, $this->result[ 'errors' ] );
 
@@ -343,6 +351,8 @@ class setTranslationController extends ajaxController {
         $_Translation[ 'suggestion_position' ]    = $this->chosen_suggestion_index;
         $_Translation[ 'warning' ]                = $check->thereAreWarnings();
         $_Translation[ 'translation_date' ]       = date( "Y-m-d H:i:s" );
+        $_Translation[ 'save_type' ]       = $this->save_type;
+        $_Translation[ 'save_match' ]       = $this->save_match;
 
         /**
          * Evaluate new Avg post-editing effort for the job:

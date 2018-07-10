@@ -467,7 +467,9 @@ function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'a
                           FROM segment_translations
                           WHERE segment_hash = s.segment_hash
                           AND id_job =  j.id
-                ) repetitions_in_chunk
+                ) repetitions_in_chunk,
+                st.save_type AS save_type,
+                st.save_match AS save_match
 
                 $optional_fields
 
@@ -637,6 +639,8 @@ function addTranslation( array $_Translation ) {
                 time_to_edit = time_to_edit + VALUES( time_to_edit ),
                 translation = {$_Translation['translation']},
                 translation_date = {$_Translation['translation_date']},
+                save_type = {$_Translation['save_type']},
+                save_match = {$_Translation['save_match']},
                 warning = {$_Translation[ 'warning' ]}";
 
     if ( array_key_exists( 'version_number', $_Translation ) ) {

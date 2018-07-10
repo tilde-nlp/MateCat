@@ -251,8 +251,8 @@ export default {
               suggestionsLoaded: false,
               jobId: this.jobData.id,
               jobPassword: this.jobData.password,
-              saveType: '',
-              match: 0
+              saveType: el.save_type,
+              match: el.save_match
             }
           })
           if (this.jobData.lastSegmentId > 0) {
@@ -321,7 +321,9 @@ export default {
         propagate: true,
         context_before: context.before,
         context_after: context.after,
-        action: 'setTranslation'
+        action: 'setTranslation',
+        saveType: this.activeSegment.saveType,
+        saveMatch: this.activeSegment.match
       }
       SegmentsService.setTranslation(data)
         .then(() => {
@@ -436,6 +438,8 @@ export default {
     clearTranslation: function () {
       if (this.activeSegment === null) return
       this.activeSegment.translation = ''
+      this.activeSegment.save_type = null
+      this.activeSegment.save_match = null
       this.setStatus('draft')
     },
     searchUnconfirmed: function (direction, activeIndex) {

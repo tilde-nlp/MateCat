@@ -33,9 +33,11 @@
           rows="1"
           class="segment-edit"
           @focus="() => {$emit('click', segment.id)}"
+          @input="onSegmentInput"
         />
       </div>
       <div
+        v-if="segment.status === 'done'"
         :class="toolsType"
         class="tools-col"
       >
@@ -53,6 +55,12 @@
           name="pencil"
           height="24"
         />
+      </div>
+      <div
+        v-else
+        class="tools-col"
+      >
+        &nbsp;
       </div>
     </div>
   </div>
@@ -113,6 +121,13 @@ export default {
   methods: {
     copySourceToTarget: function () {
       this.segment.translation = this.segment.original
+    },
+    onSegmentInput: function () {
+      if (this.segment.saveType === 'MANUAL') {
+        return
+      }
+      this.segment.saveType = 'MANUAL'
+      this.segment.match = 0
     }
   }
 }
