@@ -66,8 +66,10 @@
             </div>
           </div>
           <div
+            id="translatorSegments"
             :style="{'max-height': segmentListHeight + 'px'}"
             class="segments-container"
+            @scroll="segmentsScrolled"
           >
             <translator-segment
               v-for="(segment, index) in segmentsList"
@@ -260,6 +262,7 @@ export default {
           } else {
             this.setActive(this.segments[0].id)
           }
+          this.segmentsScrolled()
         })
     },
     getContribution: function (segment) {
@@ -331,7 +334,7 @@ export default {
           if (status === 'translated') {
             const activeIndex = parseInt(_.findKey(this.segments, {id: this.activeSegment.id}))
             if (activeIndex + 1 < this.segments.length) {
-              this.setActive(this.segments[activeIndex + 1].id)
+              this.searchUnconfirmed(1)
             }
           }
           this.checkStats()
@@ -364,6 +367,10 @@ export default {
     },
     readMoreSegments: function (activeIndex, callback) {
       callback = callback || null
+      console.log('read more segments')
+      console.log(activeIndex)
+      console.log(this.segments[activeIndex])
+      console.log(this.segments)
       let data = {
         action: 'getSegments',
         jid: this.jobData.id,
@@ -473,6 +480,22 @@ export default {
           this.setActive(this.segments[activeIndex].id)
           break
         }
+      }
+    },
+    segmentsScrolled: function () {
+      if (!this.segments.length) {
+        return
+      }
+      const element = document.getElementById('translatorSegments')
+      console.log('scroll top: ' + element.scrollTop + ' scrollHeight: ' + element.scrollHeight + ' oh: ' + element.offsetHeight)
+      if (element.scrollTop === (element.scrollHeight - element.offsetHeight)) {
+        console.log('scrolled to bottom')
+        this.readMoreSegments(this.segments.length - 1)
+        return
+      }
+      if (element.scrollTop === 0) {
+        console.log('scrolled to top')
+        this.readMoreSegments(0)
       }
     }
   }
