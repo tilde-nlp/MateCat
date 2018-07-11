@@ -14,6 +14,7 @@
           @clear="clearTranslation"
           @toPrevious="searchUnconfirmed(-1)"
           @toNext="searchUnconfirmed(1)"
+          @toggleSplit="toggleSplit"
         />
       </section>
       <div class="bb-blueish"/>
@@ -78,6 +79,7 @@
               :first-segment-id="jobData.firstSegment"
               :font-size="fontSize"
               :top-segment="index === 0"
+              :split-active="splitActive"
               @click="setActive"
               @setStatus="setStatus"
             />
@@ -132,6 +134,7 @@ export default {
       system: '',
       segmentListHeight: 600,
       suggestionsListHeight: 500,
+      splitActive: false,
       jobData: {
         id: 0,
         password: '',
@@ -367,10 +370,6 @@ export default {
     },
     readMoreSegments: function (activeIndex, callback) {
       callback = callback || null
-      console.log('read more segments')
-      console.log(activeIndex)
-      console.log(this.segments[activeIndex])
-      console.log(this.segments)
       let data = {
         action: 'getSegments',
         jid: this.jobData.id,
@@ -487,15 +486,28 @@ export default {
         return
       }
       const element = document.getElementById('translatorSegments')
-      console.log('scroll top: ' + element.scrollTop + ' scrollHeight: ' + element.scrollHeight + ' oh: ' + element.offsetHeight)
       if (element.scrollTop === (element.scrollHeight - element.offsetHeight)) {
-        console.log('scrolled to bottom')
         this.readMoreSegments(this.segments.length - 1)
         return
       }
       if (element.scrollTop === 0) {
-        console.log('scrolled to top')
         this.readMoreSegments(0)
+      }
+    },
+    setSegmentSplit: function () {
+      const data = {
+        action: 'setSegmentSplit',
+        segment: this.activeSegment.original,
+        id_segment: this.activeSegment.id,
+        id_job: this.activeSegment.jobId,
+        password: this.activeSegment.jobPassword
+      }
+      SegmentsService.setSegmentSplit(data)
+    },
+    toggleSplit: function () {
+      this.splitActive = !this.splitActive
+      if (!this.splitActive) {
+        this.setSegmentSplit()
       }
     }
   }

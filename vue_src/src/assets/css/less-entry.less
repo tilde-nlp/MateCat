@@ -1086,6 +1086,9 @@ select::-ms-expand {
   &:disabled {
     background: transparent;
   }
+  &.split-edit {
+    cursor: col-resize;
+  }
 }
 
 .relative-top {
@@ -1328,6 +1331,9 @@ select::-ms-expand {
   .bt-light-darker;
   .p-4;
   width: calc(~"100% - 32px");
+  &.split-active {
+    cursor: col-resize;
+  }
   &.first {
     .ml-32;
   }

@@ -14,7 +14,19 @@
         :style="{ 'font-size': fontSizeString }"
         :class="{top: topSegment}"
         class="segment-col first">
-        {{ segment.original }}
+        <span
+          v-if="!segment.active || !splitActive">{{ originalProcessed }}</span>
+        <textarea
+          v-autosize
+          v-show="segment.active && splitActive"
+          ref="oa"
+          v-model="originalProcessed"
+          :min-height="1"
+          :style="{ 'font-size': fontSizeString }"
+          rows="1"
+          class="segment-edit split-edit"
+          @click="setSplit"
+        />
       </div>
     </div>
     <div class="br-light-darker ib w-0 h-100p absolute"/>
@@ -84,12 +96,19 @@ export default {
     topSegment: {
       type: Boolean,
       required: true
+    },
+    splitActive: {
+      type: Boolean,
+      required: true
     }
   },
   data: function () {
     return {
       segment: {},
-      ta: ''
+      ta: '',
+      oa: '',
+      splitSpacer: '##$_SPLIT$##',
+      splitChar: ' & '
     }
   },
   computed: {
@@ -108,11 +127,19 @@ export default {
         'type-low': this.segment.saveType === 'TM' && this.segment.match < 50,
         'type-manual': this.segment.saveType === 'MANUAL'
       }
-    }
-  },
-  watch: {
-    fontSize () {
-      this.$refs.ta.resize()
+    },
+    originalProcessed: function () {
+      if (typeof (this.segment.original) === 'undefined') {
+        return
+      }
+      let newString = this.segment.original
+      while (1) {
+        newString = newString.replace(this.splitSpacer, this.splitChar)
+        if (newString.indexOf(this.splitSpacer) < 0) {
+          break
+        }
+      }
+      return newString
     }
   },
   mounted: function () {
@@ -128,6 +155,15 @@ export default {
       }
       this.segment.saveType = 'MANUAL'
       this.segment.match = 0
+    },
+    setSplit: function () {
+      const cursorPosition = this.$refs.oa.selectionStart
+      this.segment.original = [
+        this.segment.original.slice(0, cursorPosition),
+        this.splitSpacer,
+        this.segment.original.slice(cursorPosition)
+      ].join('')
+      this.$refs.oa.blur()
     }
   }
 }

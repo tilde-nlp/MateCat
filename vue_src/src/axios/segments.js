@@ -13,5 +13,8 @@ export default {
   },
   setCurrent: function (data) {
     return HTTP.post(CONFIG.baseUrl + '?action=setCurrentSegment&time=' + new Date().getTime() + ',jid=' + data.id_job + ',sid=' + data.id_segment, FormGenerator.generateForm(data))
+  },
+  setSegmentSplit: function (data) {
+    return HTTP.post(CONFIG.baseUrl + '?action=setSegmentSplit&&time=' + new Date().getTime() + ',jid=' + data.id_job + ',sid=' + data.id_segment, FormGenerator.generateForm(data))
   }
 }

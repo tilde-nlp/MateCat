@@ -97,8 +97,12 @@
     <!-- CANCEL END -->
     <!-- SPLIT -->
     <div
+      v-shortkey="['ctrl', 's']"
       title="Split: Ctrl + S"
-      class="ta-header-button bl-blueish">
+      class="ta-header-button bl-blueish"
+      @click="() => {$emit('toggleSplit')}"
+      @shortkey="() => {$emit('toggleSplit')}"
+    >
       <svgicon
         class="svg-icon"
         name="split"
