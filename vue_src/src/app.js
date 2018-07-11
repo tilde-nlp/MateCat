@@ -34,6 +34,9 @@ export function main (config) {
   Vue.use(require('vue-shortkey'))
   Vue.use(require('vue-cookie'))
   Vue.use(require('vue-autosize'))
+  const Lang = require('vuejs-localization')
+  Lang.requireAll(require.context('../lang', true, /\.js$/))
+  Vue.use(Lang)
   Vue.component('v-select', vSelect)
   /* eslint-disable no-new */
   new Vue({
@@ -44,6 +47,17 @@ export function main (config) {
     created: function () {
       this.$loading.startLoading('app')
       this.$store.dispatch('init')
+      const lang = this.$cookie.get('culture')
+      switch (lang) {
+        case 'en':
+          this.$lang.setLang('en')
+          break
+        case 'ru':
+          this.$lang.setLang('ru')
+          break
+        default:
+          this.$lang.setLang('lv')
+      }
     },
     render: h => h(App)
   })

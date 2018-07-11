@@ -10,12 +10,12 @@
         name="arrow"
         height="24"
       />
-      <div class="link ib">Atpakaļ</div>
+      <div class="link ib">{{ $lang.buttons.back }}</div>
     </div>
     <!-- GO BACK END -->
     <!-- UNDO -->
     <div
-      title="Undo: Ctrl + Z"
+      :title="$lang.tooltips.undo"
       class="ta-header-button bl-blueish">
       <svgicon
         class="svg-icon"
@@ -26,7 +26,7 @@
     <!-- UNDO END -->
     <!-- REDO -->
     <div
-      title="Redo: Ctrl + R"
+      :title="$lang.tooltips.redo"
       class="ta-header-button">
       <svgicon
         class="svg-icon flip-h"
@@ -38,7 +38,7 @@
     <!-- BACK -->
     <div
       v-shortkey.once="['ctrl', 'arrowup']"
-      title="Previous unconfirmed segment: Ctrl + Up"
+      :title="$lang.tooltips.previous_segment"
       class="ta-header-button bl-blueish"
       @click="() => {$emit('toPrevious')}"
       @shortkey="() => {$emit('toPrevious')}"
@@ -53,7 +53,7 @@
     <!-- FORWARD -->
     <div
       v-shortkey.once="['ctrl', 'arrowdown']"
-      title="Next unconfirmed segment: Ctrl + Down"
+      :title="$lang.tooltips.next_segment"
       class="ta-header-button"
       @click="() => {$emit('toNext')}"
       @shortkey="() => {$emit('toNext')}"
@@ -68,7 +68,7 @@
     <!-- CONFIRM -->
     <div
       v-shortkey.once="['ctrl', 'enter']"
-      title="Confirm: Ctrl + Enter"
+      :title="$lang.tooltips.confirm"
       class="ta-header-button bl-blueish"
       @click="() => {$emit('confirm')}"
       @shortkey="() => {$emit('confirm')}"
@@ -83,7 +83,7 @@
     <!-- CANCEL -->
     <div
       v-shortkey="['ctrl', 'd']"
-      title="Delete: Ctrl + D"
+      :title="$lang.tooltips.delete"
       class="ta-header-button"
       @click="() => {$emit('clear')}"
       @shortkey="() => {$emit('clear')}"
@@ -98,7 +98,7 @@
     <!-- SPLIT -->
     <div
       v-shortkey="['ctrl', 's']"
-      title="Split: Ctrl + S"
+      :title="$lang.tooltips.split"
       class="ta-header-button bl-blueish"
       @click="() => {$emit('toggleSplit')}"
       @shortkey="() => {$emit('toggleSplit')}"
@@ -112,7 +112,7 @@
     <!-- SPLIT END -->
     <!-- JOIN -->
     <div
-      title="Join: Ctrl + J"
+      :title="$lang.tooltips.join"
       class="ta-header-button">
       <svgicon
         class="svg-icon"
@@ -124,7 +124,7 @@
     <!-- COPY SOURCE TO TARGET -->
     <div
       v-shortkey.once="['ctrl', 'insert']"
-      title="Copy source to target: Ctrl + Insert"
+      :title="$lang.tooltips.source_to_target"
       class="ta-header-button br-blueish"
       @click="() => { $emit('sourceToTarget') }"
       @shortkey="() => { $emit('sourceToTarget') }"
@@ -138,10 +138,10 @@
     <!-- COPY SOURCE TO TARGET END -->
     <div class="pull-right">
       <!-- MT TRANSLATE -->
-      <div class="translator-toolbox-link">Tulkot visu ar MT</div>
+      <div class="translator-toolbox-link">{{ $lang.buttons.translate_all_mt }}</div>
       <!-- MT TRANSLATE END -->
       <!-- TRANSLATE 100% -->
-      <div class="translator-toolbox-link">Tulkot visu 100%</div>
+      <div class="translator-toolbox-link">{{ $lang.buttons.translate_all_tm }}</div>
       <!-- TRANSLATE 100% END -->
       <!-- ORIGINAL DOWNLOAD -->
       <div
@@ -155,7 +155,7 @@
             height="24"
           />
         </div>
-        <div class="translator-toolbox-link link">Orģināls</div>
+        <div class="translator-toolbox-link link">{{ $lang.buttons.original }}</div>
       </div>
       <!-- ORIGINAL DOWNLOAD END -->
       <!-- ORIGINAL DOWNLOAD -->
@@ -170,7 +170,7 @@
             height="24"
           />
         </div>
-        <div class="translator-toolbox-link link">Tulkojums</div>
+        <div class="translator-toolbox-link link">{{ $lang.buttons.translation }}</div>
       </div>
       <!-- ORIGINAL DOWNLOAD END -->
     </div>

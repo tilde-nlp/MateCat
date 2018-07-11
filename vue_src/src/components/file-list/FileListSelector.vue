@@ -24,7 +24,7 @@
       <div
         v-if="dragAndDropCapable"
         class="file-dropoff-note"
-      >Augšupielādēt vai ievilkt failus
+      >{{ $lang.buttons.add_or_drag }}
       </div>
     </div>
   </form>

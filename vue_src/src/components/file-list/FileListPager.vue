@@ -19,7 +19,7 @@
               height="24"
             />
           </div>
-          <div class="link normal ib left">Atpakaļ</div>
+          <div class="link normal ib left">{{ $lang.buttons.back }}</div>
         </div>
       </transition>
     </transition>
@@ -48,7 +48,7 @@
         class="white-button big right"
         @click="nextPage"
       >
-        <div class="link normal ib right">Tālāk</div>
+        <div class="link normal ib right">{{ $lang.buttons.next }}</div>
         <div class="white-button-icon">
           <svgicon
             class="svg-icon va-middle r-180"

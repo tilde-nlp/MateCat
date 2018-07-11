@@ -2,9 +2,9 @@
   <div class="toolbox-container">
     <div class="language-selector">
       <label
-        class="input-label"
+        class="input-label capitalize"
         for="fromLanguage"
-      >No</label>
+      >{{ $lang.titles.from }}</label>
       <div
         id="fromLanguage"
       >
@@ -12,17 +12,17 @@
           :class="{active: fromLang === 'lv-LV'}"
           class="button languages"
           @click="setFromLang('lv-LV')"
-        >Latviešu</div>
+        >{{ $lang.buttons.latvian }}</div>
         <div
           :class="{active: fromLang === 'en-US'}"
           class="button languages"
           @click="setFromLang('en-US')"
-        >Angļu</div>
+        >{{ $lang.buttons.english }}</div>
         <div
           :class="{active: fromLang === 'ru-RU'}"
           class="button languages"
           @click="setFromLang('ru-RU')"
-        >Krievu</div>
+        >{{ $lang.buttons.russian }}</div>
       </div>
     </div>
     <div class="language-selector subject">
@@ -48,9 +48,9 @@
     </span>
     <div class="language-selector">
       <label
-        class="input-label"
+        class="input-label capitalize"
         for="toLanguage"
-      >Uz</label>
+      >{{ $lang.titles.to }}</label>
       <div
         id="toLanguage"
       >
@@ -58,17 +58,17 @@
           :class="{active: toLang === 'lv-LV'}"
           class="button languages"
           @click="setToLang('lv-LV')"
-        >Latviešu</div>
+        >{{ $lang.buttons.latvian }}</div>
         <div
           :class="{active: toLang === 'en-US'}"
           class="button languages"
           @click="setToLang('en-US')"
-        >Angļu</div>
+        >{{ $lang.buttons.english }}</div>
         <div
           :class="{active: toLang === 'ru-RU'}"
           class="button languages"
           @click="setToLang('ru-RU')"
-        >Krievu</div>
+        >{{ $lang.buttons.russian }}</div>
       </div>
     </div>
     <button
@@ -80,7 +80,7 @@
       <transition
         name="ffade"
         mode="out-in">
-        <span v-if="!$loading.isLoading('translator')">Tulkot</span>
+        <span v-if="!$loading.isLoading('translator')">{{ $lang.buttons.translate }}</span>
         <div
           v-else
           class="translate-loading-fix"

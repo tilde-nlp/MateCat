@@ -7,14 +7,14 @@
           class="tabber-section"
           @click="activeTab = 'translate'"
         >
-          Tulkojumi
+          {{ $lang.titles.translations }}
         </div>
         <div
           :class="{active: activeTab === 'hotkeys'}"
           class="tabber-section"
           @click="activeTab = 'hotkeys'"
         >
-          Taustiņkombinācijas
+          {{ $lang.titles.shortkeys }}
         </div>
       </div>
       <transition
@@ -26,7 +26,7 @@
           <label
             class="input-label"
             for="mt"
-          >Mašīntulks</label>
+          >{{ $lang.titles.mt }}</label>
           <div class="select-container">
             <v-select
               id="mt"
@@ -37,7 +37,7 @@
             />
           </div>
           <div class="mt-24">
-            <label class="input-label">Ieteikumi</label>
+            <label class="input-label">{{ $lang.titles.suggestions }}</label>
             <img
               v-if="!activeSegment.suggestionsLoaded"
               :src="$assetPath + 'loading.svg'"
@@ -46,7 +46,7 @@
             >
             <div
               v-else-if="activeSegment.suggestions.length < 1">
-              Nav ieteikumu
+              {{ $lang.titles.no_suggestions }}
             </div>
             <div
               v-else
@@ -74,7 +74,7 @@
                     <span v-if="suggestion.isMT">{{ suggestion.translation }}</span>
                     <div
                       v-else
-                      :title="'Izveidoja: ' + suggestion.createdBy + '; Lietošanas biežums: ' + suggestion.usageCount"
+                      :title="$lang.tooltips.created_by + ': ' + suggestion.createdBy + '; ' + $lang.tooltips.usage_count + ': ' + suggestion.usageCount"
                     >
                       <div class="mb-8 bb-light-darker">{{ suggestion.segment }}</div>
                       <div>{{ suggestion.translation }}</div>

@@ -13,7 +13,7 @@
             name="file"
             height="24"
           />
-          <div class="link ib">Pievienot failus</div>
+          <div class="link ib">{{ $lang.buttons.add_files }}</div>
           <svgicon
             :class="{open: sliderOpen}"
             class="svg-icon va-middle chevron"

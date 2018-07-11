@@ -30,9 +30,9 @@
                 height="24"
               />
               <input
+                :placeholder="$lang.inputs.search_in_original"
                 class="search-input"
                 type="text"
-                placeholder="Atlasīt no sākotnējā teksta"
               >
             </div>
           </div>
@@ -44,9 +44,9 @@
                 height="24"
               />
               <input
+                :placeholder="$lang.inputs.search_in_translation"
                 class="search-input"
                 type="text"
-                placeholder="Atlasīt no tulkotā teksta"
               >
             </div>
           </div>
@@ -55,12 +55,12 @@
               <div class="ma">#</div>
             </div>
             <div class="segment-col header first">
-              Orģināls: {{ jobData.source }}
+              {{ $lang.titles.original }}: {{ jobData.source }}
             </div>
           </div>
           <div class="double-block">
             <div class="segment-col header last">
-              Tulkojums: {{ jobData.target }}
+              {{ $lang.titles.translation }}: {{ jobData.target }}
             </div>
             <div class="tools-col header no-border">
               &nbsp;
@@ -86,7 +86,7 @@
           </div>
           <div class="segments-footer">
             <div class="ib ml-8">{{ jobData.fileName }}</div>
-            <div class="pull-right mr-8">Iztulkoti {{ jobData.progress }}% no {{ jobData.segments }} segmentiem</div>
+            <div class="pull-right mr-8">{{ $lang.titles.translated }} {{ jobData.progress }}% {{ $lang.titles.from }} {{ jobData.segments }} {{ $lang.titles.from_segments }}</div>
             <div class="clear-both"/>
             <div
               :style="{width: jobData.progress + '%' }"

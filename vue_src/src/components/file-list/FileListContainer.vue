@@ -2,11 +2,11 @@
   <div class="file-list-container">
     <!-- FILE LIST HEADER -->
     <div class="file-list-header">
-      <div class="status">Statuss</div>
-      <div class="segments">Segmenti</div>
-      <div class="words">Vārdi</div>
-      <div class="translated">Iztulkots</div>
-      <div class="created">Ielādes datums</div>
+      <div class="status">{{ $lang.titles.status }}</div>
+      <div class="segments">{{ $lang.titles.segments }}</div>
+      <div class="words">{{ $lang.titles.words }}</div>
+      <div class="translated">{{ $lang.titles.translated }}</div>
+      <div class="created">{{ $lang.titles.date_added }}</div>
       <div class="controls">&nbsp;</div>
     </div>
     <!-- FILE LIST HEADER END -->
@@ -48,7 +48,7 @@
                   name="close"
                   height="24"
                 />
-                <div class="link ib">Dzēst</div>
+                <div class="link ib">{{ $lang.buttons.delete }}</div>
               </div>
               <!-- DELETE END -->
             </span>
@@ -92,7 +92,7 @@
                     name="translation-assist"
                     height="24"
                   />
-                  <div class="link ib">Tulkot</div>
+                  <div class="link ib">{{ $lang.buttons.translate }}</div>
                 </div>
                 <!-- TRANSLATE END -->
                 <!-- DOWNLOAD -->
@@ -116,7 +116,7 @@
                     name="download"
                     height="24"
                   />
-                  <div class="link ib">Lejupielādēt</div>
+                  <div class="link ib">{{ $lang.buttons.download }}</div>
                 </div>
                 <!-- DOWNLOAD END -->
                 <!-- DELETE -->
@@ -129,7 +129,7 @@
                     name="close"
                     height="24"
                   />
-                  <div class="link ib">Dzēst</div>
+                  <div class="link ib">{{ $lang.buttons.delete }}</div>
                 </div>
                 <!-- DELETE END -->
               </div>
