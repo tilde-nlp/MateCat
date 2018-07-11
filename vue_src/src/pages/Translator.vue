@@ -1,6 +1,7 @@
 <template>
   <div
     v-shortkey="{ add: ['ctrl', 'arrowright'], sub: ['ctrl', 'arrowleft'] }"
+    id="catTranslator"
     class="page-container"
     @shortkey="fontControl"
   >
