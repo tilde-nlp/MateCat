@@ -83,6 +83,7 @@
               :split-active="splitActive"
               @click="setActive"
               @setStatus="setStatus"
+              @inputDebounce="onInputDebounce"
             />
           </div>
           <div class="segments-footer">
@@ -345,7 +346,12 @@ export default {
         })
     },
     setActive: function (id) {
-      if (id === this.activeSegment.id) return
+      if (id === this.activeSegment.id) {
+        return
+      }
+      if (this.activeSegment.status !== 'done') {
+        this.setStatus('draft')
+      }
       _.map(this.segments, e => {
         if (e.id === id) {
           e.active = true
@@ -510,6 +516,9 @@ export default {
       if (!this.splitActive) {
         this.setSegmentSplit()
       }
+    },
+    onInputDebounce: function () {
+      this.setStatus('draft')
     }
   }
 }

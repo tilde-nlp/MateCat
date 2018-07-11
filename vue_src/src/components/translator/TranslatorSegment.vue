@@ -78,6 +78,7 @@
   </div>
 </template>
 <script>
+import _ from 'lodash'
 export default {
   name: 'TranslatorSegment',
   props: {
@@ -140,6 +141,16 @@ export default {
         }
       }
       return newString
+    },
+    isActive: function () {
+      return this.segment.active
+    }
+  },
+  watch: {
+    isActive: function (newVal) {
+      if (newVal) {
+        this.$refs.ta.focus()
+      }
     }
   },
   mounted: function () {
@@ -149,13 +160,14 @@ export default {
     copySourceToTarget: function () {
       this.segment.translation = this.segment.original
     },
-    onSegmentInput: function () {
+    onSegmentInput: _.debounce(function () {
+      this.$emit('inputDebounce')
       if (this.segment.saveType === 'MANUAL') {
         return
       }
       this.segment.saveType = 'MANUAL'
       this.segment.match = 0
-    },
+    }, 500),
     setSplit: function () {
       const cursorPosition = this.$refs.oa.selectionStart
       this.segment.original = [
