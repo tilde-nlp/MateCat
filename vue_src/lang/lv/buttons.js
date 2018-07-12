@@ -15,5 +15,6 @@ module.exports = {
   translation: 'Tulkojums',
   add_comment: 'Pievienot',
   save: 'Saglabāt',
-  cancel: 'Atcelt'
+  cancel: 'Atcelt',
+  resolve_comments: 'Atrisināt'
 }

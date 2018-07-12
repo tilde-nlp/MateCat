@@ -12,5 +12,6 @@ module.exports = {
   join: 'Apvienot: Ctrl + J',
   source_to_target: 'Kopēt orģinālu uz tulkojumu: Ctrl + Insert',
   created_by: 'Izveidoja',
-  usage_count: 'Lietošanas biežums'
+  usage_count: 'Lietošanas biežums',
+  resolve_comments: 'Atrisināt komentārus'
 }

@@ -110,9 +110,20 @@
               :key="index"
               class="size-s dark"
             >
-              <div class="size-xs bold dark">{{ comment.full_name }}</div>
-              <div class="size-xs dark">{{ comment.message }}</div>
-              <div class="size-xs grey">{{ timeToDateString(comment.timestamp) }}</div>
+              <div
+                v-if="parseInt(comment.message_type) === 1"
+                class="bb-blueish mb-8"
+              >
+                <div class="size-xs bold dark">{{ comment.full_name }}</div>
+                <div class="size-xs dark">{{ comment.message }}</div>
+                <div class="size-xs grey">{{ timeToDateString(comment.timestamp) }}</div>
+              </div>
+              <div
+                v-if="parseInt(comment.message_type) === 2"
+                class="bb-red-big mb-16"
+              >
+                <div class="size-xs red bold">{{ comment.full_name }} {{ $lang.messages.resolved_comments }}</div>
+              </div>
             </div>
           </transition-group>
           <textarea
@@ -125,6 +136,11 @@
             class="input w-100p"
           />
           <br>
+          <button
+            v-if="resolvable"
+            class="button"
+            @click="resolveComment"
+          >{{ $lang.buttons.resolve_comments }}</button>
           <button
             v-if="newComment === null"
             class="button"
@@ -171,6 +187,17 @@ export default {
       systems: [],
       system: null,
       newComment: null
+    }
+  },
+  computed: {
+    resolvable: function () {
+      if (this.activeSegment.comments.length < 1) {
+        return false
+      }
+      if (this.activeSegment.comments[this.activeSegment.comments.length - 1].thread_id !== null) {
+        return false
+      }
+      return true
     }
   },
   mounted: function () {
@@ -234,6 +261,26 @@ export default {
     },
     cancelComment: function () {
       this.newComment = null
+    },
+    resolveComment: function () {
+      const data = {
+        action: 'comment',
+        _sub: 'resolve',
+        id_job: this.activeSegment.jobId,
+        id_client: '???',
+        id_segment: this.activeSegment.id,
+        password: this.activeSegment.jobPassword,
+        source_page: 1,
+        username: this.$store.state.profile.first_name + ' ' + this.$store.state.profile.last_name
+      }
+      CommentsService.doAction(data)
+        .then(r => {
+          if (typeof (r.data.data.entries[0]) === 'undefined') {
+            this.$Alerts.add(this.$lang.messages.comment_save_error)
+          } else {
+            this.activeSegment.comments.push(r.data.data.entries[0])
+          }
+        })
     },
     timeToDateString: function (timestamp) {
       return DateConverter.timeStampToFullTime(timestamp)

@@ -12,5 +12,6 @@ module.exports = {
   join: 'Join: Ctrl + J',
   source_to_target: 'Copy source to target: Ctrl + Insert',
   created_by: 'Created',
-  usage_count: 'Usage count'
+  usage_count: 'Usage count',
+  resolve_comments: 'Resolve comments'
 }

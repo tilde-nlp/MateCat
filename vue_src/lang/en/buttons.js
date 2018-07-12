@@ -15,5 +15,6 @@ module.exports = {
   translation: 'Translation',
   add_comment: 'Add',
   save: 'Save',
-  cancel: 'Cancel'
+  cancel: 'Cancel',
+  resolve_comments: 'Resolve'
 }
