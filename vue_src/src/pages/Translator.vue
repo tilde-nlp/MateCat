@@ -260,7 +260,7 @@ export default {
               jobPassword: this.jobData.password,
               saveType: el.save_type,
               match: el.save_match,
-              comments: []
+              comments: el.comments
             }
           })
           if (this.jobData.lastSegmentId > 0) {
@@ -407,7 +407,7 @@ export default {
               jobPassword: this.jobData.password,
               saveType: '',
               match: 0,
-              comments: []
+              comments: el.comments
             }
             if (activeIndex === 0) {
               newArray.push(item)

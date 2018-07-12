@@ -88,6 +88,7 @@ class getSegmentsController extends ajaxController {
         );
 
         $this->prepareNotes( $data );
+        $data = $this->prepareComments( $data );
 
 		foreach ($data as $i => $seg) {
 
@@ -239,5 +240,34 @@ class getSegmentsController extends ajaxController {
 
     }
 
+    private function prepareComments( $segments ) {
+        if (empty($segments[0])) return $segments;
+        $mappedSegments = array();
+        foreach($segments as $segment) {
+            $mappedSegments[$segment['sid']] = $segment;
+            $mappedSegments[$segment['sid']]['comments'] = array();
+        }
+        $struct = new Comments_CommentStruct() ;
 
+        $struct->id_job = $segments[0]['jid'];
+        $struct->first_segment = $segments[0]['sid'];
+        $last = end($segments);
+        $struct->last_segment  = $last['sid'];
+
+        $commentDao = new Comments_CommentDao( Database::obtain() );
+
+        $comments = $commentDao->getCommentsInJob( $struct );
+        if (empty($comments)) {
+            return array_values($mappedSegments);
+        }
+
+        foreach($comments as $comment) {
+            if (empty($mappedSegments[$comment['id_segment']])) {
+                continue;
+            }
+            $mappedSegments[$comment['id_segment']]['comments'][] = $comment;
+        }
+
+        return array_values($mappedSegments);
+    }
 }

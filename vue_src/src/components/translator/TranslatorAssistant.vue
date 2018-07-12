@@ -110,10 +110,9 @@
               :key="index"
               class="size-s dark"
             >
-              <div class="size-xs bold dark">{{ comment.username }}</div>
-              <div
-                class="size-xs dark"
-              >{{ comment.message }}</div>
+              <div class="size-xs bold dark">{{ comment.full_name }}</div>
+              <div class="size-xs dark">{{ comment.message }}</div>
+              <div class="size-xs grey">{{ timeToDateString(comment.timestamp) }}</div>
             </div>
           </transition-group>
           <textarea
@@ -153,6 +152,7 @@
 import LanguagesService from 'services/languages.js'
 import CommentsService from 'services/comments.js'
 import _ from 'lodash'
+import {DateConverter} from 'utils/date-converter'
 export default {
   name: 'TranslatorAssistant',
   props: {
@@ -201,10 +201,10 @@ export default {
         action: 'comment',
         _sub: 'create',
         id_client: '???',
-        id_job: this.activeSegment.jobId,
-        id_segment: this.activeSegment.id,
+        id_job: 0,
+        id_segment: 0,
         username: this.$store.state.profile.first_name + ' ' + this.$store.state.profile.last_name,
-        password: this.activeSegment.jobPassword,
+        password: '',
         source_page: 1,
         message: '',
         date: ''
@@ -218,14 +218,25 @@ export default {
         return
       }
       this.$loading.startLoading('add-comment')
-      CommentsService.add(this.newComment)
+      this.newComment.id_job = this.activeSegment.jobId
+      this.newComment.id_segment = this.activeSegment.id
+      this.newComment.password = this.activeSegment.jobPassword
+      CommentsService.doAction(this.newComment)
         .then(r => {
           this.newComment = null
           this.$loading.endLoading('add-comment')
+          if (typeof (r.data.data.entries[0]) === 'undefined') {
+            this.$Alerts.add(this.$lang.messages.comment_save_error)
+          } else {
+            this.activeSegment.comments.push(r.data.data.entries[0])
+          }
         })
     },
     cancelComment: function () {
       this.newComment = null
+    },
+    timeToDateString: function (timestamp) {
+      return DateConverter.timeStampToFullTime(timestamp)
     }
   }
 }
