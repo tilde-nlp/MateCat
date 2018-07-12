@@ -13,5 +13,6 @@ module.exports = {
   from: 'no',
   to: 'uz',
   translations: 'Tulkojumi',
-  shortkeys: 'Taustiņkombinācijas'
+  shortkeys: 'Taustiņkombinācijas',
+  comments: 'Komentāri'
 }

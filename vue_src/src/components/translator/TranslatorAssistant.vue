@@ -16,13 +16,21 @@
         >
           {{ $lang.titles.shortkeys }}
         </div>
+        <div
+          :class="{active: activeTab === 'comments'}"
+          class="tabber-section"
+          @click="activeTab = 'comments'"
+        >
+          {{ $lang.titles.comments }}
+        </div>
       </div>
       <transition
         name="ffade"
         mode="out-in">
         <div
           v-if="activeTab === 'translate'"
-          class="tab">
+          class="tab"
+        >
           <label
             class="input-label"
             for="mt"
@@ -89,6 +97,51 @@
             </div>
           </div>
         </div>
+        <div
+          v-if="activeTab === 'comments'"
+          class="tab"
+        >
+          <transition-group
+            name="ffade"
+            mode="out-in"
+          >
+            <div
+              v-for="(comment, index) in activeSegment.comments"
+              :key="index"
+              class="size-s dark"
+            >
+              <div class="size-xs bold dark">{{ comment.username }}</div>
+              <div
+                class="size-xs dark"
+              >{{ comment.message }}</div>
+            </div>
+          </transition-group>
+          <textarea
+            v-autosize
+            v-if="newComment !== null"
+            v-model="newComment.message"
+            :min-height="1"
+            :placeholder="$lang.inputs.write_comment"
+            rows="1"
+            class="input w-100p"
+          />
+          <br>
+          <button
+            v-if="newComment === null"
+            class="button"
+            @click="addComment"
+          >{{ $lang.buttons.add_comment }}</button>
+          <button
+            v-if="newComment !== null"
+            class="button"
+            @click="saveComment"
+          >{{ $lang.buttons.save }}</button>
+          <button
+            v-if="newComment !== null"
+            class="button"
+            @click="cancelComment"
+          >{{ $lang.buttons.cancel }}</button>
+        </div>
       </transition>
     </div>
     <div class="number-col">
@@ -98,6 +151,7 @@
 </template>
 <script>
 import LanguagesService from 'services/languages.js'
+import CommentsService from 'services/comments.js'
 import _ from 'lodash'
 export default {
   name: 'TranslatorAssistant',
@@ -115,7 +169,8 @@ export default {
     return {
       activeTab: 'translate',
       systems: [],
-      system: null
+      system: null,
+      newComment: null
     }
   },
   mounted: function () {
@@ -140,6 +195,37 @@ export default {
         this.activeSegment.saveType = 'TM'
         this.activeSegment.match = parseInt(suggestion.match)
       }
+    },
+    addComment: function () {
+      const data = {
+        action: 'comment',
+        sub: 'create',
+        id_client: '???',
+        id_job: this.activeSegment.jobId,
+        id_segment: this.activeSegment.id,
+        username: this.$store.state.profile.first_name + ' ' + this.$store.state.profile.last_name,
+        password: this.activeSegment.jobPassword,
+        source_page: 1,
+        message: '',
+        date: ''
+      }
+      this.newComment = data
+    },
+    saveComment: function () {
+      if (this.newComment === null) return
+      if (this.newComment.message === '') {
+        this.$Alerts.add(this.$lang.messages.empty_comment)
+        return
+      }
+      this.$loading.startLoading('add-comment')
+      CommentsService.add(this.newComment)
+        .then(r => {
+          this.newComment = null
+          this.$loading.endLoading('add-comment')
+        })
+    },
+    cancelComment: function () {
+      this.newComment = null
     }
   }
 }

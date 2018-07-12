@@ -13,5 +13,6 @@ module.exports = {
   from: 'from',
   to: 'to',
   translations: 'Translations',
-  shortkeys: 'Shortkeys'
+  shortkeys: 'Shortkeys',
+  comments: 'Comments'
 }

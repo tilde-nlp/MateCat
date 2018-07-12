@@ -12,5 +12,8 @@ module.exports = {
   translate_all_mt: 'Tulkot visu ar MT',
   translate_all_tm: 'Tulkot visu ar 100%',
   original: 'Orģināls',
-  translation: 'Tulkojums'
+  translation: 'Tulkojums',
+  add_comment: 'Pievienot',
+  save: 'Saglabāt',
+  cancel: 'Atcelt'
 }

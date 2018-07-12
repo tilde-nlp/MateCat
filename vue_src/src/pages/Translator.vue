@@ -259,7 +259,8 @@ export default {
               jobId: this.jobData.id,
               jobPassword: this.jobData.password,
               saveType: el.save_type,
-              match: el.save_match
+              match: el.save_match,
+              comments: []
             }
           })
           if (this.jobData.lastSegmentId > 0) {
@@ -405,7 +406,8 @@ export default {
               jobId: this.jobData.id,
               jobPassword: this.jobData.password,
               saveType: '',
-              match: 0
+              match: 0,
+              comments: []
             }
             if (activeIndex === 0) {
               newArray.push(item)

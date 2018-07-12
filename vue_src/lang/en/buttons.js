@@ -12,5 +12,8 @@ module.exports = {
   translate_all_mt: 'Translate all with MT',
   translate_all_tm: 'Translate all with 100%',
   original: 'Original',
-  translation: 'Translation'
+  translation: 'Translation',
+  add_comment: 'Add',
+  save: 'Save',
+  cancel: 'Cancel'
 }
