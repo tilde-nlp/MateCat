@@ -199,7 +199,7 @@ export default {
     addComment: function () {
       const data = {
         action: 'comment',
-        sub: 'create',
+        _sub: 'create',
         id_client: '???',
         id_job: this.activeSegment.jobId,
         id_segment: this.activeSegment.id,

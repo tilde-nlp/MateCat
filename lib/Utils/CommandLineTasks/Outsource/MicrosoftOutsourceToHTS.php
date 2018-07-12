@@ -12,6 +12,7 @@ use API\V2\Json\ProjectUrls;
 use Features\Microsoft;
 use Features\Microsoft\Utils\Email\ConfirmedQuotationEmail;
 use Features\Microsoft\Utils\Email\ErrorQuotationEmail;
+use Plugins\Features\Outsource\Constants\ServiceTypes;
 
 
 class MicrosoftOutsourceToHTS extends AbstractOutsource {
@@ -38,6 +39,9 @@ class MicrosoftOutsourceToHTS extends AbstractOutsource {
 
         $eq_word = \Jobs_JobDao::getTODOWords( $job );
 
+        if( $eq_word != 0 ){
+            $eq_word = max( number_format( $eq_word + 0.00000001, 0, "", "" ), 1 );
+        }
 
         if( $this->input->getOption( 'test' ) ){
             $this->output->writeln( "  - Quote would have been sent, Job ID {$job->id} and password {$job->password}. Words: $eq_word" , true );
@@ -49,11 +53,7 @@ class MicrosoftOutsourceToHTS extends AbstractOutsource {
         $this->setSuccessMailSender( new ConfirmedQuotationEmail( Microsoft::getPluginBasePath() . '/Features/Microsoft/View/Emails/confirmed_quotation.html' ) );
         $this->setFailureMailSender( new ErrorQuotationEmail( Microsoft::getPluginBasePath() . '/Features/Microsoft/View/Emails/error_quotation.html' ) );
 
-        if( $eq_word != 0 ){
-            $eq_word = max( number_format( $eq_word + 0.00000001, 0, "", "" ), 1 );
-        }
-
-        $response = $this->requestJobQuote( $job, $eq_word, $project, $formatted );
+        $response = $this->requestJobQuote( $job, $eq_word, $project, $formatted, ServiceTypes::SERVICE_TYPE_PROFESSIONAL );
 
         if ( !empty( $response ) ) {
             $this->output->writeln( "  - Quote Success, HTS PID: " . $this->getExternalProjectId() . " - Words: $eq_word", true );

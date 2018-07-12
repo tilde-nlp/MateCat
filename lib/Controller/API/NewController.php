@@ -830,6 +830,10 @@ class NewController extends ajaxController {
 
         $this->metadata = $this->featureSet->filter( 'filterProjectMetadata', $this->metadata, $__postInput );
 
+        $this->metadata = $this->featureSet->filter( 'createProjectAssignInputMetadata', $this->metadata, [
+                'input' => $__postInput
+        ] );
+
     }
 
     private static function parseTmKeyInput( $tmKeyString ) {
@@ -837,35 +841,30 @@ class NewController extends ajaxController {
         $read      = true;
         $write     = true;
 
-        $permissionString = $tmKeyInfo[ 1 ];
+        $permissionString = @$tmKeyInfo[ 1 ];
+
         //if the key is not set, return null. It will be filtered in the next lines.
         if ( empty( $tmKeyInfo[ 0 ] ) ) {
             return null;
         } //if permissions are set, check if they are allowed or not and eventually set permissions
-        elseif ( isset( $tmKeyInfo[ 1 ] ) ) {
+
+        //permission string check
+        switch ( $permissionString ) {
+            case 'r':
+                $write = false;
+                break;
+            case 'w':
+                $read = false;
+                break;
+            case 'rw':
+            case ''  :
+            case null:
+                break;
             //permission string not allowed
-            if ( !empty( $permissionString ) &&
-                    !in_array( $permissionString, Constants_TmKeyPermissions::$_accepted_grants ) ) {
+            default:
                 $allowed_permissions = implode( ", ", Constants_TmKeyPermissions::$_accepted_grants );
                 throw new Exception( "Permission modifier string not allowed. Allowed: <empty>, $allowed_permissions" );
-            } else {
-                switch ( $permissionString ) {
-                    case 'r':
-                        $write = false;
-                        break;
-                    case 'w':
-                        $read = false;
-                        break;
-                    case 'rw':
-                    case ''  :
-                        break;
-                    //this should never be triggered
-                    default:
-                        $allowed_permissions = implode( ", ", Constants_TmKeyPermissions::$_accepted_grants );
-                        throw new Exception( "Permission modifier string not allowed. Allowed: <empty>, $allowed_permissions" );
-                        break;
-                }
-            }
+                break;
         }
 
         return [

@@ -354,7 +354,8 @@ class INIT {
                     'bmp'   => array( '', '', 'extimg' ),
                     'png'   => array( '', '', 'extimg' ),
                     'gif'   => array( '', '', 'extimg' ),
-                    'jpeg'   => array( '', '', 'extimg' ),
+                    'jpeg'  => array( '', '', 'extimg' ),
+                    'jpg'   => array( '', '', 'extimg' ),
                     'tiff'  => array( '', '', 'extimg' )
             ),
             "Interchange Formats" => array(
