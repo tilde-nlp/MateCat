@@ -31,6 +31,7 @@
                 height="24"
               />
               <input
+                v-model="searchInSource"
                 :placeholder="$lang.inputs.search_in_original"
                 class="search-input"
                 type="text"
@@ -45,6 +46,7 @@
                 height="24"
               />
               <input
+                v-model="searchInTarget"
                 :placeholder="$lang.inputs.search_in_translation"
                 class="search-input"
                 type="text"
@@ -152,7 +154,9 @@ export default {
         fileName: '',
         firstSegment: 0,
         lastSegment: 0
-      }
+      },
+      searchInSource: '',
+      searchInTarget: ''
     }
   },
   computed: {

@@ -16,5 +16,8 @@ export default {
   },
   setSegmentSplit: function (data) {
     return HTTP.post(CONFIG.baseUrl + '?action=setSegmentSplit&&time=' + new Date().getTime() + ',jid=' + data.id_job + ',sid=' + data.id_segment, FormGenerator.generateForm(data))
+  },
+  searchSegments: function (data) {
+    return HTTP.post(CONFIG.baseUrl + '?action=getSearch&time=' + new Date().getTime() + ',jid=' + data.id_job, FormGenerator.generateForm(data))
   }
 }
