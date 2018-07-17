@@ -27,6 +27,9 @@ class jobInfoController {
         $jobData = array_pop(Jobs_JobDao::getById($this->id));
         $result = new \stdClass();
         $result->active_segment_id = $lastSegmentData['segment_id'];
+        if ($result->active_segment_id == null) {
+            $result->active_segment_id = $jobData->job_first_segment;
+        }
         $result->fileName = $fileNameData['name'];
         $result->source = $jobData['source'];
         $result->target = $jobData['target'];

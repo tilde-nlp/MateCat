@@ -156,7 +156,8 @@ export default {
         lastSegment: 0
       },
       searchInSource: '',
-      searchInTarget: ''
+      searchInTarget: '',
+      segmentPageSize: 5
     }
   },
   computed: {
@@ -182,7 +183,7 @@ export default {
         this.jobData.firstSegment = parseInt(jobRes.data.firstSegment)
         this.jobData.lastSegment = parseInt(jobRes.data.lastSegment)
         this.jobData.fileName = jobRes.data.fileName
-        this.fetchSegments()
+        this.reloadSegments()
         this.checkStats()
         this.getFileUrls()
       })
@@ -235,45 +236,6 @@ export default {
             .then(this.analyzeResponse)
         }, 2000)
       }
-    },
-    fetchSegments: function () {
-      let data = {
-        action: 'getSegments',
-        jid: this.jobData.id,
-        password: this.jobData.password,
-        where: 'center',
-        step: 5
-      }
-      if (this.jobData.lastSegmentId > 0) {
-        data['segment'] = this.jobData.lastSegmentId
-      }
-      SegmentsService.getSegments(data)
-        .then(r => {
-          this.fileId = Object.keys(r.data.data.files)[0]
-          this.segments = _.map(Object.values(r.data.data.files)[0].segments, el => {
-            return {
-              id: parseInt(el.sid),
-              original: el.segment,
-              translation: el.translation,
-              status: (el.status === 'TRANSLATED' ? 'done' : ''),
-              active: false,
-              version: el.version,
-              suggestions: [],
-              suggestionsLoaded: false,
-              jobId: this.jobData.id,
-              jobPassword: this.jobData.password,
-              saveType: el.save_type,
-              match: el.save_match,
-              comments: el.comments
-            }
-          })
-          if (this.jobData.lastSegmentId > 0) {
-            this.setActive(this.jobData.lastSegmentId)
-          } else {
-            this.setActive(this.segments[0].id)
-          }
-          this.segmentsScrolled()
-        })
     },
     getContribution: function (segment) {
       const context = this.getContext(segment)
@@ -375,59 +337,70 @@ export default {
         }
         return e
       })
-      const activeIndex = parseInt(_.findKey(this.segments, {active: true}))
-      if (activeIndex === 0 || this.segments.length - activeIndex - 1 === 0) {
-        this.readMoreSegments(activeIndex)
-      }
     },
-    readMoreSegments: function (activeIndex, callback) {
-      callback = callback || null
-      let data = {
-        action: 'getSegments',
-        jid: this.jobData.id,
-        password: this.jobData.password,
-        where: activeIndex === 0 ? 'before' : 'after',
-        step: 5,
-        segment: this.segments[activeIndex].id
-      }
-      SegmentsService.getSegments(data)
-        .then(r => {
-          if (Object.values(r.data.data.files).length < 1) {
-            if (callback !== null) callback()
-            return
-          }
-          let newArray = []
-          _.map(Object.values(r.data.data.files)[0].segments, el => {
-            const item = {
-              id: parseInt(el.sid),
-              original: el.segment,
-              translation: el.translation,
-              status: (el.status === 'TRANSLATED' ? 'done' : ''),
-              active: false,
-              version: el.version,
-              suggestions: [],
-              suggestionsLoaded: false,
-              jobId: this.jobData.id,
-              jobPassword: this.jobData.password,
-              saveType: '',
-              match: 0,
-              comments: el.comments
+    readSegments: function (segmentId, segmentPosition) {
+      return new Promise((resolve) => {
+        let data = {
+          action: 'getSegments',
+          jid: this.jobData.id,
+          password: this.jobData.password,
+          where: segmentPosition,
+          step: this.segmentPageSize,
+          segment: segmentId
+        }
+        SegmentsService.getSegments(data)
+          .then(r => {
+            if (Object.values(r.data.data.files).length < 1) {
+              resolve([])
+              return
             }
-            if (activeIndex === 0) {
-              newArray.push(item)
+            this.fileId = Object.keys(r.data.data.files)[0]
+            const segments = _.map(Object.values(r.data.data.files)[0].segments, el => {
+              return {
+                id: parseInt(el.sid),
+                original: el.segment,
+                translation: el.translation,
+                status: (el.status === 'TRANSLATED' ? 'done' : ''),
+                active: false,
+                version: el.version,
+                suggestions: [],
+                suggestionsLoaded: false,
+                jobId: this.jobData.id,
+                jobPassword: this.jobData.password,
+                saveType: el.save_type,
+                match: el.save_match,
+                comments: el.comments
+              }
+            })
+            resolve(segments)
+          })
+      })
+    },
+    reloadSegments: function () {
+      this.readSegments(this.jobData.lastSegmentId, 'center')
+        .then(segments => {
+          this.segments = segments
+          this.setActive(this.jobData.lastSegmentId)
+        })
+    },
+    readMoreSegments: function (segmentIndex) {
+      return new Promise(resolve => {
+        this.readSegments(this.segments[segmentIndex].id, segmentIndex === 0 ? 'before' : 'after')
+          .then(segments => {
+            const segmentLength = segments.length
+            if (segmentIndex === 0) {
+              segments = segments.concat(this.segments)
+              this.segments = null
+              Vue.nextTick(() => {
+                this.segments = segments
+                resolve(segmentLength)
+              })
             } else {
-              this.segments.push(item)
+              this.segments.push(...segments)
+              resolve(segmentLength)
             }
           })
-          if (activeIndex === 0) {
-            newArray = newArray.concat(this.segments)
-            this.segments = null
-            Vue.nextTick(() => {
-              this.segments = newArray
-            })
-          }
-          if (callback !== null) callback()
-        })
+      })
     },
     fontControl: function (event) {
       switch (event.srcKey) {
@@ -462,50 +435,45 @@ export default {
       this.setStatus('draft')
     },
     searchUnconfirmed: function (direction, activeIndex) {
-      activeIndex = activeIndex || parseInt(_.findKey(this.segments, {active: true}))
+      // Initing unconfirmed search
+      // Go to next segment and check if it's unconfirmed
+      if (typeof (activeIndex) === 'undefined') {
+        activeIndex = parseInt(_.findKey(this.segments, {active: true}))
+      }
       let segmentId = 0
-      while (1) {
-        activeIndex += direction
-        if (activeIndex < 0) {
-          activeIndex = 0
-          segmentId = this.segments[activeIndex].id
-          this.readMoreSegments(activeIndex, () => {
+      const previousIndex = activeIndex
+      activeIndex += direction
+      // Clamp active index to 0 and segments count
+      activeIndex = Math.min(Math.max(activeIndex, 0), this.segments.length - 1)
+      segmentId = this.segments[activeIndex].id
+      if (activeIndex === previousIndex) {
+        this.readMoreSegments(activeIndex)
+          .then((count) => {
+            if (count < 1) return
             const newActiveIndex = parseInt(_.findKey(this.segments, {id: segmentId}))
-            if (newActiveIndex !== activeIndex) {
-              this.searchUnconfirmed(direction, newActiveIndex)
-            }
+            this.searchUnconfirmed(direction, newActiveIndex)
           })
-          break
-        }
-        if (activeIndex >= this.segments.length) {
-          activeIndex = this.segments.length - 1
-          segmentId = this.segments[activeIndex].id
-          this.readMoreSegments(activeIndex, () => {
-            const newActiveIndex = parseInt(_.findKey(this.segments, {id: segmentId}))
-            if (newActiveIndex !== activeIndex) {
-              this.searchUnconfirmed(direction, newActiveIndex)
-            }
-          })
-          break
-        }
+      } else {
         if (this.segments[activeIndex].status !== 'done') {
           this.setActive(this.segments[activeIndex].id)
-          break
+          return
         }
+        const newActiveIndex = parseInt(_.findKey(this.segments, {id: segmentId}))
+        this.searchUnconfirmed(direction, newActiveIndex)
       }
     },
     segmentsScrolled: function () {
-      if (!this.segments.length) {
-        return
-      }
-      const element = document.getElementById('translatorSegments')
-      if (element.scrollTop === (element.scrollHeight - element.offsetHeight)) {
-        this.readMoreSegments(this.segments.length - 1)
-        return
-      }
-      if (element.scrollTop === 0) {
-        this.readMoreSegments(0)
-      }
+      // if (!this.segments.length) {
+      //   return
+      // }
+      // const element = document.getElementById('translatorSegments')
+      // if (element.scrollTop === (element.scrollHeight - element.offsetHeight)) {
+      //   this.readMoreSegments(this.segments.length - 1)
+      //   return
+      // }
+      // if (element.scrollTop === 0) {
+      //   this.readMoreSegments(0)
+      // }
     },
     setSegmentSplit: function () {
       const data = {
