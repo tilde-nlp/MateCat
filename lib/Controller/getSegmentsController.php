@@ -17,6 +17,8 @@ class getSegmentsController extends ajaxController {
     private $filetype_handler = null;
     private $start_from = 0;
     private $page = 0;
+    private $searchInSource = '';
+    private $searchInTarget = '';
 
     /**
      * @var Chunks_ChunkStruct
@@ -41,6 +43,8 @@ class getSegmentsController extends ajaxController {
             'segment' => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
             'password'    => array( 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH ),
             'where'       => array( 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH ),
+            'searchInSource'       => array( 'filter' => FILTER_SANITIZE_STRING ),
+            'searchInTarget'       => array( 'filter' => FILTER_SANITIZE_STRING ),
         );
 
         $__postInput = filter_input_array( INPUT_POST, $filterArgs );
@@ -54,6 +58,8 @@ class getSegmentsController extends ajaxController {
         $this->ref_segment = $__postInput[ 'segment' ];
         $this->password    = $__postInput[ 'password' ];
         $this->where       = $__postInput[ 'where' ];
+        $this->searchInSource       = $__postInput[ 'searchInSource' ];
+        $this->searchInTarget       = $__postInput[ 'searchInTarget' ];
 
     }
 
@@ -84,7 +90,8 @@ class getSegmentsController extends ajaxController {
         $data = getMoreSegments(
                 $this->jid, $this->password, $this->step,
                 $this->ref_segment, $this->where,
-                $this->getOptionalQueryFields()
+                $this->getOptionalQueryFields(),
+                $this->searchInSource, $this->searchInTarget
         );
 
         $this->prepareNotes( $data );

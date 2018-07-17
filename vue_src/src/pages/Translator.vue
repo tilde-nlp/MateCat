@@ -35,6 +35,7 @@
                 :placeholder="$lang.inputs.search_in_original"
                 class="search-input"
                 type="text"
+                @keyup.enter="searchSegments"
               >
             </div>
           </div>
@@ -50,6 +51,7 @@
                 :placeholder="$lang.inputs.search_in_translation"
                 class="search-input"
                 type="text"
+                @keyup.enter="searchSegments"
               >
             </div>
           </div>
@@ -319,8 +321,10 @@ export default {
       if (this.activeSegment.status !== 'done') {
         this.setStatus('draft')
       }
+      let activeFound = false
       _.map(this.segments, e => {
         if (e.id === id) {
+          activeFound = true
           e.active = true
           this.jobData.lastSegmentId = e.id
           this.activeSegment = e
@@ -337,6 +341,9 @@ export default {
         }
         return e
       })
+      if (!activeFound && this.segments.length > 0) {
+        this.setActive(this.segments[0].id)
+      }
     },
     readSegments: function (segmentId, segmentPosition) {
       return new Promise((resolve) => {
@@ -346,7 +353,9 @@ export default {
           password: this.jobData.password,
           where: segmentPosition,
           step: this.segmentPageSize,
-          segment: segmentId
+          segment: segmentId,
+          searchInSource: this.searchInSource,
+          searchInTarget: this.searchInTarget
         }
         SegmentsService.getSegments(data)
           .then(r => {
@@ -376,11 +385,18 @@ export default {
           })
       })
     },
+    searchSegments: function () {
+      this.activeSegment = {
+        id: 0
+      }
+      this.reloadSegments()
+    },
     reloadSegments: function () {
       this.readSegments(this.jobData.lastSegmentId, 'center')
         .then(segments => {
           this.segments = segments
           this.setActive(this.jobData.lastSegmentId)
+          this.segmentsScrolled()
         })
     },
     readMoreSegments: function (segmentIndex) {
@@ -463,17 +479,15 @@ export default {
       }
     },
     segmentsScrolled: function () {
-      // if (!this.segments.length) {
-      //   return
-      // }
-      // const element = document.getElementById('translatorSegments')
-      // if (element.scrollTop === (element.scrollHeight - element.offsetHeight)) {
-      //   this.readMoreSegments(this.segments.length - 1)
-      //   return
-      // }
-      // if (element.scrollTop === 0) {
-      //   this.readMoreSegments(0)
-      // }
+      if (!this.segments.length) {
+        return
+      }
+      const element = document.getElementById('translatorSegments')
+      if (element.scrollTop === (element.scrollHeight - element.offsetHeight)) {
+        this.readMoreSegments(this.segments.length - 1)
+      } else if (element.scrollTop === 0) {
+        this.readMoreSegments(0)
+      }
     },
     setSegmentSplit: function () {
       const data = {

@@ -346,16 +346,26 @@ function getFirstSegmentId( $jid, $password ) {
  * @param int    $step
  * @param        $ref_segment
  * @param string $where
+ * @param string $searchInSource
+ * @param string $searchInTarget
  *
  * @return array
  * @throws Exception
  */
-function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'after', $options = [] ) {
+function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'after', $options = [], $searchInSource = '', $searchInTarget = '' ) {
 
     $optional_fields = null;
     if ( isset( $options[ 'optional_fields' ] ) ) {
         $optional_fields = ', ';
         $optional_fields .= implode( ', ', $options[ 'optional_fields' ] );
+    }
+
+    $searchQuery = '';
+    if (!empty($searchInSource)) {
+        $searchQuery .= " AND segments.segment LIKE '%" . $searchInSource ."%' ";
+    }
+    if (!empty($searchInTarget)) {
+        $searchQuery .= " AND IF(segment_translations.status='NEW',NULL,segment_translations.translation) LIKE '%" . $searchInTarget ."%' ";
     }
 
     $queryAfter = "
@@ -368,7 +378,8 @@ function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'a
                         AND password = '$password'
                         AND show_in_cattool = 1
                         AND segments.id > $ref_segment
-                    LIMIT %u
+                        $searchQuery
+                    LIMIT ". $step * 2 ."
                 ) AS TT1
                 ";
 
@@ -382,8 +393,9 @@ function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'a
                         AND password = '$password'
                         AND show_in_cattool = 1
                         AND segments.id < $ref_segment
+                        $searchQuery
                     ORDER BY __sid DESC
-                    LIMIT %u
+                    LIMIT ". $step * 2 ."
                 ) as TT2
                 ";
 
@@ -403,7 +415,8 @@ function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'a
                             AND password = '$password'
                             AND show_in_cattool = 1
                             AND segments.id >= $ref_segment
-                        LIMIT %u 
+                            $searchQuery
+                        LIMIT ". $step ."
                   ) AS TT1
                   UNION
                   SELECT * from(
@@ -415,20 +428,21 @@ function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'a
                             AND password = '$password'
                             AND show_in_cattool = 1
                             AND segments.id < $ref_segment
+                            $searchQuery
                         ORDER BY __sid DESC
-                        LIMIT %u
+                        LIMIT ". $step ."
                   ) AS TT2
     ";
 
     switch ( $where ) {
         case 'after':
-            $subQuery = sprintf( $queryAfter, $step * 2 );
+            $subQuery = $queryAfter;
             break;
         case 'before':
-            $subQuery = sprintf( $queryBefore, $step * 2 );
+            $subQuery = $queryBefore;
             break;
         case 'center':
-            $subQuery = sprintf( $queryCenter, $step, $step );
+            $subQuery = $queryCenter;
             break;
     }
 
