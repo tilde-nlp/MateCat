@@ -199,17 +199,32 @@ export default {
         })
     },
     upload: function (file, fileName, fileTmpId) {
+      let langDetect = {}
+      langDetect[fileName] = 'detect'
       let formData = FormGenerator.generateForm({
-        action: 'convertFile',
         file_name: fileName,
         source_lang: this.fromLang,
         target_lang: this.toLang,
-        segmentation_rule: ''
+        segmentation_rule: '',
+        project_name: '',
+        source_language: this.fromLang,
+        target_language: this.toLang,
+        job_subject: this.subject.value,
+        disable_tms_engine: 'false',
+        mt_engine: '1',
+        private_key_list: '{"ownergroup":[],"mine":[],"anonymous":[]}',
+        langDetect: langDetect,
+        pretranslate_100: '0',
+        lexiqa: 'false',
+        speech2text: 'false',
+        tag_projection: 'true',
+        dqf: 'false',
+        get_public_matches: 'true'
       })
       formData.append('files[]', file)
       FileService.upload(formData)
-        .then(convertRes => {
-          if (convertRes.data.code === -6) {
+        .then(res => {
+          if (res.data.code === -6) {
             const fileIndex = _.findKey(this.files, {tmpFileId: fileTmpId})
             if (fileIndex > -1) {
               this.files.splice(parseInt(fileIndex), 1)
@@ -220,36 +235,12 @@ export default {
             }
             if (this.uploadQueue.length < 1) this.uploadQueueActive = false
             this.updatePagesCount()
-            return Promise.reject(new Error('Kļūda ielādējot failu: ' + convertRes.data.errors[0].debug))
+            return Promise.reject(new Error('Kļūda ielādējot failu: ' + res.data.errors[0].debug))
           }
-          let langDetect = {}
-          langDetect[fileName] = 'detect'
-          const createData = {
-            action: 'createProject',
-            project_name: '',
-            file_name: fileName,
-            source_language: this.fromLang,
-            target_language: this.toLang,
-            job_subject: this.subject.value,
-            disable_tms_engine: 'false',
-            mt_engine: '1',
-            private_key_list: '{"ownergroup":[],"mine":[],"anonymous":[]}',
-            langDetect: langDetect,
-            pretranslate_100: '0',
-            lexiqa: 'false',
-            speech2text: 'false',
-            tag_projection: 'true',
-            segmentation_rule: '',
-            dqf: 'false',
-            get_public_matches: 'true'
-          }
-          return FileService.createProject(createData)
-        })
-        .then(projectRes => {
           const file = _.find(this.files, {tmpFileId: fileTmpId})
-          file.id = projectRes.data.data.id_project
-          file.password = projectRes.data.data.password
-          file.statusLink = this.$CONFIG.baseUrl + 'api/v2/projects/' + projectRes.data.data.id_project + '/' + projectRes.data.data.password + '/creation_status'
+          file.id = res.data.data.id_project
+          file.password = res.data.data.password
+          file.statusLink = this.$CONFIG.baseUrl + 'api/v2/projects/' + res.data.data.id_project + '/' + res.data.data.password + '/creation_status'
           setTimeout(() => {
             FileService.checkStatus(file.statusLink)
               .then(this.statusResponse)
