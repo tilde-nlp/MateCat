@@ -243,43 +243,21 @@ class UploadHandler {
         $file->type = mime_content_type( $file->tmp_name );
 
         if ( $this->validate( $uploaded_file, $file, $error, $index ) ) {
-            $file_path   = $this->options[ 'upload_dir' ] . $file->name;
-            $append_file = !$this->options[ 'discard_aborted_uploads' ] &&
-                    is_file( $file_path ) && $file->size > filesize( $file_path );
-            clearstatcache();
-            if ( $uploaded_file && is_uploaded_file( $uploaded_file ) ) {
-                // multipart/formdata uploads (POST method uploads)
-                if ( $append_file ) {
-                    $res = file_put_contents(
-                            $file_path, fopen( $uploaded_file, 'r' ), FILE_APPEND
-                    );
-                    Log::doLog( $res );
-                } else {
-                    // Inconsistent behaviour: sometimes project folder is created other times it isn't.
-                    // Check for project folder existence and mkdir it if necessary.
-                    if (!is_dir($this->options[ 'upload_dir' ])) {
-                        mkdir($this->options[ 'upload_dir' ], 0775, true);
-                    }
-                    $res = move_uploaded_file( $uploaded_file, $file_path );
-                    Log::doLog( $res );
-                }
-            } else {
-                // Non-multipart uploads (PUT method support)
-                $res = file_put_contents(
-                        $file_path, fopen( 'php://input', 'r' ), $append_file ? FILE_APPEND : 0
-                );
-                Log::doLog( $res );
+            $file->full_path   = $this->options[ 'upload_dir' ] . $file->name;
+            // Inconsistent behaviour: sometimes project folder is created other times it isn't.
+            // Check for project folder existence and mkdir it if necessary.
+            if (!is_dir($this->options[ 'upload_dir' ])) {
+                mkdir($this->options[ 'upload_dir' ], 0775, true);
             }
+            $res = move_uploaded_file( $uploaded_file, $file->full_path );
+            Log::doLog( $res );
 
-            clearstatcache();
-            $file_size = filesize( $file_path );
+            $file_size = filesize( $file->full_path );
             if ( $file_size === $file->size ) {
                 $file->url = $this->options[ 'upload_url' ] . rawurlencode( $file->name );
             } else {
-                if ( $this->options[ 'discard_aborted_uploads' ] ) {
-                    unlink( $file_path );
-                    $file->error = 'abort';
-                }
+                unlink( $file->full_path );
+                $file->error = 'abort';
             }
             $file->size = $file_size;
             $this->set_file_delete_url( $file );
@@ -299,13 +277,6 @@ class UploadHandler {
             }
 
         }
-
-        /**
-         *
-         * OLD
-         * Conversion check are now made server side
-         */
-        $file->convert = true;
 
         return $file;
     }
@@ -536,103 +507,14 @@ class UploadHandler {
             $this->project_name = $default_project_name;
         }
 
-        $sourceLangHistory = $_COOKIE[ \Constants::COOKIE_SOURCE_LANG ];
-        $targetLangHistory = $_COOKIE[ \Constants::COOKIE_TARGET_LANG ];
-
-        // SET SOURCE COOKIE
-
-        if ( $sourceLangHistory == \Constants::EMPTY_VAL ) {
-            $sourceLangHistory = "";
-        }
-        $sourceLangAr = explode( '||', urldecode( $sourceLangHistory ) );
-
-        if ( ( $key = array_search( $this->source_language, $sourceLangAr ) ) !== false ) {
-            unset( $sourceLangAr[ $key ] );
-        }
-        array_unshift( $sourceLangAr, $this->source_language );
-        if ( $sourceLangAr == \Constants::EMPTY_VAL ) {
-            $sourceLangAr = "";
-        }
-        $newCookieVal = "";
-        $sourceLangAr = array_slice( $sourceLangAr, 0, 3 );
-        $sourceLangAr = array_reverse( $sourceLangAr );
-
-        foreach ( $sourceLangAr as $key => $link ) {
-            if ( $sourceLangAr[ $key ] == '' ) {
-                unset( $sourceLangAr[ $key ] );
-            }
-        }
-
-        foreach ( $sourceLangAr as $lang ) {
-            if ( $lang != "" ) {
-                $newCookieVal = $lang . "||" . $newCookieVal;
-            }
-        }
-
-        setcookie( \Constants::COOKIE_SOURCE_LANG, $newCookieVal, time() + ( 86400 * 365 ) );
-
-        // SET TARGET COOKIE
-
-        if ( $targetLangHistory == \Constants::EMPTY_VAL ) {
-            $targetLangHistory = "";
-        }
-        $targetLangAr = explode( '||', urldecode( $targetLangHistory ) );
-
-        if ( ( $key = array_search( $this->target_language, $targetLangAr ) ) !== false ) {
-            unset( $targetLangAr[ $key ] );
-        }
-        array_unshift( $targetLangAr, $this->target_language );
-        if ( $targetLangAr == \Constants::EMPTY_VAL ) {
-            $targetLangAr = "";
-        }
-        $newCookieVal = "";
-        $targetLangAr = array_slice( $targetLangAr, 0, 3 );
-        $targetLangAr = array_reverse( $targetLangAr );
-
-        foreach ( $targetLangAr as $key => $link ) {
-            if ( $targetLangAr[ $key ] == '' ) {
-                unset( $targetLangAr[ $key ] );
-            }
-        }
-
-        foreach ( $targetLangAr as $lang ) {
-            if ( $lang != "" ) {
-                $newCookieVal = $lang . "||" . $newCookieVal;
-            }
-        }
-
-        setcookie( \Constants::COOKIE_TARGET_LANG, $newCookieVal, time() + ( 86400 * 365 ) );
-
         //search in fileNames if there's a zip file. If it's present, get filenames and add the instead of the zip file.
 
         $uploadDir  = INIT::$UPLOAD_REPOSITORY . DIRECTORY_SEPARATOR . $_COOKIE[ 'upload_session' ];
         $newArFiles = [];
 
         foreach ( $arFiles as $__fName ) {
-            if ( 'zip' == FilesStorage::pathinfo_fix( $__fName, PATHINFO_EXTENSION ) ) {
-
-                $fs = new FilesStorage();
-                $fs->cacheZipArchive( sha1_file( $uploadDir . DIRECTORY_SEPARATOR . $__fName ), $uploadDir . DIRECTORY_SEPARATOR . $__fName );
-
-                $linkFiles = scandir( $uploadDir );
-
-                //fetch cache links, created by converter, from upload directory
-                foreach ( $linkFiles as $storedFileName ) {
-                    //check if file begins with the name of the zip file.
-                    // If so, then it was stored in the zip file.
-                    if ( strpos( $storedFileName, $__fName ) !== false &&
-                        substr( $storedFileName, 0, strlen( $__fName ) ) == $__fName ) {
-                        //add file name to the files array
-                        $newArFiles[] = $storedFileName;
-                    }
-                }
-
-            } else { //this file was not in a zip. Add it normally
-
-                if ( file_exists( $uploadDir . DIRECTORY_SEPARATOR . $__fName ) ) {
-                    $newArFiles[] = $__fName;
-                }
-
+            if ( file_exists( $uploadDir . DIRECTORY_SEPARATOR . $__fName ) ) {
+                $newArFiles[] = $__fName;
             }
         }
 
@@ -852,28 +734,16 @@ class UploadHandler {
         $upload = isset( $_FILES[ $this->options[ 'param_name' ] ] ) ? $_FILES[ $this->options[ 'param_name' ] ] : null;
 
         $info = [];
-        if ( $upload && is_array( $upload[ 'tmp_name' ] ) ) {
-            // param_name is an array identifier like "files[]",
-            // $_FILES is a multi-dimensional array:
-            foreach ( $upload[ 'tmp_name' ] as $index => $value ) {
-                $info[] = $this->handle_file_upload(
-                        $upload[ 'tmp_name' ][ $index ],
-                        $upload[ 'name' ][ $index ],
-                        $upload[ 'size' ][ $index ],
-                        $upload[ 'type' ][ $index ],
-                        $upload[ 'error' ][ $index ],
-                        $index
-                );
-            }
-        } elseif ( $upload || isset( $_SERVER[ 'HTTP_X_FILE_NAME' ] ) ) {
-            // param_name is a single object identifier like "file",
-            // $_FILES is a one-dimensional array:
+        // param_name is an array identifier like "files[]",
+        // $_FILES is a multi-dimensional array:
+        foreach ( $upload[ 'tmp_name' ] as $index => $value ) {
             $info[] = $this->handle_file_upload(
-                    isset( $upload[ 'tmp_name' ] ) ? $upload[ 'tmp_name' ] : null,
-                    isset( $upload[ 'name' ] ) ? $upload[ 'name' ] : null,
-                    isset( $upload[ 'size' ] ) ? $upload[ 'size' ] : null,
-                    isset( $upload[ 'type' ] ) ? $upload[ 'type' ] : null,
-                    isset( $upload[ 'error' ] ) ? $upload[ 'error' ] : null
+                $upload[ 'tmp_name' ][ $index ],
+                $upload[ 'name' ][ $index ],
+                $upload[ 'size' ][ $index ],
+                $upload[ 'type' ][ $index ],
+                $upload[ 'error' ][ $index ],
+                $index
             );
         }
 

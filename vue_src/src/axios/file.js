@@ -5,12 +5,6 @@ export default {
   upload: function (data) {
     return HTTP.post(CONFIG.baseUrl + 'lib/Utils/fileupload/', data)
   },
-  convert: function (data) {
-    return HTTP.post(CONFIG.baseUrl + '?action=convertFile', FormGenerator.generateForm(data))
-  },
-  createProject: function (data) {
-    return HTTP.post(CONFIG.baseUrl + '?action=createProject&time=1527158705351,jid=undefined', FormGenerator.generateForm(data))
-  },
   checkStatus: function (link) {
     return HTTP.get(link)
   },
