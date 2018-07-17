@@ -117,6 +117,7 @@ import FileListSelector from 'components/file-list/FileListSelector'
 import FileListContainer from 'components/file-list/FileListContainer'
 import FileListPager from 'components/file-list/FileListPager'
 import {FileConstructor} from 'utils/file-constructor'
+import {FormGenerator} from 'services/form-generator'
 export default {
   name: 'FileList',
   components: {
@@ -198,20 +199,15 @@ export default {
         })
     },
     upload: function (file, fileName, fileTmpId) {
-      // eslint-disable-next-line no-undef
-      let formData = new FormData()
+      let formData = FormGenerator.generateForm({
+        action: 'convertFile',
+        file_name: fileName,
+        source_lang: this.fromLang,
+        target_lang: this.toLang,
+        segmentation_rule: ''
+      })
       formData.append('files[]', file)
       FileService.upload(formData)
-        .then(uploadRes => {
-          const convertData = {
-            action: 'convertFile',
-            file_name: fileName,
-            source_lang: this.fromLang,
-            target_lang: this.toLang,
-            segmentation_rule: ''
-          }
-          return FileService.convert(convertData)
-        })
         .then(convertRes => {
           if (convertRes.data.code === -6) {
             const fileIndex = _.findKey(this.files, {tmpFileId: fileTmpId})

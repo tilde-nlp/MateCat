@@ -5,6 +5,16 @@ define( "DIRSEP", "//" );
 class UploadHandler {
 
     protected $options;
+    protected $lang_handler;
+    protected $result;
+    protected $featureSet;
+    protected $file_name;
+    protected $source_lang;
+    protected $target_lang;
+    protected $segmentation_rule;
+    protected $cookieDir;
+    protected $intDir;
+    protected $errDir;
 
     function __construct() {
 
@@ -285,6 +295,113 @@ class UploadHandler {
         echo json_encode( $info );
     }
 
+    public function handle_convert() {
+        $this->featureSet = new FeatureSet();
+        $this->featureSet->loadFromUserEmail( AuthCookie::getCredentials()['username'] ) ;
+
+        $filterArgs = array(
+            'file_name'         => array(
+                'filter' => FILTER_SANITIZE_STRING,
+                'flags'  => FILTER_FLAG_STRIP_LOW // | FILTER_FLAG_STRIP_HIGH
+            ),
+            'source_lang'       => array(
+                'filter' => FILTER_SANITIZE_STRING,
+                'flags'  => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
+            ),
+            'target_lang'       => array(
+                'filter' => FILTER_SANITIZE_STRING,
+                'flags'  => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
+            ),
+            'segmentation_rule' => array(
+                'filter' => FILTER_SANITIZE_STRING,
+                'flags'  => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
+            )
+        );
+
+        $postInput = filter_input_array( INPUT_POST, $filterArgs );
+
+        $this->file_name         = $postInput[ 'file_name' ];
+        $this->source_lang       = $postInput[ "source_lang" ];
+        $this->target_lang       = $postInput[ "target_lang" ];
+        $this->segmentation_rule = $postInput[ "segmentation_rule" ];
+
+        if ( $this->segmentation_rule == "" ) {
+            $this->segmentation_rule = null;
+        }
+
+        $this->cookieDir = $_COOKIE[ 'upload_session' ];
+        $this->intDir    = INIT::$UPLOAD_REPOSITORY . DIRECTORY_SEPARATOR . $this->cookieDir;
+        $this->errDir    = INIT::$STORAGE_DIR . DIRECTORY_SEPARATOR . 'conversion_errors' . DIRECTORY_SEPARATOR . $this->cookieDir;
+
+        $this->result[ 'code' ] = 0; // No Good, Default
+
+        $this->lang_handler = Langs_Languages::getInstance();
+        $this->validateSourceLang();
+        $this->validateTargetLangs();
+
+        if ( empty( $this->file_name ) ) {
+            $this->result[ 'code' ]     = -1; // No Good, Default
+            $this->result[ 'errors' ][] = array( "code" => -1, "message" => "Error: missing file name." );
+        }
+
+        if( !empty( $this->result[ 'errors' ] ) ){
+            return false;
+        }
+
+        $conversionHandler = new ConversionHandler();
+        $conversionHandler->setFileName( $this->file_name );
+        $conversionHandler->setSourceLang( $this->source_lang );
+        $conversionHandler->setTargetLang( $this->target_lang );
+        $conversionHandler->setSegmentationRule( $this->segmentation_rule );
+        $conversionHandler->setCookieDir( $this->cookieDir );
+        $conversionHandler->setIntDir( $this->intDir );
+        $conversionHandler->setErrDir( $this->errDir );
+        $conversionHandler->setFeatures( $this->featureSet );
+        $conversionHandler->setUserIsLogged( true );
+
+        $conversionHandler->doAction();
+
+        $this->result = $conversionHandler->getResult();
+
+        ( isset( $this->result[ 'errors' ] ) ) ? null : $this->result[ 'errors' ] = array();
+
+        if ( count( $this->result[ 'errors' ] ) == 0 ) {
+            $this->result[ 'code' ] = 1;
+        } else {
+            $this->result[ 'errors' ] = array_values( $this->result[ 'errors' ] );
+        }
+    }
+
+    private function validateSourceLang() {
+        try {
+            $this->lang_handler->validateLanguage( $this->source_lang );
+        } catch ( Exception $e ) {
+            $this->result[ 'errors' ][]    = [ "code" => -3, "message" => $e->getMessage() ];
+        }
+    }
+
+    private function validateTargetLangs() {
+        $targets = explode( ',', $this->target_lang );
+        $targets = array_map( 'trim', $targets );
+        $targets = array_unique( $targets );
+
+        if ( empty( $targets ) ) {
+            $this->result[ 'errors' ][]    = [ "code" => -4, "message" => "Missing target language." ];
+        }
+
+        try {
+
+            foreach ( $targets as $target ) {
+                $this->lang_handler->validateLanguage( $target );
+            }
+
+        } catch ( Exception $e ) {
+            $this->result[ 'errors' ][]    = [ "code" => -4, "message" => $e->getMessage() ];
+        }
+
+        $this->target_lang = implode( ',', $targets );
+    }
+
     public function post() {
 
         if ( isset( $_REQUEST[ '_method' ] ) && $_REQUEST[ '_method' ] === 'DELETE' ) {
@@ -354,6 +471,11 @@ class UploadHandler {
                     "Check for max file upload value in the virtualhost configuration or php.ini.\"";
         }
         //check for server misconfiguration
+
+        // TODO Check if no errors occured
+        // TODO Do convert stuff
+        $this->handle_convert();
+        // TODO Do create project stuff
 
         header( 'Vary: Accept' );
         $json     = json_encode( $info );
