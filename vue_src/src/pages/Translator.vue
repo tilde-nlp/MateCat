@@ -109,6 +109,8 @@
           :job-data="jobData"
           :max-height="suggestionsListHeight"
           @mtSystemChange="val => { system = val.value }"
+          @search="searchSegments"
+          @commentSearchInput="val => { searchInComments = val }"
         />
       </section>
     </div>
@@ -159,6 +161,7 @@ export default {
       },
       searchInSource: '',
       searchInTarget: '',
+      searchInComments: '',
       segmentPageSize: 5
     }
   },
@@ -355,7 +358,8 @@ export default {
           step: this.segmentPageSize,
           segment: segmentId,
           searchInSource: this.searchInSource,
-          searchInTarget: this.searchInTarget
+          searchInTarget: this.searchInTarget,
+          searchInComments: this.searchInComments
         }
         SegmentsService.getSegments(data)
           .then(r => {

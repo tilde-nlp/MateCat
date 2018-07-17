@@ -19,6 +19,7 @@ class getSegmentsController extends ajaxController {
     private $page = 0;
     private $searchInSource = '';
     private $searchInTarget = '';
+    private $searchInComments = '';
 
     /**
      * @var Chunks_ChunkStruct
@@ -45,6 +46,7 @@ class getSegmentsController extends ajaxController {
             'where'       => array( 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH ),
             'searchInSource'       => array( 'filter' => FILTER_SANITIZE_STRING ),
             'searchInTarget'       => array( 'filter' => FILTER_SANITIZE_STRING ),
+            'searchInComments'       => array( 'filter' => FILTER_SANITIZE_STRING ),
         );
 
         $__postInput = filter_input_array( INPUT_POST, $filterArgs );
@@ -60,6 +62,7 @@ class getSegmentsController extends ajaxController {
         $this->where       = $__postInput[ 'where' ];
         $this->searchInSource       = $__postInput[ 'searchInSource' ];
         $this->searchInTarget       = $__postInput[ 'searchInTarget' ];
+        $this->searchInComments       = $__postInput[ 'searchInComments' ];
 
     }
 
@@ -91,7 +94,8 @@ class getSegmentsController extends ajaxController {
                 $this->jid, $this->password, $this->step,
                 $this->ref_segment, $this->where,
                 $this->getOptionalQueryFields(),
-                $this->searchInSource, $this->searchInTarget
+                $this->searchInSource, $this->searchInTarget,
+                $this->searchInComments
         );
 
         $this->prepareNotes( $data );

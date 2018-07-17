@@ -101,6 +101,20 @@
           v-if="activeTab === 'comments'"
           class="tab"
         >
+          <div class="relative mt-8 mb-8 mr-32">
+            <svgicon
+              class="svg-icon icon-blueish-darker-still placeholder"
+              name="search"
+              height="24"
+            />
+            <input
+              :placeholder="$lang.inputs.search_in_comments"
+              class="search-input"
+              type="text"
+              @keyup.enter="() => { $emit('search') }"
+              @input="e => { $emit('commentSearchInput', e.target.value) }"
+            >
+          </div>
           <transition-group
             name="ffade"
             mode="out-in"
@@ -191,7 +205,7 @@ export default {
   },
   computed: {
     resolvable: function () {
-      if (this.activeSegment.comments.length < 1) {
+      if (typeof (this.activeSegment.comments) === 'undefined' || this.activeSegment.comments.length < 1) {
         return false
       }
       if (this.activeSegment.comments[this.activeSegment.comments.length - 1].thread_id !== null) {

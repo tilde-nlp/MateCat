@@ -352,7 +352,7 @@ function getFirstSegmentId( $jid, $password ) {
  * @return array
  * @throws Exception
  */
-function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'after', $options = [], $searchInSource = '', $searchInTarget = '' ) {
+function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'after', $options = [], $searchInSource = '', $searchInTarget = '', $searchInComments = '' ) {
 
     $optional_fields = null;
     if ( isset( $options[ 'optional_fields' ] ) ) {
@@ -366,6 +366,9 @@ function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'a
     }
     if (!empty($searchInTarget)) {
         $searchQuery .= " AND IF(segment_translations.status='NEW',NULL,segment_translations.translation) LIKE '%" . $searchInTarget ."%' ";
+    }
+    if (!empty($searchInComments)) {
+        $searchQuery .= " AND segments.id IN (SELECT id_segment FROM comments WHERE comments.message LIKE '%". $searchInComments ."%') ";
     }
 
     $queryAfter = "
