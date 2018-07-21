@@ -14,19 +14,25 @@
         :style="{ 'font-size': fontSizeString }"
         :class="{top: topSegment}"
         class="segment-col first">
-        <span
-          v-if="!segment.active || !splitActive">{{ originalProcessed }}</span>
-        <textarea
-          v-autosize
-          v-show="segment.active && splitActive"
-          ref="oa"
-          v-model="originalProcessed"
-          :min-height="1"
-          :style="{ 'font-size': fontSizeString }"
-          rows="1"
-          class="segment-edit split-edit"
-          @click="setSplit"
+        <!--<span-->
+        <!--v-if="!segment.active || !splitActive">{{ originalProcessed }}</span>-->
+        <translator-editor
+          :is-active="isActive"
+          :text="originalProcessed"
+          :font-size="fontSizeString"
+          :search-term="$store.state.sourceSearch"
         />
+        <!--<textarea-->
+        <!--v-autosize-->
+        <!--v-show="segment.active && splitActive"-->
+        <!--ref="oa"-->
+        <!--v-model="originalProcessed"-->
+        <!--:min-height="1"-->
+        <!--:style="{ 'font-size': fontSizeString }"-->
+        <!--rows="1"-->
+        <!--class="segment-edit split-edit"-->
+        <!--@click="setSplit"-->
+        <!--/>-->
       </div>
     </div>
     <div class="br-light-darker ib w-0 h-100p absolute"/>
@@ -38,6 +44,7 @@
           :is-active="isActive"
           :text="segment.translation"
           :font-size="fontSizeString"
+          :search-term="$store.state.targetSearch"
         />
         <!--<textarea-->
         <!--v-autosize-->

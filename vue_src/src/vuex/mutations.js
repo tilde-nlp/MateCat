@@ -22,5 +22,19 @@ export default {
     }
     state.profile = profile
     state.isLoggedIn = true
+  },
+  sourceSearch (state, sourceSearch) {
+    if (state.debug) {
+      console.log('Setting sourceSearch: ')
+      console.log(sourceSearch)
+    }
+    state.sourceSearch = sourceSearch
+  },
+  targetSearch (state, targetSearch) {
+    if (state.debug) {
+      console.log('Setting targetSearch: ')
+      console.log(targetSearch)
+    }
+    state.targetSearch = targetSearch
   }
 }

@@ -393,6 +393,8 @@ export default {
       this.activeSegment = {
         id: 0
       }
+      this.$store.commit('sourceSearch', this.searchInSource)
+      this.$store.commit('targetSearch', this.searchInTarget)
       this.reloadSegments()
     },
     reloadSegments: function () {

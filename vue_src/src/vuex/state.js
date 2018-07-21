@@ -3,5 +3,7 @@ export default {
   isLoggedIn: false,
   token: '',
   ready: false,
-  profile: false
+  profile: false,
+  sourceSearch: '',
+  targetSearch: ''
 }
