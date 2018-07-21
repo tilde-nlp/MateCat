@@ -1517,3 +1517,25 @@ select::-ms-expand {
   .h-32;
   line-height: @spacer-32;
 }
+.editor-container {
+  .border-box;
+  .input;
+  .size-s;
+  .p-0;
+  .m-0;
+  outline: none !important;
+  border: none;
+  background: transparent;
+  &:active,
+  &:focus {
+    outline: none !important;
+    border: none;
+    box-shadow: none;
+  }
+  &:disabled {
+    background: transparent;
+  }
+  &.split-edit {
+    cursor: col-resize;
+  }
+}

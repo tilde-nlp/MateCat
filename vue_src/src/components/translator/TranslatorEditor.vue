@@ -18,26 +18,34 @@ export default {
     text: {
       type: String,
       default: ''
+    },
+    fontSize: {
+      type: String,
+      required: true
     }
   },
   data: function () {
     return {
-      editor: '',
+      editor: null,
+      editorBody: null,
       id: null,
       formattedText: ''
     }
   },
   watch: {
     isActive: function (newVal) {
-      if (document.getElementById('editor-' + this.id) === null) return
+      if (this.editor === null) return
       if (newVal) {
-        document.getElementById('editor-' + this.id).contentDocument.designMode = 'On'
+        this.editor.designMode = 'On'
       } else {
-        document.getElementById('editor-' + this.id).contentDocument.designMode = 'Off'
+        this.editor.designMode = 'Off'
       }
     },
     text: function (newVal) {
       this.formattedText = newVal
+      if (this.editorBody !== null) {
+        this.editorBody.innerHTML = this.formattedText
+      }
     }
   },
   mounted: function () {
@@ -45,10 +53,23 @@ export default {
   },
   updated: function () {
     this.$nextTick(() => {
+      if (this.editor === null) {
+        this.editor = document.getElementById('editor-' + this.id).contentDocument
+        this.editorBody = this.editor.getElementsByTagName('body')[0]
+        let cssLink = document.createElement('link')
+        cssLink.href = this.$CONFIG.baseUrl + 'public/vue_dist/main.css'
+        console.log(cssLink.href)
+        cssLink.rel = 'stylesheet'
+        cssLink.type = 'text/css'
+        this.editor.getElementsByTagName('head')[0].appendChild(cssLink)
+        this.editorBody.className = 'editor-container'
+        this.editorBody.style.fontSize = this.fontSize
+        this.editorBody.innerHTML = this.formattedText
+      }
       if (this.isActive) {
-        document.getElementById('editor-' + this.id).contentDocument.designMode = 'On'
+        this.editor.designMode = 'On'
       } else {
-        document.getElementById('editor-' + this.id).contentDocument.designMode = 'Off'
+        this.editor.designMode = 'Off'
       }
     })
   }

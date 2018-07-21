@@ -36,6 +36,8 @@
         class="segment-col last">
         <translator-editor
           :is-active="isActive"
+          :text="segment.translation"
+          :font-size="fontSizeString"
         />
         <!--<textarea-->
         <!--v-autosize-->
