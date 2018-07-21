@@ -2,7 +2,7 @@
   <div
     :class="{active: segment.active, confirmed: segment.status === 'done'}"
     class="segment-container font-size-0"
-    @click="() => {$emit('click', segment.id)}"
+    @click.capture="() => {$emit('click', segment.id)}"
   >
     <div class="double-block segment-fix">
       <div
@@ -34,19 +34,22 @@
       <div
         :class="{top: topSegment}"
         class="segment-col last">
-        <textarea
-          v-autosize
-          ref="ta"
-          v-model="segment.translation"
-          :min-height="1"
-          :style="{ 'font-size': fontSizeString }"
-          :disabled="segment.status === 'done'"
-          :placeholder="segment.active && segment.status !== 'done' ? $lang.inputs.start_translating : ''"
-          rows="1"
-          class="segment-edit"
-          @focus="() => {$emit('click', segment.id)}"
-          @input="onSegmentInput"
+        <translator-editor
+          :is-active="isActive"
         />
+        <!--<textarea-->
+        <!--v-autosize-->
+        <!--ref="ta"-->
+        <!--v-model="segment.translation"-->
+        <!--:min-height="1"-->
+        <!--:style="{ 'font-size': fontSizeString }"-->
+        <!--:disabled="segment.status === 'done'"-->
+        <!--:placeholder="segment.active && segment.status !== 'done' ? $lang.inputs.start_translating : ''"-->
+        <!--rows="1"-->
+        <!--class="segment-edit"-->
+        <!--@focus="() => {$emit('click', segment.id)}"-->
+        <!--@input="onSegmentInput"-->
+        <!--/>-->
       </div>
       <div
         v-if="segment.status === 'done'"
@@ -79,8 +82,12 @@
 </template>
 <script>
 import _ from 'lodash'
+import TranslatorEditor from 'components/translator/TranslatorEditor'
 export default {
   name: 'TranslatorSegment',
+  components: {
+    'translator-editor': TranslatorEditor
+  },
   props: {
     segmentData: {
       type: Object,
@@ -149,7 +156,7 @@ export default {
   watch: {
     isActive: function (newVal) {
       if (newVal) {
-        this.$refs.ta.focus()
+        // this.$refs.ta.focus()
       }
     }
   },
