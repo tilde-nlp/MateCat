@@ -8,6 +8,7 @@
   </div>
 </template>
 <script>
+import _ from 'lodash'
 export default {
   name: 'TranslatorEditor',
   props: {
@@ -69,10 +70,17 @@ export default {
   mounted: function () {
     this.id = this._uid
   },
+  contentUpdate: function (e) {
+    console.log(e)
+  },
   updated: function () {
     this.$nextTick(() => {
       if (this.editor === null) {
         this.editor = document.getElementById('editor-' + this.id).contentDocument
+        this.editor.addEventListener('keyup', _.debounce(() => {
+          // Todo Remove tags
+          this.$emit('input', this.editorBody.innerHTML)
+        }, 500), false)
         this.editorBody = this.editor.getElementsByTagName('body')[0]
         let cssLink = document.createElement('link')
         cssLink.href = this.$CONFIG.baseUrl + 'public/vue_dist/main.css'

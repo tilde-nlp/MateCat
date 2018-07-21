@@ -45,6 +45,7 @@
           :text="segment.translation"
           :font-size="fontSizeString"
           :search-term="$store.state.targetSearch"
+          @input="onSegmentInput"
         />
         <!--<textarea-->
         <!--v-autosize-->
@@ -176,14 +177,15 @@ export default {
     copySourceToTarget: function () {
       this.segment.translation = this.segment.original
     },
-    onSegmentInput: _.debounce(function () {
+    onSegmentInput: function (val) {
+      this.segment.translation = val
       this.$emit('inputDebounce')
       if (this.segment.saveType === 'MANUAL') {
         return
       }
       this.segment.saveType = 'MANUAL'
       this.segment.match = 0
-    }, 500),
+    },
     setSplit: function () {
       const cursorPosition = this.$refs.oa.selectionStart
       this.segment.original = [

@@ -318,9 +318,11 @@ export default {
         })
     },
     setActive: function (id) {
+      if (typeof (this.activeSegment) === 'undefined') return
       if (id === this.activeSegment.id) {
         return
       }
+      console.log(this.activeSegment)
       if (this.activeSegment.status !== 'done') {
         this.setStatus('draft')
       }
