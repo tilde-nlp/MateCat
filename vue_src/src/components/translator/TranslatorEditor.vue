@@ -3,10 +3,12 @@
     :id="'editor-' + id"
     :style="{ 'font-size': fontSizeString }"
     class="editor-container"
+    @input="onInput"
     v-html="formattedText"
   />
 </template>
 <script>
+import _ from 'lodash'
 export default {
   name: 'TranslatorEditor',
   props: {
@@ -26,7 +28,6 @@ export default {
   data: function () {
     return {
       editor: null,
-      editorBody: null,
       id: null
     }
   },
@@ -54,10 +55,6 @@ export default {
       if (this.editor === null) {
         this.$nextTick(() => {
           this.editor = document.getElementById('editor-' + this.id)
-          // this.editor.addEventListener('keyup', _.debounce(() => {
-          //   // Todo Remove tags
-          //   this.$emit('input', this.editorBody.innerHTML)
-          // }, 500), false)
           this.editor.innerHTML = this.formattedText
           this.editor.contentEditable = true
         })
@@ -70,13 +67,22 @@ export default {
       }
     },
     formattedText: function (newVal) {
-      if (this.editorBody !== null) {
-        this.editorBody.innerHTML = newVal
+      if (this.editor !== null) {
+        this.editor.innerHTML = newVal
       }
     }
   },
   mounted: function () {
     this.id = this._uid
+  },
+  methods: {
+    onInput: _.debounce(function () {
+      this.$emit('input', this.cleanText())
+    }, 500),
+    cleanText: function () {
+      let result = this.editor.innerHTML.replace(new RegExp('<span style="background-color: yellow;">', 'g'), '')
+      return result.replace(new RegExp('</span>', 'g'), '')
+    }
   }
 }
 </script>
