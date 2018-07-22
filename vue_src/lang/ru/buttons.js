@@ -18,5 +18,6 @@ module.exports = {
   cancel: 'Cancel',
   resolve_comments: 'Resolve',
   settings: 'Settings',
-  analyze: 'Analyze'
+  analyze: 'Analyze',
+  close: 'Close'
 }

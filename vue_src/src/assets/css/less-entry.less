@@ -1567,3 +1567,38 @@ select::-ms-expand {
     cursor: col-resize;
   }
 }
+.settings-container {
+  .border-box;
+  .absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 640px;
+  min-width: 480px;
+  .bg-white;
+  .b-blueish;
+  -webkit-box-shadow: -10px 1px 5px 0px rgba(0,0,0,0.19);
+  -moz-box-shadow: -10px 1px 5px 0px rgba(0,0,0,0.19);
+  box-shadow: -10px 1px 5px 0px rgba(0,0,0,0.19);
+  .settings-container-head {
+    .size-m;
+    .bold;
+    .pl-24;
+    .pr-16;
+    .bg-grey-light;
+    height: 81px;
+    line-height: 81px;
+    .close-button {
+      .button;
+      .bold;
+      .pull-right;
+      margin-top: 20px;
+    }
+  }
+  .settings-container-options {
+    .size-s;
+    .pl-24;
+    .pr-16;
+    .mt-24;
+  }
+}

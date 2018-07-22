@@ -78,14 +78,15 @@
     <div class="pull-right">
       <div
         class="icon-span mr-24"
-        @click="translate(key)"
+        @click="() => { $emit('toggleSettings') }"
       >
         <svgicon
           class="svg-icon va-middle"
           name="cog"
           height="24"
         />
-        <div class="link ib">{{ $lang.buttons.settings }}</div>
+        <div
+          class="link ib">{{ $lang.buttons.settings }}</div>
       </div>
       <button
         :disabled="!buttonEnabled"

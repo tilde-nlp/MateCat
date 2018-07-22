@@ -35,6 +35,7 @@
             @toLangChange="value => { toLang = value }"
             @subjectChange="value => { subject = value }"
             @translate="nextFileUpload"
+            @toggleSettings="() => { settingsOpen = !settingsOpen }"
           />
           <file-list-selector
             @fileAdded="sendToUploadQueue"
@@ -104,6 +105,14 @@
         />
       </section>
     </div>
+    <transition
+      name="ffade">
+      <settings-panel
+        v-if="settingsOpen"
+        :key="1"
+        @closeSettings="() => { settingsOpen = false }"
+      />
+    </transition>
   </div>
 </template>
 
@@ -117,13 +126,15 @@ import FileListContainer from 'components/file-list/FileListContainer'
 import FileListPager from 'components/file-list/FileListPager'
 import {FileConstructor} from 'utils/file-constructor'
 import {FormGenerator} from 'services/form-generator'
+import SettingsPanel from 'components/SettingsPanel'
 export default {
   name: 'FileList',
   components: {
     'file-list-toolbar': FileListToolbar,
     'file-list-selector': FileListSelector,
     'file-list-container': FileListContainer,
-    'file-list-pager': FileListPager
+    'file-list-pager': FileListPager,
+    'settings-panel': SettingsPanel
   },
   data: function () {
     return {
@@ -140,7 +151,8 @@ export default {
       tmpFileId: 0,
       lastUpload: new Date().getTime(),
       uploadThrottleTime: 1000,
-      uploadQueueActive: false
+      uploadQueueActive: false,
+      settingsOpen: true
     }
   },
   mounted: function () {

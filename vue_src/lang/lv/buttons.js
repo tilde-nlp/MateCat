@@ -18,5 +18,6 @@ module.exports = {
   cancel: 'Atcelt',
   resolve_comments: 'Atrisināt',
   settings: 'Uzstādījumi',
-  analyze: 'Analizēt'
+  analyze: 'Analizēt',
+  close: 'Aizvērt'
 }

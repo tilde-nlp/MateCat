@@ -15,5 +15,6 @@ module.exports = {
   translations: 'Tulkojumi',
   shortkeys: 'Taustiņkombinācijas',
   comments: 'Komentāri',
-  direction: 'Virziens'
+  direction: 'Virziens',
+  settings: 'Uzstādījumi'
 }
