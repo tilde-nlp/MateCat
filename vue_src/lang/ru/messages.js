@@ -6,5 +6,7 @@ module.exports = {
   broken_file_upload: 'Failed to upload file, please delete it and try again.',
   upload_file_to_start: 'To start translating, please upload files.',
   fill_100p_tm: 'Fill with 100% translation memory',
-  fill_mt: 'Fill with machine translator'
+  fill_mt: 'Fill with machine translator',
+  error_uploading_file: 'Error while uploading file: ',
+  unexpected_error: 'Unexpected error. Please try again. If problem persists please contact system administrator.'
 }

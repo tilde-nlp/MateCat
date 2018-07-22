@@ -21,7 +21,7 @@
           v-for="(file, key) in files"
           :key="key"
           class="file-row"
-          @click="translate(key)"
+          @click="() => { if (!file.isEmpty) translate(key) }"
         >
           <div class="status column">
             <svgicon
@@ -41,7 +41,7 @@
               {{ $lang.messages.broken_file_upload }}
               <!-- DELETE -->
               <div
-                v-if="file.jobId > 0"
+                v-if="file.isEmpty"
                 class="icon-span ml-77"
                 @click.prevent.stop="fastDeleteFile(key)"
               >
@@ -50,7 +50,6 @@
                   name="trash"
                   height="24"
                 />
-                <div class="link ib">{{ $lang.buttons.delete }}</div>
               </div>
               <!-- DELETE END -->
             </span>

@@ -152,7 +152,7 @@ export default {
       lastUpload: new Date().getTime(),
       uploadThrottleTime: 1000,
       uploadQueueActive: false,
-      settingsOpen: true
+      settingsOpen: false
     }
   },
   mounted: function () {
@@ -247,7 +247,7 @@ export default {
             }
             if (this.uploadQueue.length < 1) this.uploadQueueActive = false
             this.updatePagesCount()
-            return Promise.reject(new Error('Kļūda ielādējot failu: ' + res.data.errors[0].debug))
+            return Promise.reject(new Error(this.$lang.messages.error_uploading_file + res.data.errors[0].debug))
           }
           const file = _.find(this.files, {tmpFileId: fileTmpId})
           file.id = res.data.data.id_project
@@ -323,7 +323,7 @@ export default {
     statusResponseError: function (err) {
       this.nextFileUpload()
       if (err.message === 'Request failed with status code 403') {
-        this.$Alerts.add('Atgadijās neparedzēta kļūda. Lūdzu mēģiniet vēlreiz. Ja problēma atkārtojas, lūdzams sazināties ar sistēmas administratoru.')
+        this.$Alerts.add(this.$lang.messages.unexpected_error)
         return
       }
       this.$Alerts.add(err.message)

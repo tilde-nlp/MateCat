@@ -6,5 +6,7 @@ module.exports = {
   broken_file_upload: 'Failu neizdevās ielādēt, lūdzu izdzēsiet to un mēģinat atkārtoti.',
   upload_file_to_start: 'Lai sāktu izmantot tulkošanas asistentu, augšupielādē kādu failu.',
   fill_100p_tm: 'Aizpildīt visu ar 100% tulkošanas atmiņu',
-  fill_mt: 'Aizpildīt visu ar mašīntulku'
+  fill_mt: 'Aizpildīt visu ar mašīntulku',
+  error_uploading_file: 'Kļūda ielādējot failu: ',
+  unexpected_error: 'Atgadijās neparedzēta kļūda. Lūdzu mēģiniet vēlreiz. Ja problēma atkārtojas, lūdzams sazināties ar sistēmas administratoru.'
 }

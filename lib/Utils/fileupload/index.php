@@ -17,7 +17,8 @@ require realpath( dirname(__FILE__) . '/../../../' ) . '/inc/Bootstrap.php';
 @Bootstrap::start();
 @Bootstrap::sessionStart();
 @Bootstrap::sessionClose();
-require('upload.class.php');
+//require('upload.class.php');
+require('hugoupload.class.php');
 
 $upload_handler = new UploadHandler();
 

@@ -40,11 +40,40 @@ class ConversionHandler {
         ];
     }
 
+    /**
+     * Remove path information and dots around the filename, to prevent uploading
+     * into different directories or replacing hidden system files.
+     * Also remove control characters and spaces (\x00..\x20) around the filename:
+     */
+    protected function trim_file_name( $name ) {
+        $name = stripslashes( $name );
+
+        $file_name = trim( $this->my_basename( $name ), ".\x00..\x20" );
+
+        //remove spaces
+        $file_name = str_replace( [ " ", " " ], "_", $file_name );
+
+        return $file_name;
+    }
+
+    private function my_basename( $param, $suffix = null ) {
+        if ( $suffix ) {
+            $tmpstr = ltrim( substr( $param, strrpos( $param, DIRSEP ) ), DIRSEP );
+            if ( ( strpos( $param, $suffix ) + strlen( $suffix ) ) == strlen( $param ) ) {
+                return str_ireplace( $suffix, '', $tmpstr );
+            } else {
+                return ltrim( substr( $param, strrpos( $param, DIRSEP ) ), DIRSEP );
+            }
+        } else {
+            return ltrim( substr( $param, strrpos( $param, DIRSEP ) ), DIRSEP );
+        }
+    }
+
     public function doAction() {
 
 
         $this->file_name = html_entity_decode( $this->file_name, ENT_QUOTES );
-        $file_path       = $this->intDir . DIRECTORY_SEPARATOR . $this->file_name;
+        $file_path       = $this->intDir . DIRECTORY_SEPARATOR . $this->trim_file_name( $this->file_name );
 
         if ( !file_exists( $file_path ) ) {
             $this->result[ 'code' ]     = -6; // No Good, Default
@@ -201,7 +230,7 @@ class ConversionHandler {
             $fs->deleteHashFromUploadDir( $uploadDir, $sha1 . "|" . $this->source_lang );
 
             //put reference to cache in upload dir to link cache to session
-            $fs->linkSessionToCacheForOriginalFiles(
+            $fs->linkSessionToCacheForAlreadyConvertedFiles(
                     $sha1,
                     $this->source_lang,
                     $this->cookieDir,
