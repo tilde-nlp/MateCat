@@ -168,7 +168,7 @@ export default {
       this.segment.translation = this.segment.original
     },
     onSegmentInput: function (val) {
-      this.segment.translation = val
+      this.segment.cleanTranslation = val
       this.$emit('inputDebounce')
       if (this.segment.saveType === 'MANUAL') {
         return

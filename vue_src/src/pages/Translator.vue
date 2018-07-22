@@ -290,7 +290,7 @@ export default {
         id_first_file: this.fileId,
         password: this.jobData.password,
         status: status,
-        translation: this.activeSegment.translation,
+        translation: typeof (this.activeSegment.cleanTranslation) === 'undefined' ? this.activeSegment.translation : this.activeSegment.cleanTranslation,
         segment: this.activeSegment.original,
         time_to_edit: 1,
         autosave: false,
