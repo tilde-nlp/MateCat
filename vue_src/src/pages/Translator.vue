@@ -318,17 +318,16 @@ export default {
         })
     },
     setActive: function (id) {
-      if (typeof (this.activeSegment) === 'undefined') return
       if (id === this.activeSegment.id) {
         return
       }
-      console.log(this.activeSegment)
       if (this.activeSegment.status !== 'done') {
         this.setStatus('draft')
       }
       let activeFound = false
       _.map(this.segments, e => {
         if (e.id === id) {
+          this.$store.commit('activeSegment', e)
           activeFound = true
           e.active = true
           this.jobData.lastSegmentId = e.id

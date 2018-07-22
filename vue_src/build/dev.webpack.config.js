@@ -3,7 +3,6 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const ExtractPlugin = require('extract-text-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
 
@@ -81,35 +80,29 @@ module.exports = {
       },
       {
         test: /\.less$/,
-        use: ExtractPlugin.extract({
-          fallback: 'vue-style-loader',
-          use: [
-            {loader: 'css-loader', options: {minimize: false}},
-            {loader: 'less-loader', options: {minimize: false}}
-          ]
-        })
+        use: [
+          {loader: 'vue-style-loader'},
+          {loader: 'css-loader'},
+          {loader: 'less-loader'}
+        ]
       },
       {
         test: /\.css$/,
-        use: ExtractPlugin.extract({
-          fallback: 'vue-style-loader',
-          use: [
-            {
-              loader: 'css-loader',
-              options: {
-                minimize: false,
-                modules: true,
-                localIdentName: '[local]_[hash:base64:8]'
-              }
+        use: [
+          {loader: 'vue-style-loader'},
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true,
+              localIdentName: '[local]_[hash:base64:8]'
             }
-          ]
-        })
+          }
+        ]
       }
     ]
   },
   plugins: [
     new VueLoaderPlugin(),
-    new ExtractPlugin('main.css'),
     new CopyWebpackPlugin([{
       from: resolve('static'),
       to: resolve('../public/vue_dist/static'),

@@ -36,5 +36,12 @@ export default {
       console.log(targetSearch)
     }
     state.targetSearch = targetSearch
+  },
+  activeSegment (state, activeSegment) {
+    if (state.debug) {
+      console.log('Setting activeSegment: ')
+      console.log(activeSegment)
+    }
+    state.activeSegment = activeSegment
   }
 }

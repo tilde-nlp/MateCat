@@ -5,5 +5,6 @@ export default {
   ready: false,
   profile: false,
   sourceSearch: '',
-  targetSearch: ''
+  targetSearch: '',
+  activeSegment: null
 }

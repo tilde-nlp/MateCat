@@ -1,14 +1,11 @@
 <template>
-  <div class="translator-editor-container">
-    <iframe
-      :id="'editor-' + id"
-      frameborder="0"
-      width="100%"
-    />
-  </div>
+  <div
+    :id="'editor-' + id"
+    class="editor-container"
+    v-html="formattedText"
+  />
 </template>
 <script>
-import _ from 'lodash'
 export default {
   name: 'TranslatorEditor',
   props: {
@@ -54,11 +51,23 @@ export default {
   },
   watch: {
     isActive: function (newVal) {
-      if (this.editor === null) return
+      if (this.editor === null) {
+        this.$nextTick(() => {
+          this.editor = document.getElementById('editor-' + this.id)
+          // this.editor.addEventListener('keyup', _.debounce(() => {
+          //   // Todo Remove tags
+          //   this.$emit('input', this.editorBody.innerHTML)
+          // }, 500), false)
+          this.editor.style.fontSize = this.fontSize
+          this.editor.innerHTML = this.formattedText
+          this.editor.contentEditable = true
+        })
+        return
+      }
       if (newVal) {
-        this.editor.designMode = 'On'
+        this.editor.contentEditable = true
       } else {
-        this.editor.designMode = 'Off'
+        this.editor.contentEditable = false
       }
     },
     formattedText: function (newVal) {
@@ -69,34 +78,6 @@ export default {
   },
   mounted: function () {
     this.id = this._uid
-  },
-  contentUpdate: function (e) {
-    console.log(e)
-  },
-  updated: function () {
-    this.$nextTick(() => {
-      if (this.editor === null) {
-        this.editor = document.getElementById('editor-' + this.id).contentDocument
-        this.editor.addEventListener('keyup', _.debounce(() => {
-          // Todo Remove tags
-          this.$emit('input', this.editorBody.innerHTML)
-        }, 500), false)
-        this.editorBody = this.editor.getElementsByTagName('body')[0]
-        let cssLink = document.createElement('link')
-        cssLink.href = this.$CONFIG.baseUrl + 'public/vue_dist/main.css'
-        cssLink.rel = 'stylesheet'
-        cssLink.type = 'text/css'
-        this.editor.getElementsByTagName('head')[0].appendChild(cssLink)
-        this.editorBody.className = 'editor-container'
-        this.editorBody.style.fontSize = this.fontSize
-        this.editorBody.innerHTML = this.formattedText
-      }
-      if (this.isActive) {
-        this.editor.designMode = 'On'
-      } else {
-        this.editor.designMode = 'Off'
-      }
-    })
   }
 }
 </script>
