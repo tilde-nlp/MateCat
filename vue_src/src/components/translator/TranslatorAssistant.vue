@@ -99,6 +99,20 @@
               </transition-group>
             </div>
           </div>
+          <div class="relative mt-32 mb-8 mr-32">
+            <svgicon
+              class="svg-icon icon-blueish-darker-still placeholder"
+              name="search"
+              height="24"
+            />
+            <input
+              :placeholder="$lang.inputs.search_term"
+              class="search-input"
+              type="text"
+              @keyup.enter="openTermSearch"
+              @input="e => { searchTerm = e.target.value }"
+            >
+          </div>
         </div>
         <div
           v-if="activeTab === 'comments'"
@@ -199,7 +213,8 @@ export default {
       activeTab: 'translate',
       systems: [],
       system: null,
-      newComment: null
+      newComment: null,
+      searchTerm: ''
     }
   },
   computed: {
@@ -207,10 +222,7 @@ export default {
       if (typeof (this.$store.state.activeSegment.comments) === 'undefined' || this.$store.state.activeSegment.comments.length < 1) {
         return false
       }
-      if (this.$store.state.activeSegment.comments[this.$store.state.activeSegment.comments.length - 1].thread_id !== null) {
-        return false
-      }
-      return true
+      return this.$store.state.activeSegment.comments[this.$store.state.activeSegment.comments.length - 1].thread_id === null
     }
   },
   mounted: function () {
@@ -237,7 +249,7 @@ export default {
       }
     },
     addComment: function () {
-      const data = {
+      this.newComment = {
         action: 'comment',
         _sub: 'create',
         id_client: '???',
@@ -249,7 +261,6 @@ export default {
         message: '',
         date: ''
       }
-      this.newComment = data
     },
     saveComment: function () {
       if (this.newComment === null) return
@@ -297,6 +308,10 @@ export default {
     },
     timeToDateString: function (timestamp) {
       return DateConverter.timeStampToFullTime(timestamp)
+    },
+    openTermSearch: function () {
+      if (this.searchTerm === '') return
+      window.open('http://termini.lza.lv/term.php?term=' + this.searchTerm + '&lang=LV', '_blank')
     }
   }
 }
