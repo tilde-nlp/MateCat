@@ -32,23 +32,43 @@ export default {
   data: function () {
     return {
       editor: null,
-      id: null
+      id: null,
+      highlightTagStart: '<span style="background-color: yellow;">',
+      highlightTagEnd: '</span>',
+      gTagStart: '<span class="bg-blueish">></span>',
+      gTagEnd: '<span class="bg-blueish"><</span>'
     }
   },
   computed: {
     formattedText: function () {
-      if (this.searchTerm !== '' && this.text !== '') {
-        let result = this.text
+      if (this.text === '') {
+        return ''
+      }
+      let result = this.text
+      // Process search highlight
+      if (this.searchTerm !== '') {
         let termPosition = result.toLowerCase().indexOf(this.searchTerm)
         while (termPosition > -1) {
-          result = [result.slice(0, termPosition), '<span style="background-color: yellow;">', result.slice(termPosition)].join('')
-          const end = termPosition + this.searchTerm.length + 40
-          result = [result.slice(0, end), '</span>', result.slice(end)].join('')
-          termPosition = result.toLowerCase().indexOf(this.searchTerm, end + 47)
+          result = [result.slice(0, termPosition), this.highlightTagStart, result.slice(termPosition)].join('')
+          const end = termPosition + this.searchTerm.length + this.highlightTagStart.length
+          result = [result.slice(0, end), this.highlightTagEnd, result.slice(end)].join('')
+          termPosition = result.toLowerCase().indexOf(this.searchTerm, end + this.highlightTagEnd.length)
         }
-        return result
       }
-      return this.text
+      // Process g tags
+      // Find tag start
+      let gTagPosition = result.indexOf('&lt;g id="')
+      while (gTagPosition > -1) {
+        // Find out tag id
+        const closingMark = result.indexOf('"', gTagPosition + 10)
+        const rawId = result.substring(gTagPosition + 10, closingMark)
+        const id = parseInt(rawId)
+        result = result.replace('&lt;g id="' + id + '"&gt;', this.gTagStart)
+        const endTagPos = result.indexOf('&lt;/g&gt;')
+        result = result.replace('&lt;/g&gt;', this.gTagEnd)
+        gTagPosition = result.indexOf('&lt;g id="', endTagPos + this.gTagEnd.length)
+      }
+      return result
     },
     fontSizeString: function () {
       return this.$store.state.fontSize + 'px'
@@ -84,8 +104,8 @@ export default {
       this.$emit('input', this.cleanText())
     }, 500),
     cleanText: function () {
-      let result = this.editor.innerHTML.replace(new RegExp('<span style="background-color: yellow;">', 'g'), '')
-      return result.replace(new RegExp('</span>', 'g'), '')
+      let result = this.editor.innerHTML.replace(new RegExp(this.highlightTagStart, 'g'), '')
+      return result.replace(new RegExp(this.highlightTagEnd, 'g'), '')
     }
   }
 }
