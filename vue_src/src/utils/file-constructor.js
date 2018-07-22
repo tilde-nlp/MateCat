@@ -15,7 +15,8 @@ export const FileConstructor = {
       tmpFileId: -1,
       statsLink: -1,
       statusLink: -1,
-      isEmpty: false
+      isEmpty: false,
+      direction: ''
     }
     for (const key in data) {
       if (newFile.hasOwnProperty(key)) {

@@ -90,7 +90,7 @@
           v-if="!files.length"
           class="empty-file-list"
         >
-          Lai sāktu izmantot tulkošanas asistentu, augšupielādē kādu failu.
+          {{ $lang.messages.upload_file_to_start }}
         </div>
         <file-list-container
           v-show="totalFiles > 0"
@@ -192,7 +192,8 @@ export default {
               owner: el.jobs[0].owner,
               created: DateConverter.timeStampToDate(el.jobs[0].create_timestamp),
               tmpFileId: this.tmpFileId++,
-              statsLink: link
+              statsLink: link,
+              direction: el.jobs[0].source + ' - ' + el.jobs[0].target
             })
           })
         })
@@ -344,7 +345,8 @@ export default {
         {
           name: file.name,
           created: DateConverter.nowDate(),
-          tmpFileId: fileTmpId
+          tmpFileId: fileTmpId,
+          direction: this.fromLang + ' - ' + this.toLang
         }
       ))
       this.totalFiles++

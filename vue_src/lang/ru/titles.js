@@ -14,5 +14,6 @@ module.exports = {
   to: 'to',
   translations: 'Translations',
   shortkeys: 'Shortkeys',
-  comments: 'Comments'
+  comments: 'Comments',
+  direction: 'Direction'
 }

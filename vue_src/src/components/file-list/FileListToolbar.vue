@@ -172,15 +172,16 @@ export default {
       LanguageService.getSubjectsList(this.$lang.getLang())
         .then(r => {
           // Get relevant data for subjects dropdown
-          const filteredSystems = _.filter(r.data.System, el => {
+          let filteredSystems = _.filter(r.data.System, el => {
             return el.SourceLanguage.Code === this.fromLang.substring(0, 2) && el.TargetLanguage.Code === this.toLang.substring(0, 2)
           })
-          this.subjects = _.map(filteredSystems, el => {
+          filteredSystems = _.map(filteredSystems, el => {
             return {
               label: el.Domain,
               value: el.ID
             }
           })
+          this.subjects = _.sortBy(filteredSystems, ['label'])
           // Set default subject
           this.subject = this.subjects[0]
         })

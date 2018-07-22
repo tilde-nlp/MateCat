@@ -3,6 +3,7 @@
     <!-- FILE LIST HEADER -->
     <div class="file-list-header">
       <div class="status">{{ $lang.titles.status }}</div>
+      <div class="direction">{{ $lang.titles.direction }}</div>
       <div class="segments">{{ $lang.titles.segments }}</div>
       <div class="words">{{ $lang.titles.words }}</div>
       <div class="translated">{{ $lang.titles.translated }}</div>
@@ -20,6 +21,7 @@
           v-for="(file, key) in files"
           :key="key"
           class="file-row"
+          @click="translate(key)"
         >
           <div class="status column">
             <svgicon
@@ -36,16 +38,16 @@
               v-if="file.isEmpty"
               class="red"
             >
-              Failu neizdevās ielādēt, lūdzu izdzēsiet to un mēģinat atkārtoti.
+              {{ $lang.messages.broken_file_upload }}
               <!-- DELETE -->
               <div
                 v-if="file.jobId > 0"
                 class="icon-span ml-77"
-                @click="fastDeleteFile(key)"
+                @click.prevent.stop="fastDeleteFile(key)"
               >
                 <svgicon
-                  class="svg-icon va-middle"
-                  name="close"
+                  class="svg-icon va-middle icon-blueish-darker-still"
+                  name="trash"
                   height="24"
                 />
                 <div class="link ib">{{ $lang.buttons.delete }}</div>
@@ -53,6 +55,9 @@
               <!-- DELETE END -->
             </span>
             <span v-else>
+              <div class="direction column">
+                {{ file.direction }}
+              </div>
               <div class="segments column">
                 <svgicon
                   v-if="file.segmentCount < 0"
@@ -82,10 +87,21 @@
               </div>
               <div class="created column">{{ file.created }}</div>
               <div class="controls column">
+                <div
+                  v-if="file.progress < 0"
+                  class="icon-span mr-16 w-109"
+                >
+                  <svgicon
+                    class="svg-loading va-middle"
+                    name="loading"
+                    height="24"
+                  />
+                </div>
                 <!-- TRANSLATE -->
                 <div
+                  v-if="file.progress >= 0"
                   class="icon-span mr-24"
-                  @click="translate(key)"
+                  @click.prevent.stop="translate(key)"
                 >
                   <svgicon
                     class="svg-icon va-middle"
@@ -97,39 +113,28 @@
                 <!-- TRANSLATE END -->
                 <!-- DOWNLOAD -->
                 <div
-                  v-if="file.translatedUrl < 0"
-                  class="icon-span mr-24 w-109"
+                  v-if="file.progress >= 0"
+                  class="icon-span mr-16"
+                  @click.prevent.stop="downloadFile(file.translatedUrl)"
                 >
                   <svgicon
-                    class="svg-loading va-middle"
-                    name="loading"
-                    height="24"
-                  />
-                </div>
-                <div
-                  v-else
-                  class="icon-span mr-24"
-                  @click="downloadFile(file.translatedUrl)"
-                >
-                  <svgicon
-                    class="svg-icon va-middle"
+                    class="svg-icon va-middle icon-blueish-darker-still"
                     name="download"
                     height="24"
                   />
-                  <div class="link ib">{{ $lang.buttons.download }}</div>
                 </div>
                 <!-- DOWNLOAD END -->
                 <!-- DELETE -->
                 <div
+                  v-if="file.progress >= 0"
                   class="icon-span"
-                  @click="removeFile(key)"
+                  @click.prevent.stop="removeFile(key)"
                 >
                   <svgicon
-                    class="svg-icon va-middle"
-                    name="close"
+                    class="svg-icon va-middle icon-blueish-darker-still"
+                    name="trash"
                     height="24"
                   />
-                  <div class="link ib">{{ $lang.buttons.delete }}</div>
                 </div>
                 <!-- DELETE END -->
               </div>
@@ -145,12 +150,12 @@
     >
       <confirmation
         v-if="showFileDeleteConfirm"
-        confirm-text="Dzēst"
-        cancel-text="Atcelt"
+        :confirm-text="$lang.buttons.delete"
+        :cancel-text="$lang.buttons.cancel"
         @confirm="deleteFile"
         @cancel="cancelFileDelete"
       >
-        Vai tiešām vēlaties dzēst failu?
+        {{ $lang.messages.file_delete_confirm }}
       </confirmation>
     </transition>
   </div>
