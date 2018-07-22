@@ -6,7 +6,6 @@
         <!-- FILE UPLOAD TOGGLE -->
         <div
           class="head-control"
-          @click="() => {sliderOpen = !sliderOpen}"
         >
           <svgicon
             class="svg-icon va-middle"
@@ -133,7 +132,7 @@ export default {
       subject: null,
       toLang: null,
       fromLang: null,
-      sliderOpen: false,
+      sliderOpen: true,
       recordsPerPage: 10,
       totalPages: 1,
       totalFiles: 0,

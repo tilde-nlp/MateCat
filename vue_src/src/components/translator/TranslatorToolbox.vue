@@ -13,28 +13,6 @@
       <div class="link ib">{{ $lang.buttons.back }}</div>
     </div>
     <!-- GO BACK END -->
-    <!-- UNDO -->
-    <div
-      :title="$lang.tooltips.undo"
-      class="ta-header-button bl-blueish">
-      <svgicon
-        class="svg-icon"
-        name="undo"
-        height="24"
-      />
-    </div>
-    <!-- UNDO END -->
-    <!-- REDO -->
-    <div
-      :title="$lang.tooltips.redo"
-      class="ta-header-button">
-      <svgicon
-        class="svg-icon flip-h"
-        name="undo"
-        height="24"
-      />
-    </div>
-    <!-- REDO END -->
     <!-- BACK -->
     <div
       v-shortkey.once="['ctrl', 'arrowup']"
@@ -44,8 +22,8 @@
       @shortkey="() => {$emit('toPrevious')}"
     >
       <svgicon
-        class="svg-icon flip-h"
-        name="chevron"
+        class="svg-icon flip-up"
+        name="arrow"
         height="24"
       />
     </div>
@@ -59,8 +37,8 @@
       @shortkey="() => {$emit('toNext')}"
     >
       <svgicon
-        class="svg-icon"
-        name="chevron"
+        class="svg-icon flip-down"
+        name="arrow"
         height="24"
       />
     </div>

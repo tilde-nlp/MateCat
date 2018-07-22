@@ -1,5 +1,11 @@
 @import "~@shibetec/vue-toolbox/dist/less/shibetec-less";
 
+.flip-up {
+  transform: rotate(90deg);
+}
+.flip-down {
+  transform: rotate(-90deg);
+}
 .no-border {
   border: none;
 }
@@ -184,6 +190,10 @@
   font-weight: bold;
 }
 
+.normal {
+  font-weight: normal;
+}
+
 ::-webkit-scrollbar {
   width: 9px;
   height: 9px;
@@ -287,18 +297,25 @@
     background-color: @color-white;
     .ib;
     .w-96;
+    .normal;
     min-width: @spacer-96;
     .dark;
     .mr-0;
+    border: none;
+    border-top: solid 1px @color-dark;
+    border-bottom: solid 1px @color-dark;
+    &.bl {
+      border-left: solid 1px @color-dark;
+    }
+    &.br {
+      border-right: solid 1px @color-dark;
+    }
     &:hover {
-      background-color: @color-blueish;
+      background-color: @color-white;
     }
     &.active {
       .white;
-      background-color: @color-blueish-darker;
-      &:hover {
-        background-color: @color-blueish-darker-still;
-      }
+      background-color: @color-blueish-darker-still;
     }
   }
 }
@@ -534,9 +551,10 @@
 }
 
 .language-selector {
+  .relative;
   width: 290px;
   &.subject {
-    .w-256;
+    .w-128;
   }
   .ib;
   .mr-16;
@@ -620,11 +638,16 @@ select::-ms-expand {
   .bold;
   .mb-8;
   display: block;
+  &.file-toolbox {
+    .absolute;
+    top: -28px;
+  }
 }
 
 .toolbox-container {
   .mt-16;
   .mb-16;
+  .relative;
 }
 
 .v-select {

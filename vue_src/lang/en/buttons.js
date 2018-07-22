@@ -16,5 +16,7 @@ module.exports = {
   add_comment: 'Add',
   save: 'Save',
   cancel: 'Cancel',
-  resolve_comments: 'Resolve'
+  resolve_comments: 'Resolve',
+  settings: 'Settings',
+  analyze: 'Analyze'
 }

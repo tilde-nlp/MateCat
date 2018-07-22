@@ -38,6 +38,8 @@ export function main (config) {
   Lang.requireAll(require.context('../lang', true, /\.js$/))
   Vue.use(Lang)
   Vue.component('v-select', vSelect)
+  window.$ = require('jquery')
+  window.JQuery = require('jquery')
   /* eslint-disable no-new */
   new Vue({
     router,
