@@ -43,5 +43,12 @@ export default {
       console.log(activeSegment)
     }
     state.activeSegment = activeSegment
+  },
+  fontSize (state, fontSize) {
+    if (state.debug) {
+      console.log('Setting fontSize: ')
+      console.log(fontSize)
+    }
+    state.fontSize = fontSize
   }
 }

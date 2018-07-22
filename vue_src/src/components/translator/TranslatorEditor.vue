@@ -1,6 +1,7 @@
 <template>
   <div
     :id="'editor-' + id"
+    :style="{ 'font-size': fontSizeString }"
     class="editor-container"
     v-html="formattedText"
   />
@@ -16,10 +17,6 @@ export default {
     text: {
       type: String,
       default: ''
-    },
-    fontSize: {
-      type: String,
-      required: true
     },
     searchTerm: {
       type: String,
@@ -47,6 +44,9 @@ export default {
         return result
       }
       return this.text
+    },
+    fontSizeString: function () {
+      return this.$store.state.fontSize + 'px'
     }
   },
   watch: {
@@ -58,7 +58,6 @@ export default {
           //   // Todo Remove tags
           //   this.$emit('input', this.editorBody.innerHTML)
           // }, 500), false)
-          this.editor.style.fontSize = this.fontSize
           this.editor.innerHTML = this.formattedText
           this.editor.contentEditable = true
         })

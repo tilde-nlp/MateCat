@@ -53,6 +53,7 @@ export default {
   },
   mounted: function () {
     this.$Alerts.registerListener(this)
+    this.$store.commit('fontSize', this.$cookie.get('fontSize') === null ? 15 : parseInt(this.$cookie.get('fontSize')))
   },
   methods: {
     newAlert: function (alert) {

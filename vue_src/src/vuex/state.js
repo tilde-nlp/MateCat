@@ -6,5 +6,6 @@ export default {
   profile: false,
   sourceSearch: '',
   targetSearch: '',
-  activeSegment: null
+  activeSegment: null,
+  fontSize: null
 }

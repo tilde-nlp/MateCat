@@ -82,7 +82,6 @@
               :key="index"
               :segment-data="segment"
               :first-segment-id="jobData.firstSegment"
-              :font-size="fontSize"
               :top-segment="index === 0"
               :split-active="splitActive"
               @click="setActive"
@@ -138,7 +137,6 @@ export default {
       segments: [],
       fileId: '',
       activeSegment: {},
-      fontSize: null,
       system: '',
       segmentListHeight: 600,
       suggestionsListHeight: 500,
@@ -176,7 +174,6 @@ export default {
     this.jobData.password = this.$route.params.password
     this.jobData.projectId = this.$route.params.projectId
     this.jobData.ppassword = this.$route.params.ppassword
-    this.fontSize = this.$cookie.get('fontSize') === null ? 15 : parseInt(this.$cookie.get('fontSize'))
     JobsService.getInfo({
       id: this.jobData.id,
       password: this.jobData.password
@@ -428,13 +425,13 @@ export default {
     fontControl: function (event) {
       switch (event.srcKey) {
         case 'add':
-          this.fontSize++
+          this.$store.commit('fontSize', this.$store.state.fontSize++)
           break
         case 'sub':
-          this.fontSize--
+          this.$store.commit('fontSize', this.$store.state.fontSize--)
           break
       }
-      this.$cookie.set('fontSize', this.fontSize, 720)
+      this.$cookie.set('fontSize', this.$store.state.fontSize, 720)
     },
     getFileUrls: function () {
       FileService.getUrls({id_project: this.jobData.projectId, password: this.jobData.ppassword})

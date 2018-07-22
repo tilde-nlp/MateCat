@@ -11,7 +11,6 @@
         <div class="ma">{{ nr }}</div>
       </div>
       <div
-        :style="{ 'font-size': fontSizeString }"
         :class="{top: topSegment}"
         class="segment-col first">
         <!--<span-->
@@ -19,7 +18,6 @@
         <translator-editor
           :is-active="isActive"
           :text="originalProcessed"
-          :font-size="fontSizeString"
           :search-term="$store.state.sourceSearch"
         />
         <!--<textarea-->
@@ -43,7 +41,6 @@
         <translator-editor
           :is-active="isActive"
           :text="segment.translation"
-          :font-size="fontSizeString"
           :search-term="$store.state.targetSearch"
           @input="onSegmentInput"
         />
@@ -103,10 +100,6 @@ export default {
       type: Object,
       required: true
     },
-    fontSize: {
-      type: Number,
-      default: 15
-    },
     firstSegmentId: {
       type: Number,
       required: true
@@ -130,9 +123,6 @@ export default {
     }
   },
   computed: {
-    fontSizeString: function () {
-      return this.fontSize + 'px'
-    },
     nr: function () {
       return this.segmentData.id - this.firstSegmentId + 1
     },
