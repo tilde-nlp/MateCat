@@ -19,6 +19,7 @@
           :is-active="isActive"
           :text="originalProcessed"
           :search-term="$store.state.sourceSearch"
+          :inactive="true"
         />
         <!--<textarea-->
         <!--v-autosize-->

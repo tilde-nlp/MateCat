@@ -44,16 +44,19 @@
               @input="value => {$emit('mtSystemChange', value)}"
             />
           </div>
-          <div class="mt-24">
+          <div
+            v-if="$store.state.activeSegment"
+            class="mt-24"
+          >
             <label class="input-label">{{ $lang.titles.suggestions }}</label>
             <img
-              v-if="!activeSegment.suggestionsLoaded"
+              v-if="!$store.state.activeSegment.suggestionsLoaded"
               :src="$assetPath + 'loading.svg'"
               class="splash-image"
               height="48"
             >
             <div
-              v-else-if="activeSegment.suggestions.length < 1">
+              v-else-if="$store.state.activeSegment.suggestions.length < 1">
               {{ $lang.titles.no_suggestions }}
             </div>
             <div
@@ -67,9 +70,9 @@
               >
                 <div
                   v-shortkey="['ctrl', parseInt(index + 1)]"
-                  v-for="(suggestion, index) in activeSegment.suggestions"
+                  v-for="(suggestion, index) in $store.state.activeSegment.suggestions"
                   :key="index"
-                  :class="{'last': index === activeSegment.suggestions.length - 1}"
+                  :class="{'last': index === $store.state.activeSegment.suggestions.length - 1}"
                   class="suggestion"
                   @click="setSuggestion(suggestion)"
                   @shortkey="setSuggestion(suggestion)"
@@ -120,7 +123,7 @@
             mode="out-in"
           >
             <div
-              v-for="(comment, index) in activeSegment.comments"
+              v-for="(comment, index) in $store.state.activeSegment.comments"
               :key="index"
               class="size-s dark"
             >
@@ -186,10 +189,6 @@ import {DateConverter} from 'utils/date-converter'
 export default {
   name: 'TranslatorAssistant',
   props: {
-    activeSegment: {
-      type: Object,
-      required: true
-    },
     maxHeight: {
       type: Number,
       required: true
@@ -205,10 +204,10 @@ export default {
   },
   computed: {
     resolvable: function () {
-      if (typeof (this.activeSegment.comments) === 'undefined' || this.activeSegment.comments.length < 1) {
+      if (typeof (this.$store.state.activeSegment.comments) === 'undefined' || this.$store.state.activeSegment.comments.length < 1) {
         return false
       }
-      if (this.activeSegment.comments[this.activeSegment.comments.length - 1].thread_id !== null) {
+      if (this.$store.state.activeSegment.comments[this.$store.state.activeSegment.comments.length - 1].thread_id !== null) {
         return false
       }
       return true
@@ -229,12 +228,12 @@ export default {
   },
   methods: {
     setSuggestion: function (suggestion) {
-      this.activeSegment.translation = suggestion.translation
+      this.$store.state.activeSegment.translation = suggestion.translation
       if (suggestion.match === 'MT') {
-        this.activeSegment.saveType = 'MT'
+        this.$store.state.activeSegment.saveType = 'MT'
       } else {
-        this.activeSegment.saveType = 'TM'
-        this.activeSegment.match = parseInt(suggestion.match)
+        this.$store.state.activeSegment.saveType = 'TM'
+        this.$store.state.activeSegment.match = parseInt(suggestion.match)
       }
     },
     addComment: function () {
@@ -259,9 +258,9 @@ export default {
         return
       }
       this.$loading.startLoading('add-comment')
-      this.newComment.id_job = this.activeSegment.jobId
-      this.newComment.id_segment = this.activeSegment.id
-      this.newComment.password = this.activeSegment.jobPassword
+      this.newComment.id_job = this.$store.state.activeSegment.jobId
+      this.newComment.id_segment = this.$store.state.activeSegment.id
+      this.newComment.password = this.$store.state.activeSegment.jobPassword
       CommentsService.doAction(this.newComment)
         .then(r => {
           this.newComment = null
@@ -269,7 +268,7 @@ export default {
           if (typeof (r.data.data.entries[0]) === 'undefined') {
             this.$Alerts.add(this.$lang.messages.comment_save_error)
           } else {
-            this.activeSegment.comments.push(r.data.data.entries[0])
+            this.$store.state.activeSegment.comments.push(r.data.data.entries[0])
           }
         })
     },
@@ -280,10 +279,10 @@ export default {
       const data = {
         action: 'comment',
         _sub: 'resolve',
-        id_job: this.activeSegment.jobId,
+        id_job: this.$store.state.activeSegment.jobId,
         id_client: '???',
-        id_segment: this.activeSegment.id,
-        password: this.activeSegment.jobPassword,
+        id_segment: this.$store.state.activeSegment.id,
+        password: this.$store.state.activeSegment.jobPassword,
         source_page: 1,
         username: this.$store.state.profile.first_name + ' ' + this.$store.state.profile.last_name
       }
@@ -292,7 +291,7 @@ export default {
           if (typeof (r.data.data.entries[0]) === 'undefined') {
             this.$Alerts.add(this.$lang.messages.comment_save_error)
           } else {
-            this.activeSegment.comments.push(r.data.data.entries[0])
+            this.$store.state.activeSegment.comments.push(r.data.data.entries[0])
           }
         })
     },

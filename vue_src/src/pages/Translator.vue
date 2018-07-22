@@ -15,7 +15,6 @@
           @clear="clearTranslation"
           @toPrevious="searchUnconfirmed(-1)"
           @toNext="searchUnconfirmed(1)"
-          @toggleSplit="toggleSplit"
         />
       </section>
       <div class="bb-blueish"/>
@@ -104,7 +103,6 @@
           </div>
         </div>
         <translator-assistant
-          :active-segment="activeSegment"
           :job-data="jobData"
           :max-height="suggestionsListHeight"
           @mtSystemChange="val => { system = val.value }"
@@ -136,7 +134,6 @@ export default {
     return {
       segments: [],
       fileId: '',
-      activeSegment: {},
       system: '',
       segmentListHeight: 600,
       suggestionsListHeight: 500,
@@ -282,31 +279,31 @@ export default {
       }
     },
     setStatus: function (status) {
-      if (this.activeSegment === null) return
-      const context = this.getContext(this.activeSegment)
+      if (this.$store.state.activeSegment === null) return
+      const context = this.getContext(this.$store.state.activeSegment)
       const data = {
-        id_segment: this.activeSegment.id,
+        id_segment: this.$store.state.activeSegment.id,
         id_job: this.jobData.id,
         id_first_file: this.fileId,
         password: this.jobData.password,
         status: status,
-        translation: typeof (this.activeSegment.cleanTranslation) === 'undefined' ? this.activeSegment.translation : this.activeSegment.cleanTranslation,
-        segment: this.activeSegment.original,
+        translation: typeof (this.$store.state.activeSegment.cleanTranslation) === 'undefined' ? this.$store.state.activeSegment.translation : this.$store.state.activeSegment.cleanTranslation,
+        segment: this.$store.state.activeSegment.original,
         time_to_edit: 1,
         autosave: false,
-        version: this.activeSegment.version,
+        version: this.$store.state.activeSegment.version,
         propagate: true,
         context_before: context.before,
         context_after: context.after,
         action: 'setTranslation',
-        saveType: this.activeSegment.saveType,
-        saveMatch: this.activeSegment.match
+        saveType: this.$store.state.activeSegment.saveType,
+        saveMatch: this.$store.state.activeSegment.match
       }
       SegmentsService.setTranslation(data)
         .then(() => {
-          this.activeSegment.status = (status === 'translated' ? 'done' : '')
+          this.$store.state.activeSegment.status = (status === 'translated' ? 'done' : '')
           if (status === 'translated') {
-            const activeIndex = parseInt(_.findKey(this.segments, {id: this.activeSegment.id}))
+            const activeIndex = parseInt(_.findKey(this.segments, {id: this.$store.state.activeSegment.id}))
             if (activeIndex + 1 < this.segments.length) {
               this.searchUnconfirmed(1)
             }
@@ -315,11 +312,8 @@ export default {
         })
     },
     setActive: function (id) {
-      if (id === this.activeSegment.id) {
+      if (this.$store.state.activeSegment !== null && id === this.$store.state.activeSegment.id) {
         return
-      }
-      if (this.activeSegment.status !== 'done') {
-        this.setStatus('draft')
       }
       let activeFound = false
       _.map(this.segments, e => {
@@ -328,7 +322,6 @@ export default {
           activeFound = true
           e.active = true
           this.jobData.lastSegmentId = e.id
-          this.activeSegment = e
           if (e.suggestions.length === 0) this.getContribution(e)
           const data = {
             action: 'setCurrentSegment',
@@ -337,6 +330,9 @@ export default {
             id_job: e.jobId
           }
           SegmentsService.setCurrent(data)
+          if (e.status !== 'done') {
+            this.setStatus('draft')
+          }
         } else {
           e.active = false
         }
@@ -388,9 +384,7 @@ export default {
       })
     },
     searchSegments: function () {
-      this.activeSegment = {
-        id: 0
-      }
+      this.$store.commit('activeSegment', {id: 0})
       this.$store.commit('sourceSearch', this.searchInSource)
       this.$store.commit('targetSearch', this.searchInTarget)
       this.reloadSegments()
@@ -443,15 +437,15 @@ export default {
         })
     },
     copySourceToTarget: function () {
-      if (this.activeSegment === null) return
-      this.activeSegment.translation = this.activeSegment.original
+      if (this.$store.state.activeSegment === null) return
+      this.$store.state.activeSegment.translation = this.$store.state.activeSegment.original
       this.setStatus('draft')
     },
     clearTranslation: function () {
-      if (this.activeSegment === null) return
-      this.activeSegment.translation = ''
-      this.activeSegment.save_type = null
-      this.activeSegment.save_match = null
+      if (this.$store.state.activeSegment === null) return
+      this.$store.state.activeSegment.translation = ''
+      this.$store.state.activeSegment.save_type = null
+      this.$store.state.activeSegment.save_match = null
       this.setStatus('draft')
     },
     searchUnconfirmed: function (direction, activeIndex) {
@@ -491,22 +485,6 @@ export default {
         this.readMoreSegments(this.segments.length - 1)
       } else if (element.scrollTop === 0) {
         this.readMoreSegments(0)
-      }
-    },
-    setSegmentSplit: function () {
-      const data = {
-        action: 'setSegmentSplit',
-        segment: this.activeSegment.original,
-        id_segment: this.activeSegment.id,
-        id_job: this.activeSegment.jobId,
-        password: this.activeSegment.jobPassword
-      }
-      SegmentsService.setSegmentSplit(data)
-    },
-    toggleSplit: function () {
-      this.splitActive = !this.splitActive
-      if (!this.splitActive) {
-        this.setSegmentSplit()
       }
     },
     onInputDebounce: function () {

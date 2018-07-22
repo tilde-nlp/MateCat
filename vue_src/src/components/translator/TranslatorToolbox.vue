@@ -95,32 +95,6 @@
       />
     </div>
     <!-- CANCEL END -->
-    <!-- SPLIT -->
-    <div
-      v-shortkey="['ctrl', 's']"
-      :title="$lang.tooltips.split"
-      class="ta-header-button bl-blueish"
-      @click="() => {$emit('toggleSplit')}"
-      @shortkey="() => {$emit('toggleSplit')}"
-    >
-      <svgicon
-        class="svg-icon"
-        name="split"
-        height="24"
-      />
-    </div>
-    <!-- SPLIT END -->
-    <!-- JOIN -->
-    <div
-      :title="$lang.tooltips.join"
-      class="ta-header-button">
-      <svgicon
-        class="svg-icon"
-        name="join"
-        height="24"
-      />
-    </div>
-    <!-- JOIN END -->
     <!-- COPY SOURCE TO TARGET -->
     <div
       v-shortkey.once="['ctrl', 'insert']"

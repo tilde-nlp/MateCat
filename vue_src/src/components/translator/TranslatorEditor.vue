@@ -23,6 +23,10 @@ export default {
     searchTerm: {
       type: String,
       required: true
+    },
+    inactive: {
+      type: Boolean,
+      default: false
     }
   },
   data: function () {
@@ -56,12 +60,12 @@ export default {
         this.$nextTick(() => {
           this.editor = document.getElementById('editor-' + this.id)
           this.editor.innerHTML = this.formattedText
-          this.editor.contentEditable = true
+          this.editor.contentEditable = !this.inactive && true
         })
         return
       }
       if (newVal) {
-        this.editor.contentEditable = true
+        this.editor.contentEditable = !this.inactive && true
       } else {
         this.editor.contentEditable = false
       }
