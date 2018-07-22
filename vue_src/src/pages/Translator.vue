@@ -390,6 +390,7 @@ export default {
       this.reloadSegments()
     },
     reloadSegments: function () {
+      this.segments = null
       this.readSegments(this.jobData.lastSegmentId, 'center')
         .then(segments => {
           this.segments = segments
