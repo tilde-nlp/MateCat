@@ -82,13 +82,19 @@
                     :class="{'high-match': suggestion.rawMatch > 69, 'mid-match': suggestion.rawMatch > 49 && suggestion.rawMatch < 70, 'mt-match': suggestion.isMT}"
                     class="suggestion-text"
                   >
-                    <span v-if="suggestion.isMT">{{ suggestion.translation }}</span>
+                    <span
+                      v-if="suggestion.isMT"
+                      v-html="convertTags(suggestion.translation)"
+                    />
                     <div
                       v-else
                       :title="$lang.tooltips.created_by + ': ' + suggestion.createdBy + '; ' + $lang.tooltips.usage_count + ': ' + suggestion.usageCount"
                     >
-                      <div class="mb-8 bb-light-darker">{{ suggestion.segment }}</div>
-                      <div>{{ suggestion.translation }}</div>
+                      <div
+                        class="mb-8 bb-light-darker"
+                        v-html="convertTags(suggestion.segment)"
+                      />
+                      <div v-html="convertTags(suggestion.translation)" />
                     </div>
                   </div>
                   <div
@@ -106,11 +112,12 @@
               height="24"
             />
             <input
+              v-model="searchTerm"
               :placeholder="$lang.inputs.search_term"
               class="search-input"
               type="text"
+              name="terms-search"
               @keyup.enter="openTermSearch"
-              @input="e => { searchTerm = e.target.value }"
             >
           </div>
         </div>
@@ -125,9 +132,11 @@
               height="24"
             />
             <input
+              v-model="commentSearch"
               :placeholder="$lang.inputs.search_in_comments"
               class="search-input"
               type="text"
+              name="comments-search"
               @keyup.enter="() => { $emit('search') }"
               @input="e => { $emit('commentSearchInput', e.target.value) }"
             >
@@ -200,6 +209,7 @@ import LanguagesService from 'services/languages.js'
 import CommentsService from 'services/comments.js'
 import _ from 'lodash'
 import {DateConverter} from 'utils/date-converter'
+import {TagsConverter} from 'utils/tags-converter'
 export default {
   name: 'TranslatorAssistant',
   props: {
@@ -214,6 +224,7 @@ export default {
       systems: [],
       system: null,
       newComment: null,
+      commentSearch: '',
       searchTerm: ''
     }
   },
@@ -312,6 +323,9 @@ export default {
     openTermSearch: function () {
       if (this.searchTerm === '') return
       window.open('http://termini.lza.lv/term.php?term=' + this.searchTerm + '&lang=LV', '_blank')
+    },
+    convertTags: function (text) {
+      return TagsConverter.add(text)
     }
   }
 }

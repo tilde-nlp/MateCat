@@ -41,6 +41,8 @@
 <script>
 import {Alert} from '@shibetec/vue-toolbox'
 import 'assets/inline-svg'
+import {TextHighlighter} from 'utils/text-highlighter'
+import {TagsConverter} from 'utils/tags-converter'
 export default {
   name: 'App',
   components: {
@@ -52,6 +54,8 @@ export default {
     }
   },
   mounted: function () {
+    TextHighlighter.init()
+    TagsConverter.init()
     this.$Alerts.registerListener(this)
     this.$store.commit('fontSize', this.$cookie.get('fontSize') === null ? 15 : parseInt(this.$cookie.get('fontSize')))
   },
