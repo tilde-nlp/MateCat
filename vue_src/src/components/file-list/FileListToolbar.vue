@@ -140,7 +140,7 @@ export default {
   },
   computed: {
     buttonTitle: function () {
-      return this.buttonEnabled ? 'Augšupielādēt failus' : 'Vispirms jāievelk faili'
+      return this.buttonEnabled ? this.$lang.tooltips.upload_files : this.$lang.tooltips.drag_files_first
     }
   },
   mounted: function () {
