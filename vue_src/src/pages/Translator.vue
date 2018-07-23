@@ -488,8 +488,26 @@ export default {
       const element = document.getElementById('translatorSegments')
       if (element.scrollTop === (element.scrollHeight - element.offsetHeight)) {
         this.readMoreSegments(this.segments.length - 1)
+          .then(this.checkSegmentEnd)
       } else if (element.scrollTop === 0) {
         this.readMoreSegments(0)
+          .then(() => {
+            this.$nextTick(() => {
+              element.scrollTop = 1
+            })
+          })
+      }
+    },
+    checkSegmentEnd: function (lastReadCount) {
+      if (lastReadCount < 1) {
+        return
+      }
+      const element = document.getElementById('translatorSegments')
+      if (element.scrollHeight <= element.offsetHeight) {
+        this.readMoreSegments(this.segments.length - 1)
+          .then(this.checkSegmentEnd)
+      } else if (element.scrollTop === 0) {
+        element.scrollTop = 1
       }
     },
     onInputDebounce: function () {
