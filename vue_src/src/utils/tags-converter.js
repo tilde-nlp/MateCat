@@ -1,6 +1,12 @@
 const rawGTagSearch = '&lt;g id="'
 const convertedGTagSearch = '<g-span data-id="'
+const editorTagStart = '<span class="editor-span">'
+const editorTagStartEditable = '<span class="editor-span" contenteditable="true">'
+const editorTagEnd = '</span>'
 function processInnerTag (start, text) {
+  if (start === 0) {
+    text = editorTagStart + text + editorTagEnd
+  }
   let gTagPosition = text.indexOf(rawGTagSearch)
   while (gTagPosition > -1) {
     // Find out tag id
@@ -18,10 +24,16 @@ function processInnerTag (start, text) {
   return text
 }
 function getGStartTagC (id) {
-  return '<g-span data-id="' + id + '" class="bg-blueish">&gt;</g-span>'
+  return editorTagEnd + '<g-span data-id="' + id + '" class="bg-blueish">&gt;</g-span>' + editorTagStart
 }
 function getGEndTagC (id) {
-  return '<g-span data-id="' + id + '" class="bg-blueish">&lt;</g-span>'
+  return editorTagEnd + '<g-span data-id="' + id + '" class="bg-blueish">&lt;</g-span>' + editorTagStart
+}
+function getGStartTagCE (id) {
+  return editorTagEnd + '<g-span data-id="' + id + '" class="bg-blueish">&gt;</g-span>' + editorTagStartEditable
+}
+function getGEndTagCE (id) {
+  return editorTagEnd + '<g-span data-id="' + id + '" class="bg-blueish">&lt;</g-span>' + editorTagStartEditable
 }
 function getGStartTagR (id) {
   return rawGTagSearch + id + '"&gt;'
@@ -37,13 +49,14 @@ export const TagsConverter = {
     return processInnerTag(0, text)
   },
   remove: function (text) {
+    console.log('remove')
     let gTagPosition = text.indexOf(convertedGTagSearch)
     let safetyCounter = 0
     while (gTagPosition > -1) {
       const closingMark = text.indexOf('"', gTagPosition + convertedGTagSearch.length)
       const id = parseInt(text.substring(gTagPosition + convertedGTagSearch.length, closingMark))
-      text = text.replace(getGStartTagC(id), getGStartTagR(id))
-      text = text.replace(getGEndTagC(id), getGEndTagR())
+      text = text.replace(getGStartTagCE(id), getGStartTagR(id))
+      text = text.replace(getGEndTagCE(id), getGEndTagR())
       gTagPosition = text.indexOf(convertedGTagSearch)
       safetyCounter++
       if (safetyCounter > 264) {
@@ -51,6 +64,9 @@ export const TagsConverter = {
         gTagPosition = -1
       }
     }
+    text = text.replace(new RegExp(editorTagStartEditable, 'g'), '')
+    text = text.replace(new RegExp(editorTagEnd, 'g'), '')
+    text = text.replace(new RegExp('<br>', 'g'), '')
     return text
   }
 }
