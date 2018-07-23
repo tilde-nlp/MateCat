@@ -3,27 +3,6 @@
     <div class="section-bg bg-grey-light">
       <div class="bb-blueish"/>
       <section class="section">
-        <!-- FILE UPLOAD TOGGLE -->
-        <div
-          class="head-control"
-        >
-          <svgicon
-            class="svg-icon va-middle"
-            name="file"
-            height="24"
-          />
-          <div class="link ib">{{ $lang.buttons.add_files }}</div>
-          <svgicon
-            :class="{open: sliderOpen}"
-            class="svg-icon va-middle chevron"
-            name="chevron"
-            height="24"
-          />
-        </div>
-        <!-- FILE UPLOAD TOGGLE END -->
-      </section>
-      <div class="bb-blueish"/>
-      <section class="section">
         <!-- FILE UPLOAD CONTAINER -->
         <div
           :class="{open: sliderOpen}"
@@ -85,7 +64,7 @@
         v-if="sliderOpen"
         class="bb-blueish mt-24"/>
     </div>
-    <div class="section-bg scroll-section">
+    <div class="section-bg scroll-section file-list">
       <section class="section">
         <div
           v-if="!files.length"
@@ -205,7 +184,7 @@ export default {
               created: DateConverter.timeStampToDate(el.jobs[0].create_timestamp),
               tmpFileId: this.tmpFileId++,
               statsLink: link,
-              direction: el.jobs[0].source + ' - ' + el.jobs[0].target
+              direction: el.jobs[0].source.substring(0, 2) + ' - ' + el.jobs[0].target.substring(0, 2)
             })
           })
         })
@@ -290,11 +269,11 @@ export default {
           file.progress = 0.00
           file.created = DateConverter.nowDate()
           file.owner = this.$store.state.profile.email
-          this.nextFileUpload()
         }
         return
       }
       if (res.data.data.summary.STATUS !== 'EMPTY') {
+        this.nextFileUpload()
         setTimeout(() => {
           FileService.analyze({
             pid: file.id,
@@ -358,7 +337,7 @@ export default {
           name: file.name,
           created: DateConverter.nowDate(),
           tmpFileId: fileTmpId,
-          direction: this.fromLang + ' - ' + this.toLang
+          direction: this.fromLang.substring(0, 2) + ' - ' + this.toLang.substring(0, 2)
         }
       ))
       this.totalFiles++

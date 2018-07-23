@@ -60,6 +60,7 @@ export default {
           this.editor = document.getElementById('editor-' + this.id)
           this.editor.innerHTML = this.formattedText
           this.editor.contentEditable = !this.inactive && true
+          this.editor.focus()
         })
         return
       }

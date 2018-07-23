@@ -59,12 +59,12 @@
               <div class="ma">#</div>
             </div>
             <div class="segment-col header first">
-              {{ $lang.titles.original }}: {{ jobData.source }}
+              {{ $lang.titles.original }}: {{ jobData.source.substring(0, 2) }}
             </div>
           </div>
           <div class="double-block">
             <div class="segment-col header last">
-              {{ $lang.titles.translation }}: {{ jobData.target }}
+              {{ $lang.titles.translation }}: {{ jobData.target.substring(0, 2) }}
             </div>
             <div class="tools-col header no-border">
               &nbsp;
@@ -391,10 +391,14 @@ export default {
     },
     reloadSegments: function () {
       this.segments = null
+      this.$store.commit('activeSegment', null)
       this.readSegments(this.jobData.lastSegmentId, 'center')
         .then(segments => {
           this.segments = segments
           this.setActive(this.jobData.lastSegmentId)
+          if (this.$store.state.activeSegment === null && this.segments.length > 0) {
+            this.setActive(this.segments[0].id)
+          }
           this.segmentsScrolled()
         })
     },

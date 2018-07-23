@@ -2,7 +2,7 @@
   <div
     :class="{active: segment.active, confirmed: segment.status === 'done'}"
     class="segment-container font-size-0"
-    @click.capture="() => {$emit('click', segment.id)}"
+    @click.capture="setActive"
   >
     <div class="double-block segment-fix">
       <div
@@ -38,7 +38,8 @@
     <div class="double-block">
       <div
         :class="{top: topSegment}"
-        class="segment-col last">
+        class="segment-col last"
+      >
         <translator-editor
           :is-active="isActive"
           :text="segment.translation"
@@ -184,6 +185,9 @@ export default {
         this.segment.original.slice(cursorPosition)
       ].join('')
       this.$refs.oa.blur()
+    },
+    setActive: function () {
+      this.$emit('click', this.segment.id)
     }
   }
 }
