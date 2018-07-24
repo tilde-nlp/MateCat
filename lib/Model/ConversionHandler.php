@@ -226,8 +226,7 @@ class ConversionHandler {
         if ( isset( $cachedXliffPath ) and !empty( $cachedXliffPath ) ) {
 
             //FILE Found in cache, destroy the already present shasum for other languages ( if user swapped languages )
-            $uploadDir = INIT::$UPLOAD_REPOSITORY . DIRECTORY_SEPARATOR . $this->cookieDir;
-            $fs->deleteHashFromUploadDir( $uploadDir, $sha1 . "|" . $this->source_lang );
+            $fs->deleteHashFromUploadDir( $this->intDir, $sha1 . "|" . $this->source_lang );
 
             //put reference to cache in upload dir to link cache to session
             $fs->linkSessionToCacheForAlreadyConvertedFiles(

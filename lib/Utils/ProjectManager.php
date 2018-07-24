@@ -358,6 +358,16 @@ class ProjectManager {
 
     }
 
+    protected function log_text($data) {
+        file_put_contents('/var/tmp/worker.log', $data, FILE_APPEND);
+        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
+    }
+
+    protected function log($data) {
+        file_put_contents('/var/tmp/worker.log', var_export($data, true), FILE_APPEND);
+        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
+    }
+
     public function createProject() {
         $this->sanitizeProjectStructure();
 
@@ -388,6 +398,8 @@ class ProjectManager {
         $sortedFiles      = [];
         $firstTMXFileName = "";
         foreach ( $this->projectStructure[ 'array_files' ] as $fileName ) {
+//            $this->log_text('File: ');
+//            $this->log($fileName);
 
             //check for glossary files and tmx and put them in front of the list
             $infoFile = DetectProprietaryXliff::getInfo( $fileName );
@@ -427,11 +439,15 @@ class ProjectManager {
             }
         }
 
-        $uploadDir = $this->uploadDir = INIT::$QUEUE_PROJECT_REPOSITORY . DIRECTORY_SEPARATOR . $this->projectStructure[ 'uploadToken' ];
+        $this->uploadDir = INIT::$QUEUE_PROJECT_REPOSITORY . DIRECTORY_SEPARATOR . $this->projectStructure[ 'uploadToken' ];
+//        $this->log_text('upload dir: ');
+//        $this->log($this->uploadDir);
 
         //we are going to access the storage, get model object to manipulate it
         $this->fileStorage = new FilesStorage();
         $linkFiles         = $this->fileStorage->getHashesFromDir( $this->uploadDir );
+//        $this->log_text('link files: ');
+//        $this->log($linkFiles);
 
         /*
             loop through all input files to
@@ -468,7 +484,7 @@ class ProjectManager {
                $enforcedConversion = true; //( if conversion is enabled )
              */
             $mustBeConverted = $this->fileMustBeConverted( $fileName, $forceXliff );
-
+            // TODO Read trough actual file handling in project creation
             //if it's one of the listed formats or conversion is not enabled in first place
             if ( !$mustBeConverted ) {
                 /*

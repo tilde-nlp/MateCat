@@ -29,7 +29,6 @@ class ProjectCreationWorker extends AbstractWorker {
         /**
          * @var $queueElement QueueElement
          */
-        $this->log_text('Worker logs are go');
         $this->_checkForReQueueEnd( $queueElement );
         $this->_checkDatabaseConnection();
         $this->_createProject( $queueElement );
@@ -43,7 +42,7 @@ class ProjectCreationWorker extends AbstractWorker {
     }
 
     protected function log($data) {
-        file_put_contents('/var/tmp/worker.log', var_dump($data), FILE_APPEND);
+        file_put_contents('/var/tmp/worker.log', var_export($data, true), FILE_APPEND);
         file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
     }
 
@@ -70,6 +69,8 @@ class ProjectCreationWorker extends AbstractWorker {
 
         $this->projectStructure = new RecursiveArrayObject( json_decode( $queueElement->params, true ) );
         $projectManager = new ProjectManager( $this->projectStructure );
+//        $this->log_text('creating project');
+//        $this->log($this->projectStructure);
         $projectManager->createProject();
 
     }

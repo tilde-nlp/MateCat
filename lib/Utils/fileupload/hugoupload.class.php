@@ -32,6 +32,8 @@ class UploadHandler {
     protected $cookieDir;
     protected $intDir;
     protected $errDir;
+    protected $userIsLogged;
+    protected $guid;
 
     /**
      * @var \Teams\TeamStruct
@@ -44,10 +46,10 @@ class UploadHandler {
     private $projectFeatures = [];
 
     function __construct() {
-
+        $this->setGuid();
         $this->options = [
                 'script_url'              => $this->getFullUrl() . '/',
-                'upload_dir'              => Utils::uploadDirFromSessionCookie( $_COOKIE[ 'upload_session' ] ),
+                'upload_dir'              => INIT::$QUEUE_PROJECT_REPOSITORY. DIRECTORY_SEPARATOR . $this->guid . DIRECTORY_SEPARATOR,
                 'upload_url'              => $this->getFullUrl() . '/files/',
                 'param_name'              => 'files',
             // Set the following option to 'POST', if your server does not support
@@ -62,7 +64,11 @@ class UploadHandler {
             // Set the following option to false to enable resumable uploads:
                 'discard_aborted_uploads' => true,
         ];
-
+        $this->userIsLogged = !empty(AuthCookie::getCredentials()['username']);
+        // Check for project folder existence and mkdir it if necessary.
+        if (!is_dir($this->options['upload_dir'])) {
+            mkdir($this->options['upload_dir'], 0775, true);
+        }
     }
 
     public function post() {
@@ -70,6 +76,8 @@ class UploadHandler {
         if ( isset( $_REQUEST[ '_method' ] ) && $_REQUEST[ '_method' ] === 'DELETE' ) {
             return $this->delete();
         }
+
+
 
         $upload = isset( $_FILES[ $this->options[ 'param_name' ] ] ) ? $_FILES[ $this->options[ 'param_name' ] ] : null;
 
@@ -159,13 +167,8 @@ class UploadHandler {
         $file->type = mime_content_type( $file->tmp_name );
 
         if ( $this->validate( $uploaded_file, $file, $error, $index ) ) {
-            $destination = INIT::$QUEUE_PROJECT_REPOSITORY. DIRECTORY_SEPARATOR . $_COOKIE[ 'upload_session' ];
+            $destination = $this->options['upload_dir'];
             $file->full_path   = $destination . $file->name;
-            // Inconsistent behaviour: sometimes project folder is created other times it isn't.
-            // Check for project folder existence and mkdir it if necessary.
-            if (!is_dir($destination)) {
-                mkdir($destination, 0775, true);
-            }
             $res = move_uploaded_file( $uploaded_file, $file->full_path );
             Log::doLog( $res );
 
@@ -232,8 +235,8 @@ class UploadHandler {
             $this->segmentation_rule = null;
         }
 
-        $this->cookieDir = $_COOKIE[ 'upload_session' ];
-        $this->intDir    = INIT::$QUEUE_PROJECT_REPOSITORY . DIRECTORY_SEPARATOR . $this->cookieDir;
+        $this->cookieDir = $this->guid;
+        $this->intDir    = $this->options['upload_dir'];
         $this->errDir    = INIT::$STORAGE_DIR . DIRECTORY_SEPARATOR . 'conversion_errors' . DIRECTORY_SEPARATOR . $this->cookieDir;
 
         $this->result[ 'code' ] = 0; // No Good, Default
@@ -485,8 +488,11 @@ class UploadHandler {
         $this->setProjectFeaturesFromPostValues( $__postInput );
 
         //first we check the presence of a list from tm management panel
-        $array_keys = json_decode( $_POST[ 'private_keys_list' ], true );
-        $array_keys = array_merge( $array_keys[ 'ownergroup' ], $array_keys[ 'mine' ], $array_keys[ 'anonymous' ] );
+        $array_keys = null;
+        if (!empty($_POST[ 'private_keys_list' ])) {
+            $array_keys = json_decode( $_POST[ 'private_keys_list' ], true );
+            $array_keys = array_merge( $array_keys[ 'ownergroup' ], $array_keys[ 'mine' ], $array_keys[ 'anonymous' ] );
+        }
 
         //if a string is sent by the client, transform it into a valid array
         if ( !empty( $__postInput[ 'private_tm_key' ] ) ) {
@@ -595,7 +601,7 @@ class UploadHandler {
         $projectStructure[ 'private_tm_key' ]       = $this->private_tm_key;
         $projectStructure[ 'private_tm_user' ]      = $this->private_tm_user;
         $projectStructure[ 'private_tm_pass' ]      = $this->private_tm_pass;
-        $projectStructure[ 'uploadToken' ]          = $_COOKIE[ 'upload_session' ];
+        $projectStructure[ 'uploadToken' ]          = $this->guid;
         $projectStructure[ 'array_files' ]          = $arFiles; //list of file name
         $projectStructure[ 'source_language' ]      = $this->source_language;
         $projectStructure[ 'target_language' ]      = explode( ',', $this->target_language );
@@ -639,6 +645,18 @@ class UploadHandler {
             'password'   => $projectStructure[ 'ppassword' ]
         ];
 
+    }
+
+    private static function sanitizeTmKeyArr( $elem ) {
+
+        $elem = TmKeyManagement_TmKeyManagement::sanitize( new TmKeyManagement_TmKeyStruct( $elem ) );
+
+        return $elem->toArray();
+
+    }
+
+    private function setGuid() {
+        $this->guid = Utils::create_guid();
     }
 
     private function __assignLastCreatedPid( $pid ) {
