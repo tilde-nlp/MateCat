@@ -34,14 +34,12 @@ export default {
   data: function () {
     return {
       editor: null,
-      id: null
+      id: null,
+      isEditable: false
     }
   },
   computed: {
     formattedText: function () {
-      if (this.text === '') {
-        return ''
-      }
       let result = this.text
       if (this.searchTerm !== '') {
         result = TextHighlighter.add(this.searchTerm, result)
@@ -59,20 +57,32 @@ export default {
         this.$nextTick(() => {
           this.editor = document.getElementById('editor-' + this.id)
           this.editor.innerHTML = this.formattedText
-          this.editor.contentEditable = !this.inactive && true
-          this.editor.focus()
+          this.enableContentEdit()
+        })
+        this.$nextTick(() => {
+          console.log('focus element 1')
+          this.focusEditor()
         })
         return
       }
       if (newVal) {
-        this.editor.contentEditable = !this.inactive && true
+        this.enableContentEdit()
+        this.$nextTick(() => {
+          console.log('focus element 2')
+          this.focusEditor()
+        })
       } else {
-        this.editor.contentEditable = false
+        this.disableContentEdit()
       }
     },
     formattedText: function (newVal) {
       if (this.editor !== null) {
         this.editor.innerHTML = newVal
+        if (this.isEditable) {
+          this.$nextTick(() => {
+            this.enableContentEdit()
+          })
+        }
       }
     }
   },
@@ -88,6 +98,41 @@ export default {
       result = TextHighlighter.remove(result)
       result = TagsConverter.remove(result)
       return result
+    },
+    enableContentEdit: function () {
+      if (this.inactive) {
+        return
+      }
+      this.isEditable = true
+      for (let i = 0; i < this.editor.childNodes.length; i++) {
+        if (this.editor.childNodes[i].className !== 'editor-span') {
+          continue
+        }
+        this.editor.childNodes[i].contentEditable = !this.inactive && true
+      }
+    },
+    disableContentEdit: function () {
+      if (this.inactive) {
+        return
+      }
+      this.isEditable = false
+      for (let i = 0; i < this.editor.childNodes.length; i++) {
+        if (this.editor.childNodes[i].className !== 'editor-span') {
+          continue
+        }
+        this.editor.childNodes[i].contentEditable = false
+      }
+    },
+    focusEditor: function () {
+      if (this.editor === null) {
+        return
+      }
+      for (let i = 0; i < this.editor.childNodes.length; i++) {
+        if (this.editor.childNodes[i].className === 'editor-span') {
+          this.editor.childNodes[i].focus()
+          break
+        }
+      }
     }
   }
 }

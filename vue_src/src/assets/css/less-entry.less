@@ -1569,6 +1569,26 @@ select::-ms-expand {
   &.split-edit {
     cursor: col-resize;
   }
+  .editor-span {
+    .ib;
+    min-height: 20px;
+    min-width: 2px;
+    .border-box;
+    .p-0;
+    .m-0;
+    outline: none !important;
+    border: none;
+    background: transparent;
+    &:active,
+    &:focus {
+      outline: none !important;
+      border: none;
+      box-shadow: none;
+    }
+    &:disabled {
+      background: transparent;
+    }
+  }
 }
 .settings-container {
   .border-box;
