@@ -17,7 +17,7 @@ class getContributionController extends ajaxController {
     private $id_translator;
     private $password;
     private $tm_keys;
-    private $letsmt_system;
+    private $mt_system;
 
     protected $context_before;
     protected $context_after;
@@ -44,7 +44,7 @@ class getContributionController extends ajaxController {
                 'from_target'    => [ 'filter' => FILTER_VALIDATE_BOOLEAN ],
                 'context_before' => [ 'filter' => FILTER_UNSAFE_RAW ],
                 'context_after'  => [ 'filter' => FILTER_UNSAFE_RAW ],
-                'letsmt_system'  => [ 'filter' => FILTER_SANITIZE_STRING],
+                'mt_system'  => [ 'filter' => FILTER_SANITIZE_STRING],
         ];
 
         $this->__postInput = filter_input_array( INPUT_POST, $filterArgs );
@@ -61,7 +61,7 @@ class getContributionController extends ajaxController {
         $this->concordance_search = $this->__postInput[ 'is_concordance' ];
         $this->switch_languages   = $this->__postInput[ 'from_target' ];
         $this->password           = $this->__postInput[ 'password' ];
-        $this->letsmt_system           = $this->__postInput[ 'letsmt_system' ];
+        $this->mt_system           = $this->__postInput[ 'mt_system' ];
 
         if ( $this->id_translator == 'unknown_translator' ) {
             $this->id_translator = "";
@@ -266,9 +266,9 @@ class getContributionController extends ajaxController {
 
         }
 
-        if ($this->letsmt_system) {
-            $LetsMTLite = new \LetsMTLite(INIT::$LETSMT_BASE_URL, INIT::$LETSMT_CLIENT_ID);
-            $letsmtTranslation = $LetsMTLite->translate($this->letsmt_system, $this->text);
+        if ($this->mt_system) {
+            $LetsMTLite = new \LetsMTLite(INIT::MT_BASE_URL, INIT::MT_CLIENT_ID);
+            $letsmtTranslation = $LetsMTLite->translate($this->mt_system, $this->text);
         }
 
         $matches = array();

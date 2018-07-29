@@ -21,6 +21,8 @@ export function main (config) {
   Vue.prototype.$CONFIG = config
   CONFIG.authRedirect = config.authRedirect
   CONFIG.baseUrl = config.baseUrl
+  CONFIG.mtClientId = config.mtClientId
+  CONFIG.mtBaseUrl = config.mtBaseUrl
   Vue.prototype.$assetPath = config.baseUrl + 'public/vue_dist/static/'
   HTTP.defaults.baseUrl = config.baseUrl
   Vue.prototype.$HTTP = HTTP

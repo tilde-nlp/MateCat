@@ -169,12 +169,23 @@ export default {
       this.$emit('toLangChange', code)
       this.reloadSystem()
     },
+    getSystemStatus: function (metadata) {
+      let status = null
+      for (let i = 0; i < metadata.length; i++) {
+        if (metadata[i].Key !== 'status') continue
+        status = metadata[i].Value
+        break
+      }
+      return status
+    },
     reloadSystem: function () {
       LanguageService.getSubjectsList(this.$lang.getLang())
         .then(r => {
           // Get relevant data for subjects dropdown
           let filteredSystems = _.filter(r.data.System, el => {
-            return el.SourceLanguage.Code === this.fromLang.substring(0, 2) && el.TargetLanguage.Code === this.toLang.substring(0, 2)
+            return el.SourceLanguage.Code === this.fromLang.substring(0, 2) &&
+              el.TargetLanguage.Code === this.toLang.substring(0, 2) &&
+              this.getSystemStatus(el.Metadata) === 'running'
           })
           filteredSystems = _.map(filteredSystems, el => {
             return {

@@ -1,4 +1,6 @@
 export const CONFIG = {
   authRedirect: '',
-  baseUrl: ''
+  baseUrl: '',
+  mtClientId: '',
+  mtBaseUrl: ''
 }
