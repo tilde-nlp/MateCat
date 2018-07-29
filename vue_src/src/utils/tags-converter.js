@@ -1,3 +1,4 @@
+import {CONFIG} from '../CONFIG'
 const rawGTagSearch = '&lt;g id="'
 const convertedGTagSearch = '<g-span data-id="'
 const editorTagStart = '<span class="editor-span">'
@@ -24,10 +25,10 @@ function processInnerTag (start, text) {
   return text
 }
 function getGStartTagC (id) {
-  return editorTagEnd + '<g-span data-id="' + id + '" class="bg-blueish">&gt;</g-span>' + editorTagStart
+  return editorTagEnd + '<g-span data-id="' + id + '" ><img src="' + CONFIG.assetPath + 'g-tag-open.svg" height="24" class="va-middle ib" /></g-span>' + editorTagStart
 }
 function getGEndTagC (id) {
-  return editorTagEnd + '<g-span data-id="' + id + '" class="bg-blueish">&lt;</g-span>' + editorTagStart
+  return editorTagEnd + '<g-span data-id="' + id + '" ><img src="' + CONFIG.assetPath + 'g-tag-close.svg" height="24" class="va-middle ib" /></g-span>' + editorTagStart
 }
 function getGStartTagCE (id) {
   return editorTagEnd + '<g-span data-id="' + id + '" class="bg-blueish">&gt;</g-span>' + editorTagStartEditable
