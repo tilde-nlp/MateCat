@@ -190,16 +190,10 @@ export default {
         })
     },
     upload: function (file, fileName, fileTmpId) {
-      let langDetect = {}
-      langDetect[fileName] = 'detect'
       let formData = FormGenerator.generateForm({
-        file_name: fileName,
-        source_lang: this.fromLang,
-        target_lang: this.toLang,
         source_language: this.fromLang,
         target_language: this.toLang,
         mt_system: this.subject.value,
-        langDetect: langDetect,
         pretranslate_100: '0'
       })
       formData.append('files[]', file)

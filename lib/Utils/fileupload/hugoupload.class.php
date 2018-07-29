@@ -86,6 +86,7 @@ class UploadHandler {
         // param_name is an array identifier like "files[]",
         // $_FILES is a multi-dimensional array:
         foreach ( $upload[ 'tmp_name' ] as $index => $value ) {
+            $this->file_name = $upload[ 'name' ][ $index ];
             $info[] = $this->handle_file_upload(
                 $upload[ 'tmp_name' ][ $index ],
                 $upload[ 'name' ][ $index ],
@@ -207,15 +208,11 @@ class UploadHandler {
         $this->featureSet->loadFromUserEmail( AuthCookie::getCredentials()['username'] ) ;
 
         $filterArgs = array(
-            'file_name'         => array(
-                'filter' => FILTER_SANITIZE_STRING,
-                'flags'  => FILTER_FLAG_STRIP_LOW // | FILTER_FLAG_STRIP_HIGH
-            ),
-            'source_lang'       => array(
+            'source_language'       => array(
                 'filter' => FILTER_SANITIZE_STRING,
                 'flags'  => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
             ),
-            'target_lang'       => array(
+            'target_language'       => array(
                 'filter' => FILTER_SANITIZE_STRING,
                 'flags'  => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
             ),
@@ -223,9 +220,8 @@ class UploadHandler {
 
         $postInput = filter_input_array( INPUT_POST, $filterArgs );
 
-        $this->file_name         = $postInput[ 'file_name' ];
-        $this->source_lang       = $postInput[ "source_lang" ];
-        $this->target_lang       = $postInput[ "target_lang" ];
+        $this->source_lang       = $postInput[ "source_language" ];
+        $this->target_lang       = $postInput[ "target_language" ];
 
         $this->segmentation_rule = null;
 
@@ -451,7 +447,6 @@ class UploadHandler {
 
     protected function handle_project_create() {
         $filterArgs = [
-            'file_name'          => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
             'source_language'    => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
             'target_language'    => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
             'job_subject'        => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
@@ -526,7 +521,6 @@ class UploadHandler {
         // NOTE: Global $_POST Overriding from CLI
         // $__postInput = filter_var_array( $_POST, $filterArgs );
 
-        $this->file_name               = $__postInput[ 'file_name' ];       // da cambiare, FA SCHIFO la serializzazione
         $this->source_language         = $__postInput[ 'source_language' ];
         $this->target_language         = $__postInput[ 'target_language' ];
         $this->mt_system             = $__postInput[ 'mt_system' ];
