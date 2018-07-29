@@ -196,22 +196,11 @@ export default {
         file_name: fileName,
         source_lang: this.fromLang,
         target_lang: this.toLang,
-        segmentation_rule: '',
-        project_name: '',
         source_language: this.fromLang,
         target_language: this.toLang,
-        job_subject: 'general',
         mt_system: this.subject.value,
-        disable_tms_engine: 'false',
-        mt_engine: '1',
-        private_key_list: '{"ownergroup":[],"mine":[],"anonymous":[]}',
         langDetect: langDetect,
-        pretranslate_100: '0',
-        lexiqa: 'false',
-        speech2text: 'false',
-        tag_projection: 'true',
-        dqf: 'false',
-        get_public_matches: 'true'
+        pretranslate_100: '0'
       })
       formData.append('files[]', file)
       FileService.upload(formData)

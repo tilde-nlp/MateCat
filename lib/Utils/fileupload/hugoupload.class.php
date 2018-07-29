@@ -219,10 +219,6 @@ class UploadHandler {
                 'filter' => FILTER_SANITIZE_STRING,
                 'flags'  => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
             ),
-            'segmentation_rule' => array(
-                'filter' => FILTER_SANITIZE_STRING,
-                'flags'  => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
-            )
         );
 
         $postInput = filter_input_array( INPUT_POST, $filterArgs );
@@ -230,11 +226,8 @@ class UploadHandler {
         $this->file_name         = $postInput[ 'file_name' ];
         $this->source_lang       = $postInput[ "source_lang" ];
         $this->target_lang       = $postInput[ "target_lang" ];
-        $this->segmentation_rule = $postInput[ "segmentation_rule" ];
 
-        if ( $this->segmentation_rule == "" ) {
-            $this->segmentation_rule = null;
-        }
+        $this->segmentation_rule = null;
 
         $this->cookieDir = $this->guid;
         $this->intDir    = $this->options['upload_dir'];
@@ -459,14 +452,11 @@ class UploadHandler {
     protected function handle_project_create() {
         $filterArgs = [
             'file_name'          => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
-            'project_name'       => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
             'source_language'    => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
             'target_language'    => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
             'job_subject'        => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
             'mt_system'        => [ 'filter' => FILTER_SANITIZE_STRING ],
             'due_date'           => [ 'filter' => FILTER_VALIDATE_INT ],
-            'mt_engine'          => [ 'filter' => FILTER_VALIDATE_INT ],
-            'disable_tms_engine' => [ 'filter' => FILTER_VALIDATE_BOOLEAN ],
 
             'private_tm_user'   => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
             'private_tm_pass'   => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
@@ -537,13 +527,11 @@ class UploadHandler {
         // $__postInput = filter_var_array( $_POST, $filterArgs );
 
         $this->file_name               = $__postInput[ 'file_name' ];       // da cambiare, FA SCHIFO la serializzazione
-        $this->project_name            = $__postInput[ 'project_name' ];
         $this->source_language         = $__postInput[ 'source_language' ];
         $this->target_language         = $__postInput[ 'target_language' ];
-        $this->job_subject             = $__postInput[ 'job_subject' ];
         $this->mt_system             = $__postInput[ 'mt_system' ];
-        $this->mt_engine               = ( $__postInput[ 'mt_engine' ] != null ? $__postInput[ 'mt_engine' ] : 0 );       // null NON è ammesso
-        $this->disable_tms_engine_flag = $__postInput[ 'disable_tms_engine' ]; // se false allora MyMemory
+        $this->mt_engine               = 1;
+        $this->disable_tms_engine_flag = false;
         $this->private_tm_key          = $__postPrivateTmKey;
         $this->private_tm_user         = $__postInput[ 'private_tm_user' ];
         $this->private_tm_pass         = $__postInput[ 'private_tm_pass' ];
@@ -562,9 +550,7 @@ class UploadHandler {
             $this->result[ 'errors' ][] = [ "code" => -1, "message" => "Missing file name." ];
         }
 
-        if ( empty( $this->job_subject ) ) {
-            $this->result[ 'errors' ][] = [ "code" => -5, "message" => "Missing job subject." ];
-        }
+        $this->job_subject = 'general';
 
         if ( $this->pretranslate_100 !== 1 && $this->pretranslate_100 !== 0 ) {
             $this->result[ 'errors' ][] = [ "code" => -6, "message" => "invalid pretranslate_100 value" ];
@@ -592,9 +578,7 @@ class UploadHandler {
             $default_project_name = "MATECAT_PROJ-" . date( "Ymdhi" );
         }
 
-        if ( empty( $this->project_name ) ) {
-            $this->project_name = $default_project_name;
-        }
+        $this->project_name = $default_project_name;
 
         $projectManager = new ProjectManager();
 
@@ -728,15 +712,6 @@ class UploadHandler {
     }
 
     private function __addFilterForMetadataInput( $filterArgs ) {
-        $filterArgs = array_merge( $filterArgs, [
-            'lexiqa'            => [ 'filter' => FILTER_VALIDATE_BOOLEAN ],
-            'speech2text'       => [ 'filter' => FILTER_VALIDATE_BOOLEAN ],
-            'tag_projection'    => [ 'filter' => FILTER_VALIDATE_BOOLEAN ],
-            'segmentation_rule' => [
-                'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
-            ],
-        ] );
-
         $filterArgs = $this->featureSet->filter( 'filterCreateProjectInputFilters', $filterArgs );
 
         return $filterArgs;
@@ -745,18 +720,9 @@ class UploadHandler {
     private function __setMetadataFromPostInput( $__postInput ) {
         $options = [];
 
-        if ( isset( $__postInput[ 'lexiqa' ] ) ) {
-            $options[ 'lexiqa' ] = $__postInput[ 'lexiqa' ];
-        }
-        if ( isset( $__postInput[ 'speech2text' ] ) ) {
-            $options[ 'speech2text' ] = $__postInput[ 'speech2text' ];
-        }
-        if ( isset( $__postInput[ 'tag_projection' ] ) ) {
-            $options[ 'tag_projection' ] = $__postInput[ 'tag_projection' ];
-        }
-        if ( isset( $__postInput[ 'segmentation_rule' ] ) ) {
-            $options[ 'segmentation_rule' ] = $__postInput[ 'segmentation_rule' ];
-        }
+        $options[ 'lexiqa' ] = false;
+        $options[ 'speech2text' ] = false;
+        $options[ 'tag_projection' ] = true;
 
         $this->metadata = $options;
 
