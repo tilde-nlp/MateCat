@@ -38,6 +38,7 @@
     <div class="double-block">
       <div
         :class="{top: topSegment}"
+        :style="rowMinHeight"
         class="segment-col last"
       >
         <translator-editor
@@ -62,30 +63,29 @@
         <!--/>-->
       </div>
       <div
-        v-if="segment.status === 'done'"
         :class="toolsType"
         class="tools-col"
       >
         <div
           v-if="segment.saveType === 'MT'"
-          class="ma"
+          class="va-top mt-4"
         >MT</div>
         <div
           v-if="segment.saveType === 'TM'"
-          class="ma"
-        >{{ segment.match }}</div>
+          class="va-top mt-4"
+        >{{ segment.match }}%</div>
         <svgicon
           v-if="segment.saveType === 'MANUAL'"
-          class="svg-icon static ma icon-blueish-darker-still"
+          class="svg-icon static va-top mt-4 icon-blueish-darker-still"
           name="pencil"
           height="24"
         />
-      </div>
-      <div
-        v-else
-        class="tools-col"
-      >
-        &nbsp;
+        <svgicon
+          v-if="segment.comments && segment.comments.length > 0"
+          class="svg-icon static icon-orange chat-icon"
+          name="chat-baloon"
+          height="24"
+        />
       </div>
     </div>
   </div>
@@ -127,6 +127,14 @@ export default {
   computed: {
     nr: function () {
       return this.segmentData.id - this.firstSegmentId + 1
+    },
+    rowMinHeight: function () {
+      if (this.segment.comments && this.segment.comments.length > 0 &&
+        (this.segment.saveType === 'MT' || this.segment.saveType === 'TM' || this.segment.saveType === 'MANUAL')) {
+        return {'min-height': '60px'}
+      } else {
+        return {'min-height': '30px'}
+      }
     },
     toolsType: function () {
       return {

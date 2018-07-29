@@ -2,6 +2,7 @@
 require('./add-file')
 require('./arrow-right-bold')
 require('./arrow')
+require('./chat-baloon')
 require('./check-circle')
 require('./check')
 require('./chevron')

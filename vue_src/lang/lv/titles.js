@@ -16,5 +16,6 @@ module.exports = {
   shortkeys: 'Taustiņkombinācijas',
   comments: 'Komentāri',
   direction: 'Virziens',
-  settings: 'Uzstādījumi'
+  settings: 'Uzstādījumi',
+  add_comment: 'Pievienot komentāru'
 }

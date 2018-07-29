@@ -18,11 +18,15 @@
         </div>
         <div
           :class="{active: activeTab === 'comments'}"
-          class="tabber-section"
+          class="tabber-section last"
           @click="activeTab = 'comments'"
         >
           {{ $lang.titles.comments }}
         </div>
+        <span
+          v-if="commentCount > 0"
+          class="comment-count"
+        >{{ commentCount }}</span>
       </div>
       <transition
         name="ffade"
@@ -141,6 +145,13 @@
               @input="e => { $emit('commentSearchInput', e.target.value) }"
             >
           </div>
+          <div class="input-label ib-i mb-0-i mt-24 va-top">{{ $lang.titles.comments }}</div>
+          <div
+            v-if="resolvable"
+            class="link ib pull-right mt-24 va-top"
+            @click="resolveComment"
+          >{{ $lang.buttons.resolve_all }}</div>
+          <div class="bb-blueish mt-4"/>
           <transition-group
             name="ffade"
             mode="out-in"
@@ -152,11 +163,11 @@
             >
               <div
                 v-if="parseInt(comment.message_type) === 1"
-                class="bb-blueish mb-8"
+                class="mt-8"
               >
-                <div class="size-xs bold dark">{{ comment.full_name }}</div>
-                <div class="size-xs dark">{{ comment.message }}</div>
-                <div class="size-xs grey">{{ timeToDateString(comment.timestamp) }}</div>
+                <div class="size-xs bold blueish-darker-still ib">{{ comment.full_name }}</div>
+                <div class="size-xs blueish-darker-still ib">{{ timeToDateString(comment.timestamp) }}</div>
+                <div class="size-s dark">{{ comment.message }}</div>
               </div>
               <div
                 v-if="parseInt(comment.message_type) === 2"
@@ -166,9 +177,9 @@
               </div>
             </div>
           </transition-group>
+          <div class="input-label mt-24 va-top">{{ $lang.titles.add_comment }}</div>
           <textarea
             v-autosize
-            v-if="newComment !== null"
             v-model="newComment.message"
             :min-height="1"
             :placeholder="$lang.inputs.write_comment"
@@ -177,25 +188,9 @@
           />
           <br>
           <button
-            v-if="resolvable"
-            class="button"
-            @click="resolveComment"
-          >{{ $lang.buttons.resolve_comments }}</button>
-          <button
-            v-if="newComment === null"
-            class="button"
-            @click="addComment"
-          >{{ $lang.buttons.add_comment }}</button>
-          <button
-            v-if="newComment !== null"
             class="button"
             @click="saveComment"
-          >{{ $lang.buttons.save }}</button>
-          <button
-            v-if="newComment !== null"
-            class="button"
-            @click="cancelComment"
-          >{{ $lang.buttons.cancel }}</button>
+          >{{ $lang.buttons.publish }}</button>
         </div>
       </transition>
     </div>
@@ -235,7 +230,7 @@ export default {
       activeTab: 'translate',
       systems: [],
       system: null,
-      newComment: null,
+      newComment: {},
       commentSearch: '',
       searchTerm: ''
     }
@@ -246,6 +241,18 @@ export default {
         return false
       }
       return this.$store.state.activeSegment.comments[this.$store.state.activeSegment.comments.length - 1].thread_id === null
+    },
+    commentCount: function () {
+      let count = 0
+      if (this.$store.state.activeSegment === null) {
+        return count
+      }
+      _.map(this.$store.state.activeSegment.comments, el => {
+        if (parseInt(el.message_type) === 1) {
+          count++
+        }
+      })
+      return count
     }
   },
   watch: {
@@ -259,6 +266,7 @@ export default {
     }
   },
   mounted: function () {
+    this.resetComment()
     LanguagesService.getSubjectsList()
       .then(langsRes => {
         this.systems = LanguagesService.filterSystems(langsRes.data.System, this.fromLang.substring(0, 2), this.toLang.substring(0, 2))
@@ -278,7 +286,7 @@ export default {
         this.$store.state.activeSegment.match = parseInt(suggestion.match)
       }
     },
-    addComment: function () {
+    resetComment: function () {
       this.newComment = {
         action: 'comment',
         _sub: 'create',
@@ -293,7 +301,6 @@ export default {
       }
     },
     saveComment: function () {
-      if (this.newComment === null) return
       if (this.newComment.message === '') {
         this.$Alerts.add(this.$lang.messages.empty_comment)
         return
@@ -304,7 +311,7 @@ export default {
       this.newComment.password = this.$store.state.activeSegment.jobPassword
       CommentsService.doAction(this.newComment)
         .then(r => {
-          this.newComment = null
+          this.resetComment()
           this.$loading.endLoading('add-comment')
           if (typeof (r.data.data.entries[0]) === 'undefined') {
             this.$Alerts.add(this.$lang.messages.comment_save_error)
@@ -312,9 +319,6 @@ export default {
             this.$store.state.activeSegment.comments.push(r.data.data.entries[0])
           }
         })
-    },
-    cancelComment: function () {
-      this.newComment = null
     },
     resolveComment: function () {
       const data = {

@@ -16,5 +16,6 @@ module.exports = {
   shortkeys: 'Shortkeys',
   comments: 'Comments',
   direction: 'Direction',
-  settings: 'Settings'
+  settings: 'Settings',
+  add_comment: 'Add comment'
 }

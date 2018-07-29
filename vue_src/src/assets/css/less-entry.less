@@ -95,6 +95,7 @@
 @color-blueish-darker-still: #557c8f;
 @color-yellow-light: #f3ffea;
 @border-radius: unit(@e * @golden, px);
+@color-orange: #fc7801;
 
 .red {
   color: @color-red;
@@ -393,6 +394,9 @@
     &.active {
       fill: @color-blueish-darker-still;
     }
+  }
+  &.icon-orange {
+    fill: @color-orange;
   }
   &.placeholder {
     position: absolute;
@@ -1473,8 +1477,8 @@ select::-ms-expand {
     .ib;
     .size-s;
     .mr-24;
-    &:last-child {
-      .mr-0;
+    &.last {
+      .mr-4;
     }
     &.active,
     &:hover {
@@ -1500,6 +1504,13 @@ select::-ms-expand {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+}
+
+.chat-icon {
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  transform: translateX(-50%);
 }
 
 .suggestions-container {
@@ -1624,4 +1635,17 @@ select::-ms-expand {
     .pr-16;
     .mt-24;
   }
+}
+
+.comment-count {
+  height: 24px;
+  width: 24px;
+  background-color: @color-orange;
+  .white;
+  border-radius: 50%;
+  .ib;
+  .center;
+  .size-xs;
+  .bold;
+  line-height: 24px;
 }

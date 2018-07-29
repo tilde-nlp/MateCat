@@ -16,8 +16,9 @@ module.exports = {
   add_comment: 'Pievienot',
   save: 'Saglabāt',
   cancel: 'Atcelt',
-  resolve_comments: 'Atrisināt',
   settings: 'Uzstādījumi',
   analyze: 'Analizēt',
-  close: 'Aizvērt'
+  close: 'Aizvērt',
+  resolve_all: 'Atrisināt visus',
+  publish: 'Publicēt'
 }
