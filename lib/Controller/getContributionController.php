@@ -267,7 +267,7 @@ class getContributionController extends ajaxController {
         }
 
         if ($this->mt_system) {
-            $LetsMTLite = new \LetsMTLite(INIT::MT_BASE_URL, INIT::MT_CLIENT_ID);
+            $LetsMTLite = new \LetsMTLite(INIT::$MT_BASE_URL, INIT::$MT_CLIENT_ID, INIT::$MT_APP_ID);
             $letsmtTranslation = $LetsMTLite->translate($this->mt_system, $this->text);
         }
 

@@ -60,7 +60,6 @@ export default {
           this.enableContentEdit()
         })
         this.$nextTick(() => {
-          console.log('focus element 1')
           this.focusEditor()
         })
         return
@@ -68,7 +67,6 @@ export default {
       if (newVal) {
         this.enableContentEdit()
         this.$nextTick(() => {
-          console.log('focus element 2')
           this.focusEditor()
         })
       } else {

@@ -103,9 +103,11 @@
           </div>
         </div>
         <translator-assistant
-          :job-data="jobData"
           :max-height="suggestionsListHeight"
-          @mtSystemChange="val => { system = val.value }"
+          :selected-mt="jobData.mtSystemId"
+          :from-lang="jobData.source"
+          :to-lang="jobData.target"
+          @mtSystemChange="val => { system = val }"
           @search="searchSegments"
           @commentSearchInput="val => { searchInComments = val }"
         />
@@ -152,7 +154,8 @@ export default {
         originalUrl: '',
         fileName: '',
         firstSegment: 0,
-        lastSegment: 0
+        lastSegment: 0,
+        mtSystemId: ''
       },
       searchInSource: '',
       searchInTarget: '',
@@ -182,6 +185,7 @@ export default {
         this.jobData.firstSegment = parseInt(jobRes.data.firstSegment)
         this.jobData.lastSegment = parseInt(jobRes.data.lastSegment)
         this.jobData.fileName = jobRes.data.fileName
+        this.jobData.mtSystemId = jobRes.data.mtSystemId === null ? '' : jobRes.data.mtSystemId
         this.reloadSegments()
         this.checkStats()
         this.getFileUrls()

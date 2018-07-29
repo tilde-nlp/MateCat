@@ -41,7 +41,7 @@
               v-model="system"
               :options="systems"
               name="mt"
-              @input="value => {$emit('mtSystemChange', value)}"
+              @input="onMtChange"
             />
           </div>
           <div
@@ -216,6 +216,18 @@ export default {
     maxHeight: {
       type: Number,
       required: true
+    },
+    selectedMt: {
+      type: String,
+      required: true
+    },
+    fromLang: {
+      type: String,
+      required: true
+    },
+    toLang: {
+      type: String,
+      required: true
     }
   },
   data: function () {
@@ -236,16 +248,22 @@ export default {
       return this.$store.state.activeSegment.comments[this.$store.state.activeSegment.comments.length - 1].thread_id === null
     }
   },
+  watch: {
+    selectedMt: function (newVal) {
+      if (this.systems.length < 1) {
+        return
+      }
+      const selectedSystem = _.find(this.systems, {value: newVal})
+      this.system = typeof (selectedSystem) === 'undefined' ? this.systems[0] : selectedSystem
+      this.$emit('mtSystemChange', this.system)
+    }
+  },
   mounted: function () {
-    LanguagesService.getMTSystems()
+    LanguagesService.getSubjectsList()
       .then(langsRes => {
-        this.systems = _.map(langsRes.data, el => {
-          return {
-            label: el.Title.Text,
-            value: el.ID
-          }
-        })
-        this.system = this.systems[0]
+        this.systems = LanguagesService.filterSystems(langsRes.data.System, this.fromLang.substring(0, 2), this.toLang.substring(0, 2))
+        const selectedSystem = _.find(this.systems, {value: this.selectedMt})
+        this.system = typeof (selectedSystem) === 'undefined' ? this.systems[0] : selectedSystem
         this.$emit('mtSystemChange', this.system)
       })
   },
@@ -326,6 +344,9 @@ export default {
     },
     convertTags: function (text) {
       return TagsConverter.add(text)
+    },
+    onMtChange: function (value) {
+      this.$emit('mtSystemChange', value.value)
     }
   }
 }

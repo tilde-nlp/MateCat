@@ -23,6 +23,7 @@ export function main (config) {
   CONFIG.baseUrl = config.baseUrl
   CONFIG.mtClientId = config.mtClientId
   CONFIG.mtBaseUrl = config.mtBaseUrl
+  CONFIG.mtAppId = config.mtAppId
   Vue.prototype.$assetPath = config.baseUrl + 'public/vue_dist/static/'
   HTTP.defaults.baseUrl = config.baseUrl
   Vue.prototype.$HTTP = HTTP

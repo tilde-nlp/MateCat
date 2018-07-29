@@ -14,7 +14,8 @@ class INIT {
             'JWT_KEY',
             'AUTH_REDIRECT',
             'MT_BASE_URL',
-            'MT_CLIENT_ID'
+            'MT_CLIENT_ID',
+            'MT_APP_ID'
     );
 
     /**
@@ -43,6 +44,7 @@ class INIT {
     public static $AUTH_REDIRECT;
     public static $MT_BASE_URL;
     public static $MT_CLIENT_ID;
+    public static $MT_APP_ID;
     public static $DB_SERVER;
     public static $DB_DATABASE;
     public static $DB_USER;
