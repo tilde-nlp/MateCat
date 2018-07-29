@@ -1165,6 +1165,7 @@ function insertProject( ArrayObject $projectStructure ) {
     $data[ 'id_assignee' ]       = $projectStructure[ 'id_assignee' ];
     $data[ 'instance_id' ]       = !is_null( $projectStructure[ 'instance_id' ] ) ? $projectStructure[ 'instance_id' ] : null;
     $data[ 'due_date' ]          = !is_null( $projectStructure[ 'due_date' ] ) ? $projectStructure[ 'due_date' ] : null;
+    $data[ 'mt_system_id' ]      = !is_null( $projectStructure[ 'mt_system_id' ] ) ? $projectStructure[ 'mt_system_id' ] : null;
 
     $db = Database::obtain();
     $db->begin();

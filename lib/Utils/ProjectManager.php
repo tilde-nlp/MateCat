@@ -154,6 +154,7 @@ class ProjectManager {
                             'sanitize_project_options' => true,
                             'file_segments_count'      => [],
                             'due_date'                 => null,
+                            'mt_system_id'             => null,
                     ] );
 
         }

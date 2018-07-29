@@ -66,11 +66,8 @@ class ProjectCreationWorker extends AbstractWorker {
     }
 
     protected function _createProject( QueueElement $queueElement ){
-
         $this->projectStructure = new RecursiveArrayObject( json_decode( $queueElement->params, true ) );
         $projectManager = new ProjectManager( $this->projectStructure );
-//        $this->log_text('creating project');
-//        $this->log($this->projectStructure);
         $projectManager->createProject();
 
     }

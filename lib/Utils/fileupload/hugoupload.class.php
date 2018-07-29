@@ -10,6 +10,7 @@ class UploadHandler {
     private $source_language;
     private $target_language;
     private $job_subject;
+    private $mt_system;
     private $mt_engine;
     private $tms_engine = 1;  //1 default MyMemory
     private $private_tm_key;
@@ -462,6 +463,7 @@ class UploadHandler {
             'source_language'    => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
             'target_language'    => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
             'job_subject'        => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
+            'mt_system'        => [ 'filter' => FILTER_SANITIZE_STRING ],
             'due_date'           => [ 'filter' => FILTER_VALIDATE_INT ],
             'mt_engine'          => [ 'filter' => FILTER_VALIDATE_INT ],
             'disable_tms_engine' => [ 'filter' => FILTER_VALIDATE_BOOLEAN ],
@@ -539,6 +541,7 @@ class UploadHandler {
         $this->source_language         = $__postInput[ 'source_language' ];
         $this->target_language         = $__postInput[ 'target_language' ];
         $this->job_subject             = $__postInput[ 'job_subject' ];
+        $this->mt_system             = $__postInput[ 'mt_system' ];
         $this->mt_engine               = ( $__postInput[ 'mt_engine' ] != null ? $__postInput[ 'mt_engine' ] : 0 );       // null NON è ammesso
         $this->disable_tms_engine_flag = $__postInput[ 'disable_tms_engine' ]; // se false allora MyMemory
         $this->private_tm_key          = $__postPrivateTmKey;
@@ -614,6 +617,7 @@ class UploadHandler {
         $projectStructure[ 'pretranslate_100' ]     = $this->pretranslate_100;
         $projectStructure[ 'only_private' ]         = $this->only_private;
         $projectStructure[ 'due_date' ]             = $this->due_date;
+        $projectStructure[ 'mt_system_id' ]         = $this->mt_system;
 
 
         $projectStructure[ 'user_ip' ]   = Utils::getRealIpAddr();
