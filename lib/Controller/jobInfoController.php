@@ -25,6 +25,7 @@ class jobInfoController {
         $lastSegmentData = array_pop($JobsDao->getActiveSegment($user['uid'], $this->id));
         $fileNameData = array_pop($JobsDao->getFileName($this->id));
         $jobData = array_pop(Jobs_JobDao::getById($this->id));
+        $mtSystemId = array_pop($JobsDao->getMtSystem($jobData->id_project))['mt_system_id'];
         $result = new \stdClass();
         $result->active_segment_id = $lastSegmentData['segment_id'];
         if ($result->active_segment_id == null) {
@@ -35,6 +36,7 @@ class jobInfoController {
         $result->target = $jobData['target'];
         $result->firstSegment = $jobData['job_first_segment'];
         $result->lastSegment = $jobData['job_last_segment'];
+        $result->mtSystemId = $mtSystemId;
 
         echo json_encode($result);
     }
