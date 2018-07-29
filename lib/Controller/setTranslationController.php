@@ -118,7 +118,7 @@ class setTranslationController extends ajaxController {
         $this->save_match         = $this->__postInput[ 'saveMatch' ];
         $this->client_target_version = ( empty( $this->__postInput[ 'version' ] ) ? '0' : $this->__postInput[ 'version' ] );
 
-        list( $this->translation, $this->split_chunk_lengths ) = CatUtils::parseSegmentSplit( CatUtils::view2rawxliff( $this->__postInput[ 'translation' ] ), ' ' );
+        list( $this->translation, $this->split_chunk_lengths ) = CatUtils::parseSegmentSplit( CatUtils::view2rawxliff( html_entity_decode($this->__postInput[ 'translation' ]) ), ' ' );
         list( $this->_segment, /** not useful assignment */ ) = CatUtils::parseSegmentSplit( CatUtils::view2rawxliff( $this->__postInput[ 'segment' ] ), ' ' );
 
         $this->context_before = CatUtils::view2rawxliff( $this->__postInput[ 'context_before' ] );
