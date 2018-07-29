@@ -268,6 +268,15 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
 
     }
 
+    public static function saveMtSystem( $project_id, $system_id, $ttl = 0 ) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE projects SET mt_system_id = :system_id WHERE id = :project_id ");
+        $stmt->execute(array('system_id' => $system_id, 'project_id' => $project_id));
+        return $stmt->rowCount();
+
+    }
+
     public static function getFileName( $job_id, $ttl = 0 ) {
 
         $thisDao = new self();

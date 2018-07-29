@@ -107,7 +107,7 @@
           :selected-mt="jobData.mtSystemId"
           :from-lang="jobData.source"
           :to-lang="jobData.target"
-          @mtSystemChange="val => { system = val }"
+          @mtSystemChange="onMtSystemChange"
           @search="searchSegments"
           @commentSearchInput="val => { searchInComments = val }"
         />
@@ -125,6 +125,7 @@ import TranslatorSegment from 'components/translator/TranslatorSegment'
 import TranslatorAssistant from 'components/translator/TranslatorAssistant'
 import JobsService from 'services/jobs.js'
 import FileService from 'services/file.js'
+import LanguagesService from 'services/languages'
 export default {
   name: 'Translator',
   components: {
@@ -516,6 +517,10 @@ export default {
     },
     onInputDebounce: function () {
       this.setStatus('draft')
+    },
+    onMtSystemChange: function (value) {
+      this.system = value
+      LanguagesService.saveMtSystem({mt_system_id: value, id: this.jobData.projectId})
     }
   }
 }
