@@ -44,6 +44,7 @@
           :is-active="isActive"
           :text="segment.translation"
           :search-term="$store.state.targetSearch"
+          :focus-toggle="segment.focusToggle"
           @input="onSegmentInput"
         />
         <!--<textarea-->

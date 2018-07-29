@@ -381,7 +381,8 @@ export default {
                 jobPassword: this.jobData.password,
                 saveType: el.save_type,
                 match: el.save_match,
-                comments: el.comments
+                comments: el.comments,
+                focusToggle: false
               }
             })
             resolve(segments)
@@ -449,6 +450,7 @@ export default {
     copySourceToTarget: function () {
       if (this.$store.state.activeSegment === null) return
       this.$store.state.activeSegment.translation = this.$store.state.activeSegment.original
+      this.$store.state.activeSegment.focusToggle = !this.$store.state.activeSegment.focusToggle
       this.setStatus('draft')
     },
     clearTranslation: function () {
@@ -456,6 +458,7 @@ export default {
       this.$store.state.activeSegment.translation = ''
       this.$store.state.activeSegment.save_type = null
       this.$store.state.activeSegment.save_match = null
+      this.$store.state.activeSegment.focusToggle = !this.$store.state.activeSegment.focusToggle
       this.setStatus('draft')
     },
     searchUnconfirmed: function (direction, activeIndex) {

@@ -29,6 +29,10 @@ export default {
     inactive: {
       type: Boolean,
       default: false
+    },
+    focusToggle: {
+      type: Boolean,
+      default: false
     }
   },
   data: function () {
@@ -52,6 +56,14 @@ export default {
     }
   },
   watch: {
+    focusToggle: function () {
+      if (this.editor === null) {
+        return
+      }
+      this.$nextTick(() => {
+        this.focusEditor()
+      })
+    },
     isActive: function (newVal) {
       if (this.editor === null) {
         this.$nextTick(() => {
@@ -127,7 +139,9 @@ export default {
       }
       for (let i = 0; i < this.editor.childNodes.length; i++) {
         if (this.editor.childNodes[i].className === 'editor-span') {
-          this.editor.childNodes[i].focus()
+          this.$nextTick(() => {
+            this.editor.childNodes[i].focus()
+          })
           break
         }
       }

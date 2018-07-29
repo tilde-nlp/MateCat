@@ -270,6 +270,7 @@ export default {
   methods: {
     setSuggestion: function (suggestion) {
       this.$store.state.activeSegment.translation = suggestion.translation
+      this.$store.state.activeSegment.focusToggle = !this.$store.state.activeSegment.focusToggle
       if (suggestion.match === 'MT') {
         this.$store.state.activeSegment.saveType = 'MT'
       } else {
