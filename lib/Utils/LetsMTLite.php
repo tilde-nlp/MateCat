@@ -26,7 +26,7 @@ class LetsMTLite {
             'appID' => $this->appId,
             'options' => 'widget=text,alignment,markSentences',
             'systemID' => $systemId,
-            'text' => urlencode($text)
+            'text' => html_entity_decode($text)
         );
         return $this->post('TranslateEx', $data);
     }
@@ -49,10 +49,6 @@ class LetsMTLite {
 
 
     protected function post($request, $data) {
-        $data_string = '';
-        //url-ify the data for the POST
-        foreach($data as $key=>$value) { $data_string .= $key.'='.$value.'&'; }
-        rtrim($data_string, '&');
         // Get cURL resource
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'client-id: ' . $this->clientId));
@@ -60,7 +56,7 @@ class LetsMTLite {
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         // Set the url
         curl_setopt($curl, CURLOPT_URL,$this->baseUrl . $request);
-        curl_setopt($curl,CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($curl,CURLOPT_POSTFIELDS, json_encode($data));
 
         // Send the request & save response to $resp
         $resp = curl_exec($curl);

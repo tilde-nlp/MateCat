@@ -56,7 +56,7 @@ class getContributionController extends ajaxController {
         $this->id_segment         = $this->__postInput[ 'id_segment' ];
         $this->id_job             = $this->__postInput[ 'id_job' ];
         $this->num_results        = $this->__postInput[ 'num_results' ];
-        $this->text               = trim( $this->__postInput[ 'text' ] );
+        $this->text               = html_entity_decode(trim( $this->__postInput[ 'text' ] ));
         $this->id_translator      = $this->__postInput[ 'id_translator' ];
         $this->concordance_search = $this->__postInput[ 'is_concordance' ];
         $this->switch_languages   = $this->__postInput[ 'from_target' ];
@@ -116,8 +116,8 @@ class getContributionController extends ajaxController {
         if ( !$this->concordance_search ) {
             //
             $this->text           = CatUtils::view2rawxliff( $this->text );
-            $this->context_before = CatUtils::view2rawxliff( $this->__postInput[ 'context_before' ] );
-            $this->context_after  = CatUtils::view2rawxliff( $this->__postInput[ 'context_after' ] );
+            $this->context_before = CatUtils::view2rawxliff( html_entity_decode($this->__postInput[ 'context_before' ]) );
+            $this->context_after  = CatUtils::view2rawxliff( html_entity_decode($this->__postInput[ 'context_after' ]) );
 
             $this->source         = $this->jobData[ 'source' ];
             $this->target         = $this->jobData[ 'target' ];
@@ -281,9 +281,9 @@ class getContributionController extends ajaxController {
             $matches[ ] = array(
                 'created_by' => 'MT',
                 'match' => '70',
-                'translation' => $letsmtTranslation,
+                'translation' => $letsmtTranslation->translation,
                 'raw_segment' => $this->text,
-                'raw_translation' => $letsmtTranslation
+                'raw_translation' => $letsmtTranslation->translation
 
             );
             usort( $matches, array( "getContributionController", "__compareScore" ) );
