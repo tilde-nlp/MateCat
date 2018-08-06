@@ -109,6 +109,7 @@
           :to-lang="jobData.target"
           @mtSystemChange="onMtSystemChange"
           @search="searchSegments"
+          @refreshContributions="refreshContributions"
           @commentSearchInput="val => { searchInComments = val }"
         />
       </section>
@@ -240,6 +241,10 @@ export default {
             .then(this.analyzeResponse)
         }, 2000)
       }
+    },
+    refreshContributions: function () {
+      if (this.$store.state.activeSegment === null) return
+      this.getContribution(this.$store.state.activeSegment)
     },
     getContribution: function (segment) {
       const context = this.getContext(segment)

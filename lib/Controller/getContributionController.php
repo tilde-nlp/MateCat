@@ -281,9 +281,9 @@ class getContributionController extends ajaxController {
             $matches[ ] = array(
                 'created_by' => 'MT',
                 'match' => '70',
-                'translation' => $letsmtTranslation->translation,
+                'translation' => $letsmtTranslation->translation == null ? '' : $letsmtTranslation->translation,
                 'raw_segment' => $this->text,
-                'raw_translation' => $letsmtTranslation->translation
+                'raw_translation' => $letsmtTranslation->translation == null ? '' : $letsmtTranslation->translation,
 
             );
             usort( $matches, array( "getContributionController", "__compareScore" ) );

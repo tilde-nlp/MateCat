@@ -273,6 +273,7 @@ export default {
         const selectedSystem = _.find(this.systems, {value: this.selectedMt})
         this.system = typeof (selectedSystem) === 'undefined' ? this.systems[0] : selectedSystem
         this.$emit('mtSystemChange', this.system)
+        this.$emit('refreshContributions')
       })
   },
   methods: {
