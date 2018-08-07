@@ -62,43 +62,43 @@ function processInnerTag (start, text) {
   return text
 }
 function getXTagC (id) {
-  return editorTagEnd + '<x-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="24" class="va-middle ib"></x-span>' + editorTagStart
+  return editorTagEnd + '<x-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></x-span>' + editorTagStart
 }
 function getXTagR (id) {
   return rawXTagSearch + id + '"/&gt;'
 }
 function getXTagCE (id) {
-  return editorTagEnd + '<x-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="24" class="va-middle ib"></x-span>' + editorTagStartEditable
+  return editorTagEnd + '<x-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></x-span>' + editorTagStartEditable
 }
 function getBxTagC (id) {
-  return editorTagEnd + '<bx-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="24" class="va-middle ib"></bx-span>' + editorTagStart
+  return editorTagEnd + '<bx-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></bx-span>' + editorTagStart
 }
 function getBxTagR (id) {
   return rawBxTagSearch + id + '"/&gt;'
 }
 function getBxTagCE (id) {
-  return editorTagEnd + '<bx-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="24" class="va-middle ib"></bx-span>' + editorTagStartEditable
+  return editorTagEnd + '<bx-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></bx-span>' + editorTagStartEditable
 }
 function getExTagC (id) {
-  return editorTagEnd + '<ex-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="24" class="va-middle ib"></ex-span>' + editorTagStart
+  return editorTagEnd + '<ex-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></ex-span>' + editorTagStart
 }
 function getExTagR (id) {
   return rawExTagSearch + id + '"/&gt;'
 }
 function getExTagCE (id) {
-  return editorTagEnd + '<ex-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="24" class="va-middle ib"></ex-span>' + editorTagStartEditable
+  return editorTagEnd + '<ex-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></ex-span>' + editorTagStartEditable
 }
 function getGStartTagC (id) {
-  return editorTagEnd + '<g-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'g-tag-open.svg" height="24" class="va-middle ib"></g-span>' + editorTagStart
+  return editorTagEnd + '<g-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'g-tag-open.svg" height="16" class="va-middle ib"></g-span>' + editorTagStart
 }
 function getGEndTagC (id) {
-  return editorTagEnd + '<g-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'g-tag-close.svg" height="24" class="va-middle ib"></g-span>' + editorTagStart
+  return editorTagEnd + '<g-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'g-tag-close.svg" height="16" class="va-middle ib"></g-span>' + editorTagStart
 }
 function getGStartTagCE (id) {
-  return editorTagEnd + '<g-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'g-tag-open.svg" height="24" class="va-middle ib"></g-span>' + editorTagStartEditable
+  return editorTagEnd + '<g-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'g-tag-open.svg" height="16" class="va-middle ib"></g-span>' + editorTagStartEditable
 }
 function getGEndTagCE (id) {
-  return editorTagEnd + '<g-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'g-tag-close.svg" height="24" class="va-middle ib"></g-span>' + editorTagStartEditable
+  return editorTagEnd + '<g-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'g-tag-close.svg" height="16" class="va-middle ib"></g-span>' + editorTagStartEditable
 }
 function getGStartTagR (id) {
   return rawGTagSearch + id + '"&gt;'

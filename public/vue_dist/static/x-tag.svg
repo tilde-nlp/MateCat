@@ -1,5 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full" width="24" height="24" viewBox="0 0 24.00 24.00" enable-background="new 0 0 24.00 24.00" xml:space="preserve">
-	<path fill="#000000" fill-opacity="1" stroke-width="0.2" stroke-linejoin="miter" d="M 5.68222,3.95867L 11.4093,11.6509C 11.5501,11.8402 11.5501,12.0995 11.4093,12.2889L 5.65232,20.0222L 5.52495,20.1766C 4.76494,21.011 3.4724,21.0713 2.63799,20.3113C 1.8492,19.5948 1.79437,18.3662 2.43113,17.5113L 6.55575,11.9711L 2.46104,6.47082C 1.82552,5.616 1.87911,4.38733 2.66789,3.67082L 2.8221,3.54351C 3.72653,2.86835 5.00707,3.05422 5.68222,3.95867 Z M 18.3177,3.95868C 18.9925,3.05392 20.2729,2.86746 21.1777,3.54221L 21.3321,3.66958C 22.1208,4.38609 22.1744,5.61475 21.5389,6.46958L 17.4442,11.9699L 21.5688,17.5101C 22.2056,18.3649 22.1508,19.5936 21.362,20.3101C 20.5276,21.0701 19.235,21.0098 18.475,20.1754L 18.3476,20.021L 12.5906,12.2876C 12.4498,12.0983 12.4498,11.839 12.5906,11.6496L 18.3177,3.95868 Z "/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="12px" viewBox="0 0 18 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.2 (57519) - http://www.bohemiancoding.com/sketch -->
+    <title>icon/tag copy</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="icon/tag-copy" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" fill="#557C8F" fill-rule="nonzero">
+            <rect id="Rectangle-4" transform="translate(9.000000, 6.000000) rotate(20.000000) translate(-9.000000, -6.000000) " x="8" y="0" width="2" height="12"></rect>
+            <g id="Group-Copy" transform="translate(2.500000, 6.000000) scale(-1, 1) translate(-2.500000, -6.000000) translate(0.000000, 2.000000)">
+                <path d="M1.4893617,8 L0,6.48648649 L2.44680851,4 L1.88974132e-15,1.51351351 L1.4893617,0 L4.68085106,3.24324324 C5.10638298,3.67567568 5.10638298,4.32432432 4.68085106,4.75675676 L1.4893617,8 Z" id="Shape"></path>
+            </g>
+            <g id="Group-Copy-2" transform="translate(13.000000, 2.000000)">
+                <path d="M1.4893617,8 L0,6.48648649 L2.44680851,4 L1.88974132e-15,1.51351351 L1.4893617,0 L4.68085106,3.24324324 C5.10638298,3.67567568 5.10638298,4.32432432 4.68085106,4.75675676 L1.4893617,8 Z" id="Shape"></path>
+            </g>
+        </g>
+    </g>
 </svg>
