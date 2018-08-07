@@ -148,7 +148,7 @@ mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/lib/Model/matecat.
 mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/17-06-2018_user_email_alter.sql
 mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/20-06-2018_user_job_segment_create.sql
 mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/11-07-2018_add_save_type.sql
-mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/29-07-2018_alter_project.sql
+mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/29-07-2018_alter_projects.sql
 
 # Apache matecat vhost
 sudo cp /home/$MATECAT_USER/cattool/INSTALL/matecat-vhost.conf.sample /etc/apache2/sites-available/matecat-vhost.conf
