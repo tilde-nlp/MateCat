@@ -497,7 +497,7 @@ export default {
       }
     },
     segmentsScrolled: function () {
-      if (!this.segments.length) {
+      if (this.segments === null || !this.segments.length) {
         return
       }
       const element = document.getElementById('translatorSegments')

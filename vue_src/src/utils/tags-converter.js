@@ -1,5 +1,6 @@
 import {CONFIG} from '../CONFIG'
 const rawGTagSearch = '&lt;g id="'
+const rawSCGTagSearch = '"/&gt;'
 const rawXTagSearch = '&lt;x id="'
 const rawBxTagSearch = '&lt;bx id="'
 const rawExTagSearch = '&lt;ex id="'
@@ -7,27 +8,13 @@ const convertedGTagSearch = '<g-span data-id="'
 const convertedXTagSearch = '<x-span data-id="'
 const convertedBxTagSearch = '<bx-span data-id="'
 const convertedExTagSearch = '<ex-span data-id="'
+const convertedScgTagSearch = '<scg-span data-id="'
 const editorTagStart = '<span class="editor-span">'
 const editorTagStartEditable = '<span class="editor-span" contenteditable="true">'
 const editorTagEnd = '</span>'
 function processInnerTag (start, text, parentId) {
   if (start === 0) {
     text = editorTagStart + text + editorTagEnd
-  }
-  // Process G tag
-  let gTagPosition = text.indexOf(rawGTagSearch)
-  while (gTagPosition > -1) {
-    // Find out tag id
-    const closingMark = text.indexOf('"', gTagPosition + rawGTagSearch.length)
-    const id = parseInt(text.substring(gTagPosition + rawGTagSearch.length, closingMark))
-    text = text.replace(getGStartTagR(id), getGStartTagC(id, parentId))
-    const endTagPos = text.indexOf(getGEndTagR())
-    const nextTagStartPos = text.indexOf(rawGTagSearch)
-    if (nextTagStartPos > -1 && endTagPos > nextTagStartPos) {
-      text = processInnerTag(nextTagStartPos, text, parentId)
-    }
-    text = text.replace(getGEndTagR(), getGEndTagC(id, parentId))
-    gTagPosition = text.indexOf(rawGTagSearch, endTagPos + getGEndTagC(id, parentId).length)
   }
   // Process X tag
   let xTagPosition = text.indexOf(rawXTagSearch)
@@ -58,6 +45,43 @@ function processInnerTag (start, text, parentId) {
     text = text.replace(getExTagR(id), getExTagC(id, parentId))
     const endPos = exTagPosition + getExTagC(id, parentId).length
     exTagPosition = text.indexOf(rawExTagSearch, endPos)
+  }
+
+  // Process self closing G tag
+  let scgTagPosition = text.indexOf(rawGTagSearch)
+  while (scgTagPosition > -1) {
+    // Find out tag id
+    const closingMark = text.indexOf('"', scgTagPosition + rawGTagSearch.length)
+    const selfClosePos = text.indexOf(rawSCGTagSearch, closingMark)
+    if (selfClosePos > closingMark) {
+      scgTagPosition = text.indexOf(rawGTagSearch, closingMark)
+      continue
+    }
+    const id = parseInt(text.substring(scgTagPosition + rawGTagSearch.length, closingMark))
+    text = text.replace(getScgTagR(id), getScgTagC(id, parentId))
+    const endPos = scgTagPosition + getScgTagC(id, parentId).length
+    scgTagPosition = text.indexOf(rawGTagSearch, endPos)
+  }
+
+  // Process G tag
+  let gTagPosition = text.indexOf(rawGTagSearch)
+  while (gTagPosition > -1) {
+    // Find out tag id
+    const closingMark = text.indexOf('"', gTagPosition + rawGTagSearch.length)
+    const id = parseInt(text.substring(gTagPosition + rawGTagSearch.length, closingMark))
+    text = text.replace(getGStartTagR(id), getGStartTagC(id, parentId))
+    let endTagPos = text.indexOf(getGEndTagR())
+    const nextTagStartPos = text.indexOf(rawGTagSearch)
+    if (nextTagStartPos > -1 && endTagPos > nextTagStartPos) {
+      text = processInnerTag(nextTagStartPos, text, parentId)
+      endTagPos = text.indexOf(getGEndTagR())
+    }
+    text = text.replace(getGEndTagR(), getGEndTagC(id, parentId))
+    gTagPosition = text.indexOf(rawGTagSearch, endTagPos + getGEndTagC(id, parentId).length)
+    const endTagPosCheck = text.indexOf(getGEndTagR())
+    if (gTagPosition > endTagPosCheck) {
+      return text
+    }
   }
   return text
 }
@@ -106,12 +130,22 @@ function getGStartTagR (id) {
 function getGEndTagR () {
   return '&lt;/g&gt;'
 }
+function getScgTagC (id, parentId) {
+  return editorTagEnd + '<scg-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></scg-span>' + editorTagStart
+}
+function getScgTagCE (id, parentId) {
+  return editorTagEnd + '<scg-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></scg-span>' + editorTagStartEditable
+}
+function getScgTagR (id) {
+  return rawGTagSearch + id + '"/&gt;'
+}
 export const TagsConverter = {
   init: function () {
     document.registerElement('g-span')
     document.registerElement('x-span')
     document.registerElement('bx-span')
     document.registerElement('ex-span')
+    document.registerElement('scg-span')
   },
   add: function (text, parentId) {
     return processInnerTag(0, text, parentId)
@@ -172,6 +206,20 @@ export const TagsConverter = {
       if (safetyCounter > 264) {
         alert('Too many tags converter iterations')
         exTagPosition = -1
+      }
+    }
+    // Replace self closing G tags
+    let scgTagPosition = text.indexOf(convertedScgTagSearch)
+    safetyCounter = 0
+    while (scgTagPosition > -1) {
+      const closingMark = text.indexOf('"', scgTagPosition + convertedScgTagSearch.length)
+      const id = parseInt(text.substring(scgTagPosition + convertedScgTagSearch.length, closingMark))
+      text = text.replace(getScgTagCE(id, parentId), getScgTagR(id))
+      scgTagPosition = text.indexOf(convertedScgTagSearch)
+      safetyCounter++
+      if (safetyCounter > 264) {
+        alert('Too many tags converter iterations')
+        scgTagPosition = -1
       }
     }
     text = text.replace(new RegExp(editorTagStartEditable, 'g'), '')
