@@ -13,25 +13,12 @@
       <div
         :class="{top: topSegment}"
         class="segment-col first">
-        <!--<span-->
-        <!--v-if="!segment.active || !splitActive">{{ originalProcessed }}</span>-->
         <translator-editor
           :is-active="isActive"
           :text="originalProcessed"
           :search-term="$store.state.sourceSearch"
           :inactive="true"
         />
-        <!--<textarea-->
-        <!--v-autosize-->
-        <!--v-show="segment.active && splitActive"-->
-        <!--ref="oa"-->
-        <!--v-model="originalProcessed"-->
-        <!--:min-height="1"-->
-        <!--:style="{ 'font-size': fontSizeString }"-->
-        <!--rows="1"-->
-        <!--class="segment-edit split-edit"-->
-        <!--@click="setSplit"-->
-        <!--/>-->
       </div>
     </div>
     <div class="br-light-darker ib w-0 h-100p absolute"/>
@@ -48,19 +35,6 @@
           :focus-toggle="segment.focusToggle"
           @input="onSegmentInput"
         />
-        <!--<textarea-->
-        <!--v-autosize-->
-        <!--ref="ta"-->
-        <!--v-model="segment.translation"-->
-        <!--:min-height="1"-->
-        <!--:style="{ 'font-size': fontSizeString }"-->
-        <!--:disabled="segment.status === 'done'"-->
-        <!--:placeholder="segment.active && segment.status !== 'done' ? $lang.inputs.start_translating : ''"-->
-        <!--rows="1"-->
-        <!--class="segment-edit"-->
-        <!--@focus="() => {$emit('click', segment.id)}"-->
-        <!--@input="onSegmentInput"-->
-        <!--/>-->
       </div>
       <div
         :class="toolsType"

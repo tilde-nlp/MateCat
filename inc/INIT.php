@@ -45,6 +45,7 @@ class INIT {
     public static $MT_BASE_URL;
     public static $MT_CLIENT_ID;
     public static $MT_APP_ID;
+    public static $TM_BASE_URL;
     public static $DB_SERVER;
     public static $DB_DATABASE;
     public static $DB_USER;

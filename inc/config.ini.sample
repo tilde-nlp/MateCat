@@ -92,6 +92,7 @@ AUTH_REDIRECT = "@@@auth_redirect@@@"
 MT_BASE_URL = "@@@mt_base_url@@@"
 MT_CLIENT_ID = "@@@mt_client_id@@@"
 MT_APP_ID = "@@@mt_app_id@@@"
+TM_BASE_URL = "@@@tm_base_url@@@"
 
 CLI_HTTP_HOST = "http://localhost" ; Set the hostname for batch processes ( they do not know the global variable $_SERVER )
 DB_SERVER = "localhost"

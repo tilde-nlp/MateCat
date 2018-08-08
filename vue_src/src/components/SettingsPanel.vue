@@ -9,21 +9,53 @@
     </div>
     <div class="bb-blueish"/>
     <div class="settings-container-options">
-      <div class="checkbox-container">
-        <input type="checkbox">
-        <span class="checkmark"/>
-        {{ $lang.messages.fill_100p_tm }}
+      <div>
+        <check-box/>
+        <div class="ib va-top">
+          {{ $lang.messages.fill_100p_tm }}
+        </div>
       </div>
-      <div class="checkbox-container mt-24">
-        <input type="checkbox">
-        <span class="checkmark"/>
-        {{ $lang.messages.fill_mt }}
+      <div class="mt-24">
+        <check-box/>
+        <div class="ib va-top">
+          {{ $lang.messages.fill_mt }}
+        </div>
+      </div>
+      <div class="input-label mt-32 size-s-i">
+        {{ $lang.titles.translation_memories }}
+      </div>
+      <div class="mt-8">
+        <div
+          v-for="(memory, index) in memories"
+          :key="index"
+        >
+          <div class="size-s dark b-light-darker mt-4 p-8">
+            {{ memory.name }}
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script>
+import CheckBox from './Checkbox'
+import TranslationMemoryService from 'services/translation-memory'
 export default {
-  name: 'SettingsPanel'
+  name: 'SettingsPanel',
+  components: {
+    'check-box': CheckBox
+  },
+  data: function () {
+    return {
+      memories: []
+    }
+  },
+  mounted: function () {
+    TranslationMemoryService.get()
+      .then(response => {
+        this.memories = null
+        this.memories = response.data
+      })
+  }
 }
 </script>
