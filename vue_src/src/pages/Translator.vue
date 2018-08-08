@@ -176,6 +176,8 @@ export default {
     this.jobData.password = this.$route.params.password
     this.jobData.projectId = this.$route.params.projectId
     this.jobData.ppassword = this.$route.params.ppassword
+    this.$store.commit('targetSearch', '')
+    this.$store.commit('sourceSearch', '')
     JobsService.getInfo({
       id: this.jobData.id,
       password: this.jobData.password
