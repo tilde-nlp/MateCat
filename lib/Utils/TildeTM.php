@@ -19,6 +19,16 @@ class TildeTM {
         return $this->get('tm');
     }
 
+    public function getMatches($collection, $text, $source, $target) {
+        return $this->get('tm/' . $collection . '/segments?' . http_build_query(
+            array(
+                'q' => $text,
+                'sourceLang' => $source,
+                'targetLang' => $target
+            )
+            ));
+    }
+
     public function translate($systemId, $text) {
         $data = array(
             'appID' => $this->appId,
@@ -35,7 +45,6 @@ class TildeTM {
         curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'Authorization: Bearer ' . $this->token));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_URL,$this->baseUrl . $request);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         $resp = curl_exec($curl);
         curl_close($curl);
         return json_decode($resp);

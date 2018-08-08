@@ -191,54 +191,68 @@ class getContributionController extends ajaxController {
          */
         // Override for Tilde
         $config[ 'get_mt' ]  = false;
-        if ( isset( $_TMS ) ) {
+//        if ( isset( $_TMS ) ) {
+//
+//            /**
+//             * @var $tms Engines_MyMemory
+//             */
+//            $tms = Engine::getInstance( $_TMS );
+//
+//            $config = array_merge( $tms->getConfigStruct(), $config );
+//            $config[ 'segment' ]       = $this->text;
+//            $config[ 'source' ]        = $this->source;
+//            $config[ 'target' ]        = $this->target;
+//            $config[ 'email' ]         = INIT::$MYMEMORY_API_KEY;
+//            $config[ 'id_user' ]       = array();
+//            $config[ 'num_result' ]    = $this->num_results;
+//            $config[ 'isConcordance' ] = $this->concordance_search;
+//
+//            if ( !$this->concordance_search ) {
+//                $config[ 'context_before' ] = $this->context_before;
+//                $config[ 'context_after' ]  = $this->context_after;
+//            }
+//
+//            //get job's TM keys
+//            $this->readLoginInfo();
+//
+//            try{
+//
+//                if ( self::isRevision() ) {
+//                    $this->userRole = TmKeyManagement_Filter::ROLE_REVISOR;
+//                }
+//
+//                $tm_keys = TmKeyManagement_TmKeyManagement::getJobTmKeys($this->tm_keys, 'r', 'tm', $this->user->uid, $this->userRole );
+//
+//                if ( is_array( $tm_keys ) && !empty( $tm_keys ) ) {
+//                    foreach ( $tm_keys as $tm_key ) {
+//                        $config[ 'id_user' ][ ] = $tm_key->key;
+//                    }
+//                }
+//
+//            } catch ( Exception $e ) {
+//                $this->result[ 'errors' ][] = [ "code" => -11, "message" => "Cannot retrieve TM keys info." ];
+//                Log::doLog( $e->getMessage() );
+//
+//                return;
+//            }
+//
+//            $tms_match = $tms->get( $config );
+//            $tms_match = $tms_match->get_matches_as_array();
+//        }
 
-            /**
-             * @var $tms Engines_MyMemory
-             */
-            $tms = Engine::getInstance( $_TMS );
+        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getCookie());
+        $memories = $TildeTM->getMemories();
+        $tildeMatches = $TildeTM->getMatches(
+            $memories[0]->id,
+            $this->text,
+            substr($this->source, 0, 2),
+            substr($this->target, 0, 2)
+        );
 
-            $config = array_merge( $tms->getConfigStruct(), $config );
-            $config[ 'segment' ]       = $this->text;
-            $config[ 'source' ]        = $this->source;
-            $config[ 'target' ]        = $this->target;
-            $config[ 'email' ]         = INIT::$MYMEMORY_API_KEY;
-            $config[ 'id_user' ]       = array();
-            $config[ 'num_result' ]    = $this->num_results;
-            $config[ 'isConcordance' ] = $this->concordance_search;
-
-            if ( !$this->concordance_search ) {
-                $config[ 'context_before' ] = $this->context_before;
-                $config[ 'context_after' ]  = $this->context_after;
-            }
-
-            //get job's TM keys
-            $this->readLoginInfo();
-
-            try{
-
-                if ( self::isRevision() ) {
-                    $this->userRole = TmKeyManagement_Filter::ROLE_REVISOR;
-                }
-
-                $tm_keys = TmKeyManagement_TmKeyManagement::getJobTmKeys($this->tm_keys, 'r', 'tm', $this->user->uid, $this->userRole );
-
-                if ( is_array( $tm_keys ) && !empty( $tm_keys ) ) {
-                    foreach ( $tm_keys as $tm_key ) {
-                        $config[ 'id_user' ][ ] = $tm_key->key;
-                    }
-                }
-
-            } catch ( Exception $e ) {
-                $this->result[ 'errors' ][] = [ "code" => -11, "message" => "Cannot retrieve TM keys info." ];
-                Log::doLog( $e->getMessage() );
-
-                return;
-            }
-
-            $tms_match = $tms->get( $config );
-            $tms_match = $tms_match->get_matches_as_array();
-        }
+//        $tms_match = [];
+//        foreach($tildeMatches as $match) {
+//
+//        }
 
         if ( $this->id_mt_engine > 1 /* Request MT Directly */ ) {
             /**
