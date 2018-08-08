@@ -75,6 +75,7 @@
                 <div
                   v-shortkey="['ctrl', parseInt(index + 1)]"
                   v-for="(suggestion, index) in $store.state.activeSegment.suggestions"
+                  :id="'suggestion-' + index"
                   :key="index"
                   :class="{'last': index === $store.state.activeSegment.suggestions.length - 1}"
                   class="suggestion"
@@ -88,7 +89,7 @@
                   >
                     <span
                       v-if="suggestion.isMT"
-                      v-html="convertTags(suggestion.translation)"
+                      v-html="convertTags(suggestion.translation, 'suggestion-' + index)"
                     />
                     <div
                       v-else
@@ -348,8 +349,8 @@ export default {
       if (this.searchTerm === '') return
       window.open('http://termini.lza.lv/term.php?term=' + this.searchTerm + '&lang=LV', '_blank')
     },
-    convertTags: function (text) {
-      return TagsConverter.add(text)
+    convertTags: function (text, parentId) {
+      return TagsConverter.add(text, parentId)
     },
     onMtChange: function (value) {
       this.$emit('mtSystemChange', value.value)
