@@ -48,7 +48,7 @@ export default {
       if (this.searchTerm !== '') {
         result = TextHighlighter.add(this.searchTerm, result)
       }
-      result = TagsConverter.add(result)
+      result = TagsConverter.add(result, 'editor-' + this.id)
       return result
     },
     fontSizeString: function () {
@@ -106,7 +106,7 @@ export default {
     cleanText: function () {
       let result = this.editor.innerHTML
       result = TextHighlighter.remove(result)
-      result = TagsConverter.remove(result)
+      result = TagsConverter.remove(result, 'editor-' + this.id)
       return result
     },
     enableContentEdit: function () {

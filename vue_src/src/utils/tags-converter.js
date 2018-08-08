@@ -10,7 +10,7 @@ const convertedExTagSearch = '<ex-span data-id="'
 const editorTagStart = '<span class="editor-span">'
 const editorTagStartEditable = '<span class="editor-span" contenteditable="true">'
 const editorTagEnd = '</span>'
-function processInnerTag (start, text) {
+function processInnerTag (start, text, parentId) {
   if (start === 0) {
     text = editorTagStart + text + editorTagEnd
   }
@@ -20,14 +20,14 @@ function processInnerTag (start, text) {
     // Find out tag id
     const closingMark = text.indexOf('"', gTagPosition + rawGTagSearch.length)
     const id = parseInt(text.substring(gTagPosition + rawGTagSearch.length, closingMark))
-    text = text.replace(getGStartTagR(id), getGStartTagC(id))
+    text = text.replace(getGStartTagR(id), getGStartTagC(id, parentId))
     const endTagPos = text.indexOf(getGEndTagR())
     const nextTagStartPos = text.indexOf(rawGTagSearch)
     if (nextTagStartPos > -1 && endTagPos > nextTagStartPos) {
-      text = processInnerTag(nextTagStartPos, text)
+      text = processInnerTag(nextTagStartPos, text, parentId)
     }
-    text = text.replace(getGEndTagR(), getGEndTagC(id))
-    gTagPosition = text.indexOf(rawGTagSearch, endTagPos + getGEndTagC(id).length)
+    text = text.replace(getGEndTagR(), getGEndTagC(id, parentId))
+    gTagPosition = text.indexOf(rawGTagSearch, endTagPos + getGEndTagC(id, parentId).length)
   }
   // Process X tag
   let xTagPosition = text.indexOf(rawXTagSearch)
@@ -35,8 +35,8 @@ function processInnerTag (start, text) {
     // Find out tag id
     const closingMark = text.indexOf('"', xTagPosition + rawXTagSearch.length)
     const id = parseInt(text.substring(xTagPosition + rawXTagSearch.length, closingMark))
-    text = text.replace(getXTagR(id), getXTagC(id))
-    const endPos = xTagPosition + getXTagC(id).length
+    text = text.replace(getXTagR(id), getXTagC(id, parentId))
+    const endPos = xTagPosition + getXTagC(id, parentId).length
     xTagPosition = text.indexOf(rawXTagSearch, endPos)
   }
   // Process BX tag
@@ -45,8 +45,8 @@ function processInnerTag (start, text) {
     // Find out tag id
     const closingMark = text.indexOf('"', bxTagPosition + rawBxTagSearch.length)
     const id = parseInt(text.substring(bxTagPosition + rawBxTagSearch.length, closingMark))
-    text = text.replace(getBxTagR(id), getBxTagC(id))
-    const endPos = bxTagPosition + getBxTagC(id).length
+    text = text.replace(getBxTagR(id), getBxTagC(id, parentId))
+    const endPos = bxTagPosition + getBxTagC(id, parentId).length
     bxTagPosition = text.indexOf(rawBxTagSearch, endPos)
   }
   // Process EX tag
@@ -55,50 +55,50 @@ function processInnerTag (start, text) {
     // Find out tag id
     const closingMark = text.indexOf('"', exTagPosition + rawExTagSearch.length)
     const id = parseInt(text.substring(exTagPosition + rawExTagSearch.length, closingMark))
-    text = text.replace(getExTagR(id), getExTagC(id))
-    const endPos = exTagPosition + getExTagC(id).length
+    text = text.replace(getExTagR(id), getExTagC(id, parentId))
+    const endPos = exTagPosition + getExTagC(id, parentId).length
     exTagPosition = text.indexOf(rawExTagSearch, endPos)
   }
   return text
 }
-function getXTagC (id) {
-  return editorTagEnd + '<x-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></x-span>' + editorTagStart
+function getXTagC (id, parentId) {
+  return editorTagEnd + '<x-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></x-span>' + editorTagStart
 }
 function getXTagR (id) {
   return rawXTagSearch + id + '"/&gt;'
 }
-function getXTagCE (id) {
-  return editorTagEnd + '<x-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></x-span>' + editorTagStartEditable
+function getXTagCE (id, parentId) {
+  return editorTagEnd + '<x-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></x-span>' + editorTagStartEditable
 }
-function getBxTagC (id) {
-  return editorTagEnd + '<bx-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></bx-span>' + editorTagStart
+function getBxTagC (id, parentId) {
+  return editorTagEnd + '<bx-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></bx-span>' + editorTagStart
 }
 function getBxTagR (id) {
   return rawBxTagSearch + id + '"/&gt;'
 }
-function getBxTagCE (id) {
-  return editorTagEnd + '<bx-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></bx-span>' + editorTagStartEditable
+function getBxTagCE (id, parentId) {
+  return editorTagEnd + '<bx-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></bx-span>' + editorTagStartEditable
 }
-function getExTagC (id) {
-  return editorTagEnd + '<ex-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></ex-span>' + editorTagStart
+function getExTagC (id, parentId) {
+  return editorTagEnd + '<ex-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></ex-span>' + editorTagStart
 }
 function getExTagR (id) {
   return rawExTagSearch + id + '"/&gt;'
 }
-function getExTagCE (id) {
-  return editorTagEnd + '<ex-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></ex-span>' + editorTagStartEditable
+function getExTagCE (id, parentId) {
+  return editorTagEnd + '<ex-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></ex-span>' + editorTagStartEditable
 }
-function getGStartTagC (id) {
-  return editorTagEnd + '<g-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'g-tag-open.svg" height="16" class="va-middle ib"></g-span>' + editorTagStart
+function getGStartTagC (id, parentId) {
+  return editorTagEnd + '<g-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'g-tag-open.svg" height="16" class="va-middle ib"></g-span>' + editorTagStart
 }
-function getGEndTagC (id) {
-  return editorTagEnd + '<g-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'g-tag-close.svg" height="16" class="va-middle ib"></g-span>' + editorTagStart
+function getGEndTagC (id, parentId) {
+  return editorTagEnd + '<g-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'g-tag-close.svg" height="16" class="va-middle ib"></g-span>' + editorTagStart
 }
-function getGStartTagCE (id) {
-  return editorTagEnd + '<g-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'g-tag-open.svg" height="16" class="va-middle ib"></g-span>' + editorTagStartEditable
+function getGStartTagCE (id, parentId) {
+  return editorTagEnd + '<g-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'g-tag-open.svg" height="16" class="va-middle ib"></g-span>' + editorTagStartEditable
 }
-function getGEndTagCE (id) {
-  return editorTagEnd + '<g-span data-id="' + id + '"><img src="' + CONFIG.assetPath + 'g-tag-close.svg" height="16" class="va-middle ib"></g-span>' + editorTagStartEditable
+function getGEndTagCE (id, parentId) {
+  return editorTagEnd + '<g-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'g-tag-close.svg" height="16" class="va-middle ib"></g-span>' + editorTagStartEditable
 }
 function getGStartTagR (id) {
   return rawGTagSearch + id + '"&gt;'
@@ -113,18 +113,18 @@ export const TagsConverter = {
     document.registerElement('bx-span')
     document.registerElement('ex-span')
   },
-  add: function (text) {
-    return processInnerTag(0, text)
+  add: function (text, parentId) {
+    return processInnerTag(0, text, parentId)
   },
-  remove: function (text) {
+  remove: function (text, parentId) {
     // Replace G tags
     let gTagPosition = text.indexOf(convertedGTagSearch)
     let safetyCounter = 0
     while (gTagPosition > -1) {
       const closingMark = text.indexOf('"', gTagPosition + convertedGTagSearch.length)
       const id = parseInt(text.substring(gTagPosition + convertedGTagSearch.length, closingMark))
-      text = text.replace(getGStartTagCE(id), getGStartTagR(id))
-      text = text.replace(getGEndTagCE(id), getGEndTagR())
+      text = text.replace(getGStartTagCE(id, parentId), getGStartTagR(id))
+      text = text.replace(getGEndTagCE(id, parentId), getGEndTagR())
       gTagPosition = text.indexOf(convertedGTagSearch)
       safetyCounter++
       if (safetyCounter > 264) {
@@ -138,7 +138,7 @@ export const TagsConverter = {
     while (xTagPosition > -1) {
       const closingMark = text.indexOf('"', xTagPosition + convertedXTagSearch.length)
       const id = parseInt(text.substring(xTagPosition + convertedXTagSearch.length, closingMark))
-      text = text.replace(getXTagCE(id), getXTagR(id))
+      text = text.replace(getXTagCE(id, parentId), getXTagR(id))
       xTagPosition = text.indexOf(convertedXTagSearch)
       safetyCounter++
       if (safetyCounter > 264) {
@@ -152,7 +152,7 @@ export const TagsConverter = {
     while (bxTagPosition > -1) {
       const closingMark = text.indexOf('"', bxTagPosition + convertedBxTagSearch.length)
       const id = parseInt(text.substring(bxTagPosition + convertedBxTagSearch.length, closingMark))
-      text = text.replace(getBxTagCE(id), getBxTagR(id))
+      text = text.replace(getBxTagCE(id, parentId), getBxTagR(id))
       bxTagPosition = text.indexOf(convertedBxTagSearch)
       safetyCounter++
       if (safetyCounter > 264) {
@@ -166,7 +166,7 @@ export const TagsConverter = {
     while (exTagPosition > -1) {
       const closingMark = text.indexOf('"', exTagPosition + convertedExTagSearch.length)
       const id = parseInt(text.substring(exTagPosition + convertedExTagSearch.length, closingMark))
-      text = text.replace(getExTagCE(id), getExTagR(id))
+      text = text.replace(getExTagCE(id, parentId), getExTagR(id))
       exTagPosition = text.indexOf(convertedExTagSearch)
       safetyCounter++
       if (safetyCounter > 264) {
