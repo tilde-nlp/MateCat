@@ -242,17 +242,25 @@ class getContributionController extends ajaxController {
 
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getCookie());
         $memories = $TildeTM->getMemories();
-        $tildeMatches = $TildeTM->getMatches(
-            $memories[0]->id,
-            $this->text,
-            substr($this->source, 0, 2),
-            substr($this->target, 0, 2)
-        );
+        $tms_match = [];
+        foreach($memories as $memory) {
+            $tildeMatches = $TildeTM->getMatches(
+                $memory->id,
+                $this->text,
+                substr($this->source, 0, 2),
+                substr($this->target, 0, 2)
+            );
 
-//        $tms_match = [];
-//        foreach($tildeMatches as $match) {
-//
-//        }
+            foreach($tildeMatches as $match) {
+                $tms_match[ ] = array(
+                    'created_by' => $memory->name,
+                    'match' => $match->match,
+                    'translation' => $match->target,
+                    'raw_segment' => $this->text,
+                    'raw_translation' => $match->target,
+                );
+            }
+        }
 
         if ( $this->id_mt_engine > 1 /* Request MT Directly */ ) {
             /**
@@ -291,13 +299,13 @@ class getContributionController extends ajaxController {
             $matches = $tms_match;
         }
 
-        if ( !empty( $letsmtTranslation ) ) {
+        if ( !empty( $letsmtTranslation ) && $letsmtTranslation->translation != null ) {
             $matches[ ] = array(
                 'created_by' => 'MT',
                 'match' => '70',
-                'translation' => $letsmtTranslation->translation == null ? '' : $letsmtTranslation->translation,
+                'translation' => $letsmtTranslation->translation,
                 'raw_segment' => $this->text,
-                'raw_translation' => $letsmtTranslation->translation == null ? '' : $letsmtTranslation->translation,
+                'raw_translation' => $letsmtTranslation->translation,
 
             );
             usort( $matches, array( "getContributionController", "__compareScore" ) );

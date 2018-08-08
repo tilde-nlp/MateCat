@@ -18,5 +18,7 @@ module.exports = {
   direction: 'Virziens',
   settings: 'Uzstādījumi',
   add_comment: 'Pievienot komentāru',
-  translation_memories: 'Tulkošanas atmiņas'
+  translation_memories: 'Tulkošanas atmiņas',
+  write: 'Rakstīt',
+  read: 'Lasīt'
 }

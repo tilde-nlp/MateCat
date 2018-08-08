@@ -18,5 +18,7 @@ module.exports = {
   direction: 'Direction',
   settings: 'Settings',
   add_comment: 'Add comment',
-  translation_memories: 'Translation memories'
+  translation_memories: 'Translation memories',
+  write: 'Write',
+  read: 'Read'
 }
