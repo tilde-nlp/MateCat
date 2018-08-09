@@ -76,18 +76,29 @@
             class="segments-container"
             @scroll="segmentsScrolled"
           >
-            <translator-segment
-              v-for="(segment, index) in segmentsList"
-              :key="index"
-              :segment-data="segment"
-              :target-lang="jobData.target.substring(0, 2)"
-              :first-segment-id="jobData.firstSegment"
-              :top-segment="index === 0"
-              :split-active="splitActive"
-              @click="setActive"
-              @setStatus="setStatus"
-              @inputDebounce="onInputDebounce"
+            <svgicon
+              v-if="$loading.isLoading('segmentsAnalyze')"
+              class="svg-loading va-middle"
+              name="loading"
+              height="48"
             />
+            <transition-group
+              v-else
+              name="ffade"
+              mode="out-in">
+              <translator-segment
+                v-for="(segment, index) in segmentsList"
+                :key="index"
+                :segment-data="segment"
+                :target-lang="jobData.target.substring(0, 2)"
+                :first-segment-id="jobData.firstSegment"
+                :top-segment="index === 0"
+                :split-active="splitActive"
+                @click="setActive"
+                @setStatus="setStatus"
+                @inputDebounce="onInputDebounce"
+              />
+            </transition-group>
           </div>
           <div class="segments-footer">
             <div class="ib ml-8">{{ jobData.fileName }}</div>
@@ -179,26 +190,12 @@ export default {
     this.jobData.ppassword = this.$route.params.ppassword
     this.$store.commit('targetSearch', '')
     this.$store.commit('sourceSearch', '')
-    JobsService.getInfo({
-      id: this.jobData.id,
-      password: this.jobData.password
+    this.$loading.startLoading('segmentsAnalyze')
+    FileService.analyze({
+      pid: this.jobData.projectId,
+      ppassword: this.jobData.ppassword
     })
-      .then(jobRes => {
-        this.jobData.lastSegmentId = parseInt(jobRes.data.active_segment_id)
-        this.jobData.source = jobRes.data.source
-        this.jobData.target = jobRes.data.target
-        this.jobData.firstSegment = parseInt(jobRes.data.firstSegment)
-        this.jobData.lastSegment = parseInt(jobRes.data.lastSegment)
-        this.jobData.fileName = jobRes.data.fileName
-        this.jobData.mtSystemId = jobRes.data.mtSystemId === null ? '' : jobRes.data.mtSystemId
-        this.reloadSegments()
-        this.checkStats()
-        this.getFileUrls()
-      })
-    this.$nextTick(function () {
-      window.addEventListener('resize', this.setSegmentListHeight)
-      this.setSegmentListHeight()
-    })
+      .then(this.initialAnalyzeResponse)
   },
   beforeDestroy: function () {
     window.removeEventListener('resize', this.setSegmentListHeight)
@@ -404,6 +401,9 @@ export default {
       this.reloadSegments()
     },
     reloadSegments: function () {
+      if (this.$loading.isLoading('segmentsAnalyze')) {
+        return
+      }
       this.segments = null
       this.$store.commit('activeSegment', null)
       this.readSegments(this.jobData.lastSegmentId, 'center')
@@ -498,7 +498,7 @@ export default {
       }
     },
     segmentsScrolled: function () {
-      if (this.segments === null || !this.segments.length) {
+      if (this.$loading.isLoading('segmentsAnalyze') || this.segments === null || !this.segments.length) {
         return
       }
       const element = document.getElementById('translatorSegments')
@@ -532,6 +532,39 @@ export default {
     onMtSystemChange: function (value) {
       this.system = value
       LanguagesService.saveMtSystem({mt_system_id: value, id: this.jobData.projectId})
+    },
+    initialAnalyzeResponse: function (res) {
+      if (res.data.data.summary.STATUS === 'DONE') {
+        JobsService.getInfo({
+          id: this.jobData.id,
+          password: this.jobData.password
+        })
+          .then(jobRes => {
+            this.$loading.endLoading('segmentsAnalyze')
+            this.jobData.lastSegmentId = parseInt(jobRes.data.active_segment_id)
+            this.jobData.source = jobRes.data.source
+            this.jobData.target = jobRes.data.target
+            this.jobData.firstSegment = parseInt(jobRes.data.firstSegment)
+            this.jobData.lastSegment = parseInt(jobRes.data.lastSegment)
+            this.jobData.fileName = jobRes.data.fileName
+            this.jobData.mtSystemId = jobRes.data.mtSystemId === null ? '' : jobRes.data.mtSystemId
+            this.reloadSegments()
+            this.checkStats()
+            this.getFileUrls()
+          })
+        this.$nextTick(function () {
+          window.addEventListener('resize', this.setSegmentListHeight)
+          this.setSegmentListHeight()
+        })
+        return
+      }
+      setTimeout(() => {
+        FileService.analyze({
+          pid: this.jobData.projectId,
+          ppassword: this.jobData.ppassword
+        })
+          .then(this.initialAnalyzeResponse)
+      }, 2000)
     }
   }
 }

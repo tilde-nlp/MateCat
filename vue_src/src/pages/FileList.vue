@@ -244,12 +244,12 @@ export default {
     },
     analyzeResponse: function (res) {
       const file = _.find(this.files, {id: parseInt(res.data.data.project_id)})
+      file.jobId = Object.keys(res.data.data.jobs)[0]
+      file.jobPassword = Object.keys(Object.values(res.data.data.jobs)[0].totals)[0]
       if (res.data.data.summary.STATUS === 'DONE') {
         file.wordCount = parseInt(res.data.data.summary.TOTAL_RAW_WC)
         file.segmentCount = parseInt(res.data.data.summary.TOTAL_SEGMENTS)
         if (file.jobId < 0) {
-          file.jobId = Object.keys(res.data.data.jobs)[0]
-          file.jobPassword = Object.keys(Object.values(res.data.data.jobs)[0].totals)[0]
           file.progress = 0.00
           file.created = DateConverter.nowDate()
           file.owner = this.$store.state.profile.email

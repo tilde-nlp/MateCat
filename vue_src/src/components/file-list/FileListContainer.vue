@@ -220,6 +220,9 @@ export default {
       this.showFileDeleteConfirm = false
     },
     translate: function (key) {
+      if (this.files[key].jobId <= 0) {
+        return
+      }
       this.$router.push({name: 'translate', params: {projectId: this.files[key].id, ppassword: this.files[key].password, jobId: this.files[key].jobId, password: this.files[key].jobPassword}})
     },
     downloadFile: function (link) {
