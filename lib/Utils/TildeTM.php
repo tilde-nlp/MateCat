@@ -44,7 +44,7 @@ class TildeTM {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'Authorization: Bearer ' . $this->token));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_URL,$this->baseUrl . $request);
+        curl_setopt($curl, CURLOPT_URL, $this->baseUrl . urlencode($request));
         $resp = curl_exec($curl);
         curl_close($curl);
         return json_decode($resp);
@@ -55,7 +55,7 @@ class TildeTM {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'Authorization: Bearer ' . $this->token));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_URL,$this->baseUrl . $request);
+        curl_setopt($curl, CURLOPT_URL, $this->baseUrl . urlencode($request));
         curl_setopt($curl,CURLOPT_POSTFIELDS, json_encode($data));
         $resp = curl_exec($curl);
         curl_close($curl);

@@ -243,7 +243,20 @@ class getContributionController extends ajaxController {
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getCookie());
         $memories = $TildeTM->getMemories();
         $tms_match = [];
+        $user = AuthCookie::getCredentials();
+        $JobsDao = new Jobs_JobDao();
+        $memorySettings = $JobsDao->getMemorySetting($user['uid']);
+        $readMeories = [];
+        foreach($memorySettings as $setting) {
+            if (!$setting->read_memory) {
+                continue;
+            }
+            $readMeories[] = $setting->memory_id;
+        }
         foreach($memories as $memory) {
+            if (!in_array($memory->id, $readMeories)) {
+                continue;
+            }
             $tildeMatches = $TildeTM->getMatches(
                 $memory->id,
                 $this->text,
