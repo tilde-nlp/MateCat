@@ -274,7 +274,30 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         $stmt = $conn->prepare("UPDATE projects SET mt_system_id = :system_id WHERE id = :project_id ");
         $stmt->execute(array('system_id' => $system_id, 'project_id' => $project_id));
         return $stmt->rowCount();
+    }
 
+    public static function getMemorySetting( $userId, $ttl = 0 ) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT * FROM memory_settings WHERE user_id = ? ");
+        return $thisDao->setCacheTTL( $ttl )->_fetchObject( $stmt, new LoudArray(), [ $userId ] );
+
+    }
+
+    public static function saveMemorySetting( $user_id, $memory_id, $read, $write, $ttl = 0 ) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("INSERT INTO memory_settings (memory_id, read_memory, write_memory, user_id) VALUES (:memory_id, :read, :write, :user_id)
+                        ON DUPLICATE KEY UPDATE
+                        read_memory = :read,
+                        write_memory = :write");
+        $stmt->execute(array(
+            'memory_id' => $memory_id,
+            'read' => $read ? 1 : 0,
+            'write' => $write ? 1 : 0,
+            'user_id' => $user_id));
+        return $stmt->rowCount();
     }
 
     public static function getFileName( $job_id, $ttl = 0 ) {

@@ -31,20 +31,37 @@
         {{ $lang.titles.write }}
       </div>
       <div class="mt-8">
-        <div
-          v-for="(memory, index) in memories"
-          :key="index"
+        <svgicon
+          v-if="$loading.isLoading('memories')"
+          class="svg-loading va-middle"
+          name="loading"
+          height="24"
+        />
+        <transition-group
+          v-else
+          name="ffade"
+          mode="out-in"
         >
-          <div class="size-s dark b-light-darker mt-4 p-8">
-            <check-box
-              class="ib w-64"
-            />
-            <check-box
-              class="ib w-64"
-            />
-            <div class="ib va-top">{{ memory.name }}</div>
+          <div
+            v-for="(memory, index) in memories"
+            :key="index"
+          >
+            <div class="size-s dark b-light-darker mt-4 p-8">
+              <check-box
+                :value="memory.read"
+                class="ib w-64"
+                @change="val => { setRead(memory, val) }"
+              />
+              <check-box
+                :value="memory.write"
+                :disabled="!memory.canUpdate"
+                class="ib w-64"
+                @change="val => { setWrite(memory, val) }"
+              />
+              <div class="ib va-top">{{ memory.name }}</div>
+            </div>
           </div>
-        </div>
+        </transition-group>
       </div>
     </div>
   </div>
@@ -52,6 +69,7 @@
 <script>
 import CheckBox from './Checkbox'
 import TranslationMemoryService from 'services/translation-memory'
+import Vue from 'vue'
 export default {
   name: 'SettingsPanel',
   components: {
@@ -63,11 +81,23 @@ export default {
     }
   },
   mounted: function () {
+    this.$loading.startLoading('memories')
     TranslationMemoryService.get()
       .then(response => {
         this.memories = null
         this.memories = response.data
+        this.$loading.endLoading('memories')
       })
+  },
+  methods: {
+    setRead: function (memory, value) {
+      Vue.set(memory, 'read', value)
+      TranslationMemoryService.saveSettings(memory)
+    },
+    setWrite: function (memory, value) {
+      Vue.set(memory, 'write', value)
+      TranslationMemoryService.saveSettings(memory)
+    }
   }
 }
 </script>

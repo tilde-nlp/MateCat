@@ -1,5 +1,6 @@
 <template>
   <div
+    :class="{disabled: disabled}"
     class="checkbox-container"
     @click="change"
   >
@@ -22,6 +23,10 @@ export default {
     value: {
       type: Boolean,
       default: false
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data: function () {
@@ -34,8 +39,11 @@ export default {
   },
   methods: {
     change: function () {
+      if (this.disabled) {
+        return
+      }
       this.isOn = !this.isOn
-      this.$emit('onChange', this.isOn)
+      this.$emit('change', this.isOn)
     }
   }
 }
