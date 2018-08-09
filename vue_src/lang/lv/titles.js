@@ -20,5 +20,6 @@ module.exports = {
   add_comment: 'Pievienot komentāru',
   translation_memories: 'Tulkošanas atmiņas',
   write: 'Rakstīt',
-  read: 'Lasīt'
+  read: 'Lasīt',
+  hotkeys: 'Taustiņkombinācijas'
 }

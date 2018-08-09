@@ -20,5 +20,6 @@ module.exports = {
   add_comment: 'Add comment',
   translation_memories: 'Translation memories',
   write: 'Write',
-  read: 'Read'
+  read: 'Read',
+  hotkeys: 'Hotkeys'
 }

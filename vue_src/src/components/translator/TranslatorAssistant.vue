@@ -127,6 +127,110 @@
           </div>
         </div>
         <div
+          v-if="activeTab === 'hotkeys'"
+          class="tab"
+        >
+          <div class="input-label mt-24 size-s-i">
+            {{ $lang.titles.hotkeys }}
+          </div>
+          <div class="hotkey-row bt-light-darker">
+            <div class="ib">{{ $lang.hotkeys.previous_unconfirmed_segment }}</div>
+            <div class="ib pull-right">
+              <div class="hotkey-container">
+                Ctrl
+              </div>
+              +
+              <div class="hotkey-container">
+                &uarr;
+              </div>
+            </div>
+          </div>
+          <div class="hotkey-row">
+            <div class="ib">{{ $lang.hotkeys.next_unconfirmed_segment }}</div>
+            <div class="ib pull-right">
+              <div class="hotkey-container">
+                Ctrl
+              </div>
+              +
+              <div class="hotkey-container">
+                &darr;
+              </div>
+            </div>
+          </div>
+          <div class="hotkey-row">
+            <div class="ib">{{ $lang.hotkeys.confirm_segment }}</div>
+            <div class="ib pull-right">
+              <div class="hotkey-container">
+                Ctrl
+              </div>
+              +
+              <div class="hotkey-container">
+                &#9166;
+              </div>
+            </div>
+          </div>
+          <div class="hotkey-row">
+            <div class="ib">{{ $lang.hotkeys.delete_segment }}</div>
+            <div class="ib pull-right">
+              <div class="hotkey-container">
+                Ctrl
+              </div>
+              +
+              <div class="hotkey-container">
+                D
+              </div>
+            </div>
+          </div>
+          <div class="hotkey-row">
+            <div class="ib">{{ $lang.hotkeys.copy_source_to_target }}</div>
+            <div class="ib pull-right">
+              <div class="hotkey-container">
+                Ctrl
+              </div>
+              +
+              <div class="hotkey-container">
+                Insert
+              </div>
+            </div>
+          </div>
+          <div class="hotkey-row">
+            <div class="ib">{{ $lang.hotkeys.select_suggestion }}</div>
+            <div class="ib pull-right">
+              <div class="hotkey-container">
+                Ctrl
+              </div>
+              +
+              <div class="hotkey-container">
+                1, 2, ...
+              </div>
+            </div>
+          </div>
+          <!--<div class="hotkey-row">-->
+          <!--<div class="ib">{{ $lang.hotkeys.decrease_font }}</div>-->
+          <!--<div class="ib pull-right">-->
+          <!--<div class="hotkey-container">-->
+          <!--Ctrl-->
+          <!--</div>-->
+          <!--+-->
+          <!--<div class="hotkey-container">-->
+          <!--&larr;-->
+          <!--</div>-->
+          <!--</div>-->
+          <!--</div>-->
+          <!--<div class="hotkey-row">-->
+          <!--<div class="ib">{{ $lang.hotkeys.increase_font }}</div>-->
+          <!--<div class="ib pull-right">-->
+          <!--<div class="hotkey-container">-->
+          <!--Ctrl-->
+          <!--</div>-->
+          <!--+-->
+          <!--<div class="hotkey-container">-->
+          <!--&rarr;-->
+          <!--</div>-->
+          <!--</div>-->
+          <!--</div>-->
+        </div>
+        <div
           v-if="activeTab === 'comments'"
           class="tab"
         >
