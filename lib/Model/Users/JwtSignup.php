@@ -15,9 +15,9 @@ class JwtSignup {
      */
     protected $user ;
 
-    public function __construct( $jwtId ) {
+    public function __construct( $jwtId, $firstName, $lastName ) {
 
-        $this->user = new Users_UserStruct( array('email' => $jwtId, 'first_name' => 'jwt_user', 'last_name' => 'jwt_user') );
+        $this->user = new Users_UserStruct( array('email' => $jwtId, 'first_name' => $firstName, 'last_name' => $lastName) );
     }
 
     public function process() {

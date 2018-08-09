@@ -79,13 +79,18 @@ class AuthCookie {
                 }
 
                 $jwtId = $token->getClaim('sub') . ':-:' . $token->getClaim('grp');
+                $nameArray = explode(' ', $token->getClaim('given_name'), 2);
+                $firstName = isset($nameArray[0]) ? $nameArray[0] : 'jwt_user';
+                $lastName = isset($nameArray[1]) ? $nameArray[1] : 'jwt_user';
 
                 $dao  = new Users_UserDao();
                 $user = $dao->getByEmail( $jwtId );
                 if ($user == null) {
-                    $signup = new JwtSignup( $jwtId );
+                    $signup = new JwtSignup( $jwtId, $firstName, $lastName );
                     $signup->process();
                     $user = $dao->getByEmail( $jwtId );
+                } else {
+                    Users_UserDao::saveName($user->uid, $firstName, $lastName);
                 }
 
                 return array('username' => $user->email, 'uid' => $user->uid);

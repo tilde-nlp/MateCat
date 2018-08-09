@@ -148,6 +148,14 @@ class Users_UserDao extends DataAccess_AbstractDao {
         return $this->_destroyObjectCache( $stmt, [ 'email' => $userQuery->email ] );
     }
 
+    public static function saveName($uid, $firstName, $lastName) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE users SET first_name = :first_name, last_name = :last_name WHERE uid = :uid ");
+        $stmt->execute(array('first_name' => $firstName, 'last_name' => $lastName, 'uid' => $uid));
+        return $stmt->rowCount();
+    }
+
 
     /**
      *

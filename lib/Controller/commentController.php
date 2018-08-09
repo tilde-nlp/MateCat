@@ -51,13 +51,12 @@ class commentController extends ajaxController {
             return;
         }
 
-        $this->readLoginInfo() ;
+        $this->readLoginInfo();
         if ( $this->userIsLogged ) {
             $this->loadUser();
         }
 
         $this->route();
-
     }
 
     private function route() {
@@ -127,7 +126,7 @@ class commentController extends ajaxController {
 
         $this->struct->id_segment = $this->__postInput[ 'id_segment' ];
         $this->struct->id_job     = $this->__postInput[ 'id_job' ];
-        $this->struct->full_name  = $this->__postInput[ 'username' ];
+        $this->struct->full_name  = $this->current_user->first_name . ' ' . $this->current_user->last_name;
         $this->struct->source_page  = $this->__postInput[ 'source_page' ];
         $this->struct->message    = $this->__postInput[ 'message' ];
         $this->struct->email      = $this->getEmail();
