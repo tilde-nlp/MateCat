@@ -23,19 +23,12 @@
     </div>
     <div class="br-light-darker ib w-0 h-100p absolute"/>
     <div class="double-block">
-      <!--<div class="tag-insert-container">-->
-      <!--<div-->
-      <!--v-for="(tag, index) in unusedTags"-->
-      <!--:key="index"-->
-      <!--class="tag-insert"-->
-      <!--&gt;-->
-      <!--{{ tag.id }}-->
-      <!--</div>-->
-      <!--</div>-->
       <div
         :class="{top: topSegment}"
         :style="rowMinHeight"
+        :lang="targetLang"
         class="segment-col last"
+        spellcheck="true"
       >
         <translator-editor
           :is-active="isActive"
@@ -96,6 +89,10 @@ export default {
     },
     splitActive: {
       type: Boolean,
+      required: true
+    },
+    targetLang: {
+      type: String,
       required: true
     }
   },

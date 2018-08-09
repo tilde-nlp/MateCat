@@ -80,6 +80,7 @@
               v-for="(segment, index) in segmentsList"
               :key="index"
               :segment-data="segment"
+              :target-lang="jobData.target.substring(0, 2)"
               :first-segment-id="jobData.firstSegment"
               :top-segment="index === 0"
               :split-active="splitActive"
