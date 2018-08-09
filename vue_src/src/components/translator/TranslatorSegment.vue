@@ -23,6 +23,15 @@
     </div>
     <div class="br-light-darker ib w-0 h-100p absolute"/>
     <div class="double-block">
+      <!--<div class="tag-insert-container">-->
+      <!--<div-->
+      <!--v-for="(tag, index) in unusedTags"-->
+      <!--:key="index"-->
+      <!--class="tag-insert"-->
+      <!--&gt;-->
+      <!--{{ tag.id }}-->
+      <!--</div>-->
+      <!--</div>-->
       <div
         :class="{top: topSegment}"
         :style="rowMinHeight"
@@ -66,6 +75,7 @@
 </template>
 <script>
 import TranslatorEditor from 'components/translator/TranslatorEditor'
+import {TagsConverter} from 'utils/tags-converter'
 export default {
   name: 'TranslatorSegment',
   components: {
@@ -135,6 +145,15 @@ export default {
     },
     isActive: function () {
       return this.segment.active
+    },
+    unusedTags: function () {
+      if (this.$store.state.activeSegment === null) {
+        return []
+      }
+      const originalTags = TagsConverter.getTagList(this.$store.state.activeSegment.original)
+      return originalTags
+      // const translationTags = TagsConverter.getTagList(this.$store.state.activeSegment.translation)
+      // return []
     }
   },
   watch: {

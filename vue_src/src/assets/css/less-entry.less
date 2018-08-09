@@ -1079,7 +1079,6 @@ select::-ms-expand {
 
 .segment-container {
   width: calc(~"100% + 9px");
-  overflow-x: hidden;
   .h-100p;
   .transition;
   .relative;
@@ -1657,4 +1656,23 @@ select::-ms-expand {
 
 .tag-bg {
   background-color: yellow;
+}
+
+.tag-insert-container {
+  .absolute;
+  top: 63px;
+  left: 0;
+  height: 24px;
+  z-index: 1000;
+  .tag-insert {
+    .ib;
+    .size-s;
+    .dark;
+    .b-light-darker;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    .mr-4;
+    .pointer;
+  }
 }

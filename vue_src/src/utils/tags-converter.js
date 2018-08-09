@@ -86,43 +86,43 @@ function processInnerTag (start, text, parentId) {
   return text
 }
 function getXTagC (id, parentId) {
-  return editorTagEnd + '<x-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></x-span>' + editorTagStart
+  return editorTagEnd + '<x-span data-id="' + id + '" title="' + id + '" title="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></x-span>' + editorTagStart
 }
 function getXTagR (id) {
   return rawXTagSearch + id + '"/&gt;'
 }
 function getXTagCE (id, parentId) {
-  return editorTagEnd + '<x-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></x-span>' + editorTagStartEditable
+  return editorTagEnd + '<x-span data-id="' + id + '" title="' + id + '" title="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></x-span>' + editorTagStartEditable
 }
 function getBxTagC (id, parentId) {
-  return editorTagEnd + '<bx-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></bx-span>' + editorTagStart
+  return editorTagEnd + '<bx-span data-id="' + id + '" title="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></bx-span>' + editorTagStart
 }
 function getBxTagR (id) {
   return rawBxTagSearch + id + '"/&gt;'
 }
 function getBxTagCE (id, parentId) {
-  return editorTagEnd + '<bx-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></bx-span>' + editorTagStartEditable
+  return editorTagEnd + '<bx-span data-id="' + id + '" title="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></bx-span>' + editorTagStartEditable
 }
 function getExTagC (id, parentId) {
-  return editorTagEnd + '<ex-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></ex-span>' + editorTagStart
+  return editorTagEnd + '<ex-span data-id="' + id + '" title="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></ex-span>' + editorTagStart
 }
 function getExTagR (id) {
   return rawExTagSearch + id + '"/&gt;'
 }
 function getExTagCE (id, parentId) {
-  return editorTagEnd + '<ex-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></ex-span>' + editorTagStartEditable
+  return editorTagEnd + '<ex-span data-id="' + id + '" title="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></ex-span>' + editorTagStartEditable
 }
 function getGStartTagC (id, parentId) {
-  return editorTagEnd + '<g-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'g-tag-open.svg" height="16" class="va-middle ib"></g-span>' + editorTagStart
+  return editorTagEnd + '<g-span data-id="' + id + '" title="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'g-tag-open.svg" height="16" class="va-middle ib"></g-span>' + editorTagStart
 }
 function getGEndTagC (id, parentId) {
-  return editorTagEnd + '<g-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'g-tag-close.svg" height="16" class="va-middle ib"></g-span>' + editorTagStart
+  return editorTagEnd + '<g-span data-id="' + id + '" title="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'g-tag-close.svg" height="16" class="va-middle ib"></g-span>' + editorTagStart
 }
 function getGStartTagCE (id, parentId) {
-  return editorTagEnd + '<g-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'g-tag-open.svg" height="16" class="va-middle ib"></g-span>' + editorTagStartEditable
+  return editorTagEnd + '<g-span data-id="' + id + '" title="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'g-tag-open.svg" height="16" class="va-middle ib"></g-span>' + editorTagStartEditable
 }
 function getGEndTagCE (id, parentId) {
-  return editorTagEnd + '<g-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'g-tag-close.svg" height="16" class="va-middle ib"></g-span>' + editorTagStartEditable
+  return editorTagEnd + '<g-span data-id="' + id + '" title="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'g-tag-close.svg" height="16" class="va-middle ib"></g-span>' + editorTagStartEditable
 }
 function getGStartTagR (id) {
   return rawGTagSearch + id + '"&gt;'
@@ -131,10 +131,10 @@ function getGEndTagR () {
   return '&lt;/g&gt;'
 }
 function getScgTagC (id, parentId) {
-  return editorTagEnd + '<scg-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></scg-span>' + editorTagStart
+  return editorTagEnd + '<scg-span data-id="' + id + '" title="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></scg-span>' + editorTagStart
 }
 function getScgTagCE (id, parentId) {
-  return editorTagEnd + '<scg-span data-id="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></scg-span>' + editorTagStartEditable
+  return editorTagEnd + '<scg-span data-id="' + id + '" title="' + id + '" class="pointer" onmouseenter="onTagMouseEnter(this, \'' + parentId + '\')" onmouseleave="onTagMouseLeave(this, \'' + parentId + '\')"><img src="' + CONFIG.assetPath + 'x-tag.svg" height="16" class="va-middle ib"></scg-span>' + editorTagStartEditable
 }
 function getScgTagR (id) {
   return rawGTagSearch + id + '"/&gt;'
@@ -226,5 +226,81 @@ export const TagsConverter = {
     text = text.replace(new RegExp(editorTagEnd, 'g'), '')
     text = text.replace(new RegExp('<br>', 'g'), '')
     return text
+  },
+  getTagList: function (text) {
+    let tags = []
+    // Process X tag
+    let xTagPosition = text.indexOf(rawXTagSearch)
+    while (xTagPosition > -1) {
+      // Find out tag id
+      const closingMark = text.indexOf('"', xTagPosition + rawXTagSearch.length)
+      const id = parseInt(text.substring(xTagPosition + rawXTagSearch.length, closingMark))
+      tags.push({
+        type: 'x',
+        id: id
+      })
+      xTagPosition = text.indexOf(rawXTagSearch, closingMark)
+    }
+    // Process BX tag
+    let bxTagPosition = text.indexOf(rawBxTagSearch)
+    while (bxTagPosition > -1) {
+      // Find out tag id
+      const closingMark = text.indexOf('"', bxTagPosition + rawBxTagSearch.length)
+      const id = parseInt(text.substring(bxTagPosition + rawBxTagSearch.length, closingMark))
+      tags.push({
+        type: 'bx',
+        id: id
+      })
+      bxTagPosition = text.indexOf(rawBxTagSearch, closingMark)
+    }
+    // Process EX tag
+    let exTagPosition = text.indexOf(rawExTagSearch)
+    while (exTagPosition > -1) {
+      // Find out tag id
+      const closingMark = text.indexOf('"', exTagPosition + rawExTagSearch.length)
+      const id = parseInt(text.substring(exTagPosition + rawExTagSearch.length, closingMark))
+      tags.push({
+        type: 'ex',
+        id: id
+      })
+      exTagPosition = text.indexOf(rawExTagSearch, closingMark)
+    }
+
+    // Process self closing G tag
+    let scgTagPosition = text.indexOf(rawGTagSearch)
+    while (scgTagPosition > -1) {
+      // Find out tag id
+      const closingMark = text.indexOf('"', scgTagPosition + rawGTagSearch.length)
+      const selfClosePos = text.indexOf(rawSCGTagSearch, closingMark)
+      if (selfClosePos > closingMark) {
+        scgTagPosition = text.indexOf(rawGTagSearch, closingMark)
+        continue
+      }
+      const id = parseInt(text.substring(scgTagPosition + rawGTagSearch.length, closingMark))
+      tags.push({
+        type: 'scg',
+        id: id
+      })
+      scgTagPosition = text.indexOf(rawGTagSearch, closingMark)
+    }
+
+    // Process G tag
+    let gTagPosition = text.indexOf(rawGTagSearch)
+    while (gTagPosition > -1) {
+      // Find out tag id
+      const closingMark = text.indexOf('"', gTagPosition + rawGTagSearch.length)
+      const selfClosePos = text.indexOf(rawSCGTagSearch, closingMark)
+      if (selfClosePos <= closingMark) {
+        scgTagPosition = text.indexOf(rawGTagSearch, closingMark)
+        continue
+      }
+      const id = parseInt(text.substring(gTagPosition + rawGTagSearch.length, closingMark))
+      tags.push({
+        type: 'g',
+        id: id
+      })
+      gTagPosition = text.indexOf(rawGTagSearch, closingMark)
+    }
+    return tags
   }
 }
