@@ -9,18 +9,18 @@
     </div>
     <div class="bb-blueish"/>
     <div class="settings-container-options">
-      <div>
-        <check-box/>
-        <div class="ib va-top">
-          {{ $lang.messages.fill_100p_tm }}
-        </div>
-      </div>
-      <div class="mt-24">
-        <check-box/>
-        <div class="ib va-top">
-          {{ $lang.messages.fill_mt }}
-        </div>
-      </div>
+      <!--<div>-->
+      <!--<check-box/>-->
+      <!--<div class="ib va-top">-->
+      <!--{{ $lang.messages.fill_100p_tm }}-->
+      <!--</div>-->
+      <!--</div>-->
+      <!--<div class="mt-24">-->
+      <!--<check-box/>-->
+      <!--<div class="ib va-top">-->
+      <!--{{ $lang.messages.fill_mt }}-->
+      <!--</div>-->
+      <!--</div>-->
       <div class="input-label mt-32 size-s-i">
         {{ $lang.titles.translation_memories }}
       </div>
