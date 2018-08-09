@@ -93,7 +93,7 @@
                     />
                     <div
                       v-else
-                      :title="$lang.tooltips.created_by + ': ' + suggestion.createdBy + '; ' + $lang.tooltips.usage_count + ': ' + suggestion.usageCount"
+                      :title="$lang.tooltips.created_by + ': ' + suggestion.createdBy"
                     >
                       <div
                         class="mb-8 bb-light-darker"

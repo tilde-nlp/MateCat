@@ -20,6 +20,9 @@ use Contribution\ContributionStruct,
         TaskRunner\Commons\AbstractElement,
         Jobs_JobStruct;
 use INIT;
+use TildeTM;
+use AuthCookie;
+use Jobs_JobDao;
 
 class SetContributionWorker extends AbstractWorker {
 
@@ -33,6 +36,16 @@ class SetContributionWorker extends AbstractWorker {
      * @var \Engines_EngineInterface
      */
     protected $_engine;
+
+    protected function log_text($data) {
+        file_put_contents('/var/tmp/worker.log', $data, FILE_APPEND);
+        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
+    }
+
+    protected function log($data) {
+        file_put_contents('/var/tmp/worker.log', var_export($data, true), FILE_APPEND);
+        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
+    }
 
     /**
      * This method is for testing purpose. Set a dependency injection
@@ -142,42 +155,35 @@ class SetContributionWorker extends AbstractWorker {
      * @throws ReQueueException
      * @throws \Exceptions\ValidationError
      */
-    protected function _set( Array $config, ContributionStruct $contributionStruct ){
-
-        $config[ 'segment' ]        = $contributionStruct->segment;
-        $config[ 'translation' ]    = $contributionStruct->translation;
-        $config[ 'context_after' ]  = $contributionStruct->context_after;
-        $config[ 'context_before' ] = $contributionStruct->context_before;
-
-        //get the Props
-        $config[ 'prop' ]        = json_encode( $contributionStruct->getProp() );
-
-        // set the contribution for every key in the job belonging to the user
-        $res = $this->_engine->set( $config );
-        if ( !$res ) {
-            //reset the engine
-            $this->_raiseException( 'Set', $config );
+    protected function _set( Array $config, ContributionStruct $contributionStruct ) {
+        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getCookie());
+        $memories = $TildeTM->getMemories();
+        $user = AuthCookie::getCredentials();
+        $JobsDao = new Jobs_JobDao();
+        $memorySettings = $JobsDao->getMemorySetting($user['uid']);
+        $writeMemories = [];
+        foreach($memorySettings as $setting) {
+            if (!$setting->write_memory) {
+                continue;
+            }
+            $writeMemories[] = $setting->memory_id;
         }
-
+        foreach($memories as $memory) {
+            if (!in_array($memory->id, $writeMemories)) {
+                continue;
+            }
+            $TildeTM->writeMatch(
+                $memory->id,
+                $contributionStruct->segment,
+                $contributionStruct->translation,
+                substr($config['source'], 0, 2),
+                substr($config['target'], 0, 2)
+            );
+        }
     }
 
     protected function _update( Array $config, ContributionStruct $contributionStruct ){
-
-        // update the contribution for every key in the job belonging to the user
-        $config[ 'segment' ]        = $contributionStruct->oldSegment;
-        $config[ 'translation' ]    = $contributionStruct->oldTranslation;
-        $config[ 'context_after' ]  = $contributionStruct->context_after;
-        $config[ 'context_before' ] = $contributionStruct->context_before;
-
-        $config[ 'newsegment' ]     = $contributionStruct->segment;
-        $config[ 'newtranslation' ] = $contributionStruct->translation;
-
-        $res = $this->_engine->update( $config );
-        if ( !$res ) {
-            //reset the engine
-            $this->_raiseException( 'Update', $config );
-        }
-
+        $this->_set($config, $contributionStruct);
     }
 
     protected function _extractAvailableKeysForUser( ContributionStruct $contributionStruct, Jobs_JobStruct $jobStruct ){

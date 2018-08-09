@@ -20,7 +20,7 @@ class TildeTM {
     }
 
     public function getMatches($collection, $text, $source, $target) {
-        return $this->get('tm/' . $collection . '/segments?' . http_build_query(
+        return $this->get('tm/' . urlencode($collection) . '/segments?' . http_build_query(
             array(
                 'q' => $text,
                 'sourceLang' => $source,
@@ -29,14 +29,14 @@ class TildeTM {
             ));
     }
 
-    public function translate($systemId, $text) {
+    public function writeMatch($collection, $source, $target, $sourceLang, $targetLang) {
         $data = array(
-            'appID' => $this->appId,
-            'options' => 'widget=text,alignment,markSentences',
-            'systemID' => $systemId,
-            'text' => html_entity_decode($text)
+            'source' => $source,
+            'target' => $target,
+            'sourceLang' => $sourceLang,
+            'targetLang' => $targetLang
         );
-        return $this->post('TranslateEx', $data);
+        return $this->post('tm/' . urlencode($collection) . '/segments', $data);
     }
 
     protected function get($request) {
@@ -44,7 +44,7 @@ class TildeTM {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'Authorization: Bearer ' . $this->token));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_URL, $this->baseUrl . urlencode($request));
+        curl_setopt($curl, CURLOPT_URL, $this->baseUrl . $request);
         $resp = curl_exec($curl);
         curl_close($curl);
         return json_decode($resp);
@@ -55,7 +55,7 @@ class TildeTM {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'Authorization: Bearer ' . $this->token));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_URL, $this->baseUrl . urlencode($request));
+        curl_setopt($curl, CURLOPT_URL, $this->baseUrl . $request);
         curl_setopt($curl,CURLOPT_POSTFIELDS, json_encode($data));
         $resp = curl_exec($curl);
         curl_close($curl);

@@ -268,6 +268,7 @@ class getContributionController extends ajaxController {
                 $tms_match[ ] = array(
                     'created_by' => $memory->name,
                     'match' => $match->match,
+                    'segment' => $match->source,
                     'translation' => $match->target,
                     'raw_segment' => $this->text,
                     'raw_translation' => $match->target,
