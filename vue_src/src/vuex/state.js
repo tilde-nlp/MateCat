@@ -8,5 +8,6 @@ export default {
   targetSearch: '',
   activeSegment: null,
   fontSize: null,
-  unusedTags: []
+  unusedTags: [],
+  termBaseUrl: ''
 }

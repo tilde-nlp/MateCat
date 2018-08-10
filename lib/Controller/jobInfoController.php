@@ -37,6 +37,7 @@ class jobInfoController {
         $result->firstSegment = $jobData['job_first_segment'];
         $result->lastSegment = $jobData['job_last_segment'];
         $result->mtSystemId = $mtSystemId;
+        $result->termBaseUrl = INIT::$TERM_BASE_URL;
 
         echo json_encode($result);
     }

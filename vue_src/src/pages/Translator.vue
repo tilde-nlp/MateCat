@@ -548,6 +548,7 @@ export default {
             this.jobData.lastSegment = parseInt(jobRes.data.lastSegment)
             this.jobData.fileName = jobRes.data.fileName
             this.jobData.mtSystemId = jobRes.data.mtSystemId === null ? '' : jobRes.data.mtSystemId
+            this.$store.commit('termBaseUrl', jobRes.data.termBaseUrl)
             this.reloadSegments()
             this.checkStats()
             this.getFileUrls()

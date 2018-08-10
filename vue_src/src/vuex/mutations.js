@@ -25,6 +25,13 @@ export default {
     state.profile = profile
     state.isLoggedIn = true
   },
+  termBaseUrl (state, termBaseUrl) {
+    if (state.debug) {
+      console.log('Setting termBaseUrl: ')
+      console.log(termBaseUrl)
+    }
+    state.termBaseUrl = termBaseUrl
+  },
   sourceSearch (state, sourceSearch) {
     if (state.debug) {
       console.log('Setting sourceSearch: ')

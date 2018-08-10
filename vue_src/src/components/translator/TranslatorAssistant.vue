@@ -451,7 +451,7 @@ export default {
     },
     openTermSearch: function () {
       if (this.searchTerm === '') return
-      window.open('http://termini.lza.lv/term.php?term=' + this.searchTerm + '&lang=LV', '_blank')
+      window.open(this.$store.state.termBaseUrl + this.searchTerm, '_blank')
     },
     convertTags: function (text, parentId) {
       return TagsConverter.add(text, parentId)
