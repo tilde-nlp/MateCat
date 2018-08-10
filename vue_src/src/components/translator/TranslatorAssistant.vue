@@ -451,7 +451,7 @@ export default {
     },
     openTermSearch: function () {
       if (this.searchTerm === '') return
-      window.open(this.$store.state.termBaseUrl + this.searchTerm, '_blank')
+      window.open(this.$store.state.termBaseUrl + this.searchTerm + '/' + this.fromLang.substring(0, 2) + '?target=' + this.toLang.substring(0, 2), '_blank')
     },
     convertTags: function (text, parentId) {
       return TagsConverter.add(text, parentId)
