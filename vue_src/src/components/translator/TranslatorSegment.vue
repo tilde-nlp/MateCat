@@ -37,6 +37,21 @@
           :focus-toggle="segment.focusToggle"
           @input="onSegmentInput"
         />
+        <div
+          v-if="showTags"
+          class="tag-insert-container"
+        >
+          <transition-group
+            name="ffade"
+            mode="out-in">
+            <div
+              v-for="(tag, index) in $store.state.unusedTags"
+              :key="index"
+              class="tag-insert">
+              {{ tag.id }}
+            </div>
+          </transition-group>
+        </div>
       </div>
       <div
         :class="toolsType"
@@ -68,7 +83,6 @@
 </template>
 <script>
 import TranslatorEditor from 'components/translator/TranslatorEditor'
-import {TagsConverter} from 'utils/tags-converter'
 export default {
   name: 'TranslatorSegment',
   components: {
@@ -143,14 +157,9 @@ export default {
     isActive: function () {
       return this.segment.active
     },
-    unusedTags: function () {
-      if (this.$store.state.activeSegment === null) {
-        return []
-      }
-      const originalTags = TagsConverter.getTagList(this.$store.state.activeSegment.original)
-      return originalTags
-      // const translationTags = TagsConverter.getTagList(this.$store.state.activeSegment.translation)
-      // return []
+    showTags: function () {
+      return this.$store.state.activeSegment !== null &&
+        this.$store.state.activeSegment.id === this.segmentData.id
     }
   },
   watch: {

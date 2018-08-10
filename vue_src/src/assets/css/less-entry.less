@@ -1663,8 +1663,8 @@ select::-ms-expand {
 
 .tag-insert-container {
   .absolute;
-  top: 63px;
-  left: 0;
+  bottom: -30px;
+  right: 48px;
   height: 24px;
   z-index: 1000;
   .tag-insert {
@@ -1672,11 +1672,18 @@ select::-ms-expand {
     .size-s;
     .dark;
     .b-light-darker;
+    .border-box;
+    .w-32;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
+    background-color: @color-blueish;
+    &:hover {
+      background-color: @color-light;
+    }
     .mr-4;
     .pointer;
+    .center;
   }
 }
 

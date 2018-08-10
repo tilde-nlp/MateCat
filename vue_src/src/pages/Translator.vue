@@ -88,7 +88,7 @@
               mode="out-in">
               <translator-segment
                 v-for="(segment, index) in segmentsList"
-                :key="index"
+                :key="index + 1"
                 :segment-data="segment"
                 :target-lang="jobData.target.substring(0, 2)"
                 :first-segment-id="jobData.firstSegment"

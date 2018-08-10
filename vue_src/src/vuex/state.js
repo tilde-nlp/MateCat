@@ -7,5 +7,6 @@ export default {
   sourceSearch: '',
   targetSearch: '',
   activeSegment: null,
-  fontSize: null
+  fontSize: null,
+  unusedTags: []
 }

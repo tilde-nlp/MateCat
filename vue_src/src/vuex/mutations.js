@@ -1,3 +1,5 @@
+import {TagsConverter} from 'utils/tags-converter'
+import _ from 'lodash'
 export default {
   ready (state, ready) {
     if (state.debug) console.log('Setting ready: ' + ready)
@@ -41,6 +43,21 @@ export default {
     if (state.debug) {
       console.log('Setting activeSegment: ')
       console.log(activeSegment)
+    }
+    state.unusedTags = null
+    if (activeSegment === null) {
+      state.unusedTags = []
+    } else {
+      state.unusedTags = []
+      const originalTags = TagsConverter.getTagList(activeSegment.original)
+      const translationTags = TagsConverter.getTagList(activeSegment.translation)
+      for (let i = 0; i < originalTags.length; i++) {
+        const tag = _.find(translationTags, {id: originalTags[i].id})
+        if (tag) {
+          continue
+        }
+        state.unusedTags.push(originalTags[i])
+      }
     }
     state.activeSegment = activeSegment
   },
