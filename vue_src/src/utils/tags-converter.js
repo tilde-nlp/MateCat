@@ -241,7 +241,6 @@ export const TagsConverter = {
       })
       xTagPosition = text.indexOf(rawXTagSearch, closingMark)
     }
-    console.log('x done')
     // Process BX tag
     let bxTagPosition = text.indexOf(rawBxTagSearch)
     while (bxTagPosition > -1) {
@@ -254,7 +253,6 @@ export const TagsConverter = {
       })
       bxTagPosition = text.indexOf(rawBxTagSearch, closingMark)
     }
-    console.log('bx done')
     // Process EX tag
     let exTagPosition = text.indexOf(rawExTagSearch)
     while (exTagPosition > -1) {
@@ -267,7 +265,6 @@ export const TagsConverter = {
       })
       exTagPosition = text.indexOf(rawExTagSearch, closingMark)
     }
-    console.log('ex done')
     // Process self closing G tag
     let scgTagPosition = text.indexOf(rawGTagSearch)
     while (scgTagPosition > -1) {
@@ -285,7 +282,6 @@ export const TagsConverter = {
       })
       scgTagPosition = text.indexOf(rawGTagSearch, closingMark)
     }
-    console.log('scg done')
     // Process G tag
     let gTagPosition = text.indexOf(rawGTagSearch)
     while (gTagPosition > -1) {
@@ -303,7 +299,20 @@ export const TagsConverter = {
       })
       gTagPosition = text.indexOf(rawGTagSearch, closingMark)
     }
-    console.log('g done')
     return tags
+  },
+  getEmptyTag: function (tag, parentId) {
+    switch (tag.type) {
+      case 'x':
+        return getXTagCE(tag.id, parentId)
+      case 'bx':
+        return getBxTagCE(tag.id, parentId)
+      case 'ex':
+        return getExTagCE(tag.id, parentId)
+      case 'scg':
+        return getScgTagCE(tag.id, parentId)
+      case 'g':
+        return getGStartTagCE(tag.id, parentId) + getGStartTagCE(tag.id, parentId)
+    }
   }
 }

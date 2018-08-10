@@ -33,6 +33,10 @@ export default {
     focusToggle: {
       type: Boolean,
       default: false
+    },
+    segmentId: {
+      type: Number,
+      required: true
     }
   },
   data: function () {
@@ -98,6 +102,7 @@ export default {
   },
   mounted: function () {
     this.id = this._uid
+    this.$emit('id', this.id)
   },
   methods: {
     onInput: _.debounce(function () {
