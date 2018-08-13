@@ -193,8 +193,7 @@ export default {
       let formData = FormGenerator.generateForm({
         source_language: this.fromLang,
         target_language: this.toLang,
-        mt_system: this.subject.value,
-        pretranslate_100: '0'
+        mt_system: this.subject.value
       })
       formData.append('files[]', file)
       FileService.upload(formData)
@@ -216,6 +215,9 @@ export default {
           file.id = res.data.data.id_project
           file.password = res.data.data.password
           file.statusLink = this.$CONFIG.baseUrl + 'api/v2/projects/' + res.data.data.id_project + '/' + res.data.data.password + '/creation_status'
+          file.progress = 0.00
+          file.created = DateConverter.nowDate()
+          file.owner = this.$store.state.profile.email
           setTimeout(() => {
             FileService.checkStatus(file.statusLink)
               .then(this.statusResponse)
@@ -249,11 +251,6 @@ export default {
       if (res.data.data.summary.STATUS === 'DONE') {
         file.wordCount = parseInt(res.data.data.summary.TOTAL_RAW_WC)
         file.segmentCount = parseInt(res.data.data.summary.TOTAL_SEGMENTS)
-        if (file.jobId < 0) {
-          file.progress = 0.00
-          file.created = DateConverter.nowDate()
-          file.owner = this.$store.state.profile.email
-        }
         return
       }
       if (res.data.data.summary.STATUS !== 'EMPTY') {
