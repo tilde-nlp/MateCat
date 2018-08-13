@@ -235,11 +235,6 @@ class UploadHandler {
         $this->validateSourceLang();
         $this->validateTargetLangs();
 
-        if ( empty( $this->file_name ) ) {
-            $this->result[ 'code' ]     = -1; // No Good, Default
-            $this->result[ 'errors' ][] = array( "code" => -1, "message" => "Error: missing file name." );
-        }
-
         if( !empty( $this->result[ 'errors' ] ) ){
             return false;
         }
@@ -530,7 +525,7 @@ class UploadHandler {
         $this->private_tm_user         = $__postInput[ 'private_tm_user' ];
         $this->private_tm_pass         = $__postInput[ 'private_tm_pass' ];
         $this->lang_detect_files       = $__postInput[ 'lang_detect_files' ];
-        $this->pretranslate_100        = $__postInput[ 'pretranslate_100' ];
+        $this->pretranslate_100        = intval($__postInput[ 'pretranslate_100' ]) > 0 ? 1 : 0;
         $this->only_private            = ( is_null( $__postInput[ 'get_public_matches' ] ) ? false : !$__postInput[ 'get_public_matches' ] );
         $this->due_date                = ( empty( $__postInput[ 'due_date' ] ) ? null : Utils::mysqlTimestamp( $__postInput[ 'due_date' ] ) );
 
@@ -539,17 +534,7 @@ class UploadHandler {
         if ( $this->disable_tms_engine_flag ) {
             $this->tms_engine = 0; //remove default MyMemory
         }
-
-        if ( empty( $this->file_name ) ) {
-            $this->result[ 'errors' ][] = [ "code" => -1, "message" => "Missing file name." ];
-        }
-
         $this->job_subject = 'general';
-
-        if ( $this->pretranslate_100 !== 1 && $this->pretranslate_100 !== 0 ) {
-            $this->result[ 'errors' ][] = [ "code" => -6, "message" => "invalid pretranslate_100 value" ];
-        }
-
 
         $this->lang_handler = Langs_Languages::getInstance();
         $this->__validateSourceLang();
