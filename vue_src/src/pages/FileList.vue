@@ -212,21 +212,37 @@ export default {
             return Promise.reject(new Error(this.$lang.messages.error_uploading_file + res.data.errors[0].debug))
           }
           const file = _.find(this.files, {tmpFileId: fileTmpId})
-          file.id = res.data.id_project
-          file.password = res.data.project_password
-          file.jobId = res.data.id_job
-          file.jobPassword = res.data.job_password
+          file.id = res.data.data.id_project
+          file.password = res.data.data.password
+          file.statusLink = this.$CONFIG.baseUrl + 'api/v2/projects/' + res.data.data.id_project + '/' + res.data.data.password + '/creation_status'
           file.progress = 0.00
           file.created = DateConverter.nowDate()
           file.owner = this.$store.state.profile.email
-          this.getFileUrls(file.id, file.password)
-          FileService.analyze({
-            pid: file.id,
-            ppassword: file.password
-          })
-            .then(this.analyzeResponse)
+          setTimeout(() => {
+            FileService.checkStatus(file.statusLink)
+              .then(this.statusResponse)
+              .catch(this.statusResponseError)
+          }, 1500)
         })
         .catch(this.statusResponseError)
+    },
+    statusResponse: function (res) {
+      // If file is not done processing keep calling checkStatus until it is
+      if (res.data.status === 202) {
+        setTimeout(() => {
+          FileService.checkStatus(res.request.responseURL)
+            .then(this.statusResponse)
+        }, 2000)
+      }
+      if (res.data.status === 200) {
+        const file = _.find(this.files, {statusLink: res.request.responseURL})
+        this.getFileUrls(file.id, file.password)
+        FileService.analyze({
+          pid: file.id,
+          ppassword: file.password
+        })
+          .then(this.analyzeResponse)
+      }
     },
     analyzeResponse: function (res) {
       const file = _.find(this.files, {id: parseInt(res.data.data.project_id)})

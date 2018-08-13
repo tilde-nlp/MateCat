@@ -139,23 +139,6 @@ class UploadHandler {
         $this->handle_convert();
         $this->handle_project_create();
         $this->create_project();
-        Log::$fileName = "create_project.log";
-        Log::doLog( $this->result );
-        Log::$fileName = "upload.log";
-        try {
-            $this->check_creation_status();
-            if (!is_array($this->result)) {
-                $this->result->job_password = $this->result->password[0];
-                $this->result->id_job = $this->result->id_job[0];
-                $this->result->project_password = $this->result->ppassword;
-                unset($this->result->ppassword);
-                unset($this->result->password);
-            }
-        } catch (Exception $exception) {
-            $this->result = ['code' => -6, 'message' => 'Error while creating project.'];
-        } catch (AuthorizationError $exception) {
-            $this->result = ['code' => -6, 'message' => 'Error while creating project.'];
-        }
 
         header( 'Vary: Accept' );
         $json     = json_encode( $this->result );
@@ -174,50 +157,6 @@ class UploadHandler {
         }
 
         echo $json;
-    }
-
-    protected function check_creation_status() {
-        if (!isset($this->result['data']['id_project'])) {
-            throw new Exception('Project id is missing');
-        }
-        $result = Queue::getPublishedResults( $this->result['data']['id_project'] );
-
-        if ( empty( $result ) ) {
-
-            $this->_letsWait();
-
-        } elseif ( !empty( $result ) && !empty( $result[ 'errors' ] ) ){
-
-            $this->result = [];
-            foreach( $result[ 'errors' ] as $error ){
-                $response[] = [
-                    'message' => $error[ 'message' ],
-                    'code' => $error[ 'code' ],
-                    ];
-            }
-        } else {
-            // project is created, find it with password
-            try {
-                $project = Projects_ProjectDao::findByIdAndPassword($this->result['data']['id_project'], $this->result['data']['password'] ) ;
-            } catch( NotFoundError $e ) {
-                throw new AuthorizationError( 'Not Authorized.' );
-            }
-
-            $featureSet = $project->getFeatures();
-            $result = $featureSet->filter('filterCreationStatus', $result, $project);
-
-            if ( empty( $result ) ) {
-                $this->_letsWait();
-            }
-            else {
-                $this->result = (object)$result;
-            }
-        }
-    }
-
-    protected function _letsWait() {
-        sleep(2);
-        $this->check_creation_status();
     }
 
     protected function handle_file_upload( $uploaded_file, $name, $size, $type, $error, $index = null ) {
@@ -298,11 +237,6 @@ class UploadHandler {
         $this->lang_handler = Langs_Languages::getInstance();
         $this->validateSourceLang();
         $this->validateTargetLangs();
-
-        if ( empty( $this->file_name ) ) {
-            $this->result[ 'code' ]     = -1; // No Good, Default
-            $this->result[ 'errors' ][] = array( "code" => -1, "message" => "Error: missing file name." );
-        }
 
         if( !empty( $this->result[ 'errors' ] ) ){
             return false;
@@ -594,7 +528,7 @@ class UploadHandler {
         $this->private_tm_user         = $__postInput[ 'private_tm_user' ];
         $this->private_tm_pass         = $__postInput[ 'private_tm_pass' ];
         $this->lang_detect_files       = $__postInput[ 'lang_detect_files' ];
-        $this->pretranslate_100        = empty ($__postInput[ 'pretranslate_100' ] ) ? 0 : $__postInput[ 'pretranslate_100' ];
+        $this->pretranslate_100        = intval($__postInput[ 'pretranslate_100' ]) > 0 ? 1 : 0;
         $this->only_private            = ( is_null( $__postInput[ 'get_public_matches' ] ) ? false : !$__postInput[ 'get_public_matches' ] );
         $this->due_date                = ( empty( $__postInput[ 'due_date' ] ) ? null : Utils::mysqlTimestamp( $__postInput[ 'due_date' ] ) );
 
@@ -603,17 +537,7 @@ class UploadHandler {
         if ( $this->disable_tms_engine_flag ) {
             $this->tms_engine = 0; //remove default MyMemory
         }
-
-        if ( empty( $this->file_name ) ) {
-            $this->result[ 'errors' ][] = [ "code" => -1, "message" => "Missing file name." ];
-        }
-
         $this->job_subject = 'general';
-
-        if ( $this->pretranslate_100 !== 1 && $this->pretranslate_100 !== 0 ) {
-            $this->result[ 'errors' ][] = [ "code" => -6, "message" => "invalid pretranslate_100 value" ];
-        }
-
 
         $this->lang_handler = Langs_Languages::getInstance();
         $this->validateSourceLang2();
