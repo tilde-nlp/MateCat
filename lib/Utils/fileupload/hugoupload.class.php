@@ -2,6 +2,9 @@
 
 define( "DIRSEP", "//" );
 use ProjectQueue\Queue;
+use API\V2\Exceptions\AuthorizationError;
+use API\V2\Json\CreationStatus;
+use Exceptions\NotFoundError;
 
 class UploadHandler {
 
@@ -136,6 +139,15 @@ class UploadHandler {
         $this->handle_convert();
         $this->handle_project_create();
         $this->create_project();
+        $this->check_creation_status();
+
+        if (!is_array($this->result)) {
+            $this->result->job_password = $this->result->password[0];
+            $this->result->id_job = $this->result->id_job[0];
+            $this->result->project_password = $this->result->ppassword;
+            unset($this->result->ppassword);
+            unset($this->result->password);
+        }
 
         header( 'Vary: Accept' );
         $json     = json_encode( $this->result );
@@ -154,6 +166,47 @@ class UploadHandler {
         }
 
         echo $json;
+    }
+
+    protected function check_creation_status() {
+        $result = Queue::getPublishedResults( $this->result['data']['id_project'] );
+
+        if ( empty( $result ) ) {
+
+            $this->_letsWait();
+
+        } elseif ( !empty( $result ) && !empty( $result[ 'errors' ] ) ){
+
+            $this->result = [];
+            foreach( $result[ 'errors' ] as $error ){
+                $response[] = [
+                    'message' => $error[ 'message' ],
+                    'code' => $error[ 'code' ],
+                    ];
+            }
+        } else {
+            // project is created, find it with password
+            try {
+                $project = Projects_ProjectDao::findByIdAndPassword($this->result['data']['id_project'], $this->result['data']['password'] ) ;
+            } catch( NotFoundError $e ) {
+                throw new AuthorizationError( 'Not Authorized.' );
+            }
+
+            $featureSet = $project->getFeatures();
+            $result = $featureSet->filter('filterCreationStatus', $result, $project);
+
+            if ( empty( $result ) ) {
+                $this->_letsWait();
+            }
+            else {
+                $this->result = (object)$result;
+            }
+        }
+    }
+
+    protected function _letsWait() {
+        sleep(2);
+        $this->check_creation_status();
     }
 
     protected function handle_file_upload( $uploaded_file, $name, $size, $type, $error, $index = null ) {
@@ -530,7 +583,7 @@ class UploadHandler {
         $this->private_tm_user         = $__postInput[ 'private_tm_user' ];
         $this->private_tm_pass         = $__postInput[ 'private_tm_pass' ];
         $this->lang_detect_files       = $__postInput[ 'lang_detect_files' ];
-        $this->pretranslate_100        = $__postInput[ 'pretranslate_100' ];
+        $this->pretranslate_100        = empty ($__postInput[ 'pretranslate_100' ] ) ? 0 : $__postInput[ 'pretranslate_100' ];
         $this->only_private            = ( is_null( $__postInput[ 'get_public_matches' ] ) ? false : !$__postInput[ 'get_public_matches' ] );
         $this->due_date                = ( empty( $__postInput[ 'due_date' ] ) ? null : Utils::mysqlTimestamp( $__postInput[ 'due_date' ] ) );
 
