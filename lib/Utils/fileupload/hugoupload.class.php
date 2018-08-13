@@ -139,14 +139,22 @@ class UploadHandler {
         $this->handle_convert();
         $this->handle_project_create();
         $this->create_project();
-        $this->check_creation_status();
-
-        if (!is_array($this->result)) {
-            $this->result->job_password = $this->result->password[0];
-            $this->result->id_job = $this->result->id_job[0];
-            $this->result->project_password = $this->result->ppassword;
-            unset($this->result->ppassword);
-            unset($this->result->password);
+        Log::$fileName = "create_project.log";
+        Log::doLog( $this->result );
+        Log::$fileName = "upload.log";
+        try {
+            $this->check_creation_status();
+            if (!is_array($this->result)) {
+                $this->result->job_password = $this->result->password[0];
+                $this->result->id_job = $this->result->id_job[0];
+                $this->result->project_password = $this->result->ppassword;
+                unset($this->result->ppassword);
+                unset($this->result->password);
+            }
+        } catch (Exception $exception) {
+            $this->result = ['code' => -6, 'message' => 'Error while creating project.'];
+        } catch (AuthorizationError $exception) {
+            $this->result = ['code' => -6, 'message' => 'Error while creating project.'];
         }
 
         header( 'Vary: Accept' );
@@ -169,6 +177,9 @@ class UploadHandler {
     }
 
     protected function check_creation_status() {
+        if (!isset($this->result['data']['id_project'])) {
+            throw new Exception('Project id is missing');
+        }
         $result = Queue::getPublishedResults( $this->result['data']['id_project'] );
 
         if ( empty( $result ) ) {
@@ -521,7 +532,7 @@ class UploadHandler {
 
         ];
 
-        $filterArgs = $this->__addFilterForMetadataInput( $filterArgs );
+        $filterArgs = $this->addFilterForMetadataInput( $filterArgs );
 
         $__postInput = filter_input_array( INPUT_POST, $filterArgs );
 
@@ -587,7 +598,7 @@ class UploadHandler {
         $this->only_private            = ( is_null( $__postInput[ 'get_public_matches' ] ) ? false : !$__postInput[ 'get_public_matches' ] );
         $this->due_date                = ( empty( $__postInput[ 'due_date' ] ) ? null : Utils::mysqlTimestamp( $__postInput[ 'due_date' ] ) );
 
-        $this->__setMetadataFromPostInput( $__postInput );
+        $this->setMetadataFromPostInput( $__postInput );
 
         if ( $this->disable_tms_engine_flag ) {
             $this->tms_engine = 0; //remove default MyMemory
@@ -605,11 +616,11 @@ class UploadHandler {
 
 
         $this->lang_handler = Langs_Languages::getInstance();
-        $this->__validateSourceLang();
-        $this->__validateTargetLangs();
-        $this->__validateUserMTEngine();
+        $this->validateSourceLang2();
+        $this->validateTargetLangs2();
+        $this->validateUserMTEngine();
 
-        $this->__setTeam( $__postInput[ 'id_team' ] );
+        $this->setTeam( $__postInput[ 'id_team' ] );
     }
 
     public function create_project() {
@@ -673,7 +684,7 @@ class UploadHandler {
 
         Queue::sendProject( $projectStructure );
 
-        $this->__assignLastCreatedPid( $projectStructure[ 'id_project' ] );
+        $this->assignLastCreatedPid( $projectStructure[ 'id_project' ] );
 
         $this->result[ 'data' ] = [
             'id_project' => $projectStructure[ 'id_project' ],
@@ -694,19 +705,19 @@ class UploadHandler {
         $this->guid = Utils::create_guid();
     }
 
-    private function __assignLastCreatedPid( $pid ) {
+    private function assignLastCreatedPid($pid ) {
         $_SESSION[ 'redeem_project' ]   = false;
         $_SESSION[ 'last_created_pid' ] = $pid;
     }
 
-    private function __setTeam() {
+    private function setTeam() {
         $user = new Users_UserStruct();
         $user->uid   = AuthCookie::getCredentials()['uid'];
         $user->email   = AuthCookie::getCredentials()['username'];
         $this->team = $user->getPersonalTeam();
     }
 
-    private function __validateUserMTEngine() {
+    private function validateUserMTEngine() {
 
         if ( array_search( $this->mt_engine, [ 0, 1, 2 ] ) === false ) {
 
@@ -730,7 +741,7 @@ class UploadHandler {
 
     }
 
-    private function __validateTargetLangs() {
+    private function validateTargetLangs2() {
         $targets = explode( ',', $this->target_language );
         $targets = array_map( 'trim', $targets );
         $targets = array_unique( $targets );
@@ -750,7 +761,7 @@ class UploadHandler {
         $this->target_language = implode( ',', $targets );
     }
 
-    private function __validateSourceLang() {
+    private function validateSourceLang2() {
         try {
             $this->lang_handler->validateLanguage( $this->source_language );
         } catch ( Exception $e ) {
@@ -758,13 +769,13 @@ class UploadHandler {
         }
     }
 
-    private function __addFilterForMetadataInput( $filterArgs ) {
+    private function addFilterForMetadataInput($filterArgs ) {
         $filterArgs = $this->featureSet->filter( 'filterCreateProjectInputFilters', $filterArgs );
 
         return $filterArgs;
     }
 
-    private function __setMetadataFromPostInput( $__postInput ) {
+    private function setMetadataFromPostInput($__postInput ) {
         $options = [];
 
         $options[ 'lexiqa' ] = false;
