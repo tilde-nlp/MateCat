@@ -29,6 +29,8 @@ class CreationStatus {
                 'project_name' => $this->data->project_name,
                 'new_keys'     => $this->data->new_keys,
                 'analyze_url'  => $this->data->analyze_url,
+                'id_job' => $this->data->id_job[0],
+                'job_password' => $this->data->password[0]
         ];
     }
 
