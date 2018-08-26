@@ -413,6 +413,9 @@ export default {
           if (this.$store.state.activeSegment === null && this.segments.length > 0) {
             this.setActive(this.segments[0].id)
           }
+          if (this.jobData.lastSegment === this.segments[this.segments.length - 1].id) {
+            this.readTopSegments(true)
+          }
           this.segmentsScrolled()
         })
     },
@@ -506,12 +509,32 @@ export default {
         this.readMoreSegments(this.segments.length - 1)
           .then(this.checkSegmentEnd)
       } else if (element.scrollTop === 0) {
-        this.readMoreSegments(0)
-          .then(() => {
+        this.readTopSegments()
+      }
+    },
+    readTopSegments: function (focusActiveSegment) {
+      focusActiveSegment = focusActiveSegment || false
+      this.readMoreSegments(0)
+        .then(() => {
+          this.checkSegmentTop()
+          if (!focusActiveSegment) {
             this.$nextTick(() => {
-              element.scrollTop = 1
+              this.$nextTick(() => {
+                const element = document.getElementById('translatorSegments')
+                element.scrollTop = 1
+              })
             })
-          })
+          }
+        })
+    },
+    checkSegmentTop: function (lastReadCount) {
+      if (lastReadCount < 1) {
+        return
+      }
+      const element = document.getElementById('translatorSegments')
+      if (element.scrollHeight <= element.offsetHeight) {
+        this.readMoreSegments(0)
+          .then(this.checkSegmentTop)
       }
     },
     checkSegmentEnd: function (lastReadCount) {
