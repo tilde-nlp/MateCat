@@ -234,12 +234,12 @@ mvn clean package -DskipTests
 
 # copy files to destination folder for filter service
 sudo mkdir -p /opt/filters
-sudo cp target/filters-1.2.3.jar /opt/filters/
+sudo cp target/filters-1.2.4.jar /opt/filters/
 sudo cp src/main/resources/config.sample.properties /opt/filters/config.properties
 
 #cd target
 #cp ../src/main/resources/config.sample.properties config.properties
-#java -cp ".:filters-1.2.3.jar" com.matecat.converter.Main
+#java -cp ".:filters-1.2.4.jar" com.matecat.converter.Main
 
 # MateCat filter as systemd service
 sudo bash <<EOF
@@ -247,7 +247,7 @@ echo "[Unit]" > /etc/systemd/system/matecat-filter.service
 echo "Description=Matecat filter service" >> /etc/systemd/system/matecat-filter.service
 echo "[Service]" >> /etc/systemd/system/matecat-filter.service
 echo "WorkingDirectory=/opt/filters/" >> /etc/systemd/system/matecat-filter.service
-echo "ExecStart=/usr/bin/java -cp \".:filters-1.2.3.jar\" com.matecat.converter.Main" >> /etc/systemd/system/matecat-filter.service
+echo "ExecStart=/usr/bin/java -cp \".:filters-1.2.4.jar\" com.matecat.converter.Main" >> /etc/systemd/system/matecat-filter.service
 echo "Restart=always" >> /etc/systemd/system/matecat-filter.service
 echo "RestartSec=10" >> /etc/systemd/system/matecat-filter.service
 echo "SyslogIdentifier=Matecat-Filter" >> /etc/systemd/system/matecat-filter.service
