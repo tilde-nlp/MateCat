@@ -4,6 +4,7 @@
     :style="{ 'font-size': fontSizeString }"
     class="editor-container"
     @input="onInput"
+    @click.self="focusEditor"
     v-html="formattedText"
   />
 </template>

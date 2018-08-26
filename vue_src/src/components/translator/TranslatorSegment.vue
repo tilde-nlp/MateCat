@@ -24,13 +24,17 @@
       </div>
     </div>
     <div class="br-light-darker ib w-0 h-100p absolute"/>
-    <div class="double-block">
+    <div
+      class="double-block"
+      @click.self="focusEditor"
+    >
       <div
         :class="{top: topSegment}"
         :style="rowMinHeight"
         :lang="targetLang"
         class="segment-col last"
         spellcheck="true"
+        @click.self="focusEditor"
       >
         <translator-editor
           v-if="segmentData.id > 0 && segmentData.id !== null"
@@ -210,6 +214,9 @@ export default {
     insertTag: function (tag) {
       const tagString = TagsConverter.getEmptyTag(tag, 'editor-' + this.editorId)
       this.inserTagHtml(tagString, false)
+    },
+    focusEditor: function () {
+      this.segment.focusToggle = !this.segment.focusToggle
     },
     inserTagHtml: function (html, selectPastedContent) {
       let sel
