@@ -12,6 +12,7 @@
 import _ from 'lodash'
 import {TextHighlighter} from 'utils/text-highlighter'
 import {TagsConverter} from 'utils/tags-converter'
+import {TooManyConverterIterations} from 'utils/too-many-converter-iterations'
 export default {
   name: 'TranslatorEditor',
   props: {
@@ -44,7 +45,8 @@ export default {
     return {
       editor: null,
       id: null,
-      isEditable: false
+      isEditable: false,
+      lastValidContent: ''
     }
   },
   computed: {
@@ -92,7 +94,7 @@ export default {
     },
     formattedText: function (newVal) {
       if (this.editor !== null) {
-        this.editor.innerHTML = newVal
+        this.editor.innerHTML = this.lastValidContent = newVal
         if (this.isEditable) {
           this.$nextTick(() => {
             this.enableContentEdit()
@@ -107,11 +109,24 @@ export default {
   },
   methods: {
     onInput: _.debounce(function () {
-      this.$emit('input', this.cleanText())
+      let cleanText
+      try {
+        cleanText = this.cleanText()
+      } catch (error) {
+        if (error instanceof TooManyConverterIterations) {
+          this.$Alerts.add(this.$lang.messages.invalid_target_content)
+          this.editor.innerHTML = this.lastValidContent
+          return
+        }
+        throw error
+      }
+      this.lastValidContent = this.editor.innerHTML
+      this.$emit('input', cleanText)
     }, 500),
     cleanText: function () {
-      let result = this.editor.innerHTML
-      result = TextHighlighter.remove(result)
+      const rawText = this.editor.innerHTML
+      let result
+      result = TextHighlighter.remove(rawText)
       result = TagsConverter.remove(result, 'editor-' + this.id)
       return result
     },

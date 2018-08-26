@@ -1,4 +1,5 @@
 import {CONFIG} from '../CONFIG'
+import {TooManyConverterIterations} from './too-many-converter-iterations'
 const rawGTagSearch = '&lt;g id="'
 const rawSCGTagSearch = '"/&gt;'
 const rawXTagSearch = '&lt;x id="'
@@ -162,8 +163,7 @@ export const TagsConverter = {
       gTagPosition = text.indexOf(convertedGTagSearch)
       safetyCounter++
       if (safetyCounter > 264) {
-        alert('Too many tags converter iterations')
-        gTagPosition = -1
+        throw new TooManyConverterIterations()
       }
     }
     // Replace X tags

@@ -8,5 +8,6 @@ module.exports = {
   fill_100p_tm: 'Fill with 100% translation memory',
   fill_mt: 'Fill with machine translator',
   error_uploading_file: 'Error while uploading file: ',
-  unexpected_error: 'Unexpected error. Please try again. If problem persists please contact system administrator.'
+  unexpected_error: 'Unexpected error. Please try again. If problem persists please contact system administrator.',
+  invalid_target_content: 'Invalid tags in target text. Reverting back to last text.'
 }
