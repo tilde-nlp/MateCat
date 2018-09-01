@@ -192,8 +192,6 @@ export default {
     }
   },
   mounted: function () {
-    this.jobData.id = this.$route.params.jobId
-    this.jobData.password = this.$route.params.password
     this.jobData.projectId = this.$route.params.projectId
     this.jobData.ppassword = this.$route.params.ppassword
     this.$store.commit('targetSearch', '')
@@ -566,6 +564,8 @@ export default {
     },
     initialAnalyzeResponse: function (res) {
       this.segmentsAnalyzed = res.data.data.summary.SEGMENTS_ANALYZED
+      this.jobData.id = res.data.data.job_id
+      this.jobData.password = res.data.data.job_password
       if (res.data.data.summary.STATUS === 'DONE') {
         JobsService.getInfo({
           id: this.jobData.id,
