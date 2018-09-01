@@ -99,6 +99,9 @@ class UploadHandler {
                 $index
             );
         }
+        if (!empty($info[0]->error)) {
+            return $this->sendError($info[0]->error);
+        }
 
         //check for server misconfiguration
         $uploadParams = ServerCheck::getInstance()->getUploadParams();
@@ -137,17 +140,39 @@ class UploadHandler {
         //check for server misconfiguration
 
         $this->handle_convert();
+        if (!empty($this->result['errors'])) {
+            return $this->sendError('ErrorConvertingFile');
+        }
         $this->handle_project_create();
         $this->create_project();
+        if (!empty($this->result['errors'])) {
+            return $this->sendError('ErrorCreatingProject');
+        }
 
+        $this->respond($this->result);
+    }
+
+    protected function sendError($errorMessage): int {
+        $responseData = new \stdClass();
+        $responseData->code = -6;
+        $responseData->data = array();
+        $responseData->errors = array();
+        $error = new \stdClass();
+        $error->code = -1000;
+        $error->message = $errorMessage;
+        $responseData->errors[] = $error;
+        return $this->respond($responseData);
+    }
+
+    protected function respond($responseData): int {
         header( 'Vary: Accept' );
-        $json     = json_encode( $this->result );
+        $json     = json_encode( $responseData );
         $redirect = isset( $_REQUEST[ 'redirect' ] ) ?
             stripslashes( $_REQUEST[ 'redirect' ] ) : null;
 
         if ( $redirect ) {
             header( 'Location: ' . sprintf( $redirect, rawurlencode( $json ) ) );
-            return;
+            return 0;
         }
 
         if ( isset( $_SERVER[ 'HTTP_ACCEPT' ] ) && ( strpos( $_SERVER[ 'HTTP_ACCEPT' ], 'application/json' ) !== false ) ) {
@@ -157,6 +182,7 @@ class UploadHandler {
         }
 
         echo $json;
+        return 0;
     }
 
     protected function handle_file_upload( $uploaded_file, $name, $size, $type, $error, $index = null ) {
@@ -168,7 +194,6 @@ class UploadHandler {
         $file->name = $this->trim_file_name( $name );
         $file->size = intval( $size );
         $file->tmp_name = $uploaded_file;
-        //$file->type = $type; // Override and ignore the client type definition
         $file->type = mime_content_type( $file->tmp_name );
 
         if ( $this->validate( $uploaded_file, $file, $error, $index ) ) {
@@ -194,7 +219,7 @@ class UploadHandler {
                 // FORMAT ERROR MESSAGE
                 switch ( $file->error ) {
                     case 'abort':
-                        $file->error = "File upload failed. Refresh the page using CTRL+R (or CMD+R) and try again.";
+                        $file->error = "ErrorConvertingFile";
                         break;
                     default:
                         null;
@@ -318,33 +343,29 @@ class UploadHandler {
         }
 
         if ( !$this->_isValidFileName( $file ) ) {
-            $file->error = "Invalid File Name";
-
+            $file->error = "InvalidFileName";
             return false;
         }
 
         if ( $file->type !== null ) {
             if ( !$this->_isRightMime( $file ) && ( !isset( $file->error ) || empty( $file->error ) ) ) {
-                $file->error = "Mime type Not Allowed";
+                $file->error = "MimeTypeNotAllowed";
                 return false;
             }
         }
 
         if ( !$this->_isRightExtension( $file ) && ( !isset( $file->error ) || empty( $file->error ) ) ) {
-            $file->error = "File Extension Not Allowed";
-
+            $file->error = "FileExtensionNotAllowed";
             return false;
         }
 
 
         if ( !$file->name ) {
-            $file->error = 'missingFileName';
-
+            $file->error = 'MissingFileName';
             return false;
         } else {
             if ( mb_strlen( $file->name ) > INIT::$MAX_FILENAME_LENGTH ) {
-                $file->error = "filenameTooLong";
-
+                $file->error = "FileNameTooLong";
                 return false;
             }
         }
@@ -359,7 +380,7 @@ class UploadHandler {
                         $file_size > $this->options[ 'max_file_size' ] ||
                         $file->size > $this->options[ 'max_file_size' ] )
         ) {
-            $file->error = 'maxFileSize';
+            $file->error = 'FileSizeTooBig';
 
             return false;
         }
@@ -367,7 +388,7 @@ class UploadHandler {
         if ( $this->options[ 'min_file_size' ] &&
                 $file_size < $this->options[ 'min_file_size' ]
         ) {
-            $file->error = 'minFileSize';
+            $file->error = 'FileSizeTooSmall';
 
             return false;
         }
@@ -375,7 +396,7 @@ class UploadHandler {
         if ( is_int( $this->options[ 'max_number_of_files' ] ) && (
                         count( $this->get_file_objects() ) >= $this->options[ 'max_number_of_files' ] )
         ) {
-            $file->error = 'maxNumberOfFiles';
+            $file->error = 'TooManyFiles';
             return false;
         }
 

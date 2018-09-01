@@ -198,7 +198,7 @@ export default {
       formData.append('files[]', file)
       FileService.upload(formData)
         .then(res => {
-          if (res.data.code === -6) {
+          if (res.data.code < 1) {
             const fileIndex = _.findKey(this.files, {tmpFileId: fileTmpId})
             if (fileIndex > -1) {
               this.files.splice(parseInt(fileIndex), 1)
@@ -209,7 +209,7 @@ export default {
             }
             if (this.uploadQueue.length < 1) this.uploadQueueActive = false
             this.updatePagesCount()
-            return Promise.reject(new Error(this.$lang.messages.error_uploading_file + res.data.errors[0].debug))
+            return Promise.reject(new Error(res.data.errors[0].message))
           }
           const file = _.find(this.files, {tmpFileId: fileTmpId})
           file.id = res.data.data.id_project
@@ -284,6 +284,10 @@ export default {
       this.nextFileUpload()
       if (err.message === 'Request failed with status code 403') {
         this.$Alerts.add(this.$lang.messages.unexpected_error)
+        return
+      }
+      if (typeof (this.$lang.uploadErrors[err.message]) !== 'undefined') {
+        this.$Alerts.add(this.$lang.uploadErrors[err.message])
         return
       }
       this.$Alerts.add(err.message)
