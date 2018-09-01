@@ -76,12 +76,19 @@
             class="segments-container"
             @scroll="segmentsScrolled"
           >
-            <svgicon
+            <div
               v-if="$loading.isLoading('segmentsAnalyze')"
-              class="svg-loading va-middle"
-              name="loading"
-              height="48"
-            />
+              class="segments-loading"
+            >
+              <svgicon
+                class="svg-loading va-middle"
+                name="loading"
+                height="32"
+              />
+              <div class="size-s dark ib va-middle">
+                {{ segmentsAnalyzed }} {{ $lang.messages.segments_analyzed }}
+              </div>
+            </div>
             <transition-group
               v-else
               name="ffade"
@@ -174,7 +181,8 @@ export default {
       searchInSource: '',
       searchInTarget: '',
       searchInComments: '',
-      segmentPageSize: 5
+      segmentPageSize: 5,
+      segmentsAnalyzed: 0
     }
   },
   computed: {
@@ -557,6 +565,7 @@ export default {
       LanguagesService.saveMtSystem({mt_system_id: value, id: this.jobData.projectId})
     },
     initialAnalyzeResponse: function (res) {
+      this.segmentsAnalyzed = res.data.data.summary.SEGMENTS_ANALYZED
       if (res.data.data.summary.STATUS === 'DONE') {
         JobsService.getInfo({
           id: this.jobData.id,

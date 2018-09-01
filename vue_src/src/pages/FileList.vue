@@ -236,6 +236,8 @@ export default {
       }
       if (res.data.status === 200) {
         const file = _.find(this.files, {statusLink: res.request.responseURL})
+        file.jobId = parseInt(res.data.id_job)
+        file.jobPassword = res.data.job_password
         this.getFileUrls(file.id, file.password)
         FileService.analyze({
           pid: file.id,
