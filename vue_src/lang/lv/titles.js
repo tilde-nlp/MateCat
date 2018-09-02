@@ -22,5 +22,9 @@ module.exports = {
   write: 'Rakstīt',
   read: 'Lasīt',
   hotkeys: 'Taustiņkombinācijas',
-  concordance_search: 'Concordance search'
+  concordance_search: 'Concordance search',
+  time_spent: 'Laiks patērēts',
+  minutes: 'minūtes',
+  hours: 'stundas',
+  time_remaining: 'Laiks atlicis'
 }

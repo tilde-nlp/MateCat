@@ -34,6 +34,7 @@ class jobInfoController {
         $result->fileName = $fileNameData['name'];
         $result->source = $jobData['source'];
         $result->target = $jobData['target'];
+        $result->editing_time = $jobData['editing_time'];
         $result->firstSegment = $jobData['job_first_segment'];
         $result->lastSegment = $jobData['job_last_segment'];
         $result->mtSystemId = $mtSystemId;

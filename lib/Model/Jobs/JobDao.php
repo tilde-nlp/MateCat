@@ -276,6 +276,14 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         return $stmt->rowCount();
     }
 
+    public static function saveEditingTime( $job_id, $editingTime, $ttl = 0 ) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE jobs SET editing_time = :editing_time WHERE id = :job_id ");
+        $stmt->execute(array('editing_time' => $editingTime, 'job_id' => $job_id));
+        return $stmt->rowCount();
+    }
+
     public static function getMemorySetting( $userId, $ttl = 0 ) {
 
         $thisDao = new self();

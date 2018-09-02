@@ -109,7 +109,11 @@
           </div>
           <div class="segments-footer">
             <div class="ib ml-8">{{ jobData.fileName }}</div>
-            <div class="pull-right mr-8">{{ $lang.titles.translated }} {{ jobData.progress }}% {{ $lang.titles.from }} {{ jobData.segments }} {{ $lang.titles.from_segments }}</div>
+            <div class="pull-right mr-8">
+              {{ $lang.titles.translated }} {{ jobData.progress }}% {{ $lang.titles.from }} {{ jobData.segments }} {{ $lang.titles.from_segments }}.
+              {{ $lang.titles.time_spent }} {{ timeSpent }}.
+              {{ $lang.titles.time_remaining }} {{ timeRemaining }}.
+            </div>
             <div class="clear-both"/>
             <div
               :style="{width: jobData.progress + '%' }"
@@ -176,7 +180,8 @@ export default {
         fileName: '',
         firstSegment: 0,
         lastSegment: 0,
-        mtSystemId: ''
+        mtSystemId: '',
+        editingTime: 0
       },
       searchInSource: '',
       searchInTarget: '',
@@ -189,6 +194,26 @@ export default {
     segmentsList: function () {
       const l = _.sortBy(this.segments, ['id'], ['asc'])
       return l
+    },
+    timeSpent: function () {
+      let minutes = Math.floor(this.jobData.editingTime / 60)
+      if (minutes > 59) {
+        const hours = Math.floor(this.jobData.editingTime / 60 / 60)
+        minutes = Math.floor((this.jobData.editingTime - (hours * 60 * 60)) / 60)
+        return hours + ' ' + this.$lang.titles.hours + ' ' + minutes + ' ' + this.$lang.titles.minutes
+      }
+      return minutes + ' ' + this.$lang.titles.minutes
+    },
+    timeRemaining: function () {
+      const timePerPercent = this.jobData.editingTime / this.jobData.progress
+      const predictedTime = timePerPercent * 100
+      let minutes = Math.floor(predictedTime / 60)
+      if (minutes > 59) {
+        const hours = Math.floor(predictedTime / 60 / 60)
+        minutes = Math.floor((predictedTime - (hours * 60 * 60)) / 60)
+        return hours + ' ' + this.$lang.titles.hours + ' ' + minutes + ' ' + this.$lang.titles.minutes
+      }
+      return minutes + ' ' + this.$lang.titles.minutes
     }
   },
   mounted: function () {
@@ -576,6 +601,8 @@ export default {
             this.jobData.lastSegmentId = parseInt(jobRes.data.active_segment_id)
             this.jobData.source = jobRes.data.source
             this.jobData.target = jobRes.data.target
+            this.jobData.editingTime = jobRes.data.editing_time
+            Vue.set(this.jobData, 'editingTime', parseInt(jobRes.data.editing_time))
             this.jobData.firstSegment = parseInt(jobRes.data.firstSegment)
             this.jobData.lastSegment = parseInt(jobRes.data.lastSegment)
             this.jobData.fileName = jobRes.data.fileName
@@ -584,6 +611,7 @@ export default {
             this.reloadSegments()
             this.checkStats()
             this.getFileUrls()
+            this.startEditTimer()
           })
         this.$nextTick(function () {
           window.addEventListener('resize', this.setSegmentListHeight)
@@ -598,6 +626,15 @@ export default {
         })
           .then(this.initialAnalyzeResponse)
       }, 2000)
+    },
+    startEditTimer: function () {
+      setInterval(() => {
+        this.jobData.editingTime += 10
+        JobsService.setEditingTime({
+          id: this.jobData.id,
+          editingTime: this.jobData.editingTime
+        })
+      }, 10000)
     }
   }
 }

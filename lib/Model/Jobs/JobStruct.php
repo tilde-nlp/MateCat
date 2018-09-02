@@ -67,6 +67,7 @@ class Jobs_JobStruct extends DataAccess_AbstractDaoSilentStruct implements DataA
     public $revision_stats_language_quality_maj;
     public $revision_stats_style_maj;
     public $total_raw_wc;
+    public $editing_time;
 
     /**
      * @var JobsTranslatorsStruct

@@ -22,5 +22,9 @@ module.exports = {
   write: 'Write',
   read: 'Read',
   hotkeys: 'Hotkeys',
-  concordance_search: 'Concordance search'
+  concordance_search: 'Concordance search',
+  time_spent: 'Time spent',
+  minutes: 'minutes',
+  hours: 'hours',
+  time_remaining: 'Time remaining'
 }

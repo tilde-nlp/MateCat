@@ -4,5 +4,8 @@ import {CONFIG} from '../CONFIG'
 export default {
   getInfo: function (data) {
     return HTTP.post(CONFIG.baseUrl + '?action=jobInfo', FormGenerator.generateForm(data))
+  },
+  setEditingTime: function (data) {
+    return HTTP.post(CONFIG.baseUrl + '?action=setEditingTime', FormGenerator.generateForm(data))
   }
 }
