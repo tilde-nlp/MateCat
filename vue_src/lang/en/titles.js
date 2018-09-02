@@ -21,5 +21,6 @@ module.exports = {
   translation_memories: 'Translation memories',
   write: 'Write',
   read: 'Read',
-  hotkeys: 'Hotkeys'
+  hotkeys: 'Hotkeys',
+  concordance_search: 'Concordance search'
 }

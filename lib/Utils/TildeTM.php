@@ -19,14 +19,19 @@ class TildeTM {
         return $this->get('tm');
     }
 
-    public function getMatches($collection, $text, $source, $target) {
-        return $this->get('tm/' . urlencode($collection) . '/segments?' . http_build_query(
+    public function getMatches($collection, $text, $source, $target, $concordance) {
+        $queryString = http_build_query(
             array(
                 'q' => $text,
                 'sourceLang' => $source,
-                'targetLang' => $target
-            )
-            ));
+                'targetLang' => $target)
+        );
+        if ($concordance) {
+            $queryString .= '&concordance=true';
+        } else {
+            $queryString .= '&concordance=false';
+        }
+        return $this->get('tm/' . urlencode($collection) . '/segments?' . $queryString);
     }
 
     public function writeMatch($collection, $source, $target, $sourceLang, $targetLang) {

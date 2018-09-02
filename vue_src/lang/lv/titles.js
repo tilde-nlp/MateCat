@@ -21,5 +21,6 @@ module.exports = {
   translation_memories: 'Tulkošanas atmiņas',
   write: 'Rakstīt',
   read: 'Lasīt',
-  hotkeys: 'Taustiņkombinācijas'
+  hotkeys: 'Taustiņkombinācijas',
+  concordance_search: 'Concordance search'
 }

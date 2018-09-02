@@ -158,18 +158,22 @@ class SetContributionWorker extends AbstractWorker {
     protected function _set( Array $config, ContributionStruct $contributionStruct ) {
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getCookie());
         $memories = $TildeTM->getMemories();
+        foreach($memories as &$memory) {
+            $memory->write = true && $memory->canUpdate;
+        }
         $user = AuthCookie::getCredentials();
         $JobsDao = new Jobs_JobDao();
         $memorySettings = $JobsDao->getMemorySetting($user['uid']);
-        $writeMemories = [];
         foreach($memorySettings as $setting) {
-            if (!$setting->write_memory) {
-                continue;
+            foreach($memories as $k => $memory) {
+                if (strcmp($memory->id, $setting['memory_id']) !== 0) {
+                    continue;
+                }
+                $memories[$k]->write = $setting['write_memory'] > 0;
             }
-            $writeMemories[] = $setting->memory_id;
         }
         foreach($memories as $memory) {
-            if (!in_array($memory->id, $writeMemories)) {
+            if (!$memory->write) {
                 continue;
             }
             $TildeTM->writeMatch(

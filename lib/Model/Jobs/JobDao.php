@@ -285,17 +285,19 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
 
     }
 
-    public static function saveMemorySetting( $user_id, $memory_id, $read, $write, $ttl = 0 ) {
+    public static function saveMemorySetting( $user_id, $memory_id, $read, $write, $concordance, $ttl = 0 ) {
 
         $conn = Database::obtain()->getConnection();
-        $stmt = $conn->prepare("INSERT INTO memory_settings (memory_id, read_memory, write_memory, user_id) VALUES (:memory_id, :read, :write, :user_id)
+        $stmt = $conn->prepare("INSERT INTO memory_settings (memory_id, read_memory, write_memory, concordance_search, user_id) VALUES (:memory_id, :read, :write, :concordance, :user_id)
                         ON DUPLICATE KEY UPDATE
                         read_memory = :read,
-                        write_memory = :write");
+                        write_memory = :write,
+                        concordance_search = :concordance");
         $stmt->execute(array(
             'memory_id' => $memory_id,
             'read' => $read ? 1 : 0,
             'write' => $write ? 1 : 0,
+            'concordance' => $concordance ? 1 : 0,
             'user_id' => $user_id));
         return $stmt->rowCount();
     }

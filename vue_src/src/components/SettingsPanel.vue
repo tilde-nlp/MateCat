@@ -30,6 +30,9 @@
       <div class="input-label ib-i w-64">
         {{ $lang.titles.write }}
       </div>
+      <div class="input-label ib-i w-64">
+        {{ $lang.titles.concordance_search }}
+      </div>
       <div class="mt-8">
         <svgicon
           v-if="$loading.isLoading('memories')"
@@ -57,6 +60,11 @@
                 :disabled="!memory.canUpdate"
                 class="ib w-64"
                 @change="val => { setWrite(memory, val) }"
+              />
+              <check-box
+                :value="memory.concordance"
+                class="ib w-64"
+                @change="val => { setConcordance(memory, val) }"
               />
               <div class="ib va-top">{{ memory.name }}</div>
             </div>
@@ -96,6 +104,10 @@ export default {
     },
     setWrite: function (memory, value) {
       Vue.set(memory, 'write', value)
+      TranslationMemoryService.saveSettings(memory)
+    },
+    setConcordance: function (memory, value) {
+      Vue.set(memory, 'concordance', value)
       TranslationMemoryService.saveSettings(memory)
     }
   }
