@@ -141,9 +141,9 @@ class UploadHandler {
 
         $this->handle_convert();
         if (!empty($this->result['errors'])) {
-            Log::$fileName = "test-upload.log";
-            Log::doLog( "convert error" );
-            Log::doLog( $this->result['errors'] );
+//            Log::$fileName = "test-upload.log";
+//            Log::doLog( "convert error" );
+//            Log::doLog( $this->result['errors'] );
             return $this->sendError('ErrorConvertingFile');
         }
         $this->handle_project_create();
@@ -222,8 +222,8 @@ class UploadHandler {
                 // FORMAT ERROR MESSAGE
                 switch ( $file->error ) {
                     case 'abort':
-                        Log::$fileName = "test-upload.log";
-                        Log::doLog( "upload error" );
+//                        Log::$fileName = "test-upload.log";
+//                        Log::doLog( "upload error" );
                         $file->error = "ErrorConvertingFile";
                         break;
                     default:
