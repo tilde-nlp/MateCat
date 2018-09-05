@@ -1,13 +1,13 @@
-function onTagMouseEnter (tagElement, parentId) {
-  const elements = document.getElementById(parentId).querySelectorAll("[data-id='" + tagElement.getAttribute('data-id') + "']")
+function onTagMouseEnter (tagElement) {
+  const elements = document.querySelectorAll("[data-class-id='" + tagElement.getAttribute('data-class-id') + "']")
   for (let i = 0; i < elements.length; i++) {
-    elements[i].classList.add('tag-bg')
+    elements[i].classList.add('active')
   }
 }
 
-function onTagMouseLeave (tagElement, parentId) {
-  const elements = document.getElementById(parentId).querySelectorAll("[data-id='" + tagElement.getAttribute('data-id') + "']")
+function onTagMouseLeave (tagElement) {
+  const elements = document.querySelectorAll("[data-class-id='" + tagElement.getAttribute('data-class-id') + "']")
   for (let i = 0; i < elements.length; i++) {
-    elements[i].classList.remove('tag-bg')
+    elements[i].classList.remove('active')
   }
 }

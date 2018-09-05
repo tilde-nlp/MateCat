@@ -1713,3 +1713,20 @@ select::-ms-expand {
   .mt-32;
   .center;
 }
+
+.tag {
+  .ib;
+  .w-32;
+  .center;
+  .white;
+  background-color: @color-blueish-darker-still;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  .p-0;
+  .pointer;
+  .transition;
+  &.active {
+    background-color: @color-green-darker;
+  }
+}
