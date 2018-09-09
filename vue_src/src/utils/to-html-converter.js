@@ -6,6 +6,34 @@ import {ValueEmpty} from './exceptions/value-empty'
 const selfClosingPattern = /&lt;.?.?.?.?.? id="[0-9]+"\/&gt;/g
 const dualOpenPattern = /&lt;.?.?.?.?.? id="[0-9]+"&gt;/
 const dualClosePattern = /&lt;\/.?.?.?.?.?&gt;/
+export class Tag {
+  constructor (id, name, segmentId) {
+    this.id = id
+    this.name = name
+    this.segmentId = segmentId
+  }
+}
+export class SelfClosingTag extends Tag {
+  constructor (tagString, segmentId) {
+    super(getId(tagString), getTagName(tagString), segmentId)
+    this.namePostfix = 'sc'
+    this.typeClass = 'self-closing'
+  }
+}
+export class DualOpenTag extends Tag {
+  constructor (tagString, segmentId) {
+    super(getId(tagString), getTagName(tagString), segmentId)
+    this.namePostfix = 'do'
+    this.typeClass = 'dual-open'
+  }
+}
+export class DualCloseTag extends Tag {
+  constructor (openTag) {
+    super(openTag.id, openTag.name, openTag.segmentId)
+    this.namePostfix = 'dc'
+    this.typeClass = 'dual-close'
+  }
+}
 export function replaceAllSelfClosedTags (inputText, segmentId) {
   if (typeof (inputText) === 'undefined' || inputText === null) {
     throw new ValueMissing()
@@ -21,10 +49,7 @@ export function replaceAllSelfClosedTags (inputText, segmentId) {
   return outputText
 }
 function replaceOneSeflClosedTag (tag, text, segmentId) {
-  const id = getId(tag)
-  const tagName = getTagName(tag)
-  const htmlTagName = tagName
-  const htmlTag = buildSelfClosingHtmlTag(htmlTagName, id, segmentId)
+  const htmlTag = buildHtmlTag(new SelfClosingTag(tag, segmentId))
   return text.replace(tag, htmlTag)
 }
 function replaceAllDualsTags (text, segmentId) {
@@ -46,11 +71,11 @@ function replaceAllDualsTags (text, segmentId) {
     if (openTagPosition > -1 && openTagPosition < closeTagPosition) {
       const openTag = text.match(dualOpenPattern)[0]
       text = replaceOpenTag(text, openTag, segmentId)
-      stack.push(toObject(openTag))
+      stack.push(new DualOpenTag(openTag, segmentId))
     } else {
       const closeTag = text.match(dualClosePattern)[0]
-      const openTagObject = stack.pop()
-      text = replaceCloseTag(text, closeTag, openTagObject, segmentId)
+      const openTag = stack.pop()
+      text = replaceCloseTag(text, closeTag, openTag)
     }
   }
   if (stack.length > 0) {
@@ -59,22 +84,12 @@ function replaceAllDualsTags (text, segmentId) {
   return text
 }
 function replaceOpenTag (text, tag, segmentId) {
-  const tagId = getId(tag)
-  const tagName = getTagName(tag)
-  const htmlTagName = tagName
-  const htmlTag = buildDualOpenHtmlTag(htmlTagName, tagId, segmentId)
+  const htmlTag = buildHtmlTag(new DualOpenTag(tag, segmentId))
   return text.replace(tag, htmlTag)
 }
-function replaceCloseTag (text, closeTag, openTagObject, segmentId) {
-  const htmlTagName = openTagObject.name
-  const htmlTag = buildDualCloseHtmlTag(htmlTagName, openTagObject.id, segmentId)
+function replaceCloseTag (text, closeTag, openTag) {
+  const htmlTag = buildHtmlTag(new DualCloseTag(openTag))
   return text.replace(closeTag, htmlTag)
-}
-function toObject (tag) {
-  return {
-    id: getId(tag),
-    name: getTagName(tag)
-  }
 }
 export function getId (tag) {
   validateString(tag)
@@ -95,26 +110,13 @@ export function validateString (text) {
     throw new ValueEmpty()
   }
 }
-// TODO Only one class changes, these methods can be de-duplicated
-export function buildSelfClosingHtmlTag (tagName, id, segmentId) {
-  const template = '<span class="tag self-closing" data-tag-name="xxtagNamexx-sc" data-xlif-id="xxtagIdxx" data-class-id="tag-xxtagIdxx-xxsegmentIdxx" onmouseenter="onTagMouseEnter(this)" onmouseleave="onTagMouseLeave(this)">xxtagNamexx</span>'
-  let result = template.replace(new RegExp('xxtagNamexx', 'g'), tagName)
-  result = result.replace(new RegExp('xxtagIdxx', 'g'), id)
-  result = result.replace(new RegExp('xxsegmentIdxx', 'g'), segmentId)
-  return result
-}
-export function buildDualOpenHtmlTag (tagName, id, segmentId) {
-  const template = '<span class="tag dual-open" data-tag-name="xxtagNamexx-do" data-xlif-id="xxtagIdxx" data-class-id="tag-xxtagIdxx-xxsegmentIdxx" onmouseenter="onTagMouseEnter(this)" onmouseleave="onTagMouseLeave(this)">xxtagNamexx</span>'
-  let result = template.replace(new RegExp('xxtagNamexx', 'g'), tagName)
-  result = result.replace(new RegExp('xxtagIdxx', 'g'), id)
-  result = result.replace(new RegExp('xxsegmentIdxx', 'g'), segmentId)
-  return result
-}
-export function buildDualCloseHtmlTag (tagName, id, segmentId) {
-  const template = '<span class="tag dual-close" data-tag-name="xxtagNamexx-dc" data-xlif-id="xxtagIdxx" data-class-id="tag-xxtagIdxx-xxsegmentIdxx" onmouseenter="onTagMouseEnter(this)" onmouseleave="onTagMouseLeave(this)">xxtagNamexx</span>'
-  let result = template.replace(new RegExp('xxtagNamexx', 'g'), tagName)
-  result = result.replace(new RegExp('xxtagIdxx', 'g'), id)
-  result = result.replace(new RegExp('xxsegmentIdxx', 'g'), segmentId)
+export function buildHtmlTag (tag) {
+  const template = '<span class="tag typeClass" data-tag-name="tagName-namePostfix" data-xlif-id="tagId" data-class-id="tag-tagId-segmentId" onmouseenter="onTagMouseEnter(this)" onmouseleave="onTagMouseLeave(this)">tagName</span>'
+  let result = template.replace(new RegExp('tagName', 'g'), tag.name)
+  result = result.replace(new RegExp('namePostfix', 'g'), tag.namePostfix)
+  result = result.replace(new RegExp('tagId', 'g'), tag.id)
+  result = result.replace(new RegExp('segmentId', 'g'), tag.segmentId)
+  result = result.replace(new RegExp('typeClass', 'g'), tag.typeClass)
   return result
 }
 export const ToHtmlConverter = {
