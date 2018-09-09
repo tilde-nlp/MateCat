@@ -11,9 +11,10 @@
 <script>
 import _ from 'lodash'
 import {TextHighlighter} from 'utils/text-highlighter'
-import {TagsConverter} from 'utils/tags-converter'
-import {xliffToHtml} from 'utils/segment/segment-text'
-import {TooManyConverterIterations} from 'utils/too-many-converter-iterations'
+import {
+  xliffToHtml,
+  htmlToXliff
+} from 'utils/segment/segment-text'
 export default {
   name: 'TranslatorEditor',
   props: {
@@ -114,12 +115,10 @@ export default {
       try {
         cleanText = this.cleanText()
       } catch (error) {
-        if (error instanceof TooManyConverterIterations) {
-          this.$Alerts.add(this.$lang.messages.invalid_target_content)
-          this.editor.innerHTML = this.lastValidContent
-          return
-        }
-        throw error
+        this.$Alerts.add(this.$lang.messages.invalid_target_content)
+        console.log(this.lastValidContent)
+        this.editor.innerHTML = this.lastValidContent
+        return
       }
       this.lastValidContent = this.editor.innerHTML
       this.$emit('input', cleanText)
@@ -128,7 +127,7 @@ export default {
       const rawText = this.editor.innerHTML
       let result
       result = TextHighlighter.remove(rawText)
-      result = TagsConverter.remove(result, 'editor-' + this.id)
+      result = htmlToXliff(result, this.id)
       return result
     },
     enableContentEdit: function () {

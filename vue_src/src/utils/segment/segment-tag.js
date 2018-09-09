@@ -13,8 +13,12 @@ export class Tag {
     this.namePostfix = ''
     this.typeClass = ''
   }
+  fromHtml (xliffTag) {
+    this.id = getTagIdFromHtml(xliffTag)
+    this.name = getTagNameFromHtml(xliffTag)
+  }
   toHtml () {
-    const template = '<span class="tag typeClass" data-tag-name="tagName-namePostfix" data-xlif-id="tagId" data-class-id="tag-tagId-segmentId" onmouseenter="onTagMouseEnter(this)" onmouseleave="onTagMouseLeave(this)">tagName</span>'
+    const template = '<span contenteditable="false" class="tag typeClass" data-tag-name="tagName-namePostfix" data-xlif-id="tagId" data-class-id="tag-tagId-segmentId" onmouseenter="onTagMouseEnter(this)" onmouseleave="onTagMouseLeave(this)">tagName</span>'
     let result = template.replace(new RegExp('tagName', 'g'), this.name)
     result = result.replace(new RegExp('namePostfix', 'g'), this.namePostfix)
     result = result.replace(new RegExp('tagId', 'g'), this.id)
@@ -31,12 +35,22 @@ export class Tag {
   }
   replaceToHtml (source) {
     if (this instanceof SelfClosingTag || this instanceof DualOpenTag) {
-      const tagCount = (source.match(new RegExp(this.toXliff(), 'g')) || []).length
+      const tagCount = (source.match(new RegExp(this.escapeRegExp(this.toXliff()), 'g')) || []).length
       if (tagCount > 1) {
         throw new DuplicateTagInSource()
       }
     }
     return source.replace(this.toXliff(), this.toHtml())
+  }
+  replaceToXliff (source) {
+    const tagCount = (source.match(new RegExp(this.escapeRegExp(this.toHtml()), 'g')) || []).length
+    if (tagCount > 1) {
+      throw new DuplicateTagInSource()
+    }
+    return source.replace(this.toHtml(), this.toXliff())
+  }
+  escapeRegExp (text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
   }
 }
 export class SelfClosingTag extends Tag {
@@ -90,6 +104,20 @@ export function getDualCloseTagNameFromXliff (tag) {
     throw new InvalidXlifTags()
   }
   return tag.substring(slashPosition + 1, ampersandPosition)
+}
+export function getTagIdFromHtml (tag) {
+  validateString(tag)
+  const searchString = 'data-xlif-id="'
+  const idStartPosition = tag.indexOf(searchString) + searchString.length
+  const idEndPosition = tag.indexOf('"', idStartPosition)
+  return tag.substring(idStartPosition, idEndPosition)
+}
+export function getTagNameFromHtml (tag) {
+  validateString(tag)
+  const searchString = 'data-tag-name="'
+  const nameStartPosition = tag.indexOf(searchString) + searchString.length
+  const nameEndPosition = tag.indexOf('-', nameStartPosition)
+  return tag.substring(nameStartPosition, nameEndPosition)
 }
 export function validateString (text) {
   if (typeof (text) === 'undefined' || text === null) {

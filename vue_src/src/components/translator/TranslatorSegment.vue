@@ -43,6 +43,7 @@
           :search-term="$store.state.targetSearch"
           :focus-toggle="segment.focusToggle"
           :segment-id="segmentData.id"
+          :contenteditable="isActive"
           @input="onSegmentInput"
           @id="id => { editorId = id }"
         />
@@ -95,7 +96,6 @@
 </template>
 <script>
 import TranslatorEditor from 'components/translator/TranslatorEditor'
-import {TagsConverter} from 'utils/tags-converter'
 export default {
   name: 'TranslatorSegment',
   components: {
@@ -211,61 +211,9 @@ export default {
     setActive: function () {
       this.$emit('click', this.segment.id)
     },
-    insertTag: function (tag) {
-      const tagString = TagsConverter.getEmptyTag(tag, 'editor-' + this.editorId)
-      this.inserTagHtml(tagString, false)
-    },
+    insertTag: function (tag) {},
     focusEditor: function () {
       this.segment.focusToggle = !this.segment.focusToggle
-    },
-    inserTagHtml: function (html, selectPastedContent) {
-      let sel
-      let range
-      if (window.getSelection) {
-        // IE9 and non-IE
-        sel = window.getSelection()
-        if (sel.getRangeAt && sel.rangeCount) {
-          range = sel.getRangeAt(0)
-          range.deleteContents()
-
-          // Range.createContextualFragment() would be useful here but is
-          // only relatively recently standardized and is not supported in
-          // some browsers (IE9, for one)
-          let el = document.createElement('div')
-          el.innerHTML = html
-          let frag = document.createDocumentFragment()
-          let node
-          let lastNode
-          node = el.firstChild
-          while (node) {
-            lastNode = frag.appendChild(node)
-            node = el.firstChild
-          }
-          let firstNode = frag.firstChild
-          range.insertNode(frag)
-
-          // Preserve the selection
-          if (lastNode) {
-            range = range.cloneRange()
-            range.setStartAfter(lastNode)
-            if (selectPastedContent) {
-              range.setStartBefore(firstNode)
-            } else {
-              range.collapse(true)
-            }
-            sel.removeAllRanges()
-            sel.addRange(range)
-          }
-        }
-      } else if ((sel = document.selection) && sel.type !== 'Control') {
-        // IE < 9
-        let originalRange = sel.createRange()
-        originalRange.collapse(true)
-        sel.createRange().pasteHTML(html)
-        let range = sel.createRange()
-        range.setEndPoint('StartToStart', originalRange)
-        range.select()
-      }
     }
   }
 }

@@ -89,7 +89,7 @@
                   >
                     <span
                       v-if="suggestion.isMT"
-                      v-html="convertTags(suggestion.translation, 'suggestion-' + index)"
+                      v-html="convertTags(suggestion.translation, $store.state.activeSegment.id)"
                     />
                     <div
                       v-else
@@ -97,9 +97,9 @@
                     >
                       <div
                         class="mb-8 bb-light-darker"
-                        v-html="convertTags(suggestion.segment)"
+                        v-html="convertTags(suggestion.segment, $store.state.activeSegment.id)"
                       />
-                      <div v-html="convertTags(suggestion.translation)" />
+                      <div v-html="convertTags(suggestion.translation, $store.state.activeSegment.id)" />
                     </div>
                   </div>
                   <div
@@ -309,7 +309,9 @@ import LanguagesService from 'services/languages.js'
 import CommentsService from 'services/comments.js'
 import _ from 'lodash'
 import {DateConverter} from 'utils/date-converter'
-import {TagsConverter} from 'utils/tags-converter'
+import {
+  xliffToHtml
+} from 'utils/segment/segment-text'
 export default {
   name: 'TranslatorAssistant',
   props: {
@@ -454,7 +456,7 @@ export default {
       window.open(this.$store.state.termBaseUrl + this.searchTerm + '/' + this.fromLang.substring(0, 2) + '?target=' + this.toLang.substring(0, 2), '_blank')
     },
     convertTags: function (text, parentId) {
-      return TagsConverter.add(text, parentId)
+      return xliffToHtml(text, parentId)
     },
     onMtChange: function (value) {
       this.$emit('mtSystemChange', value.value)
