@@ -1,4 +1,4 @@
-import {ValueMissing, ValueEmpty} from './exceptions'
+import {ValueMissing, ValueEmpty, DuplicateTagInSource} from './exceptions'
 
 export class Tag {
   constructor (id, name, segmentId) {
@@ -17,17 +17,16 @@ export class Tag {
     result = result.replace(new RegExp('typeClass', 'g'), this.typeClass)
     return result
   }
-}
-export function getTagIdFromXliff (tag) {
-  validateString(tag)
-  const idStartPosition = tag.indexOf('"')
-  const idEndPosition = tag.indexOf('"', idStartPosition + 1)
-  return tag.substring(idStartPosition + 1, idEndPosition)
-}
-export function getTagNameFromXliff (tag) {
-  validateString(tag)
-  const spacePosition = tag.indexOf(' ')
-  return tag.substring(4, spacePosition)
+  toXliff () {
+    return ''
+  }
+  replaceToHtml (source) {
+    const tagCount = (source.match(new RegExp(this.toXliff(), 'g')) || []).length
+    if (tagCount > 1) {
+      throw new DuplicateTagInSource()
+    }
+    return source.replace(this.toXliff(), this.toHtml())
+  }
 }
 export class SelfClosingTag extends Tag {
   constructor (tagString, segmentId) {
@@ -37,14 +36,6 @@ export class SelfClosingTag extends Tag {
   }
   toXliff () {
     return '&lt;' + this.name + ' id="' + this.id + '"/&gt;'
-  }
-}
-export function validateString (text) {
-  if (typeof (text) === 'undefined' || text === null) {
-    throw new ValueMissing()
-  }
-  if (text === '') {
-    throw new ValueEmpty()
   }
 }
 export class DualOpenTag extends Tag {
@@ -65,5 +56,24 @@ export class DualCloseTag extends Tag {
   }
   toXliff () {
     return '&lt;"/' + this.name + '&gt;'
+  }
+}
+export function getTagIdFromXliff (tag) {
+  validateString(tag)
+  const idStartPosition = tag.indexOf('"')
+  const idEndPosition = tag.indexOf('"', idStartPosition + 1)
+  return tag.substring(idStartPosition + 1, idEndPosition)
+}
+export function getTagNameFromXliff (tag) {
+  validateString(tag)
+  const spacePosition = tag.indexOf(' ')
+  return tag.substring(4, spacePosition)
+}
+export function validateString (text) {
+  if (typeof (text) === 'undefined' || text === null) {
+    throw new ValueMissing()
+  }
+  if (text === '') {
+    throw new ValueEmpty()
   }
 }

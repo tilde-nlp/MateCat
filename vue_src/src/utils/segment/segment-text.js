@@ -1,7 +1,6 @@
 // TODO How to handle xlif ids of _48 and sorts?
 // TODO Make global mousenter/leave listener
 import {
-  DuplicateTagInSource,
   InvalidXlifTags,
   ValueMissing
 } from './exceptions'
@@ -15,34 +14,27 @@ const selfClosingPattern = /&lt;.?.?.?.?.? id="[0-9]+"\/&gt;/g
 const dualOpenPattern = /&lt;.?.?.?.?.? id="[0-9]+"&gt;/
 const dualClosePattern = /&lt;\/.?.?.?.?.?&gt;/
 
-export function xliffToHtml (text, segmentId) {
-  const selfClosedReplaced = replaceAllSelfClosedTags(text, segmentId)
+export function xliffToHtml (inputText, segmentId) {
+  if (typeof (inputText) === 'undefined' || inputText === null) {
+    throw new ValueMissing()
+  }
+  const selfClosedReplaced = replaceAllXliffSelfClosedTags(inputText, segmentId)
   return replaceAllDualsTags(selfClosedReplaced, segmentId)
 }
 export function htmlToXliff (text) {
   return ''
 }
-export function replaceAllSelfClosedTags (inputText, segmentId) {
-  if (typeof (inputText) === 'undefined' || inputText === null) {
-    throw new ValueMissing()
-  }
+export function replaceAllXliffSelfClosedTags (inputText, segmentId) {
   const matches = inputText.match(selfClosingPattern)
   if (matches === null) {
     return inputText
   }
   let outputText = inputText
   matches.forEach(foundTag => {
-    outputText = replaceOneSelfClosedTag(foundTag, outputText, segmentId)
+    const selfClosingTag = new SelfClosingTag(foundTag, segmentId)
+    outputText = selfClosingTag.replaceToHtml(outputText)
   })
   return outputText
-}
-export function replaceOneSelfClosedTag (xliffTag, text, segmentId) {
-  const tagCount = (text.match(new RegExp(xliffTag, 'g')) || []).length
-  if (tagCount > 1) {
-    throw new DuplicateTagInSource(text)
-  }
-  const tag = new SelfClosingTag(xliffTag, segmentId)
-  return text.replace(xliffTag, tag.toHtml())
 }
 function replaceAllDualsTags (text, segmentId) {
   let openTagPosition = text.search(dualOpenPattern)

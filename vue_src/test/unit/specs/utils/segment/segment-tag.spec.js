@@ -7,7 +7,8 @@ import {
 } from '@/utils/segment/segment-tag'
 import {
   ValueMissing,
-  ValueEmpty
+  ValueEmpty,
+  DuplicateTagInSource
 } from '@/utils/segment/exceptions'
 
 describe('SegmentTag.toHtml', () => {
@@ -58,5 +59,30 @@ describe('SegmentTag.getTagNameFromXliff', () => {
   it('gets correct id', () => {
     const tag = '&lt;bx id="_10"&gt;'
     expect(getTagNameFromXliff(tag)).toBe('bx')
+  })
+})
+
+describe('SegmentTag-SelfClosing.replaceToHtml', () => {
+  let selfClosingTag
+
+  beforeEach(() => {
+    selfClosingTag = new SelfClosingTag('&lt;gx id="10"/&gt;', 1)
+  })
+
+  it('replaces xliff tag with html tag', () => {
+    const source = 'Random text' + selfClosingTag.toXliff() + ' another random text'
+    const expectedResult = 'Random text' + selfClosingTag.toHtml() + ' another random text'
+    expect(selfClosingTag.replaceToHtml(source)).toBe(expectedResult)
+  })
+  it('if text with no tag given', () => {
+    const source = 'Some random text without tags'
+    expect(selfClosingTag.replaceToHtml(source)).toBe(source)
+  })
+  it('throws  exception if duplicate tags found in source', () => {
+    const source = 'Some random text' + selfClosingTag.toXliff() + ' another random text' + selfClosingTag.toXliff()
+    const testFunction = () => {
+      selfClosingTag.replaceToHtml(source)
+    }
+    expect(testFunction).toThrow(DuplicateTagInSource)
   })
 })
