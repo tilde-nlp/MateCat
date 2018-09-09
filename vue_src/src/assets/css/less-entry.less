@@ -1720,13 +1720,23 @@ select::-ms-expand {
   .center;
   .white;
   background-color: @color-blueish-darker-still;
+  .pointer;
+  .transition;
+  margin: 0 1.5px;
+  &.active {
+    background-color: @color-green-darker;
+  }
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;
-  .p-0;
-  .pointer;
-  .transition;
-  &.active {
-    background-color: @color-green-darker;
+  &.dual-open {
+    border-top-right-radius: 100%;
+    border-bottom-right-radius: 100%;
+    padding-right: 4px;
+  }
+  &.dual-close {
+    border-top-left-radius: 100%;
+    border-bottom-left-radius: 100%;
+    padding-left: 4px;
   }
 }
