@@ -19,7 +19,7 @@ export function xliffToHtml (inputText, segmentId) {
     throw new ValueMissing()
   }
   const selfClosedReplaced = replaceAllXliffSelfClosedTags(inputText, segmentId)
-  return replaceAllDualsTags(selfClosedReplaced, segmentId)
+  return replaceAllXliffDualTags(selfClosedReplaced, segmentId)
 }
 export function htmlToXliff (text) {
   return ''
@@ -31,47 +31,53 @@ export function replaceAllXliffSelfClosedTags (inputText, segmentId) {
   }
   let outputText = inputText
   matches.forEach(foundTag => {
-    const selfClosingTag = new SelfClosingTag(foundTag, segmentId)
+    const selfClosingTag = new SelfClosingTag()
+    selfClosingTag.fromXliff(foundTag)
+    selfClosingTag.segmentId = segmentId
     outputText = selfClosingTag.replaceToHtml(outputText)
   })
   return outputText
 }
-function replaceAllDualsTags (text, segmentId) {
-  let openTagPosition = text.search(dualOpenPattern)
-  let closeTagPosition = text.search(dualClosePattern)
+export function replaceAllXliffDualTags (inputText, segmentId) {
+  let outputText = inputText
+  let openTagPosition = outputText.search(dualOpenPattern)
+  let closeTagPosition = outputText.search(dualClosePattern)
   if (openTagPosition < 0 && closeTagPosition >= 0) {
     throw InvalidXlifTags
   }
   if (openTagPosition < 0) {
-    return text
+    return outputText
   }
   let stack = []
+  let counter = 0
   while (1) {
-    let openTagPosition = text.search(dualOpenPattern)
-    let closeTagPosition = text.search(dualClosePattern)
+    counter++
+    if (counter > 300) {
+      break
+    }
+    let openTagPosition = outputText.search(dualOpenPattern)
+    let closeTagPosition = outputText.search(dualClosePattern)
     if (openTagPosition < 0 && closeTagPosition < 0) {
       break
     }
     if (openTagPosition > -1 && openTagPosition < closeTagPosition) {
-      const openTag = text.match(dualOpenPattern)[0]
-      text = replaceOpenTag(text, openTag, segmentId)
-      stack.push(new DualOpenTag(openTag, segmentId))
+      const xliffOpenTag = outputText.match(dualOpenPattern)[0]
+      const dualOpenTag = new DualOpenTag()
+      dualOpenTag.fromXliff(xliffOpenTag)
+      dualOpenTag.segmentId = segmentId
+      outputText = dualOpenTag.replaceToHtml(outputText)
+      stack.push(dualOpenTag)
     } else {
-      const closeTag = text.match(dualClosePattern)[0]
-      const openTag = stack.pop()
-      text = replaceCloseTag(text, closeTag, openTag)
+      const dualOpenTag = stack.pop()
+      const dualCloseTag = new DualCloseTag()
+      dualCloseTag.id = dualOpenTag.id
+      dualCloseTag.name = dualOpenTag.name
+      dualCloseTag.segmentId = dualOpenTag.segmentId
+      outputText = dualCloseTag.replaceToHtml(outputText)
     }
   }
   if (stack.length > 0) {
     throw InvalidXlifTags
   }
-  return text
-}
-function replaceOpenTag (text, xliffTag, segmentId) {
-  const tag = new DualOpenTag(xliffTag, segmentId)
-  return text.replace(tag, tag.toHtml())
-}
-function replaceCloseTag (text, xliffCloseTag, openTag) {
-  const closeTag = new DualCloseTag(openTag)
-  return text.replace(closeTag, closeTag.toHtml())
+  return outputText
 }

@@ -1,10 +1,15 @@
-import {ValueMissing, ValueEmpty, DuplicateTagInSource} from './exceptions'
+import {
+  ValueMissing,
+  ValueEmpty,
+  DuplicateTagInSource,
+  InvalidXlifTags
+} from './exceptions'
 
 export class Tag {
-  constructor (id, name, segmentId) {
-    this.id = id
-    this.name = name
-    this.segmentId = segmentId
+  constructor () {
+    this.id = ''
+    this.name = ''
+    this.segmentId = ''
     this.namePostfix = ''
     this.typeClass = ''
   }
@@ -17,20 +22,26 @@ export class Tag {
     result = result.replace(new RegExp('typeClass', 'g'), this.typeClass)
     return result
   }
+  fromXliff (xliffTag) {
+    this.id = getTagIdFromXliff(xliffTag)
+    this.name = getTagNameFromXliff(xliffTag)
+  }
   toXliff () {
     return ''
   }
   replaceToHtml (source) {
-    const tagCount = (source.match(new RegExp(this.toXliff(), 'g')) || []).length
-    if (tagCount > 1) {
-      throw new DuplicateTagInSource()
+    if (this instanceof SelfClosingTag || this instanceof DualOpenTag) {
+      const tagCount = (source.match(new RegExp(this.toXliff(), 'g')) || []).length
+      if (tagCount > 1) {
+        throw new DuplicateTagInSource()
+      }
     }
     return source.replace(this.toXliff(), this.toHtml())
   }
 }
 export class SelfClosingTag extends Tag {
-  constructor (tagString, segmentId) {
-    super(getTagIdFromXliff(tagString), getTagNameFromXliff(tagString), segmentId)
+  constructor () {
+    super()
     this.namePostfix = 'sc'
     this.typeClass = 'self-closing'
   }
@@ -39,8 +50,8 @@ export class SelfClosingTag extends Tag {
   }
 }
 export class DualOpenTag extends Tag {
-  constructor (tagString, segmentId) {
-    super(getTagIdFromXliff(tagString), getTagNameFromXliff(tagString), segmentId)
+  constructor () {
+    super()
     this.namePostfix = 'do'
     this.typeClass = 'dual-open'
   }
@@ -49,13 +60,13 @@ export class DualOpenTag extends Tag {
   }
 }
 export class DualCloseTag extends Tag {
-  constructor (openTag) {
-    super(openTag.id, openTag.name, openTag.segmentId)
+  constructor () {
+    super()
     this.namePostfix = 'dc'
     this.typeClass = 'dual-close'
   }
   toXliff () {
-    return '&lt;"/' + this.name + '&gt;'
+    return '&lt;/' + this.name + '&gt;'
   }
 }
 export function getTagIdFromXliff (tag) {
@@ -67,7 +78,18 @@ export function getTagIdFromXliff (tag) {
 export function getTagNameFromXliff (tag) {
   validateString(tag)
   const spacePosition = tag.indexOf(' ')
-  return tag.substring(4, spacePosition)
+  if (spacePosition > -1) {
+    return tag.substring(4, spacePosition)
+  }
+  return getDualCloseTagNameFromXliff(tag)
+}
+export function getDualCloseTagNameFromXliff (tag) {
+  const slashPosition = tag.indexOf('/')
+  const ampersandPosition = tag.lastIndexOf('&')
+  if (slashPosition < 0 || ampersandPosition < 0) {
+    throw new InvalidXlifTags()
+  }
+  return tag.substring(slashPosition + 1, ampersandPosition)
 }
 export function validateString (text) {
   if (typeof (text) === 'undefined' || text === null) {
