@@ -74,7 +74,7 @@ function toObject (tag) {
     name: getTagName(tag)
   }
 }
-function getId (tag) {
+export function getId (tag) {
   const idStartPosition = tag.indexOf('"')
   const idEndPosition = tag.indexOf('"', idStartPosition + 1)
   return parseInt(tag.substring(idStartPosition + 1, idEndPosition))
@@ -90,6 +90,7 @@ function registerHtmlTag (tagName) {
   document.registerElement(tagName)
   RegisteredTags.push(tagName)
 }
+// TODO Only one class changes, these methods can be de-duplicated
 function buildSelfClosingHtmlTag (tagName, id, segmentId) {
   const classId = 'data-class-id="tag-' + id + '-' + segmentId + '"'
   const classList = ' class="tag self-closing"'

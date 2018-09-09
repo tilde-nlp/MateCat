@@ -5,7 +5,6 @@ import {AlertsObserver} from '@shibetec/vue-toolbox'
 import {router} from './router/router'
 import {HTTP} from './axios/base'
 import {store} from './vuex/store'
-import VueLocalStorage from 'vue-localstorage'
 import {loading} from './utils/loading'
 import {Auth} from './utils/auth'
 import vSelect from 'vue-select'
@@ -30,10 +29,6 @@ export function main (config) {
   Vue.prototype.$HTTP = HTTP
   Vue.use(svgicon, {
     tagName: 'svgicon'
-  })
-  Vue.use(VueLocalStorage, {
-    name: 'localStorage',
-    bind: true
   })
   Vue.use(require('vue-shortkey'))
   Vue.use(require('vue-cookie'))

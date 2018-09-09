@@ -9,7 +9,7 @@ module.exports = {
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-    '^c/(.*)$': '<rootDir>/src/components/$1',
+    '^c/(.*)$': '<rootDir>/src/components/$1'
   },
   transform: {
     '^.+\\.js$': '<rootDir>/node_modules/babel-jest',
@@ -24,7 +24,8 @@ module.exports = {
     'src/**/*.{js,vue}',
     '!src/app.js',
     '!src/router/router.js',
-    '!**/assets/**',
+    '!src/assets/**',
     '!**/node_modules/**'
-  ]
+  ],
+  testURL: 'http://local.matecat.com'
 }
