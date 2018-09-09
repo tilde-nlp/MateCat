@@ -12,7 +12,7 @@
 import _ from 'lodash'
 import {TextHighlighter} from 'utils/text-highlighter'
 import {TagsConverter} from 'utils/tags-converter'
-import {ToHtmlConverter} from 'utils/to-html-converter'
+import {xliffToHtml} from 'utils/segment/segment-text'
 import {TooManyConverterIterations} from 'utils/too-many-converter-iterations'
 export default {
   name: 'TranslatorEditor',
@@ -56,8 +56,7 @@ export default {
       if (this.searchTerm !== '') {
         result = TextHighlighter.add(this.searchTerm, result)
       }
-      result = ToHtmlConverter.convert(result, this.segmentId)
-      // result = TagsConverter.add(result, 'editor-' + this.id)
+      result = xliffToHtml(result, this.segmentId)
       return result
     },
     fontSizeString: function () {

@@ -1,60 +1,35 @@
 import {
-  getId,
-  getTagName,
   replaceAllSelfClosedTags,
-  buildHtmlTag,
-  SelfClosingTag,
-  DualOpenTag,
-  DualCloseTag
-} from '@/utils/to-html-converter'
-import {ValueMissing} from '@/utils/exceptions/value-missing'
-import {ValueEmpty} from '@/utils/exceptions/value-empty'
+  replaceOneSelfClosedTag
+} from '@/utils/segment/segment-text'
+import {
+  SelfClosingTag
+} from '@/utils/segment/segment-tag'
+import {
+  ValueMissing,
+  DuplicateTagInSource
+} from '@/utils/segment/exceptions'
 
-describe('ToHtmlConverter.getId', () => {
-  it('throws exception on missing value', () => {
-    expect(getId).toThrow(ValueMissing)
+describe('ToHtmlConverter.replaceOneSelfClosedTag', () => {
+  it('replaces xlif tag with html tag', () => {
+    const tagToReplace = '&lt;gx id="10"/&gt;'
+    const html = 'Doge 420 iet pa ceļu' + tagToReplace + ' un nu jā tipa...'
+    const selfClosedTag = new SelfClosingTag(tagToReplace, 1)
+    const expectedResult = 'Doge 420 iet pa ceļu' + selfClosedTag.toHtml() + ' un nu jā tipa...'
+    expect(replaceOneSelfClosedTag(tagToReplace, html, 1)).toBe(expectedResult)
   })
-  it('throws exception on empty string', () => {
+  it('if text with no tag given', () => {
+    const tagToReplace = '&lt;gx id="10"/&gt;'
+    const html = 'Doge 420 iet pa ceļu un nu jā tipa...'
+    expect(replaceOneSelfClosedTag(tagToReplace, html, 1)).toBe(html)
+  })
+  it('throws  exception if duplicate tags found in source', () => {
+    const tagToReplace = '&lt;gx id="10"/&gt;'
+    const html = 'Doge 420 iet pa ceļu' + tagToReplace + ' un nu jā tipa...' + tagToReplace
     const testFunction = () => {
-      getId('')
+      replaceOneSelfClosedTag(tagToReplace, html, 1)
     }
-    expect(testFunction).toThrow(ValueEmpty)
-  })
-  it('gets correct id', () => {
-    const tag = '&lt;bx id="_10"&gt;'
-    expect(getId(tag)).toBe('_10')
-  })
-})
-
-describe('ToHtmlConverter.getTagName', () => {
-  it('throws exception on missing value', () => {
-    expect(getTagName).toThrow(ValueMissing)
-  })
-  it('throws exception on empty string', () => {
-    const testFunction = () => {
-      getTagName('')
-    }
-    expect(testFunction).toThrow(ValueEmpty)
-  })
-  it('gets correct id', () => {
-    const tag = '&lt;bx id="_10"&gt;'
-    expect(getTagName(tag)).toBe('bx')
-  })
-})
-
-describe('ToHtmlConverter.buildHtmlTag', () => {
-  it('builds correct html tag', () => {
-    const expectedResult = '<span class="tag self-closing" data-tag-name="gx-sc" data-xlif-id="10" data-class-id="tag-10-1" onmouseenter="onTagMouseEnter(this)" onmouseleave="onTagMouseLeave(this)">gx</span>'
-    expect(buildHtmlTag(new SelfClosingTag('&lt;gx id="10"&gt;', 1))).toBe(expectedResult)
-  })
-  it('builds correct html tag', () => {
-    const expectedResult = '<span class="tag dual-open" data-tag-name="gx-do" data-xlif-id="10" data-class-id="tag-10-1" onmouseenter="onTagMouseEnter(this)" onmouseleave="onTagMouseLeave(this)">gx</span>'
-    expect(buildHtmlTag(new DualOpenTag('&lt;gx id="10"&gt;', 1))).toBe(expectedResult)
-  })
-  it('builds correct html tag', () => {
-    const expectedResult = '<span class="tag dual-close" data-tag-name="gx-dc" data-xlif-id="10" data-class-id="tag-10-1" onmouseenter="onTagMouseEnter(this)" onmouseleave="onTagMouseLeave(this)">gx</span>'
-    const openTag = new DualOpenTag('&lt;gx id="10"&gt;', 1)
-    expect(buildHtmlTag(new DualCloseTag(openTag))).toBe(expectedResult)
+    expect(testFunction).toThrow(DuplicateTagInSource)
   })
 })
 
