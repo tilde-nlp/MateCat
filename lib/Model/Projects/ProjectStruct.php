@@ -20,6 +20,8 @@ class Projects_ProjectStruct extends DataAccess_AbstractDaoSilentStruct implemen
     public $id_qa_model ;
     public $id_assignee ;
     public $due_date;
+    public $tm_pretranslate;
+    public $mt_pretranslate;
 
 
     /**

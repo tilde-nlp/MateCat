@@ -195,13 +195,16 @@ export default {
         firstSegment: 0,
         lastSegment: 0,
         mtSystemId: '',
-        editingTime: 0
+        editingTime: 0,
+        tmPretranslate: 0,
+        mtPretranslate: 0
       },
       searchInSource: '',
       searchInTarget: '',
       searchInComments: '',
       segmentPageSize: 5,
-      segmentsAnalyzed: 0
+      segmentsAnalyzed: 0,
+      pretranslateInterval: null
     }
   },
   computed: {
@@ -449,6 +452,7 @@ export default {
       if (this.$loading.isLoading('segmentsAnalyze')) {
         return
       }
+      this.segments = null
       this.segments = []
       this.$store.commit('activeSegment', null)
       this.readSegments(this.jobData.lastSegmentId, 'center')
@@ -472,6 +476,7 @@ export default {
             const segmentLength = segments.length
             if (segmentIndex === 0) {
               segments = segments.concat(this.segments)
+              this.segments = null
               this.segments = []
               Vue.nextTick(() => {
                 this.segments = segments
@@ -601,6 +606,7 @@ export default {
     onMtSystemChange: function (value) {
       this.system = value
       LanguagesService.saveMtSystem({mt_system_id: value, id: this.jobData.projectId})
+      this.$store.commit('mtSystem', value)
     },
     initialAnalyzeResponse: function (res) {
       this.segmentsAnalyzed = res.data.data.summary.SEGMENTS_ANALYZED
@@ -621,12 +627,28 @@ export default {
             this.jobData.firstSegment = parseInt(jobRes.data.firstSegment)
             this.jobData.lastSegment = parseInt(jobRes.data.lastSegment)
             this.jobData.fileName = jobRes.data.fileName
+            this.jobData.tmPretranslate = parseInt(jobRes.data.tm_pretranslate) > 0
+            this.jobData.mtPretranslate = parseInt(jobRes.data.mt_pretranslate) > 0
             this.jobData.mtSystemId = jobRes.data.mtSystemId === null ? '' : jobRes.data.mtSystemId
             this.$store.commit('termBaseUrl', jobRes.data.termBaseUrl)
-            this.reloadSegments()
             this.checkStats()
             this.getFileUrls()
             this.startEditTimer()
+            if (this.jobData.tmPretranslate || this.jobData.mtPretranslate) {
+              this.$loading.startLoading('pretranslate')
+              JobsService.preTranslate({
+                id: this.jobData.id,
+                password: this.jobData.password,
+                use_tm: this.jobData.tmPretranslate ? 1 : 0,
+                use_mt: this.jobData.mtPretranslate ? 1 : 0,
+                mt_system: this.jobData.mtSystemId
+              })
+                .then(() => {
+                  this.reloadSegments()
+                })
+            } else {
+              this.reloadSegments()
+            }
           })
         this.$nextTick(function () {
           window.addEventListener('resize', this.setSegmentListHeight)

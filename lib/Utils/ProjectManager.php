@@ -155,6 +155,8 @@ class ProjectManager {
                             'file_segments_count'      => [],
                             'due_date'                 => null,
                             'mt_system_id'             => null,
+                            'tm_pretranslate'             => null,
+                            'mt_pretranslate'             => null,
                     ] );
 
         }
@@ -1100,6 +1102,8 @@ class ProjectManager {
             $newJob->payable_rates     = $payableRates;
             $newJob->total_raw_wc      = $this->files_word_count;
             $newJob->only_private_tm   = $projectStructure[ 'only_private' ];
+            $newJob->tm_pretranslate   = $projectStructure[ 'tm_pretranslate' ];
+            $newJob->mt_pretranslate   = $projectStructure[ 'mt_pretranslate' ];
 
             $newJob = Jobs_JobDao::createFromStruct( $newJob );
 

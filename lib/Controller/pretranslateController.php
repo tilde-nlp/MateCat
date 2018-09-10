@@ -43,6 +43,8 @@ class pretranslateController {
 
         foreach($emptySegments as $segment) {
             $translation = '';
+            $type = '';
+            $match = '';
             if ($this->useTm) {
                 $tms_match = TildeTM::getContributions($segment->segment, $jobData->source, $jobData->target);
                 if (!empty($tms_match)) {
@@ -50,20 +52,26 @@ class pretranslateController {
                     $tms_match = array_reverse($tms_match);
                     if (intval($tms_match[0]['match']) >= 100) {
                         $translation = $tms_match[0]['translation'];
+                        $match = $tms_match[0]['match'];
+                        $type = 'TM';
                     }
                 }
             }
             if (empty($translation) && $this->useMt) {
                 $mt_match = \LetsMTLite::getMatch($this->mtSystem, $segment->segment);
                 $translation = $mt_match[0]['translation'];
+                $match = 70;
+                $type = 'MT';
             }
 
             if (empty($translation)) {
                 continue;
             }
 
-            Jobs_JobDao::setTranslation($segment->id, $translation);
+            Jobs_JobDao::setTranslation($segment->id, $translation, $match, $type);
         }
+
+        Jobs_JobDao::removePretranslate($this->id);
     }
 
     public function finalize() {}

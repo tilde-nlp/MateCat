@@ -225,7 +225,8 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
 
         \Database::obtain()->begin();
 
-        $stmt = $conn->prepare( 'INSERT INTO `jobs` ( ' . implode( ',', $columns ) . ' ) VALUES ( ' . implode( ',' , array_fill( 0, count( $values ), '?' ) ) . ' )' );
+        $sql = 'INSERT INTO `jobs` ( ' . implode( ',', $columns ) . ' ) VALUES ( ' . implode( ',' , array_fill( 0, count( $values ), '?' ) ) . ' )';
+        $stmt = $conn->prepare($sql);
 
         foreach( $values as $k => $v ){
             $stmt->bindValue( $k +1, $v ); //Columns/Parameters are 1-based
@@ -300,6 +301,14 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         return $stmt->rowCount();
     }
 
+    public static function removePretranslate($job_id) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE jobs SET tm_pretranslate = 0, mt_pretranslate = 0 WHERE id = :job_id ");
+        $stmt->execute(array('job_id' => $job_id));
+        return $stmt->rowCount();
+    }
+
     public static function getMemorySetting( $userId, $ttl = 0 ) {
 
         $thisDao = new self();
@@ -309,16 +318,26 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
 
     }
 
-    public static function setTranslation($segmentId, $translation) {
+    public static function setTranslation($segmentId, $translation, $match, $source) {
 
         $conn = Database::obtain()->getConnection();
         $sql = "
         UPDATE segment_translations
-        SET `translation` = ?
-        WHERE id_segment = ?
+        SET `translation` = :translation,
+        `status` = 'DRAFT',
+        translation_date = NOW(),
+        suggestion_match = :match,
+        suggestion_source = :source,
+        save_match = :match,
+        save_type = :source
+        WHERE id_segment = :segment_id
         ";
         $stmt = $conn->prepare($sql);
-        $stmt->execute(array($translation, $segmentId));
+        $stmt->execute(array(
+            'translation' => $translation,
+            'segment_id' => $segmentId,
+            'match' => $match,
+            'source' => $source));
         return $stmt->rowCount();
 
     }
@@ -334,7 +353,7 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
             WHERE j.id = ?
             AND j.password = ?
             AND st.id_segment BETWEEN ? AND ?
-            AND (st.translation = '' OR st.translation IS NULL)";
+            AND (st.translation = '' OR st.translation IS NULL OR st.status = 'NEW')";
         $stmt = $conn->prepare($sql);
         return $thisDao->_fetchObject( $stmt, new LoudArray(), [ $jobId, $jobPassword, $startSegmentId, $endSegmentId ] );
 

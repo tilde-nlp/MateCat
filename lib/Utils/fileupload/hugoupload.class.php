@@ -24,6 +24,8 @@ class UploadHandler {
     private $pretranslate_100;
     private $only_private;
     private $due_date;
+    private $tm_pretranslate;
+    private $mt_pretranslate;
 
     private $metadata;
     private $lang_handler;
@@ -476,6 +478,8 @@ class UploadHandler {
             'job_subject'        => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
             'mt_system'        => [ 'filter' => FILTER_SANITIZE_STRING ],
             'due_date'           => [ 'filter' => FILTER_VALIDATE_INT ],
+            'tm_pretranslate'           => [ 'filter' => FILTER_VALIDATE_INT ],
+            'mt_pretranslate'           => [ 'filter' => FILTER_VALIDATE_INT ],
 
             'private_tm_user'   => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
             'private_tm_pass'   => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
@@ -554,7 +558,9 @@ class UploadHandler {
         $this->private_tm_user         = $__postInput[ 'private_tm_user' ];
         $this->private_tm_pass         = $__postInput[ 'private_tm_pass' ];
         $this->lang_detect_files       = $__postInput[ 'lang_detect_files' ];
-        $this->pretranslate_100        = intval($__postInput[ 'pretranslate_100' ]) > 0 ? 1 : 0;
+        $this->pretranslate_100        = 0;
+        $this->tm_pretranslate        = intval($__postInput[ 'tm_pretranslate' ]) > 0 ? 1 : 0;
+        $this->mt_pretranslate        = intval($__postInput[ 'mt_pretranslate' ]) > 0 ? 1 : 0;
         $this->only_private            = ( is_null( $__postInput[ 'get_public_matches' ] ) ? false : !$__postInput[ 'get_public_matches' ] );
         $this->due_date                = ( empty( $__postInput[ 'due_date' ] ) ? null : Utils::mysqlTimestamp( $__postInput[ 'due_date' ] ) );
 
@@ -610,6 +616,8 @@ class UploadHandler {
         $projectStructure[ 'only_private' ]         = $this->only_private;
         $projectStructure[ 'due_date' ]             = $this->due_date;
         $projectStructure[ 'mt_system_id' ]         = $this->mt_system;
+        $projectStructure[ 'tm_pretranslate' ]      = $this->tm_pretranslate;
+        $projectStructure[ 'mt_pretranslate' ]      = $this->mt_pretranslate;
 
 
         $projectStructure[ 'user_ip' ]   = Utils::getRealIpAddr();

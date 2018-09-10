@@ -36,6 +36,8 @@ class jobInfoController {
         $result->editing_time = $jobData['editing_time'];
         $result->firstSegment = $jobData['job_first_segment'];
         $result->lastSegment = $jobData['job_last_segment'];
+        $result->tm_pretranslate = $jobData['tm_pretranslate'];
+        $result->mt_pretranslate = $jobData['mt_pretranslate'];
         $result->mtSystemId = $mtSystemId;
         $result->termBaseUrl = INIT::$TERM_BASE_URL;
 
