@@ -15,6 +15,12 @@ export default {
     state.profile = profile
     state.isLoggedIn = true
   },
+  tmPretranslate (state, value) {
+    state.profile.tm_pretranslate = value
+  },
+  mtPretranslate (state, value) {
+    state.profile.mt_pretranslate = value
+  },
   termBaseUrl (state, termBaseUrl) {
     state.termBaseUrl = termBaseUrl
   },

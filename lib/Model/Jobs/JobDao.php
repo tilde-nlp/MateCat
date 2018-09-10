@@ -276,6 +276,22 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         return $stmt->rowCount();
     }
 
+    public static function saveTmPretranslate($userId, $pretranslate) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE users SET tm_pretranslate = :pretranslate WHERE uid = :user_id ");
+        $stmt->execute(array('user_id' => $userId, 'pretranslate' => $pretranslate));
+        return $stmt->rowCount();
+    }
+
+    public static function saveMtPretranslate($userId, $pretranslate) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE users SET mt_pretranslate = :pretranslate WHERE uid = :user_id ");
+        $stmt->execute(array('user_id' => $userId, 'pretranslate' => $pretranslate));
+        return $stmt->rowCount();
+    }
+
     public static function saveEditingTime( $job_id, $editingTime, $ttl = 0 ) {
 
         $conn = Database::obtain()->getConnection();

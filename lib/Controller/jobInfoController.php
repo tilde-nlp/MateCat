@@ -1,6 +1,5 @@
 <?php
 
-use AuthCookie;
 class jobInfoController {
 
     private $id;

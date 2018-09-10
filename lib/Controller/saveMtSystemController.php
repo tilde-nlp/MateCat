@@ -17,8 +17,7 @@ class saveMtSystemController {
     }
 
     public function doAction() {
-        $JobsDao = new Jobs_JobDao();
-        $JobsDao->saveMtSystem($this->id, $this->systemId);
+        Jobs_JobDao::saveMtSystem($this->id, $this->systemId);
 
         echo json_encode("OK");
     }

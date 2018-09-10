@@ -10,13 +10,19 @@
     <div class="bb-blueish"/>
     <div class="settings-container-options">
       <div>
-        <check-box/>
+        <check-box
+          :value="parseInt($store.state.profile.tm_pretranslate) > 0"
+          @change="val => { setTmPretranslate(val) }"
+        />
         <div class="ib va-top">
           {{ $lang.messages.fill_100p_tm }}
         </div>
       </div>
       <div class="mt-24">
-        <check-box/>
+        <check-box
+          :value="parseInt($store.state.profile.mt_pretranslate) > 0"
+          @change="val => { setMtPretranslate(val) }"
+        />
         <div class="ib va-top">
           {{ $lang.messages.fill_mt }}
         </div>
@@ -77,6 +83,7 @@
 <script>
 import CheckBox from './Checkbox'
 import TranslationMemoryService from 'services/translation-memory'
+import LanguagesService from 'services/languages'
 import Vue from 'vue'
 export default {
   name: 'SettingsPanel',
@@ -109,6 +116,14 @@ export default {
     setConcordance: function (memory, value) {
       Vue.set(memory, 'concordance', value)
       TranslationMemoryService.saveSettings(memory)
+    },
+    setTmPretranslate: function (value) {
+      LanguagesService.saveTmPretranslate({pretranslate: value ? 1 : 0})
+      this.$store.commit('tmPretranslate', value)
+    },
+    setMtPretranslate: function (value) {
+      LanguagesService.saveMtPretranslate({pretranslate: value ? 1 : 0})
+      this.$store.commit('mtPretranslate', value)
     }
   }
 }

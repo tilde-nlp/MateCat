@@ -23,6 +23,12 @@ export default {
   saveMtSystem: function (data) {
     return HTTP.post(CONFIG.baseUrl + '?action=saveMtSystem', FormGenerator.generateForm(data))
   },
+  saveTmPretranslate: function (data) {
+    return HTTP.post(CONFIG.baseUrl + '?action=saveTmPretranslate', FormGenerator.generateForm(data))
+  },
+  saveMtPretranslate: function (data) {
+    return HTTP.post(CONFIG.baseUrl + '?action=saveMtPretranslate', FormGenerator.generateForm(data))
+  },
   filterSystems: function (systems, from, to) {
     // Get relevant data for subjects dropdown
     let filteredSystems = _.filter(systems, el => {
