@@ -240,100 +240,16 @@ class getContributionController extends ajaxController {
 //            $tms_match = $tms_match->get_matches_as_array();
 //        }
 
-        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getCookie());
-        $memories = $TildeTM->getMemories();
-        foreach($memories as &$memory) {
-            $memory->read = true;
-            $memory->concordance = false;
-        }
-        $tms_match = [];
-        $user = AuthCookie::getCredentials();
-        $JobsDao = new Jobs_JobDao();
-        $memorySettings = $JobsDao->getMemorySetting($user['uid']);
-        foreach($memorySettings as $setting) {
-            foreach($memories as $k => $memory) {
-                if (strcmp($memory->id, $setting['memory_id']) !== 0) {
-                    continue;
-                }
-                $memories[$k]->read = $setting['read_memory'] > 0;
-                $memories[$k]->concordance = $setting['concordance_search'] > 0;
-            }
-        }
-        foreach($memories as $memory) {
-            if (!$memory->read) {
-                continue;
-            }
-            $tildeMatches = $TildeTM->getMatches(
-                $memory->id,
-                $this->text,
-                substr($this->source, 0, 2),
-                substr($this->target, 0, 2),
-                $memory->concordance
-            );
-
-            foreach($tildeMatches as $match) {
-                $tms_match[ ] = array(
-                    'created_by' => $memory->name,
-                    'match' => $match->match,
-                    'segment' => $match->source,
-                    'translation' => $match->target,
-                    'raw_segment' => $this->text,
-                    'raw_translation' => $match->target,
-                );
-            }
-        }
-
-        if ( $this->id_mt_engine > 1 /* Request MT Directly */ ) {
-            /**
-             * @var $mt_engine Engines_MMT
-             */
-            $mt_engine        = Engine::getInstance( $this->id_mt_engine );
-            $config = $mt_engine->getConfigStruct();
-
-            //if a callback is not set only the first argument is returned, get the config params from the callback
-            $config = $this->featureSet->filter( 'beforeGetContribution', $config, $mt_engine, $this->jobData );
-
-            $config[ 'segment' ] = $this->text;
-            $config[ 'source' ]  = $this->source;
-            $config[ 'target' ]  = $this->target;
-            $config[ 'email' ]   = INIT::$MYMEMORY_API_KEY;
-            $config[ 'segid' ]   = $this->id_segment;
-
-            $mt_result = $mt_engine->get( $config );
-
-            if ( isset( $mt_result['error']['code'] ) ) {
-                $mt_result['error']['created_by_type'] = 'MT';
-                $this->result[ 'errors' ][] = $mt_result['error'];
-                $mt_result = false;
-            }
-
-        }
+        $tms_match = TildeTM::getContributions($this->text, $this->source, $this->target);
+        $mt_match = [];
 
         if ($this->mt_system) {
-            $LetsMTLite = new \LetsMTLite(INIT::$MT_BASE_URL, INIT::$MT_CLIENT_ID, INIT::$MT_APP_ID);
-            $letsmtTranslation = $LetsMTLite->translate($this->mt_system, $this->text);
+            $mt_match = \LetsMTLite::getMatch($this->mt_system, $this->text);
         }
 
-        $matches = array();
-
-        if ( !empty( $tms_match ) ) {
-            $matches = $tms_match;
-        }
-
-        if ( !empty( $letsmtTranslation ) && $letsmtTranslation->translation != null ) {
-            $matches[ ] = array(
-                'created_by' => 'MT',
-                'match' => '70',
-                'translation' => $letsmtTranslation->translation,
-                'raw_segment' => $this->text,
-                'raw_translation' => $letsmtTranslation->translation,
-
-            );
-            usort( $matches, array( "getContributionController", "__compareScore" ) );
-            //this is necessary since usort sorts is ascending order, thus inverting the ranking
-            $matches = array_reverse( $matches );
-        }
-
+        $matches = array_merge($tms_match, $mt_match);
+        usort( $matches, array( "getContributionController", "__compareScore" ) );
+        $matches = array_reverse( $matches );
         $matches = array_slice( $matches, 0, $this->num_results );
 
         /* New Feature only if this is not a MT and if it is a ( 90 =< MATCH < 100 ) */

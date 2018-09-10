@@ -90,10 +90,16 @@
     <!-- COPY SOURCE TO TARGET END -->
     <div class="pull-right">
       <!-- MT TRANSLATE -->
-      <div class="translator-toolbox-link">{{ $lang.buttons.translate_all_mt }}</div>
+      <div
+        class="translator-toolbox-link"
+        @click="preTranslateMt()"
+      >{{ $lang.buttons.translate_all_mt }}</div>
       <!-- MT TRANSLATE END -->
       <!-- TRANSLATE 100% -->
-      <div class="translator-toolbox-link">{{ $lang.buttons.translate_all_tm }}</div>
+      <div
+        class="translator-toolbox-link"
+        @click="preTranslateTm()"
+      >{{ $lang.buttons.translate_all_tm }}</div>
       <!-- TRANSLATE 100% END -->
       <!-- ORIGINAL DOWNLOAD -->
       <div
@@ -135,6 +141,7 @@
   </div>
 </template>
 <script>
+import JobsService from 'services/jobs'
 export default {
   name: 'TranslatorToolbox',
   props: {
@@ -149,6 +156,12 @@ export default {
     },
     goBack: function () {
       this.$router.push({name: 'file-list'})
+    },
+    preTranslateTm: function () {
+      JobsService.preTranslate({id: this.jobData.id, password: this.jobData.password, use_tm: 1})
+    },
+    preTranslateMt: function () {
+      JobsService.preTranslate({id: this.jobData.id, password: this.jobData.password, use_mt: 1})
     }
   }
 }

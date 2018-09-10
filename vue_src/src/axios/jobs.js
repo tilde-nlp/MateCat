@@ -7,5 +7,8 @@ export default {
   },
   setEditingTime: function (data) {
     return HTTP.post(CONFIG.baseUrl + '?action=setEditingTime', FormGenerator.generateForm(data))
+  },
+  preTranslate: function (data) {
+    return HTTP.post(CONFIG.baseUrl + '?action=pretranslate', FormGenerator.generateForm(data))
   }
 }

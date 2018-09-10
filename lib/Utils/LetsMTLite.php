@@ -10,6 +10,24 @@ class LetsMTLite {
     private $baseUrl;
     private $appId;
 
+    public static function getMatch($mtSystem, $text) {
+        $LetsMTLite = new \LetsMTLite(INIT::$MT_BASE_URL, INIT::$MT_CLIENT_ID, INIT::$MT_APP_ID);
+        $letsmtTranslation = $LetsMTLite->translate($mtSystem, $text);
+        $matches = [];
+        if ( !empty( $letsmtTranslation ) && $letsmtTranslation->translation != null ) {
+            $matches[] = array(
+                'created_by' => 'MT',
+                'match' => '70',
+                'translation' => $letsmtTranslation->translation,
+                'raw_segment' => $text,
+                'raw_translation' => $letsmtTranslation->translation,
+
+            );
+        }
+
+        return $matches;
+    }
+
     public function __construct($baseUrl, $clientId, $appId)
     {
         $this->clientId = $clientId;
