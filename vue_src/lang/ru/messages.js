@@ -10,5 +10,6 @@ module.exports = {
   error_uploading_file: 'Error while uploading file: ',
   unexpected_error: 'Unexpected error. Please try again. If problem persists please contact system administrator.',
   invalid_target_content: 'Invalid tags in target text. Reverting back to last text.',
-  segments_analyzed: ' segments analyzed'
+  segments_analyzed: ' segments analyzed',
+  pretranslating: 'Pretranslating'
 }

@@ -21,6 +21,9 @@ export default {
   mtPretranslate (state, value) {
     state.profile.mt_pretranslate = value
   },
+  mtSystem (state, value) {
+    state.mtSystem = value
+  },
   termBaseUrl (state, termBaseUrl) {
     state.termBaseUrl = termBaseUrl
   },

@@ -460,6 +460,7 @@ export default {
     },
     onMtChange: function (value) {
       this.$emit('mtSystemChange', value.value)
+      this.$store.commit('mtSystem', value.value)
     }
   }
 }

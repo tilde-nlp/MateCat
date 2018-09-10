@@ -10,5 +10,6 @@ module.exports = {
   error_uploading_file: 'Kļūda ielādējot failu: ',
   unexpected_error: 'Atgadijās neparedzēta kļūda. Lūdzu mēģiniet vēlreiz. Ja problēma atkārtojas, lūdzams sazināties ar sistēmas administratoru.',
   invalid_target_content: 'Nepareizi tagi tulkojumā. Atgriežam iepriekšējo tekstu.',
-  segments_analyzed: ' segmenti analizēti'
+  segments_analyzed: ' segmenti analizēti',
+  pretranslating: 'Pirmstulko'
 }

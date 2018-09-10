@@ -33,7 +33,7 @@
           :options="subjects"
           class="w-128-i"
           name="subject"
-          @input="value => {$emit('subjectChange', value)}"
+          @input="onSystemChange"
         />
       </div>
     </div>
@@ -177,6 +177,10 @@ export default {
           // Set default subject
           this.subject = this.subjects[0]
         })
+    },
+    onSystemChange: function (value) {
+      this.$emit('subjectChange', value)
+      this.$store.commit('mtSystem', value.value)
     }
   }
 }

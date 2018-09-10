@@ -158,10 +158,18 @@ export default {
       this.$router.push({name: 'file-list'})
     },
     preTranslateTm: function () {
-      JobsService.preTranslate({id: this.jobData.id, password: this.jobData.password, use_tm: 1})
+      this.$loading.startLoading('pretranslate')
+      JobsService.preTranslate({id: this.jobData.id, password: this.jobData.password, use_tm: 1, mt_system: this.$store.state.mtSystem})
+        .then(() => {
+          this.$emit('pretranslated')
+        })
     },
     preTranslateMt: function () {
-      JobsService.preTranslate({id: this.jobData.id, password: this.jobData.password, use_mt: 1})
+      this.$loading.startLoading('pretranslate')
+      JobsService.preTranslate({id: this.jobData.id, password: this.jobData.password, use_mt: 1, mt_system: this.$store.state.mtSystem})
+        .then(() => {
+          this.$emit('pretranslated')
+        })
     }
   }
 }

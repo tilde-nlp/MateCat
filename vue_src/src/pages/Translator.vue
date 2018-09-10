@@ -15,6 +15,7 @@
           @clear="clearTranslation"
           @toPrevious="searchUnconfirmed(-1)"
           @toNext="searchUnconfirmed(1)"
+          @pretranslated="reloadSegments"
         />
       </section>
       <div class="bb-blueish"/>
@@ -87,6 +88,19 @@
               />
               <div class="size-s dark ib va-middle">
                 {{ segmentsAnalyzed }} {{ $lang.messages.segments_analyzed }}
+              </div>
+            </div>
+            <div
+              v-else-if="$loading.isLoading('pretranslate')"
+              class="segments-loading"
+            >
+              <svgicon
+                class="svg-loading va-middle"
+                name="loading"
+                height="32"
+              />
+              <div class="size-s dark ib va-middle">
+                {{ $lang.messages.pretranslating }}
               </div>
             </div>
             <transition-group
@@ -435,12 +449,13 @@ export default {
       if (this.$loading.isLoading('segmentsAnalyze')) {
         return
       }
-      this.segments = null
+      this.segments = []
       this.$store.commit('activeSegment', null)
       this.readSegments(this.jobData.lastSegmentId, 'center')
         .then(segments => {
           this.segments = segments
           this.setActive(this.jobData.lastSegmentId)
+          this.$loading.endLoading('pretranslate')
           if (this.$store.state.activeSegment === null && this.segments.length > 0) {
             this.setActive(this.segments[0].id)
           }
@@ -457,7 +472,7 @@ export default {
             const segmentLength = segments.length
             if (segmentIndex === 0) {
               segments = segments.concat(this.segments)
-              this.segments = null
+              this.segments = []
               Vue.nextTick(() => {
                 this.segments = segments
                 resolve(segmentLength)

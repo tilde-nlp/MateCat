@@ -9,5 +9,6 @@ export default {
   activeSegment: null,
   fontSize: null,
   unusedTags: [],
-  termBaseUrl: ''
+  termBaseUrl: '',
+  mtSystem: ''
 }
