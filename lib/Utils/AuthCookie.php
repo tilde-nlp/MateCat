@@ -69,6 +69,11 @@ class AuthCookie {
 
             try {
                 $jwtCookie = AuthCookie::getCookie();
+                $oldFileName = \Log::$fileName;
+                \Log::$fileName = "auth-test.log";
+                \Log::doLog("DEV_MODE: " . \INIT::$DEV_MODE);
+                \Log::doLog("AuthCookie->getData: jwt token: " . $jwtCookie);
+                \Log::$fileName = $oldFileName;
                 $token = (new Parser())->parse((string) $jwtCookie);
                 $signer = new Sha256();
                 $data = new ValidationData();
@@ -76,6 +81,10 @@ class AuthCookie {
                 if (!$token->verify($signer, INIT::$JWT_KEY)
                 || (!$token->validate($data) && !INIT::$DEV_MODE)
                 ) {
+                    $oldFileName = \Log::$fileName;
+                    \Log::$fileName = "auth-test.log";
+                    \Log::doLog("AuthCookie->getData: invalid token or expired, deny access");
+                    \Log::$fileName = $oldFileName;
                     return false;
                 }
 

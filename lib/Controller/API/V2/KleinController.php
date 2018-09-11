@@ -80,6 +80,11 @@ abstract class KleinController implements IController {
     }
 
     public function __construct( $request, $response, $service, $app ) {
+        $oldFileName = \Log::$fileName;
+        \Log::$fileName = "auth-test.log";
+        \Log::doLog("DEV_MODE: " . \INIT::$DEV_MODE);
+        \Log::doLog("Inside klein controller constructor");
+        \Log::$fileName = $oldFileName;
         $this->request  = $request;
         $this->response = $response;
         $this->service  = $service;
@@ -90,6 +95,9 @@ abstract class KleinController implements IController {
         $this->params = $this->request->paramsPost()->getIterator()->getArrayCopy();
         $this->params = array_merge( $this->params, $paramsGet, ( empty( $paramsPut ) ? [] : $paramsPut ) );
         $this->featureSet = new FeatureSet();
+        \Log::$fileName = "auth-test.log";
+        \Log::doLog("Inside klein controller constructor before authenticate");
+        \Log::$fileName = $oldFileName;
         $this->authenticate();
     }
 
@@ -133,6 +141,10 @@ abstract class KleinController implements IController {
         }
 
         if ( !$this->validKeys() ) {
+            $oldFileName = \Log::$fileName;
+            \Log::$fileName = "auth-test.log";
+            \Log::doLog("Invalid auth headers");
+            \Log::$fileName = $oldFileName;
             throw new AuthenticationError( "Invalid Login.", 401 );
         }
 
@@ -155,7 +167,16 @@ abstract class KleinController implements IController {
 
             $dao = new Users_UserDao();
             $dao->setCacheTTL( 0 );
+            $oldFileName = \Log::$fileName;
+            \Log::$fileName = "auth-test.log";
+            \Log::doLog("Before user get");
+            \Log::$fileName = $oldFileName;
             $this->user = $dao->getByUid( $user_credentials[ 'uid' ] ) ;
+            $oldFileName = \Log::$fileName;
+            \Log::$fileName = "auth-test.log";
+            \Log::doLog("After user get");
+            \Log::doLog($this->user);
+            \Log::$fileName = $oldFileName;
         }
 
         return $this->user;
