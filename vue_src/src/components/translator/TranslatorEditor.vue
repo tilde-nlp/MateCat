@@ -82,6 +82,7 @@ export default {
         })
         this.$nextTick(() => {
           this.focusEditor()
+          this.lastValidContent = this.editor.innerHTML
         })
         return
       }
@@ -89,6 +90,7 @@ export default {
         this.enableContentEdit()
         this.$nextTick(() => {
           this.focusEditor()
+          this.lastValidContent = this.editor.innerHTML
         })
       } else {
         this.disableContentEdit()
@@ -96,7 +98,7 @@ export default {
     },
     formattedText: function (newVal) {
       if (this.editor !== null) {
-        this.editor.innerHTML = this.lastValidContent = newVal
+        this.lastValidContent = newVal
         if (this.isEditable) {
           this.$nextTick(() => {
             this.enableContentEdit()
@@ -116,7 +118,6 @@ export default {
         cleanText = this.cleanText()
       } catch (error) {
         this.$Alerts.add(this.$lang.messages.invalid_target_content)
-        console.log(this.lastValidContent)
         this.editor.innerHTML = this.lastValidContent
         return
       }
@@ -127,7 +128,7 @@ export default {
       const rawText = this.editor.innerHTML
       let result
       result = TextHighlighter.remove(rawText)
-      result = htmlToXliff(result, this.id)
+      result = htmlToXliff(result, this.segmentId)
       return result
     },
     enableContentEdit: function () {

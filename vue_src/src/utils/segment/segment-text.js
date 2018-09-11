@@ -117,7 +117,7 @@ export function replaceAllHtmlDualTags (inputText, segmentId) {
   let counter = 0
   while (1) {
     counter++
-    if (counter > 300) {
+    if (counter > 500) {
       break
     }
     let openTagPosition = outputText.search(dualOpenHtmlPattern)
