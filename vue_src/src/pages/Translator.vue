@@ -324,6 +324,10 @@ export default {
               usageCount: el.usage_count
             }
           })
+          segment.topSuggestion = ''
+          if (segment.suggestions.length) {
+            segment.topSuggestion = segment.suggestions[0].translation
+          }
           segment.suggestionsLoaded = true
         })
     },

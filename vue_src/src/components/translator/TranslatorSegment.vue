@@ -29,12 +29,14 @@
       @click.self="focusEditor"
     >
       <div
+        v-shortkey="['enter']"
         :class="{top: topSegment}"
         :style="rowMinHeight"
         :lang="targetLang"
         class="segment-col last"
         spellcheck="true"
         @click.self="focusEditor"
+        @shortkey="autocompleteText()"
       >
         <translator-editor
           v-if="segmentData.id > 0 && segmentData.id !== null"
@@ -47,6 +49,18 @@
           @input="onSegmentInput"
           @id="id => { editorId = id }"
         />
+        <div
+          v-if="isActive && autocompleteSuggestions.length"
+          class="autocomplete-suggestions"
+        >
+          <div
+            v-for="(acText, index) in autocompleteSuggestions"
+            :key="index + 1"
+            class="autocomplete-suggestion"
+          >
+            {{ acText }}
+          </div>
+        </div>
         <div
           v-if="showTags"
           class="tag-insert-container"
@@ -96,6 +110,7 @@
 </template>
 <script>
 import TranslatorEditor from 'components/translator/TranslatorEditor'
+import _ from 'lodash'
 export default {
   name: 'TranslatorSegment',
   components: {
@@ -130,7 +145,10 @@ export default {
       oa: '',
       splitSpacer: '##$_SPLIT$##',
       splitChar: ' & ',
-      editorId: ''
+      editorId: '',
+      autocompleteSuggestions: [],
+      w3: false,
+      ie: false
     }
   },
   computed: {
@@ -185,12 +203,15 @@ export default {
   },
   mounted: function () {
     this.segment = this.segmentData
+    this.ie = (typeof document.selection !== 'undefined' && document.selection.type !== 'Control') && true
+    this.w3 = (typeof window.getSelection !== 'undefined') && true
   },
   methods: {
     copySourceToTarget: function () {
       this.segment.translation = this.segment.original
     },
     onSegmentInput: function (val) {
+      this.showAutocomplete(val)
       this.segment.cleanTranslation = val
       this.$emit('inputDebounce')
       if (this.segment.saveType === 'MANUAL') {
@@ -214,6 +235,69 @@ export default {
     insertTag: function (tag) {},
     focusEditor: function () {
       this.segment.focusToggle = !this.segment.focusToggle
+    },
+    showAutocomplete: function (value) {
+      const entered = this.getLastWord(value)
+      this.autocompleteSuggestions = this.findSuggestions(entered)
+    },
+    getLastWord: function (value) {
+      if (typeof (value) === 'undefined' || value === null) {
+        return ''
+      }
+      const caretPosition = this.getCaretPosition()
+      const words = value.substring(0, caretPosition).split(' ')
+      return words[words.length - 1]
+    },
+    findSuggestions: function (entered) {
+      if (typeof (this.segmentData.topSuggestion) === 'undefined' && this.segmentData.topSuggestion === '') {
+        return []
+      }
+      const suggestionWords = this.segmentData.topSuggestion.split(' ')
+      const suggestions = _.filter(suggestionWords, el => {
+        return el.startsWith(entered)
+      })
+      if (suggestions[0]) {
+        return [suggestions[0]]
+      }
+      return []
+    },
+    autocompleteText: function () {
+      if (this.autocompleteSuggestions.length < 1) {
+        return
+      }
+      const lastWord = this.getLastWord(this.segment.cleanTranslation)
+      const insertText = this.autocompleteSuggestions[0].substr(lastWord.length)
+      this.insertTextAtCursor(insertText)
+      this.autocompleteSuggestions = []
+    },
+    insertTextAtCursor: function (text) {
+      let sel, range
+      sel = window.getSelection()
+      range = sel.getRangeAt(0)
+      range.deleteContents()
+      let textNode = document.createTextNode(text)
+      range.insertNode(textNode)
+      range.setStartAfter(textNode)
+      sel.removeAllRanges()
+      sel.addRange(range)
+    },
+    getCaretPosition: function () {
+      const element = document.getElementById('editor-' + this.editorId)
+      if (this.w3) {
+        let range = window.getSelection().getRangeAt(0)
+        let preCaretRange = range.cloneRange()
+        preCaretRange.selectNodeContents(element)
+        preCaretRange.setEnd(range.endContainer, range.endOffset)
+        return preCaretRange.toString().length
+      }
+      if (this.ie) {
+        let textRange = document.selection.createRange()
+        let preCaretTextRange = document.body.createTextRange()
+        preCaretTextRange.moveToElementText(element)
+        preCaretTextRange.setEndPoint('EndToEnd', textRange)
+        return preCaretTextRange.text.length
+      }
+      return 0
     }
   }
 }

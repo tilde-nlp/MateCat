@@ -4,6 +4,7 @@
     :style="{ 'font-size': fontSizeString }"
     class="editor-container"
     @input="onInput"
+    @keydow="onKeydown"
     @click.self="focusEditor"
     v-html="formattedText"
   />
@@ -113,6 +114,7 @@ export default {
   },
   methods: {
     onInput: _.debounce(function () {
+      this.removeUnwantedTags()
       let cleanText
       try {
         cleanText = this.cleanText()
@@ -124,6 +126,15 @@ export default {
       this.lastValidContent = this.editor.innerHTML
       this.$emit('input', cleanText)
     }, 500),
+    onKeydown: function (event) {
+      console.log(event)
+    },
+    removeUnwantedTags: function () {
+      const brTag = '<div><br></div>'
+      if (this.editor.innerHTML.indexOf(brTag) > -1) {
+        this.editor.innerHTML = this.editor.innerHTML.replace(new RegExp(brTag, 'g'), '')
+      }
+    },
     cleanText: function () {
       const rawText = this.editor.innerHTML
       let result
