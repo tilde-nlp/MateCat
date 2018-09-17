@@ -110,19 +110,24 @@
               </transition-group>
             </div>
           </div>
-          <div class="relative mt-32 mb-8 mr-32">
+          <div
+            v-shortkey="['shift', 'enter']"
+            class="relative mt-32 mb-8 mr-32"
+            @shortkey="openTermSearch"
+          >
             <svgicon
               class="svg-icon icon-blueish-darker-still placeholder"
               name="search"
               height="24"
             />
             <input
+              v-shortkey="['enter']"
               v-model="searchTerm"
               :placeholder="$lang.inputs.search_term"
               class="search-input"
               type="text"
               name="terms-search"
-              @keyup.enter="openTermSearch"
+              @shortkey="openTermSearch"
             >
           </div>
         </div>
@@ -205,30 +210,26 @@
               </div>
             </div>
           </div>
-          <!--<div class="hotkey-row">-->
-          <!--<div class="ib">{{ $lang.hotkeys.decrease_font }}</div>-->
-          <!--<div class="ib pull-right">-->
-          <!--<div class="hotkey-container">-->
-          <!--Ctrl-->
-          <!--</div>-->
-          <!--+-->
-          <!--<div class="hotkey-container">-->
-          <!--&larr;-->
-          <!--</div>-->
-          <!--</div>-->
-          <!--</div>-->
-          <!--<div class="hotkey-row">-->
-          <!--<div class="ib">{{ $lang.hotkeys.increase_font }}</div>-->
-          <!--<div class="ib pull-right">-->
-          <!--<div class="hotkey-container">-->
-          <!--Ctrl-->
-          <!--</div>-->
-          <!--+-->
-          <!--<div class="hotkey-container">-->
-          <!--&rarr;-->
-          <!--</div>-->
-          <!--</div>-->
-          <!--</div>-->
+          <div class="hotkey-row">
+            <div class="ib">{{ $lang.hotkeys.search_term }}</div>
+            <div class="ib pull-right">
+              <div class="hotkey-container">
+                Shift
+              </div>
+              +
+              <div class="hotkey-container">
+                &#9166;
+              </div>
+            </div>
+          </div>
+          <div class="hotkey-row">
+            <div class="ib">{{ $lang.hotkeys.select_autocomplete }}</div>
+            <div class="ib pull-right">
+              <div class="hotkey-container">
+                &#9166;
+              </div>
+            </div>
+          </div>
         </div>
         <div
           v-if="activeTab === 'comments'"
@@ -330,6 +331,10 @@ export default {
     toLang: {
       type: String,
       required: true
+    },
+    searchedTerm: {
+      type: String,
+      default: ''
     }
   },
   data: function () {
@@ -370,6 +375,9 @@ export default {
       const selectedSystem = _.find(this.systems, {value: newVal})
       this.system = typeof (selectedSystem) === 'undefined' ? this.systems[0] : selectedSystem
       this.$emit('mtSystemChange', this.system)
+    },
+    searchedTerm: function (newVal) {
+      this.searchTerm = newVal
     }
   },
   mounted: function () {
@@ -453,7 +461,7 @@ export default {
     },
     openTermSearch: function () {
       if (this.searchTerm === '') return
-      window.open(this.$store.state.termBaseUrl + this.searchTerm + '/' + this.fromLang.substring(0, 2) + '?target=' + this.toLang.substring(0, 2), '_blank')
+      window.open(this.$store.state.termBaseUrl + this.searchTerm + '/' + this.fromLang.substring(0, 2) + '?target=' + this.toLang.substring(0, 2), '_blank').focus()
     },
     convertTags: function (text, parentId) {
       return xliffToHtml(text, parentId)

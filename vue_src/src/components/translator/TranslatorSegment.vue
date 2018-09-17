@@ -20,6 +20,7 @@
           :search-term="$store.state.sourceSearch"
           :inactive="true"
           :segment-id="segmentData.id"
+          @termSearch="text => { $emit('termSearch', text) }"
         />
       </div>
     </div>

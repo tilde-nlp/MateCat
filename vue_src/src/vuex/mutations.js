@@ -24,6 +24,9 @@ export default {
   mtSystem (state, value) {
     state.mtSystem = value
   },
+  termSearch (state, value) {
+    state.termSearch = value
+  },
   termBaseUrl (state, termBaseUrl) {
     state.termBaseUrl = termBaseUrl
   },

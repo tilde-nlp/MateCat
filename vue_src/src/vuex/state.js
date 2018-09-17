@@ -10,5 +10,6 @@ export default {
   fontSize: null,
   unusedTags: [],
   termBaseUrl: '',
-  mtSystem: ''
+  mtSystem: '',
+  termSearch: ''
 }

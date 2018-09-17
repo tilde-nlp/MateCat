@@ -6,5 +6,7 @@ module.exports = {
   copy_source_to_target: 'Copy source to target',
   select_suggestion: 'Select suggestion with number',
   decrease_font: 'Decrease font size',
-  increase_font: 'Increase font size'
+  increase_font: 'Increase font size',
+  search_term: 'Search term',
+  select_autocomplete: 'Select autocomplete'
 }

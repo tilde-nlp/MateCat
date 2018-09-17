@@ -6,6 +6,7 @@
     @input="onInput"
     @keydow="onKeydown"
     @click.self="focusEditor"
+    @mouseup.self="checkSelection"
     v-html="formattedText"
   />
 </template>
@@ -178,6 +179,21 @@ export default {
           break
         }
       }
+    },
+    checkSelection: function () {
+      const selectedText = this.getSelectionText()
+      if (selectedText === '') {
+        return
+      }
+      this.$emit('termSearch', selectedText)
+    },
+    getSelectionText: function () {
+      if (window.getSelection) {
+        return window.getSelection().toString()
+      } else if (document.selection && document.selection.type !== 'Control') {
+        return document.selection.createRange().text
+      }
+      return ''
     }
   }
 }

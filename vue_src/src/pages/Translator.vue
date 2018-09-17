@@ -118,6 +118,7 @@
                 @click="setActive"
                 @setStatus="setStatus"
                 @inputDebounce="onInputDebounce"
+                @termSearch="termSearch"
               />
             </transition-group>
           </div>
@@ -144,6 +145,7 @@
           :selected-mt="jobData.mtSystemId"
           :from-lang="jobData.source"
           :to-lang="jobData.target"
+          :searched-term="searchedTerm"
           @mtSystemChange="onMtSystemChange"
           @search="searchSegments"
           @refreshContributions="refreshContributions"
@@ -204,7 +206,8 @@ export default {
       searchInComments: '',
       segmentPageSize: 5,
       segmentsAnalyzed: 0,
-      pretranslateInterval: null
+      pretranslateInterval: null,
+      searchedTerm: ''
     }
   },
   computed: {
@@ -676,6 +679,9 @@ export default {
           editingTime: this.jobData.editingTime
         })
       }, 10000)
+    },
+    termSearch: function (text) {
+      this.searchedTerm = text
     }
   }
 }
