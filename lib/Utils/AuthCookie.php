@@ -45,7 +45,8 @@ class AuthCookie {
             if (!$token->verify($signer, INIT::$JWT_KEY)
             || (!$token->validate($data) && !INIT::$DEV_MODE)
             ) {
-                return false;
+                header("HTTP/1.1 401 Unauthorized");
+                exit;
             }
 
             $jwtId = $token->getClaim('sub') . ':-:' . $token->getClaim('grp');
