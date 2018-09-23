@@ -2,7 +2,7 @@
 
 class getTranslationMemoriesController {
     public function doAction() {
-        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getCookie());
+        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getToken());
         $tildeMemories = $TildeTM->getMemories();
 
         $user = AuthCookie::getCredentials();

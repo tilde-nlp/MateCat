@@ -24,12 +24,6 @@ class UserController extends AbstractStatefulKleinController {
     protected $connectedServices;
 
     public function show() {
-        $oldFileName = \Log::$fileName;
-        \Log::$fileName = "auth-test.log";
-        \Log::doLog("DEV_MODE: " . \INIT::$DEV_MODE);
-        \Log::doLog("user inside api/app/user show ");
-        \Log::doLog($this->user);
-        \Log::$fileName = $oldFileName;
         $metadata = $this->user->getMetadataAsKeyValue();
 
         $membersDao = new MembershipDao();
@@ -44,11 +38,10 @@ class UserController extends AbstractStatefulKleinController {
                 $membersDao->findUserTeams( $this->user )
         );
 
+        // TODO Check header for auth token
+
+
         // TODO: move this into a formatter class
-        \Log::$fileName = "auth-test.log";
-        \Log::doLog("user inside api/app/user show before return");
-        \Log::doLog($this->user);
-        \Log::$fileName = $oldFileName;
         $this->response->json( [
                 'user'               => User::renderItem( $this->user ),
                 'connected_services' => ( new ConnectedService( $this->connectedServices ) )->render(),

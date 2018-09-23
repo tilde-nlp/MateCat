@@ -156,7 +156,7 @@ class SetContributionWorker extends AbstractWorker {
      * @throws \Exceptions\ValidationError
      */
     protected function _set( Array $config, ContributionStruct $contributionStruct ) {
-        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getCookie());
+        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getToken());
         $memories = $TildeTM->getMemories();
         foreach($memories as &$memory) {
             $memory->write = true && $memory->canUpdate;

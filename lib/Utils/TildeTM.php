@@ -10,7 +10,7 @@ class TildeTM {
     private $baseUrl;
 
     public static function getContributions($text, $sourceLang, $targetLang) {
-        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getCookie());
+        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getToken());
         $memories = $TildeTM->getMemories();
         foreach($memories as &$memory) {
             $memory->read = true;

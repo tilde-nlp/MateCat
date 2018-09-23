@@ -11,52 +11,23 @@ class AuthCookie {
 
     //get user name in cookie, if present
     public static function getCredentials() {
-
         $payload = self::getData();
-
-        if ( $payload ) {
-            self::setCredentials( $payload[ 'username' ], $payload[ 'uid' ] );
-        }
-
         return $payload;
-
     }
 
-    //set a cookie with a username
-    public static function setCredentials( $username, $uid ) {
-        list( $new_cookie_data, $new_expire_date ) = static::generateSignedAuthCookie( $username, $uid );
-        setcookie( INIT::$AUTHCOOKIENAME, $new_cookie_data, $new_expire_date, '/' );
-    }
-
-    public static function generateSignedAuthCookie( $username, $uid ) {
-
-        $JWT = new SimpleJWT( [
-                'uid'      => $uid,
-                'username' => $username,
-        ] );
-
-        $JWT->setTimeToLive( INIT::$AUTHCOOKIEDURATION );
-
-        return array( $JWT->jsonSerialize(), $JWT->getExpireDate() );
-    }
-
-    public static function destroyAuthentication() {
-        unset( $_COOKIE[ INIT::$AUTHCOOKIENAME ] );
-        setcookie( INIT::$AUTHCOOKIENAME, '', 0, '/' );
-        session_destroy();
-    }
-
-    public static function getCookie() {
-        $jwtCookie = '';
+    public static function getToken() {
+        $jwtToken = '';
 
         if (INIT::$DEV_MODE) {
-            $jwtCookie = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2YWx0ZXJzLnNpY3NAdGlsZGUubHYiLCJncnAiOiJ0ZXN0ZXJUaWxkZUBnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiVmFsdGVycyIsInJvbGVzIjpbImFkbSIsInRtYWRtIl0sImp0aSI6IjRhMGY2MmUwLTBhYjMtNDI2MC05NmI0LTZkMmI1NjdmNGM0ZiIsIm5iZiI6MTUzMzYzMDI5MCwiZXhwIjoxNTM4OTAwNjkwLCJpc3MiOiJMZXRzTVRTZXJ2aWNlIn0.0yqkUSkSaxvHNnVzG83in2Qq_tunTv2iXm1kcdnhClU';
-        }
-        if ( isset( $_COOKIE[ 'jwt' ] ) and !empty( $_COOKIE[ 'jwt' ] ) ) {
-            $jwtCookie = $_COOKIE[ 'jwt' ];
+            $jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2YWx0ZXJzLnNpY3NAdGlsZGUubHYiLCJncnAiOiJ0ZXN0ZXJUaWxkZUBnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiVmFsdGVycyIsInJvbGVzIjpbImFkbSIsInRtYWRtIl0sImp0aSI6IjRhMGY2MmUwLTBhYjMtNDI2MC05NmI0LTZkMmI1NjdmNGM0ZiIsIm5iZiI6MTUzMzYzMDI5MCwiZXhwIjoxNTM4OTAwNjkwLCJpc3MiOiJMZXRzTVRTZXJ2aWNlIn0.0yqkUSkSaxvHNnVzG83in2Qq_tunTv2iXm1kcdnhClU';
         }
 
-        return $jwtCookie;
+        $headers = apache_request_headers();
+        if ( isset( $headers['Authorization'] ) and !empty( $headers['Authorization'] ) ) {
+            $jwtToken = str_replace('Bearer ', '', $headers['Authorization']);
+        }
+
+        return $jwtToken;
     }
 
     /**
@@ -65,50 +36,38 @@ class AuthCookie {
      * @return mixed
      */
     private static function getData() {
-//        if ( isset( $_COOKIE[ 'jwt' ] ) and !empty( $_COOKIE[ 'jwt' ] ) ) {
+        try {
+            $jwtToken = AuthCookie::getToken();
+            $token = (new Parser())->parse((string) $jwtToken);
+            $signer = new Sha256();
+            $data = new ValidationData();
 
-            try {
-                $jwtCookie = AuthCookie::getCookie();
-                $oldFileName = \Log::$fileName;
-                \Log::$fileName = "auth-test.log";
-                \Log::doLog("DEV_MODE: " . \INIT::$DEV_MODE);
-                \Log::doLog("AuthCookie->getData: jwt token: " . $jwtCookie);
-                \Log::$fileName = $oldFileName;
-                $token = (new Parser())->parse((string) $jwtCookie);
-                $signer = new Sha256();
-                $data = new ValidationData();
-
-                if (!$token->verify($signer, INIT::$JWT_KEY)
-                || (!$token->validate($data) && !INIT::$DEV_MODE)
-                ) {
-                    $oldFileName = \Log::$fileName;
-                    \Log::$fileName = "auth-test.log";
-                    \Log::doLog("AuthCookie->getData: invalid token or expired, deny access");
-                    \Log::$fileName = $oldFileName;
-                    return false;
-                }
-
-                $jwtId = $token->getClaim('sub') . ':-:' . $token->getClaim('grp');
-                $nameArray = explode(' ', $token->getClaim('given_name'), 2);
-                $firstName = isset($nameArray[0]) ? $nameArray[0] : 'jwt_user';
-                $lastName = isset($nameArray[1]) ? $nameArray[1] : 'jwt_user';
-
-                $dao  = new Users_UserDao();
-                $user = $dao->getByEmail( $jwtId );
-                if ($user == null) {
-                    $signup = new JwtSignup( $jwtId, $firstName, $lastName );
-                    $signup->process();
-                    $user = $dao->getByEmail( $jwtId );
-                } else {
-                    Users_UserDao::saveName($user->uid, $firstName, $lastName);
-                }
-
-                return array('username' => $user->email, 'uid' => $user->uid);
-            } catch ( DomainException $e ) {
-                Log::doLog( $e->getMessage() . " " . $_COOKIE[ INIT::$AUTHCOOKIENAME ] );
-                self::destroyAuthentication();
+            if (!$token->verify($signer, INIT::$JWT_KEY)
+            || (!$token->validate($data) && !INIT::$DEV_MODE)
+            ) {
+                return false;
             }
-//        }
+
+            $jwtId = $token->getClaim('sub') . ':-:' . $token->getClaim('grp');
+            $nameArray = explode(' ', $token->getClaim('given_name'), 2);
+            $firstName = isset($nameArray[0]) ? $nameArray[0] : 'jwt_user';
+            $lastName = isset($nameArray[1]) ? $nameArray[1] : 'jwt_user';
+
+            $dao  = new Users_UserDao();
+            $user = $dao->getByEmail( $jwtId );
+            if ($user == null) {
+                $signup = new JwtSignup( $jwtId, $firstName, $lastName );
+                $signup->process();
+                $user = $dao->getByEmail( $jwtId );
+            } else {
+                Users_UserDao::saveName($user->uid, $firstName, $lastName);
+            }
+
+            return array('username' => $user->email, 'uid' => $user->uid);
+        } catch ( Exception $e ) {
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        }
     }
 
 }
