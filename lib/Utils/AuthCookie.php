@@ -42,9 +42,12 @@ class AuthCookie {
             $signer = new Sha256();
             $data = new ValidationData();
 
-            if (!$token->verify($signer, INIT::$JWT_KEY)
-            || (!$token->validate($data) && !INIT::$DEV_MODE)
-            ) {
+            if (!$token->verify($signer, INIT::$JWT_KEY)) {
+                header("HTTP/1.1 401 Unauthorized");
+                exit;
+            }
+
+            if (!INIT::$DEV_MODE && (!$token->validate($data) || $token->isExpired())) {
                 header("HTTP/1.1 401 Unauthorized");
                 exit;
             }

@@ -6,16 +6,16 @@ use API\App\Json\ConnectedService;
 use API\V2\Json\Team;
 use API\V2\Json\User;
 
+use API\V2\KleinController;
 use API\V2\Validators\LoginValidator;
 use ConnectedServices\ConnectedServiceDao;
-use Exceptions\NotFoundError;
 use TeamModel;
 use Teams\MembershipDao;
 use Teams\TeamStruct;
 use Users_UserDao;
 use Utils;
 
-class UserController extends AbstractStatefulKleinController {
+class UserController extends KleinController {
 
     /**
      * @var \Users_UserStruct
