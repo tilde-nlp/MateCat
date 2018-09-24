@@ -1,5 +1,8 @@
 <template>
-  <div class="pager-container">
+  <div
+    v-if="pages > 1"
+    class="pager-container"
+  >
     <transition
       name="fade"
     >
