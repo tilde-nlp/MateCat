@@ -121,13 +121,12 @@
               height="24"
             />
             <input
-              v-shortkey="['enter']"
               v-model="searchTerm"
               :placeholder="$lang.inputs.search_term"
               class="search-input"
               type="text"
               name="terms-search"
-              @shortkey="openTermSearch"
+              @keyup.enter="openTermSearch"
             >
           </div>
         </div>
@@ -226,7 +225,11 @@
             <div class="ib">{{ $lang.hotkeys.select_autocomplete }}</div>
             <div class="ib pull-right">
               <div class="hotkey-container">
-                &#9166;
+                Ctrl
+              </div>
+              +
+              <div class="hotkey-container">
+                A
               </div>
             </div>
           </div>

@@ -30,7 +30,7 @@
       @click.self="focusEditor"
     >
       <div
-        v-shortkey="['enter']"
+        v-shortkey="['ctrl', 'a']"
         :class="{top: topSegment}"
         :style="rowMinHeight"
         :lang="targetLang"
