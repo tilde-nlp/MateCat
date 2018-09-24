@@ -6,59 +6,71 @@
         <!-- FILE UPLOAD CONTAINER -->
         <div
           :class="{open: sliderOpen}"
+          :style="{'max-height': sliderMaxHeight + 'px'}"
           class="slider-container"
         >
           <file-list-toolbar
-            :button-enabled="uploadQueue.length > 0"
             @fromLangChange="value => { fromLang = value }"
             @toLangChange="value => { toLang = value }"
             @subjectChange="value => { subject = value }"
-            @translate="nextFileUpload"
             @toggleSettings="() => { settingsOpen = !settingsOpen }"
           />
+          <!-- FILE QUEUE -->
+          <transition
+            name="ffade"
+            mdde="out-in">
+            <div
+              v-if="uploadQueue.length"
+              class="file-queue-container"
+            >
+              <transition-group
+                name="ffade"
+                mode="out-in">
+                <div
+                  v-for="(file, index) in uploadQueue"
+                  :key="index"
+                  class="file-queue-item"
+                >
+                  <img
+                    :src="$assetPath + 'document.svg'"
+                    class="svg-icon va-middle static"
+                    height="32"
+                  >
+                  {{ file.name }}
+                  <span
+                    v-if="!uploadQueueActive"
+                    class="icon-span is-24"
+                    title="Noņemt failu"
+                    @click="removeFromQueue(index)"
+                  >
+                    <svgicon
+                      class="svg-icon va-middle icon-blueish-darker-still"
+                      name="close-circle"
+                      height="24"
+                    />
+                  </span>
+                </div>
+              </transition-group>
+            </div>
+          </transition>
+          <!-- FILE QUEUE END -->
           <file-list-selector
             @fileAdded="sendToUploadQueue"
           />
         </div>
         <!-- FILE UPLOAD CONTAINER END -->
-        <!-- FILE QUEUE -->
-        <transition
-          name="ffade"
-          mdde="out-in">
-          <div
-            v-if="uploadQueue.length"
-            class="file-queue-container"
-          >
-            <transition-group
-              name="ffade"
-              mode="out-in">
-              <div
-                v-for="(file, index) in uploadQueue"
-                :key="index"
-                class="">
-                <img
-                  :src="$assetPath + 'document.svg'"
-                  class="svg-icon va-middle static"
-                  height="32"
-                >
-                {{ file.name }}
-                <span
-                  v-if="!uploadQueueActive"
-                  class="icon-span is-24"
-                  title="Noņemt failu"
-                  @click="removeFromQueue(index)"
-                >
-                  <svgicon
-                    class="svg-icon va-middle icon-blueish-darker-still"
-                    name="close-circle"
-                    height="24"
-                  />
-                </span>
-              </div>
-            </transition-group>
-          </div>
-        </transition>
-        <!-- FILE QUEUE END -->
+        <button
+          v-if="buttonEnabled && !$loading.isLoading('translator') && !$loading.isLoading('mt-systems')"
+          :title="buttonTitle"
+          class="analyze-button"
+          @click="translateClick"
+        >
+          <transition
+            name="ffade"
+            mode="out-in">
+            <span>{{ $lang.buttons.analyze }}</span>
+          </transition>
+        </button>
       </section>
       <div
         v-if="sliderOpen"
@@ -131,13 +143,34 @@ export default {
       lastUpload: new Date().getTime(),
       uploadThrottleTime: 1000,
       uploadQueueActive: false,
-      settingsOpen: false
+      settingsOpen: false,
+      baseMaxHeight: 253,
+      fileRowHeight: 48
+    }
+  },
+  computed: {
+    buttonTitle: function () {
+      return this.buttonEnabled ? this.$lang.tooltips.upload_files : this.$lang.tooltips.drag_files_first
+    },
+    buttonEnabled: function () {
+      return this.uploadQueue.length > 0
+    },
+    sliderMaxHeight: function () {
+      if (!this.sliderOpen) {
+        return 0
+      }
+      return this.baseMaxHeight + this.uploadQueue.length * this.fileRowHeight
     }
   },
   mounted: function () {
     this.fetchFileList(1)
   },
   methods: {
+    translateClick: function () {
+      if (!this.$loading.isLoading('translator')) {
+        this.nextFileUpload()
+      }
+    },
     fetchFileList: function (page, updateList) {
       updateList = updateList || false
       this.currentPage = page

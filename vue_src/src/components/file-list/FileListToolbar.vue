@@ -88,29 +88,6 @@
         <div
           class="link ib">{{ $lang.buttons.settings }}</div>
       </div>
-      <button
-        :disabled="!buttonEnabled"
-        :title="buttonTitle"
-        class="button pull-right"
-        @click="() => { if (!$loading.isLoading('translator')) $emit('translate') }"
-      >
-        <transition
-          name="ffade"
-          mode="out-in">
-          <span v-if="!$loading.isLoading('translator') && !$loading.isLoading('mt-systems')">{{ $lang.buttons.analyze }}</span>
-          <div
-            v-else
-            class="translate-loading-fix"
-          >
-            <span class="vam-helper"/>
-            <img
-              :src="$assetPath + 'loading-spinner.svg'"
-              class="va-middle"
-              height="24"
-            >
-          </div>
-        </transition>
-      </button>
     </div>
   </div>
 </template>
@@ -119,12 +96,6 @@
 import LanguageService from 'services/languages'
 export default {
   name: 'FileListToolbar',
-  props: {
-    buttonEnabled: {
-      type: Boolean,
-      required: true
-    }
-  },
   data: function () {
     return {
       languages: [],
@@ -135,11 +106,6 @@ export default {
       subjects: [],
       subject: null,
       defaultSubjectKey: 'general'
-    }
-  },
-  computed: {
-    buttonTitle: function () {
-      return this.buttonEnabled ? this.$lang.tooltips.upload_files : this.$lang.tooltips.drag_files_first
     }
   },
   mounted: function () {
