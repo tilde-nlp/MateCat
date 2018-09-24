@@ -145,13 +145,15 @@ abstract class controller implements IController {
     public function setUserCredentials() {
 
         $this->user        = new Users_UserStruct();
-        $this->user->uid   = ( isset( $_SESSION[ 'uid' ] ) && !empty( $_SESSION[ 'uid' ] ) ? $_SESSION[ 'uid' ] : null );
-        $this->user->email = ( isset( $_SESSION[ 'cid' ] ) && !empty( $_SESSION[ 'cid' ] ) ? $_SESSION[ 'cid' ] : null );
+        $username_from_cookie = AuthCookie::getCredentials();
+
+        $this->user->uid   = $username_from_cookie['uid'];
+        $this->user->email = $username_from_cookie['username'];
 
         try {
 
             $userDao    = new Users_UserDao( Database::obtain() );
-            $loggedUser = $userDao->setCacheTTL( 3600 )->read( $this->user )[ 0 ]; // one hour cache
+            $loggedUser = $userDao->setCacheTTL( 0 )->read( $this->user )[ 0 ]; // one hour cache
             $this->userIsLogged = (
                     !empty( $loggedUser->uid ) &&
                     !empty( $loggedUser->email ) &&
@@ -171,25 +173,16 @@ abstract class controller implements IController {
      *
      */
     protected function _setUserFromAuthCookie() {
-        if ( empty( $_SESSION[ 'cid' ] ) ) {
-            $username_from_cookie = AuthCookie::getCredentials();
-            if ( $username_from_cookie ) {
-                $_SESSION[ 'cid' ] = $username_from_cookie['username'];
-                $_SESSION[ 'uid' ] = $username_from_cookie['uid'];
-            }
+        $username_from_cookie = AuthCookie::getCredentials();
+        if ( $username_from_cookie ) {
+            $_SESSION[ 'cid' ] = $username_from_cookie['username'];
+            $_SESSION[ 'uid' ] = $username_from_cookie['uid'];
         }
     }
 
-    public function readLoginInfo( $close = true ) {
-        //Warning, sessions enabled, disable them after check, $_SESSION is in read only mode after disable
-        self::sessionStart();
+    public function readLoginInfo() {
         $this->_setUserFromAuthCookie();
         $this->setUserCredentials();
-
-        if ( $close ) {
-            self::disableSessions();
-        }
-
     }
 
     /**
