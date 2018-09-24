@@ -26,5 +26,8 @@ module.exports = {
   time_spent: 'Time spent',
   minutes: 'minutes',
   hours: 'hours',
-  time_remaining: 'Time remaining'
+  time_remaining: 'Time remaining',
+  General: 'General',
+  Culture: 'Culture',
+  Justice: 'Justice'
 }

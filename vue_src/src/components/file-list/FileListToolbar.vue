@@ -97,7 +97,7 @@
         <transition
           name="ffade"
           mode="out-in">
-          <span v-if="!$loading.isLoading('translator')">{{ $lang.buttons.analyze }}</span>
+          <span v-if="!$loading.isLoading('translator') && !$loading.isLoading('mt-systems')">{{ $lang.buttons.analyze }}</span>
           <div
             v-else
             class="translate-loading-fix"
@@ -117,7 +117,6 @@
 
 <script>
 import LanguageService from 'services/languages'
-import _ from 'lodash'
 export default {
   name: 'FileListToolbar',
   props: {
@@ -170,12 +169,18 @@ export default {
       this.reloadSystem()
     },
     reloadSystem: function () {
+      this.$loading.startLoading('mt-systems')
       LanguageService.getSubjectsList(this.$lang.getLang())
         .then(r => {
-          const filteredSystems = LanguageService.filterSystems(r.data.System, this.fromLang.substring(0, 2), this.toLang.substring(0, 2))
-          this.subjects = _.sortBy(filteredSystems, ['label'])
-          // Set default subject
+          this.subjects = LanguageService.filterSystems(r.data.System, this.fromLang.substring(0, 2), this.toLang.substring(0, 2))
+          for (let i = 0; i < this.subjects.length; i++) {
+            this.subjects[i].label = this.$lang.titles[this.subjects[i].label]
+          }
           this.subject = this.subjects[0]
+          this.$loading.endLoading('mt-systems')
+        })
+        .catch(() => {
+          this.$loading.endLoading('mt-systems')
         })
     },
     onSystemChange: function (value) {

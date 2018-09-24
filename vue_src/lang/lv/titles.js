@@ -26,5 +26,8 @@ module.exports = {
   time_spent: 'Laiks patērēts',
   minutes: 'minūtes',
   hours: 'stundas',
-  time_remaining: 'Laiks atlicis'
+  time_remaining: 'Laiks atlicis',
+  General: 'Vispārēja',
+  Culture: 'Kultūra',
+  Justice: 'Tieslietas'
 }

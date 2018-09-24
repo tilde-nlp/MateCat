@@ -16,7 +16,7 @@ export default {
     return HTTP.get(CONFIG.baseUrl + '?action=getLanguages')
   },
   getSubjectsList: function (lang) {
-    return HTTP.get(CONFIG.mtBaseUrl + 'GetSystemList?appID=' + CONFIG.mtAppId + '&options=public&uiLanguageID=' + lang, {
+    return HTTP.get(CONFIG.mtBaseUrl + 'GetSystemList?appID=' + CONFIG.mtAppId + '&uiLanguageID=' + lang + '&options=public', {
       headers: { 'client-id': CONFIG.mtClientId }
     })
   },
@@ -42,6 +42,17 @@ export default {
         value: el.ID
       }
     })
-    return filteredSystems
+    let returnSystems = []
+    for (let i = 0; i < filteredSystems.length; i++) {
+      if (filteredSystems[i].label === 'General') {
+        returnSystems.push(filteredSystems[i])
+        filteredSystems.splice(i, 1)
+        break
+      }
+    }
+    for (let i = 0; i < filteredSystems.length; i++) {
+      returnSystems.push(filteredSystems[i])
+    }
+    return returnSystems
   }
 }

@@ -388,6 +388,9 @@ export default {
     LanguagesService.getSubjectsList()
       .then(langsRes => {
         this.systems = LanguagesService.filterSystems(langsRes.data.System, this.fromLang.substring(0, 2), this.toLang.substring(0, 2))
+        for (let i = 0; i < this.systems.length; i++) {
+          this.systems[i].label = this.$lang.titles[this.systems[i].label]
+        }
         const selectedSystem = _.find(this.systems, {value: this.selectedMt})
         this.system = typeof (selectedSystem) === 'undefined' ? this.systems[0] : selectedSystem
         this.$emit('mtSystemChange', this.system)
