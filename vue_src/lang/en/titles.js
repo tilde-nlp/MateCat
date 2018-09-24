@@ -29,5 +29,6 @@ module.exports = {
   time_remaining: 'Time remaining',
   General: 'General',
   Culture: 'Culture',
-  Justice: 'Justice'
+  Justice: 'Justice',
+  unknown: 'unknown'
 }

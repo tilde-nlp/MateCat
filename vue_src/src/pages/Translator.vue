@@ -207,7 +207,8 @@ export default {
       segmentPageSize: 5,
       segmentsAnalyzed: 0,
       pretranslateInterval: null,
-      searchedTerm: ''
+      searchedTerm: '',
+      timeReference: 0
     }
   },
   computed: {
@@ -225,6 +226,9 @@ export default {
       return minutes + ' ' + this.$lang.titles.minutes
     },
     timeRemaining: function () {
+      if (this.jobData.progress <= 0) {
+        return this.$lang.titles.unknown
+      }
       const timePerPercent = this.jobData.editingTime / this.jobData.progress
       const predictedTime = timePerPercent * 100
       let minutes = Math.floor(predictedTime / 60)
@@ -247,6 +251,7 @@ export default {
       ppassword: this.jobData.ppassword
     })
       .then(this.initialAnalyzeResponse)
+    this.timeReference = parseInt(new Date().getTime() / 1000)
   },
   beforeDestroy: function () {
     window.removeEventListener('resize', this.setSegmentListHeight)
@@ -375,6 +380,13 @@ export default {
           }
           this.checkStats()
         })
+      const currentTime = parseInt(new Date().getTime() / 1000)
+      this.jobData.editingTime += currentTime - this.timeReference
+      this.timeReference = currentTime
+      JobsService.setEditingTime({
+        id: this.jobData.id,
+        editingTime: this.jobData.editingTime
+      })
     },
     setActive: function (id) {
       if (this.$store.state.activeSegment !== null && id === this.$store.state.activeSegment.id) {
@@ -641,7 +653,6 @@ export default {
             this.$store.commit('termBaseUrl', jobRes.data.termBaseUrl)
             this.checkStats()
             this.getFileUrls()
-            this.startEditTimer()
             if (this.jobData.tmPretranslate || this.jobData.mtPretranslate) {
               this.$loading.startLoading('pretranslate')
               JobsService.preTranslate({
@@ -671,15 +682,6 @@ export default {
         })
           .then(this.initialAnalyzeResponse)
       }, 2000)
-    },
-    startEditTimer: function () {
-      setInterval(() => {
-        this.jobData.editingTime += 10
-        JobsService.setEditingTime({
-          id: this.jobData.id,
-          editingTime: this.jobData.editingTime
-        })
-      }, 10000)
     },
     termSearch: function (text) {
       this.searchedTerm = text

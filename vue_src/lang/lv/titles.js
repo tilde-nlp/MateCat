@@ -29,5 +29,6 @@ module.exports = {
   time_remaining: 'Laiks atlicis',
   General: 'Vispārēja',
   Culture: 'Kultūra',
-  Justice: 'Tieslietas'
+  Justice: 'Tieslietas',
+  unknown: 'nezināms'
 }
