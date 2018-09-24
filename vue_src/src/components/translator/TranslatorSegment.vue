@@ -3,6 +3,7 @@
     :class="{active: segment.active, confirmed: segment.status === 'done'}"
     class="segment-container font-size-0"
     @click.capture="setActive"
+    @click.self="focusEditor"
   >
     <div class="double-block segment-fix">
       <div
