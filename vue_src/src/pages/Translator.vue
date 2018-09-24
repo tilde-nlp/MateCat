@@ -395,6 +395,7 @@ export default {
             id_job: e.jobId
           }
           SegmentsService.setCurrent(data)
+          e.focusToggle = !e.focusToggle
           if (e.status !== 'done') {
             this.setStatus('draft')
           }

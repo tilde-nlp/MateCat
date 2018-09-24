@@ -4,7 +4,6 @@
     :style="{ 'font-size': fontSizeString }"
     class="editor-container"
     @input="onInput"
-    @keydow="onKeydown"
     @click.self="focusEditor"
     @mouseup.self="checkSelection"
     v-html="formattedText"
@@ -50,7 +49,8 @@ export default {
       editor: null,
       id: null,
       isEditable: false,
-      lastValidContent: ''
+      lastValidContent: '',
+      autoFocusEditor: false
     }
   },
   computed: {
@@ -69,6 +69,7 @@ export default {
   watch: {
     focusToggle: function () {
       if (this.editor === null) {
+        this.autoFocusEditor = true
         return
       }
       this.$nextTick(() => {
@@ -127,9 +128,6 @@ export default {
       this.lastValidContent = this.editor.innerHTML
       this.$emit('input', cleanText)
     }, 500),
-    onKeydown: function (event) {
-      console.log(event)
-    },
     removeUnwantedTags: function () {
       const brTag = '<div><br></div>'
       if (this.editor.innerHTML.indexOf(brTag) > -1) {
@@ -171,14 +169,7 @@ export default {
       if (this.editor === null) {
         return
       }
-      for (let i = 0; i < this.editor.childNodes.length; i++) {
-        if (this.editor.childNodes[i].className === 'editor-span') {
-          this.$nextTick(() => {
-            this.editor.childNodes[i].focus()
-          })
-          break
-        }
-      }
+      this.editor.focus()
     },
     checkSelection: function () {
       const selectedText = this.getSelectionText()
