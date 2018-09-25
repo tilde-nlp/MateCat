@@ -11,7 +11,7 @@
     <div class="settings-container-options">
       <div>
         <check-box
-          :value="parseInt($store.state.profile.tm_pretranslate) > 0"
+          :value="$store.state.profile.tm_pretranslate"
           @change="val => { setTmPretranslate(val) }"
         />
         <div class="ib va-top">
@@ -20,7 +20,7 @@
       </div>
       <div class="mt-24">
         <check-box
-          :value="parseInt($store.state.profile.mt_pretranslate) > 0"
+          :value="$store.state.profile.mt_pretranslate"
           @change="val => { setMtPretranslate(val) }"
         />
         <div class="ib va-top">

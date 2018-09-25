@@ -42,7 +42,7 @@
           <div class="select-container">
             <v-select
               id="mt"
-              v-model="system"
+              v-model="activeSystem"
               :options="systems"
               name="mt"
               @input="onMtChange"
@@ -309,7 +309,6 @@
   </div>
 </template>
 <script>
-import LanguagesService from 'services/languages.js'
 import CommentsService from 'services/comments.js'
 import _ from 'lodash'
 import {DateConverter} from 'utils/date-converter'
@@ -323,10 +322,6 @@ export default {
       type: Number,
       required: true
     },
-    selectedMt: {
-      type: String,
-      required: true
-    },
     fromLang: {
       type: String,
       required: true
@@ -338,16 +333,23 @@ export default {
     searchedTerm: {
       type: String,
       default: ''
+    },
+    systems: {
+      type: Array,
+      required: true
+    },
+    system: {
+      type: Object,
+      required: true
     }
   },
   data: function () {
     return {
       activeTab: 'translate',
-      systems: [],
-      system: null,
       newComment: {},
       commentSearch: '',
-      searchTerm: ''
+      searchTerm: '',
+      activeSystem: null
     }
   },
   computed: {
@@ -371,31 +373,15 @@ export default {
     }
   },
   watch: {
-    selectedMt: function (newVal) {
-      if (this.systems.length < 1) {
-        return
-      }
-      const selectedSystem = _.find(this.systems, {value: newVal})
-      this.system = typeof (selectedSystem) === 'undefined' ? this.systems[0] : selectedSystem
-      this.$emit('mtSystemChange', this.system)
-    },
     searchedTerm: function (newVal) {
       this.searchTerm = newVal
+    },
+    system: function (newVal) {
+      this.activeSystem = newVal
     }
   },
   mounted: function () {
     this.resetComment()
-    LanguagesService.getSubjectsList()
-      .then(langsRes => {
-        this.systems = LanguagesService.filterSystems(langsRes.data.System, this.fromLang.substring(0, 2), this.toLang.substring(0, 2))
-        for (let i = 0; i < this.systems.length; i++) {
-          this.systems[i].label = this.$lang.titles[this.systems[i].label]
-        }
-        const selectedSystem = _.find(this.systems, {value: this.selectedMt})
-        this.system = typeof (selectedSystem) === 'undefined' ? this.systems[0] : selectedSystem
-        this.$emit('mtSystemChange', this.system)
-        this.$emit('refreshContributions')
-      })
   },
   methods: {
     setSuggestion: function (suggestion) {
@@ -473,8 +459,7 @@ export default {
       return xliffToHtml(text, parentId)
     },
     onMtChange: function (value) {
-      this.$emit('mtSystemChange', value.value)
-      this.$store.commit('mtSystem', value.value)
+      this.$emit('mtSystemChange', value)
     }
   }
 }

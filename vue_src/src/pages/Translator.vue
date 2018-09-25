@@ -78,7 +78,17 @@
             @scroll="segmentsScrolled"
           >
             <div
-              v-if="$loading.isLoading('segmentsAnalyze')"
+              v-if="$loading.isLoading('master-translator')"
+              class="segments-loading"
+            >
+              <svgicon
+                class="svg-loading va-middle"
+                name="loading"
+                height="32"
+              />
+            </div>
+            <div
+              v-else-if="$loading.isLoading('segmentsAnalyze')"
               class="segments-loading"
             >
               <svgicon
@@ -142,10 +152,11 @@
         </div>
         <translator-assistant
           :max-height="suggestionsListHeight"
-          :selected-mt="jobData.mtSystemId"
           :from-lang="jobData.source"
           :to-lang="jobData.target"
           :searched-term="searchedTerm"
+          :systems="systems"
+          :system="system"
           @mtSystemChange="onMtSystemChange"
           @search="searchSegments"
           @refreshContributions="refreshContributions"
@@ -177,7 +188,8 @@ export default {
     return {
       segments: [],
       fileId: '',
-      system: '',
+      system: {},
+      systems: [],
       segmentListHeight: 600,
       suggestionsListHeight: 500,
       splitActive: false,
@@ -257,6 +269,70 @@ export default {
     window.removeEventListener('resize', this.setSegmentListHeight)
   },
   methods: {
+    initialAnalyzeResponse: function (res) {
+      this.segmentsAnalyzed = res.data.data.summary.SEGMENTS_ANALYZED
+      this.jobData.id = res.data.data.job_id
+      this.jobData.password = res.data.data.job_password
+      if (res.data.data.summary.STATUS === 'DONE') {
+        JobsService.getInfo({
+          id: this.jobData.id,
+          password: this.jobData.password
+        })
+          .then(jobRes => {
+            this.$loading.endLoading('segmentsAnalyze')
+            this.jobData.lastSegmentId = parseInt(jobRes.data.active_segment_id)
+            this.jobData.source = jobRes.data.source
+            this.jobData.target = jobRes.data.target
+            this.jobData.editingTime = jobRes.data.editing_time
+            Vue.set(this.jobData, 'editingTime', parseInt(jobRes.data.editing_time))
+            this.jobData.firstSegment = parseInt(jobRes.data.firstSegment)
+            this.jobData.lastSegment = parseInt(jobRes.data.lastSegment)
+            this.jobData.fileName = jobRes.data.fileName
+            this.jobData.tmPretranslate = parseInt(jobRes.data.tm_pretranslate) > 0
+            this.jobData.mtPretranslate = parseInt(jobRes.data.mt_pretranslate) > 0
+            this.jobData.mtSystemId = jobRes.data.mtSystemId === null ? '' : jobRes.data.mtSystemId
+            this.$store.commit('termBaseUrl', jobRes.data.termBaseUrl)
+            this.checkStats()
+            this.getFileUrls()
+            LanguagesService.getSubjectsList()
+              .then(langsRes => {
+                this.systems = LanguagesService.filterSystems(langsRes.data.System, this.jobData.source.substring(0, 2), this.jobData.target.substring(0, 2))
+                for (let i = 0; i < this.systems.length; i++) {
+                  this.systems[i].label = this.$lang.titles[this.systems[i].label]
+                }
+                const selectedSystem = _.find(this.systems, {value: this.jobData.mtSystemId})
+                this.system = typeof (selectedSystem) === 'undefined' ? this.systems[0] : selectedSystem
+                if (this.jobData.tmPretranslate || this.jobData.mtPretranslate) {
+                  this.$loading.startLoading('pretranslate')
+                  JobsService.preTranslate({
+                    id: this.jobData.id,
+                    password: this.jobData.password,
+                    use_tm: this.jobData.tmPretranslate ? 1 : 0,
+                    use_mt: this.jobData.mtPretranslate ? 1 : 0,
+                    mt_system: this.jobData.mtSystemId
+                  })
+                    .then(() => {
+                      this.reloadSegments()
+                    })
+                } else {
+                  this.reloadSegments()
+                }
+              })
+          })
+        this.$nextTick(function () {
+          window.addEventListener('resize', this.setSegmentListHeight)
+          this.setSegmentListHeight()
+        })
+        return
+      }
+      setTimeout(() => {
+        FileService.analyze({
+          pid: this.jobData.projectId,
+          ppassword: this.jobData.ppassword
+        })
+          .then(this.initialAnalyzeResponse)
+      }, 2000)
+    },
     setSegmentListHeight: function () {
       const appHeight = document.getElementById('cat-app').clientHeight
       this.segmentListHeight = appHeight - 48 - 26 - 90
@@ -625,63 +701,8 @@ export default {
     },
     onMtSystemChange: function (value) {
       this.system = value
-      LanguagesService.saveMtSystem({mt_system_id: value, id: this.jobData.projectId})
+      LanguagesService.saveMtSystem({mt_system_id: value.value, id: this.jobData.projectId})
       this.$store.commit('mtSystem', value)
-    },
-    initialAnalyzeResponse: function (res) {
-      this.segmentsAnalyzed = res.data.data.summary.SEGMENTS_ANALYZED
-      this.jobData.id = res.data.data.job_id
-      this.jobData.password = res.data.data.job_password
-      if (res.data.data.summary.STATUS === 'DONE') {
-        JobsService.getInfo({
-          id: this.jobData.id,
-          password: this.jobData.password
-        })
-          .then(jobRes => {
-            this.$loading.endLoading('segmentsAnalyze')
-            this.jobData.lastSegmentId = parseInt(jobRes.data.active_segment_id)
-            this.jobData.source = jobRes.data.source
-            this.jobData.target = jobRes.data.target
-            this.jobData.editingTime = jobRes.data.editing_time
-            Vue.set(this.jobData, 'editingTime', parseInt(jobRes.data.editing_time))
-            this.jobData.firstSegment = parseInt(jobRes.data.firstSegment)
-            this.jobData.lastSegment = parseInt(jobRes.data.lastSegment)
-            this.jobData.fileName = jobRes.data.fileName
-            this.jobData.tmPretranslate = parseInt(jobRes.data.tm_pretranslate) > 0
-            this.jobData.mtPretranslate = parseInt(jobRes.data.mt_pretranslate) > 0
-            this.jobData.mtSystemId = jobRes.data.mtSystemId === null ? '' : jobRes.data.mtSystemId
-            this.$store.commit('termBaseUrl', jobRes.data.termBaseUrl)
-            this.checkStats()
-            this.getFileUrls()
-            if (this.jobData.tmPretranslate || this.jobData.mtPretranslate) {
-              this.$loading.startLoading('pretranslate')
-              JobsService.preTranslate({
-                id: this.jobData.id,
-                password: this.jobData.password,
-                use_tm: this.jobData.tmPretranslate ? 1 : 0,
-                use_mt: this.jobData.mtPretranslate ? 1 : 0,
-                mt_system: this.jobData.mtSystemId
-              })
-                .then(() => {
-                  this.reloadSegments()
-                })
-            } else {
-              this.reloadSegments()
-            }
-          })
-        this.$nextTick(function () {
-          window.addEventListener('resize', this.setSegmentListHeight)
-          this.setSegmentListHeight()
-        })
-        return
-      }
-      setTimeout(() => {
-        FileService.analyze({
-          pid: this.jobData.projectId,
-          ppassword: this.jobData.ppassword
-        })
-          .then(this.initialAnalyzeResponse)
-      }, 2000)
     },
     termSearch: function (text) {
       this.searchedTerm = text

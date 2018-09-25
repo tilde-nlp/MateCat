@@ -227,8 +227,8 @@ export default {
         source_language: this.fromLang,
         target_language: this.toLang,
         mt_system: this.subject !== null ? this.subject.value : '',
-        tm_pretranslate: file.tm_pretranslate,
-        mt_pretranslate: file.mt_pretranslate
+        tm_pretranslate: file.tm_pretranslate ? 1 : 0,
+        mt_pretranslate: file.mt_pretranslate ? 1 : 0
       })
       formData.append('files[]', file)
       FileService.upload(formData)

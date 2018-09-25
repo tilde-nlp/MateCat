@@ -13,6 +13,8 @@ export default {
   },
   profile (state, profile) {
     state.profile = profile
+    state.profile.tm_pretranslate = parseInt(profile.tm_pretranslate) > 0
+    state.profile.mt_pretranslate = parseInt(profile.mt_pretranslate) > 0
     state.isLoggedIn = true
   },
   tmPretranslate (state, value) {
