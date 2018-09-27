@@ -11,23 +11,14 @@ class TildeTM {
 
     public static function getContributions($text, $sourceLang, $targetLang) {
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getToken());
+        $user = AuthCookie::getCredentials();
+        $memorySettings = self::settingsToArray(Jobs_JobDao::getMemorySetting($user['uid']));
         $memories = $TildeTM->getMemories();
-        foreach($memories as &$memory) {
-            $memory->read = true;
-            $memory->concordance = false;
+        foreach($memories as &$mem) {
+            $mem->read = true && $memorySettings[$mem->id]['read'];
+            $mem->concordance = false || $memorySettings[$mem->id]['concordance'];
         }
         $tms_match = [];
-        $user = AuthCookie::getCredentials();
-        $memorySettings = Jobs_JobDao::getMemorySetting($user['uid']);
-        foreach($memorySettings as $setting) {
-            foreach($memories as $k => $memory) {
-                if (strcmp($memory->id, $setting['memory_id']) !== 0) {
-                    continue;
-                }
-                $memories[$k]->read = $setting['read_memory'] > 0;
-                $memories[$k]->concordance = $setting['concordance_search'] > 0;
-            }
-        }
         foreach($memories as $memory) {
             if (!$memory->read) {
                 continue;
@@ -53,6 +44,17 @@ class TildeTM {
         }
 
         return $tms_match;
+    }
+
+    private static function settingsToArray($settings) {
+        $settingsArray = [];
+        foreach($settings as $setting) {
+            $settingsArray[$setting['memory_id']] = [
+                'read' => intval($setting['read_memory']) > 0,
+                'concordance' => intval($setting['concordance_search']) > 0,
+                ];
+        }
+        return $settingsArray;
     }
 
     public function __construct($baseUrl, $token)
@@ -85,7 +87,8 @@ class TildeTM {
             'source' => $source,
             'target' => $target,
             'sourceLang' => $sourceLang,
-            'targetLang' => $targetLang
+            'targetLang' => $targetLang,
+            'match' => 100
         );
         return $this->post('tm/' . urlencode($collection) . '/segments', $data);
     }
@@ -108,7 +111,9 @@ class TildeTM {
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_URL, $this->baseUrl . $request);
         curl_setopt($curl,CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($curl, CURLOPT_HEADER  , true);
         $resp = curl_exec($curl);
+        $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
         return json_decode($resp);
     }

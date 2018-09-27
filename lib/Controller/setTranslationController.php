@@ -857,6 +857,7 @@ class setTranslationController extends ajaxController {
         $contributionStruct->oldTranslation       = $old_translation[ 'translation' ];
         $contributionStruct->propagationRequest   = $this->propagate;
         $contributionStruct->id_mt                = $this->jobData->id_mt_engine;
+        $contributionStruct->jwt_token            = AuthCookie::getToken();
 
         $contributionStruct->context_after        = $this->context_after;
         $contributionStruct->context_before       = $this->context_before;
@@ -873,8 +874,6 @@ class setTranslationController extends ajaxController {
         } catch ( Exception $e ){
             Log::doLog( $contributionStruct );
         }
-        /** TODO Remove */
-
         //assert there is not an exception by following the flow
         WorkerClient::init( new AMQHandler() );
         Set::contribution( $contributionStruct );

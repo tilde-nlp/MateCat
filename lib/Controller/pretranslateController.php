@@ -49,7 +49,6 @@ class pretranslateController {
                 $tms_match = TildeTM::getContributions($segment->segment, $jobData->source, $jobData->target);
                 if (!empty($tms_match)) {
                     usort($tms_match, array( "getContributionController", "__compareScore" ));
-                    $tms_match = array_reverse($tms_match);
                     if (intval($tms_match[0]['match']) >= 100) {
                         $translation = $tms_match[0]['translation'];
                         $match = $tms_match[0]['match'];

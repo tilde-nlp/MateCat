@@ -112,6 +112,11 @@ class ContributionStruct extends DataAccess_AbstractDaoObjectStruct implements D
     public $id_mt;
 
     /**
+     * @var string
+     */
+    public $jwt_token;
+
+    /**
      * Global Cached record for jobs metadata
      *
      * WARNING these values are cached only globally and not locally by the "cachable" method ( in the running process )

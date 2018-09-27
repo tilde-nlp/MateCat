@@ -21,7 +21,6 @@ use Contribution\ContributionStruct,
         Jobs_JobStruct;
 use INIT;
 use TildeTM;
-use AuthCookie;
 use Jobs_JobDao;
 
 class SetContributionWorker extends AbstractWorker {
@@ -88,11 +87,7 @@ class SetContributionWorker extends AbstractWorker {
      * @throws \Exceptions\ValidationError
      */
     protected function _execContribution( ContributionStruct $contributionStruct ){
-
         $jobStruct = $contributionStruct->getJobStruct();
-//        $userInfoList = $contributionStruct->getUserInfo();
-//        $userInfo = array_pop( $userInfoList );
-
         $this->_loadEngine( $contributionStruct );
 
         $config = $this->_engine->getConfigStruct();
@@ -156,26 +151,25 @@ class SetContributionWorker extends AbstractWorker {
      * @throws \Exceptions\ValidationError
      */
     protected function _set( Array $config, ContributionStruct $contributionStruct ) {
-        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getToken());
+        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, $contributionStruct->jwt_token);
         $memories = $TildeTM->getMemories();
-        foreach($memories as &$memory) {
-            $memory->write = true && $memory->canUpdate;
+        $canWrite= $this->settingsToArray(Jobs_JobDao::getMemorySetting($contributionStruct->uid));
+        if (empty($memories)) {
+            return;
         }
-        $user = AuthCookie::getCredentials();
-        $JobsDao = new Jobs_JobDao();
-        $memorySettings = $JobsDao->getMemorySetting($user['uid']);
-        foreach($memorySettings as $setting) {
-            foreach($memories as $k => $memory) {
-                if (strcmp($memory->id, $setting['memory_id']) !== 0) {
-                    continue;
-                }
-                $memories[$k]->write = $setting['write_memory'] > 0;
-            }
+        foreach($memories as &$mem) {
+            $mem->write = true && $mem->canUpdate && $canWrite[$mem->id];
         }
+        $this->log($memories[0]);
+        $this->log($memories[1]);
         foreach($memories as $memory) {
+            $this->log_text('Write');
+            $this->log($memory);
+            $this->log($memory->write);
             if (!$memory->write) {
                 continue;
             }
+            $this->log_text('Writing');
             $TildeTM->writeMatch(
                 $memory->id,
                 $contributionStruct->segment,
@@ -184,6 +178,14 @@ class SetContributionWorker extends AbstractWorker {
                 substr($config['target'], 0, 2)
             );
         }
+    }
+
+    private function settingsToArray($settings) {
+        $settingsArray = [];
+        foreach($settings as $setting) {
+            $settingsArray[$setting['memory_id']] = intval($setting['write_memory']) > 0;
+        }
+        return $settingsArray;
     }
 
     protected function _update( Array $config, ContributionStruct $contributionStruct ){
