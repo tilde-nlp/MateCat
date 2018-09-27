@@ -390,7 +390,7 @@ export default {
         num_results: 5,
         context_before: context.before,
         context_after: context.after,
-        mt_system: this.system
+        mt_system: this.system.value
       }
       SegmentsService.getContribution(data)
         .then(r => {
