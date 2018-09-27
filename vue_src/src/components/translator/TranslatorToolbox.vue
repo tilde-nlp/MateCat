@@ -148,6 +148,10 @@ export default {
     jobData: {
       type: Object,
       required: true
+    },
+    mtSystem: {
+      type: Object,
+      required: true
     }
   },
   methods: {
@@ -159,14 +163,14 @@ export default {
     },
     preTranslateTm: function () {
       this.$loading.startLoading('pretranslate')
-      JobsService.preTranslate({id: this.jobData.id, password: this.jobData.password, use_tm: 1, mt_system: this.$store.state.mtSystem})
+      JobsService.preTranslate({id: this.jobData.id, password: this.jobData.password, use_tm: 1, mt_system: this.mtSystem.value})
         .then(() => {
           this.$emit('pretranslated')
         })
     },
     preTranslateMt: function () {
       this.$loading.startLoading('pretranslate')
-      JobsService.preTranslate({id: this.jobData.id, password: this.jobData.password, use_mt: 1, mt_system: this.$store.state.mtSystem})
+      JobsService.preTranslate({id: this.jobData.id, password: this.jobData.password, use_mt: 1, mt_system: this.mtSystem.value})
         .then(() => {
           this.$emit('pretranslated')
         })

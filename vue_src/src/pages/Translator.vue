@@ -10,6 +10,7 @@
       <section class="section header">
         <translator-toolbox
           :job-data="jobData"
+          :mt-system="system"
           @confirm="() => setStatus('translated')"
           @sourceToTarget="copySourceToTarget"
           @clear="clearTranslation"
