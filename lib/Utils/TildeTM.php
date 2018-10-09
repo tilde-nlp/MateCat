@@ -15,8 +15,10 @@ class TildeTM {
         $memorySettings = self::settingsToArray(Jobs_JobDao::getMemorySetting($user['uid']));
         $memories = $TildeTM->getMemories();
         foreach($memories as &$mem) {
-            $mem->read = true && $memorySettings[$mem->id]['read'];
-            $mem->concordance = false || $memorySettings[$mem->id]['concordance'];
+            $readValue = empty($memorySettings[$mem->id]['read']) ? true : $memorySettings[$mem->id]['read'];
+            $concordValue = empty($memorySettings[$mem->id]['concordance']) ? false : $memorySettings[$mem->id]['concordance'];
+            $mem->read = true && $readValue;
+            $mem->concordance = false || $concordValue;
         }
         $tms_match = [];
         foreach($memories as $memory) {
@@ -99,9 +101,14 @@ class TildeTM {
         curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'Authorization: Bearer ' . $this->token));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_URL, $this->baseUrl . $request);
-        $resp = curl_exec($curl);
+        curl_setopt($curl, CURLOPT_VERBOSE, true);
+        curl_setopt($curl, CURLOPT_HEADER, true);
+        $response = curl_exec($curl);
+        $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+        $header = substr($response, 0, $header_size);
+        $body = substr($response, $header_size);
         curl_close($curl);
-        return json_decode($resp);
+        return json_decode($body);
     }
 
 

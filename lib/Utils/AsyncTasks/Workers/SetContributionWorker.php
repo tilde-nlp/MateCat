@@ -102,13 +102,13 @@ class SetContributionWorker extends AbstractWorker {
 
         try {
 
-            if( empty( $isANewSet ) && $contributionStruct->propagationRequest ){
-                $this->_update( $config, $contributionStruct );
-                $this->_doLog( "Key UPDATE: $redisSetKey, " . var_export( $isANewSet, true ) );
-            } else {
-                $this->_set( $config, $contributionStruct );
-                $this->_doLog( "Key SET: $redisSetKey, " . var_export( $isANewSet, true ) );
-            }
+//            if( empty( $isANewSet ) && $contributionStruct->propagationRequest ){
+//                $this->_update( $config, $contributionStruct );
+//                $this->_doLog( "Key UPDATE: $redisSetKey, " . var_export( $isANewSet, true ) );
+//            } else {
+//                $this->_set( $config, $contributionStruct );
+//                $this->_doLog( "Key SET: $redisSetKey, " . var_export( $isANewSet, true ) );
+//            }
 
             $this->_queueHandler->getRedisClient()->expire(
                     $redisSetKey,
@@ -151,14 +151,19 @@ class SetContributionWorker extends AbstractWorker {
      * @throws \Exceptions\ValidationError
      */
     protected function _set( Array $config, ContributionStruct $contributionStruct ) {
+        $this->log($contributionStruct->jwt_token);
+        $this->log(INIT::$TM_BASE_URL);
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, $contributionStruct->jwt_token);
         $memories = $TildeTM->getMemories();
         $canWrite= $this->settingsToArray(Jobs_JobDao::getMemorySetting($contributionStruct->uid));
+        $this->log($canWrite);
+        $this->log($memories);
         if (empty($memories)) {
             return;
         }
         foreach($memories as &$mem) {
-            $mem->write = true && $mem->canUpdate && $canWrite[$mem->id];
+            $writeValue = empty($canWrite[$mem->id]) ? true : $canWrite[$mem->id];
+            $mem->write = true && $mem->canUpdate && $writeValue;
         }
         $this->log($memories[0]);
         $this->log($memories[1]);

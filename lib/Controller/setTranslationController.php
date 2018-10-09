@@ -862,8 +862,15 @@ class setTranslationController extends ajaxController {
         $contributionStruct->context_after        = $this->context_after;
         $contributionStruct->context_before       = $this->context_before;
 
+        $direction = [
+            'source' => $this->jobData->source,
+            'target' => $this->jobData->target,
+        ];
+
         $contributionStruct = $this->featureSet->filter(
                 'filterContributionStructOnSetTranslation', $contributionStruct,  $this->project );
+
+        $this->writeTM($direction, $contributionStruct);
 
         /** TODO Remove , is only for debug purposes */
         try {
@@ -880,6 +887,45 @@ class setTranslationController extends ajaxController {
 
         $contributionStruct = $this->featureSet->filter( 'filterSetContributionMT', null, $contributionStruct, $this->project ) ;
         Set::contributionMT( $contributionStruct );
+    }
 
+    /**
+     * @param array              $config
+     * @param ContributionStruct $contributionStruct
+     *
+     * @throws ReQueueException
+     * @throws \Exceptions\ValidationError
+     */
+    protected function writeTM( Array $config, ContributionStruct $contributionStruct ) {
+        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, $contributionStruct->jwt_token);
+        $memories = $TildeTM->getMemories();
+        $canWrite= $this->settingsToArray(Jobs_JobDao::getMemorySetting($contributionStruct->uid));
+        if (empty($memories)) {
+            return;
+        }
+        foreach($memories as &$mem) {
+            $writeValue = empty($canWrite[$mem->id]) ? true : $canWrite[$mem->id];
+            $mem->write = true && $mem->canUpdate && $writeValue;
+        }
+        foreach($memories as $memory) {
+            if (!$memory->write) {
+                continue;
+            }
+            $TildeTM->writeMatch(
+                $memory->id,
+                $contributionStruct->segment,
+                $contributionStruct->translation,
+                substr($config['source'], 0, 2),
+                substr($config['target'], 0, 2)
+            );
+        }
+    }
+
+    private function settingsToArray($settings) {
+        $settingsArray = [];
+        foreach($settings as $setting) {
+            $settingsArray[$setting['memory_id']] = intval($setting['write_memory']) > 0;
+        }
+        return $settingsArray;
     }
 }
