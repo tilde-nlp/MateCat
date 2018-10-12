@@ -30,5 +30,7 @@ module.exports = {
   General: 'Vispārēja',
   Culture: 'Kultūra',
   Justice: 'Tieslietas',
-  unknown: 'nezināms'
+  unknown: 'nezināms',
+  target: 'tulkojums',
+  source: 'orģināls'
 }

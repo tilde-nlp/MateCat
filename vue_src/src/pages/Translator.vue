@@ -38,6 +38,13 @@
                 type="text"
                 @keyup.enter="searchSegments"
               >
+              <svgicon
+                v-if="isSearching && searchInSource !== ''"
+                class="svg-icon icon-blueish-darker-still clear-single-search"
+                name="close-circle"
+                height="24"
+                @click="clearSourceSearch"
+              />
             </div>
           </div>
           <div class="double-block">
@@ -54,6 +61,40 @@
                 type="text"
                 @keyup.enter="searchSegments"
               >
+              <svgicon
+                v-if="isSearching && searchInTarget !== ''"
+                class="svg-icon icon-blueish-darker-still clear-single-search"
+                name="close-circle"
+                height="24"
+                @click="clearTargetSearch"
+              />
+            </div>
+          </div>
+          <div
+            v-if="isSearching"
+            class="full-block search-info"
+          >
+            {{ $lang.messages.search_results }}
+            <span
+              v-if="searchInSource !== ''"
+            >
+              {{ $lang.titles.source }}: "{{ searchInSource }}"
+            </span>
+            <span
+              v-if="searchInTarget !== ''"
+            >
+              {{ $lang.titles.target }}: "{{ searchInTarget }}"
+            </span>
+            <div
+              class="pull-right mr-24 pointer search-close-button"
+              @click="clearSearch"
+            >
+              {{ $lang.buttons.close }}
+              <svgicon
+                class="svg-loading va-middle search-close"
+                name="close-circle"
+                height="24"
+              />
             </div>
           </div>
           <div class="double-block br-light-darker">
@@ -221,7 +262,8 @@ export default {
       segmentsAnalyzed: 0,
       pretranslateInterval: null,
       searchedTerm: '',
-      timeReference: 0
+      timeReference: 0,
+      isSearching: false
     }
   },
   computed: {
@@ -540,10 +582,24 @@ export default {
       })
     },
     searchSegments: function () {
+      this.isSearching = this.searchInSource !== '' || this.searchInTarget !== ''
       this.$store.commit('activeSegment', {id: 0})
       this.$store.commit('sourceSearch', this.searchInSource)
       this.$store.commit('targetSearch', this.searchInTarget)
       this.reloadSegments()
+    },
+    clearSearch: function () {
+      this.searchInTarget = ''
+      this.searchInSource = ''
+      this.searchSegments()
+    },
+    clearSourceSearch: function () {
+      this.searchInSource = ''
+      this.searchSegments()
+    },
+    clearTargetSearch: function () {
+      this.searchInTarget = ''
+      this.searchSegments()
     },
     reloadSegments: function () {
       if (this.$loading.isLoading('segmentsAnalyze')) {

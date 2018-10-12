@@ -30,5 +30,7 @@ module.exports = {
   General: 'General',
   Culture: 'Culture',
   Justice: 'Justice',
-  unknown: 'unknown'
+  unknown: 'unknown',
+  target: 'target',
+  source: 'source'
 }

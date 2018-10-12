@@ -86,6 +86,7 @@
 @color-red-darker: #931C1C;
 @color-green: #51b729;
 @color-green-darker: #3e8124;
+@color-green-darker2: #00ab6f;
 @color-yellow: #dbd54a;
 @color-yellow-darker: #b7b149;
 @color-yellow-l: #fdf7e3;
@@ -402,6 +403,11 @@
     position: absolute;
     top: 3px;
     left: 10px;
+  }
+  &.clear-single-search {
+    position: absolute;
+    top: 4px;
+    right: 10px;
   }
 }
 
@@ -1279,6 +1285,40 @@ select::-ms-expand {
     width: calc(~"50% - 1px");
   }
   .split-block;
+}
+
+.full-block {
+  width: 100%;
+  &.segment-fix {
+    width: calc(~"100% - 1px");
+  }
+  .split-block;
+}
+
+.search-info {
+  .h-48;
+  .border-box;
+  background-color: @color-green-darker2;
+  .transition;
+  .size-s;
+  .white;
+  line-height: 48px;
+  .pl-16;
+
+  .search-close-button {
+    &:hover {
+      color: @color-light-darker;
+    }
+  }
+}
+
+.search-close {
+  fill: @color-white;
+  .relative;
+  top: -1.5px;
+  &:hover {
+    fill: @color-light-darker;
+  }
 }
 
 .tt-triple-container {
