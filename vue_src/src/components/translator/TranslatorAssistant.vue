@@ -253,6 +253,13 @@
               @keyup.enter="() => { $emit('search') }"
               @input="e => { $emit('commentSearchInput', e.target.value) }"
             >
+            <svgicon
+              v-if="isSearching && commentSearch !== ''"
+              class="svg-icon icon-blueish-darker-still clear-single-search"
+              name="close-circle"
+              height="24"
+              @click="() => { commentSearch = ''; $emit('clearCommentsSearch') }"
+            />
           </div>
           <div class="input-label ib-i mb-0-i mt-24 va-top">{{ $lang.titles.comments }}</div>
           <div
@@ -265,26 +272,31 @@
             name="ffade"
             mode="out-in"
           >
-            <div
-              v-for="(comment, index) in $store.state.activeSegment.comments"
-              :key="index"
-              class="size-s dark"
+            <span
+              v-if="$store.state.activeSegment"
+              :key="22"
             >
               <div
-                v-if="parseInt(comment.message_type) === 1"
-                class="mt-8"
+                v-for="(comment, index) in $store.state.activeSegment.comments"
+                :key="index"
+                class="size-s dark"
               >
-                <div class="size-xs bold blueish-darker-still ib">{{ comment.full_name }}</div>
-                <div class="size-xs blueish-darker-still ib">{{ timeToDateString(comment.timestamp) }}</div>
-                <div class="size-s dark">{{ comment.message }}</div>
+                <div
+                  v-if="parseInt(comment.message_type) === 1"
+                  class="mt-8"
+                >
+                  <div class="size-xs bold blueish-darker-still ib">{{ comment.full_name }}</div>
+                  <div class="size-xs blueish-darker-still ib">{{ timeToDateString(comment.timestamp) }}</div>
+                  <div class="size-s dark">{{ comment.message }}</div>
+                </div>
+                <div
+                  v-if="parseInt(comment.message_type) === 2"
+                  class="bb-red-big mb-16"
+                >
+                  <div class="size-xs red bold">{{ comment.full_name }} {{ $lang.messages.resolved_comments }}</div>
+                </div>
               </div>
-              <div
-                v-if="parseInt(comment.message_type) === 2"
-                class="bb-red-big mb-16"
-              >
-                <div class="size-xs red bold">{{ comment.full_name }} {{ $lang.messages.resolved_comments }}</div>
-              </div>
-            </div>
+            </span>
           </transition-group>
           <div class="input-label mt-24 va-top">{{ $lang.titles.add_comment }}</div>
           <textarea
@@ -341,6 +353,10 @@ export default {
     system: {
       type: Object,
       required: true
+    },
+    isSearching: {
+      type: Boolean,
+      default: false
     }
   },
   data: function () {
@@ -354,6 +370,9 @@ export default {
   },
   computed: {
     resolvable: function () {
+      if (this.$store.state.activeSegment === null) {
+        return false
+      }
       if (typeof (this.$store.state.activeSegment.comments) === 'undefined' || this.$store.state.activeSegment.comments.length < 1) {
         return false
       }

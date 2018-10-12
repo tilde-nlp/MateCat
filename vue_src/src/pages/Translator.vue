@@ -78,12 +78,17 @@
             <span
               v-if="searchInSource !== ''"
             >
-              {{ $lang.titles.source }}: "{{ searchInSource }}"
+              {{ $lang.titles.search_source }}: "{{ searchInSource }}"
             </span>
             <span
               v-if="searchInTarget !== ''"
             >
-              {{ $lang.titles.target }}: "{{ searchInTarget }}"
+              {{ $lang.titles.search_target }}: "{{ searchInTarget }}"
+            </span>
+            <span
+              v-if="searchInComments !== ''"
+            >
+              {{ $lang.titles.search_comments }}: "{{ searchInComments }}"
             </span>
             <div
               class="pull-right mr-24 pointer search-close-button"
@@ -199,9 +204,11 @@
           :searched-term="searchedTerm"
           :systems="systems"
           :system="system"
+          :is-searching="isSearching"
           @mtSystemChange="onMtSystemChange"
           @search="searchSegments"
           @refreshContributions="refreshContributions"
+          @clearCommentsSearch="clearCommentsSearch"
           @commentSearchInput="val => { searchInComments = val }"
         />
       </section>
@@ -582,7 +589,7 @@ export default {
       })
     },
     searchSegments: function () {
-      this.isSearching = this.searchInSource !== '' || this.searchInTarget !== ''
+      this.isSearching = this.searchInSource !== '' || this.searchInTarget !== '' || this.searchInComments !== ''
       this.$store.commit('activeSegment', {id: 0})
       this.$store.commit('sourceSearch', this.searchInSource)
       this.$store.commit('targetSearch', this.searchInTarget)
@@ -591,6 +598,7 @@ export default {
     clearSearch: function () {
       this.searchInTarget = ''
       this.searchInSource = ''
+      this.searchInComments = ''
       this.searchSegments()
     },
     clearSourceSearch: function () {
@@ -599,6 +607,10 @@ export default {
     },
     clearTargetSearch: function () {
       this.searchInTarget = ''
+      this.searchSegments()
+    },
+    clearCommentsSearch: function () {
+      this.searchInComments = ''
       this.searchSegments()
     },
     reloadSegments: function () {

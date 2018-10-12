@@ -31,6 +31,7 @@ module.exports = {
   Culture: 'Kultūra',
   Justice: 'Tieslietas',
   unknown: 'nezināms',
-  target: 'tulkojums',
-  source: 'orģināls'
+  search_target: 'tulkojumā',
+  search_source: 'orģinālā',
+  search_comments: 'komentāros'
 }

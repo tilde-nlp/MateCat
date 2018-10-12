@@ -31,6 +31,7 @@ module.exports = {
   Culture: 'Culture',
   Justice: 'Justice',
   unknown: 'unknown',
-  target: 'target',
-  source: 'source'
+  search_target: 'target',
+  search_source: 'source',
+  search_comments: 'comments'
 }
