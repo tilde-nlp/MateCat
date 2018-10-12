@@ -131,6 +131,7 @@ export default {
     return {
       files: [],
       uploadQueue: [],
+      activeUploadQueue: [],
       subject: null,
       toLang: null,
       fromLang: null,
@@ -153,7 +154,7 @@ export default {
       return this.buttonEnabled ? this.$lang.tooltips.upload_files : this.$lang.tooltips.drag_files_first
     },
     buttonEnabled: function () {
-      return this.uploadQueue.length > 0
+      return this.uploadQueue.length > 0 && this.activeUploadQueue.length < 1
     },
     sliderMaxHeight: function () {
       if (!this.sliderOpen) {
@@ -168,6 +169,8 @@ export default {
   methods: {
     translateClick: function () {
       if (!this.$loading.isLoading('translator')) {
+        this.activeUploadQueue = this.uploadQueue
+        this.uploadQueue = []
         this.nextFileUpload()
       }
     },
@@ -238,11 +241,11 @@ export default {
             if (fileIndex > -1) {
               this.files.splice(parseInt(fileIndex), 1)
             }
-            const queueIndex = _.findKey(this.uploadQueue, {tmpId: fileTmpId})
+            const queueIndex = _.findKey(this.activeUploadQueue, {tmpId: fileTmpId})
             if (queueIndex > -1) {
-              this.uploadQueue.splice(parseInt(queueIndex), 1)
+              this.activeUploadQueue.splice(parseInt(queueIndex), 1)
             }
-            if (this.uploadQueue.length < 1) this.uploadQueueActive = false
+            if (this.activeUploadQueue.length < 1) this.uploadQueueActive = false
             this.updatePagesCount()
             return Promise.reject(new Error(res.data.errors[0].message))
           }
@@ -342,14 +345,14 @@ export default {
       this.uploadQueue.push(file)
     },
     nextFileUpload: function () {
-      if (this.uploadQueue.length < 1) {
+      if (this.activeUploadQueue.length < 1) {
         this.uploadQueueActive = false
         this.$loading.endLoading('translator')
         return
       }
       this.$loading.startLoading('translator')
       this.uploadQueueActive = true
-      const file = this.uploadQueue.splice(0, 1)[0]
+      const file = this.activeUploadQueue.splice(0, 1)[0]
       let fileTmpId = this.tmpFileId++
       if (this.files.length === this.recordsPerPage) {
         this.files.splice(-1, 1)
