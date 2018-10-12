@@ -77,6 +77,19 @@ class UploadHandler {
         }
     }
 
+    private function uploadLog($text)
+    {
+        $oldFileName = Log::$fileName;
+        Log::$fileName = "upload-stability.log";
+        Log::doLog($text);
+        Log::$fileName = $oldFileName;
+    }
+
+    private function uploadLogData($data)
+    {
+        $this->uploadLog(var_export($data, true));
+    }
+
     public function post() {
 
         if ( isset( $_REQUEST[ '_method' ] ) && $_REQUEST[ '_method' ] === 'DELETE' ) {
@@ -109,7 +122,7 @@ class UploadHandler {
         $uploadParams = ServerCheck::getInstance()->getUploadParams();
 
         if ( $_SERVER[ 'CONTENT_LENGTH' ] >= $uploadParams->getPostMaxSize() ) {
-
+            $this->uploadLog("File too large (defined in php.ini).");
             $fp = fopen( "php://input", "r" );
 
             list( $trash, $boundary ) = explode( 'boundary=', $_SERVER[ 'CONTENT_TYPE' ] );
@@ -134,6 +147,7 @@ class UploadHandler {
             $info = [ $file ];
 
         } elseif ( $_SERVER[ 'CONTENT_LENGTH' ] >= $uploadParams->getUploadMaxFilesize() ) {
+            $this->uploadLog("File too large (defined in matecat).");
             $info[ 0 ]->error = "The file is too large.  " .
                 "Please Contact " . INIT::$SUPPORT_MAIL . " and report these details: " .
                 "\"The server configuration does not conform with Matecat configuration. " .
@@ -141,16 +155,38 @@ class UploadHandler {
         }
         //check for server misconfiguration
 
-        $this->handle_convert();
+        try {
+            $this->handle_convert();
+        } catch(Exception $e) {
+            $this->uploadLog("Converting exception: ");
+            $this->uploadLog($e->getMessage());
+            $this->uploadLog($e->getTraceAsString());
+        }
         if (!empty($this->result['errors'])) {
-//            Log::$fileName = "test-upload.log";
-//            Log::doLog( "convert error" );
-//            Log::doLog( $this->result['errors'] );
+            $this->uploadLog("Converting errors: ");
+            $this->uploadLogData($this->result['errors']);
             return $this->sendError('ErrorConvertingFile');
         }
-        $this->handle_project_create();
-        $this->create_project();
+
+        try {
+            $this->handle_project_create();
+        } catch(Exception $e) {
+            $this->uploadLog("Handle project create exception: ");
+            $this->uploadLog($e->getMessage());
+            $this->uploadLog($e->getTraceAsString());
+        }
+
+        try {
+            $this->create_project();
+        } catch(Exception $e) {
+            $this->uploadLog("Project create exception: ");
+            $this->uploadLog($e->getMessage());
+            $this->uploadLog($e->getTraceAsString());
+        }
+
         if (!empty($this->result['errors'])) {
+            $this->uploadLog("Creating project errors: ");
+            $this->uploadLogData($this->result['errors']);
             return $this->sendError('ErrorCreatingProject');
         }
 
@@ -205,7 +241,6 @@ class UploadHandler {
             $destination = $this->options['upload_dir'];
             $file->full_path   = $destination . $file->name;
             $res = move_uploaded_file( $uploaded_file, $file->full_path );
-            Log::doLog( $res );
 
             $file_size = filesize( $file->full_path );
             if ( $file_size === $file->size ) {
@@ -213,19 +248,17 @@ class UploadHandler {
             } else {
                 unlink( $file->full_path );
                 $file->error = 'abort';
+                $this->uploadLog("Declared file size is not the same as actual file size.");
             }
             $file->size = $file_size;
             $this->set_file_delete_url( $file );
 
-            Log::doLog( "Size on disk: $file_size - Declared size: $file->size" );
-
             //As opposed with isset(), property_exists() returns TRUE even if the property has the value NULL.
             if ( property_exists( $file, 'error' ) ) {
+                $this->uploadLog("File error: " . $file->error);
                 // FORMAT ERROR MESSAGE
                 switch ( $file->error ) {
                     case 'abort':
-//                        Log::$fileName = "test-upload.log";
-//                        Log::doLog( "upload error" );
                         $file->error = "ErrorConvertingFile";
                         break;
                     default:
@@ -233,6 +266,8 @@ class UploadHandler {
                 }
             }
 
+        } else {
+            $this->uploadLog("Invalid file: " . $file->error);
         }
 
         return $file;
