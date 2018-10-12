@@ -111,7 +111,7 @@ class downloadOriginalController extends downloadController {
         /**
          * Retrieve user information
          */
-        $this->readLoginInfo();
+        $this->setUserCredentials();
 
         $activity             = new ActivityLogStruct();
         $activity->id_job     = $this->id_job;
@@ -121,6 +121,34 @@ class downloadOriginalController extends downloadController {
         $activity->uid        = $this->user->uid;
         $activity->event_date = date( 'Y-m-d H:i:s' );
         Activity::save( $activity );
+    }
+
+    public function setUserCredentials() {
+        $username_from_cookie = AuthCookie::getCredentialsFromCookie();
+        $this->user        = new Users_UserStruct();
+        if ( $username_from_cookie ) {
+            $_SESSION[ 'cid' ] = $username_from_cookie['username'];
+            $_SESSION[ 'uid' ] = $username_from_cookie['uid'];
+        }
+
+        $this->user->uid   = $username_from_cookie['uid'];
+        $this->user->email = $username_from_cookie['username'];
+
+        try {
+
+            $userDao    = new Users_UserDao( Database::obtain() );
+            $loggedUser = $userDao->setCacheTTL( 0 )->read( $this->user )[ 0 ]; // one hour cache
+            $this->userIsLogged = (
+                !empty( $loggedUser->uid ) &&
+                !empty( $loggedUser->email ) &&
+                !empty( $loggedUser->first_name ) &&
+                !empty( $loggedUser->last_name )
+            );
+
+        } catch ( Exception $e ) {
+            Log::doLog( 'User not logged.' );
+        }
+        $this->user = ( $this->userIsLogged ? $loggedUser : $this->user );
 
     }
 

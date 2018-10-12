@@ -167,16 +167,7 @@ abstract class KleinController implements IController {
 
             $dao = new Users_UserDao();
             $dao->setCacheTTL( 0 );
-            $oldFileName = \Log::$fileName;
-            \Log::$fileName = "auth-test.log";
-            \Log::doLog("Before user get");
-            \Log::$fileName = $oldFileName;
             $this->user = $dao->getByUid( $user_credentials[ 'uid' ] ) ;
-            $oldFileName = \Log::$fileName;
-            \Log::$fileName = "auth-test.log";
-            \Log::doLog("After user get");
-            \Log::doLog($this->user);
-            \Log::$fileName = $oldFileName;
         }
 
         return $this->user;
