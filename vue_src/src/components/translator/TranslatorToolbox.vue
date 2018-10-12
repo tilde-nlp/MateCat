@@ -22,8 +22,8 @@
       @shortkey="() => {$emit('toPrevious')}"
     >
       <svgicon
-        class="svg-icon flip-up"
-        name="arrow"
+        class="svg-icon"
+        name="seg-up"
         height="24"
       />
     </div>
@@ -37,8 +37,8 @@
       @shortkey="() => {$emit('toNext')}"
     >
       <svgicon
-        class="svg-icon flip-down"
-        name="arrow"
+        class="svg-icon"
+        name="seg-down"
         height="24"
       />
     </div>
@@ -82,8 +82,8 @@
       @shortkey="() => { $emit('sourceToTarget') }"
     >
       <svgicon
-        class="svg-icon flip-h"
-        name="arrow"
+        class="svg-icon"
+        name="s2t"
         height="24"
       />
     </div>
