@@ -911,10 +911,12 @@ class setTranslationController extends ajaxController {
             if (!$memory->write) {
                 continue;
             }
+            $taglessSource = CatUtils::stripTags($contributionStruct->segment);
+            $taglessTarget = CatUtils::stripTags($contributionStruct->translation);
             $TildeTM->writeMatch(
                 $memory->id,
-                $contributionStruct->segment,
-                $contributionStruct->translation,
+                $taglessSource,
+                $taglessTarget,
                 substr($config['source'], 0, 2),
                 substr($config['target'], 0, 2)
             );
