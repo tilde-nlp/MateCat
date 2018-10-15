@@ -22,7 +22,7 @@ class getTranslationMemoriesController {
                 'name' => $memory->name,
                 'read' => isset($indexedMemorySettings[$memory->id]) ? $indexedMemorySettings[$memory->id]['read_memory'] > 0 : true,
                 'concordance' => isset($indexedMemorySettings[$memory->id]) ? $indexedMemorySettings[$memory->id]['concordance_search'] > 0 : false,
-                'write' => isset($indexedMemorySettings[$memory->id]) ? $indexedMemorySettings[$memory->id]['write_memory'] > 0 : true && $memory->canUpdate
+                'write' => isset($indexedMemorySettings[$memory->id]) ? $indexedMemorySettings[$memory->id]['write_memory'] > 0 : false
             ];
         }
 

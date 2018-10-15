@@ -904,8 +904,8 @@ class setTranslationController extends ajaxController {
             return;
         }
         foreach($memories as &$mem) {
-            $writeValue = empty($canWrite[$mem->id]) ? true : $canWrite[$mem->id];
-            $mem->write = true && $mem->canUpdate && $writeValue;
+            $writeValue = empty($canWrite[$mem->id]) ? false : $canWrite[$mem->id];
+            $mem->write = $mem->canUpdate && $writeValue;
         }
         foreach($memories as $memory) {
             if (!$memory->write) {
