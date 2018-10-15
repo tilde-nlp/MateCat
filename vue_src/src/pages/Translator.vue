@@ -427,6 +427,7 @@ export default {
     refreshContributions: function () {
       if (this.$store.state.activeSegment === null) return
       this.getContribution(this.$store.state.activeSegment)
+      this.getMtMatches(this.$store.state.activeSegment)
     },
     getContribution: function (segment) {
       const context = this.getContext(segment)
@@ -444,8 +445,7 @@ export default {
       }
       SegmentsService.getContribution(data)
         .then(r => {
-          segment.suggestions = null
-          segment.suggestions = _.map(r.data.data.matches, el => {
+          segment.suggestions = segment.suggestions.concat(_.map(r.data.data.matches, el => {
             const isMT = el.created_by === 'MT'
             return {
               createdBy: el.created_by,
@@ -457,12 +457,38 @@ export default {
               lastUpdatedBy: el.last_updated_by,
               usageCount: el.usage_count
             }
-          })
+          }))
           segment.topSuggestion = ''
           if (segment.suggestions.length) {
             segment.topSuggestion = segment.suggestions[0].translation
           }
           segment.suggestionsLoaded = true
+        })
+    },
+    getMtMatches: function (segment) {
+      const data = {
+        action: 'getMtMatches',
+        text: segment.original,
+        mt_id: this.system.value
+      }
+      SegmentsService.getMtMatches(data)
+        .then(r => {
+          if (!r.data.data.hasOwnProperty('match')) {
+            return
+          }
+          const el = r.data.data.match
+          segment.mtMatch = {
+            createdBy: el.created_by,
+            match: 'MT',
+            rawMatch: parseInt(el.match),
+            translation: el.translation,
+            isMT: true
+          }
+          segment.topSuggestion = segment.mtMatch
+          let array = []
+          array[0] = segment.mtMatch
+          segment.suggestions.splice(0, 0, segment.mtMatch)
+          segment.mtMatchLoaded = true
         })
     },
     getContext: function (segment) {
@@ -525,7 +551,10 @@ export default {
           activeFound = true
           e.active = true
           this.jobData.lastSegmentId = e.id
-          if (e.suggestions.length === 0) this.getContribution(e)
+          if (e.suggestions.length === 0) {
+            this.getContribution(e)
+            this.getMtMatches(e)
+          }
           const data = {
             action: 'setCurrentSegment',
             password: e.jobPassword,

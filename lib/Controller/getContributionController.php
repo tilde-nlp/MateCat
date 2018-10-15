@@ -195,10 +195,6 @@ class getContributionController extends ajaxController {
         $tms_match = TildeTM::getContributions($this->text, $this->source, $this->target);
         $mt_match = [];
 
-        if ($this->mt_system) {
-            $mt_match = \LetsMTLite::getMatch($this->mt_system, $this->text);
-        }
-
         $matches = array_merge($tms_match, $mt_match);
         usort( $matches, array( "getContributionController", "__compareScore" ) );
         $matches = array_reverse( $matches );
