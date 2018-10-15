@@ -157,6 +157,7 @@ mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/02-09-2018
 mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/02-09-2018_edit_job_table.sql
 mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/10-09-2018_alter_user.sql
 mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/11-09-2018_alter_jobs.sql
+mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/15-10-2018.sql
 
 # Apache matecat vhost
 sudo cp /home/$MATECAT_USER/cattool/INSTALL/matecat-vhost.conf.sample /etc/apache2/sites-available/matecat-vhost.conf

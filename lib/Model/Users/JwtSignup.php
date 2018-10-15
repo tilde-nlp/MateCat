@@ -36,7 +36,7 @@ class JwtSignup {
 
         $this->user->confirmation_token = Utils::randomString() ;
         $this->user->confirmation_token_created_at = Utils::mysqlTimestamp( time() );
-        $this->user->tm_pretranslate = 1;
+        $this->user->tm_pretranslate = 0;
         $this->user->mt_pretranslate = 0;
     }
 }
