@@ -20,5 +20,7 @@ module.exports = {
   analyze: 'Analizēt',
   close: 'Aizvērt',
   resolve_all: 'Atrisināt visus',
-  publish: 'Publicēt'
+  publish: 'Publicēt',
+  search_in_terms: 'Meklēt vārdnīcā',
+  search_in_synonym: 'Meklēt sinonīmos'
 }

@@ -20,5 +20,7 @@ module.exports = {
   analyze: 'Analyze',
   close: 'Close',
   resolve_all: 'Resolve all',
-  publish: 'Publish'
+  publish: 'Publish',
+  search_in_terms: 'Search terms',
+  search_in_synonym: 'Search synonyms'
 }

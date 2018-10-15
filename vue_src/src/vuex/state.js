@@ -10,6 +10,7 @@ export default {
   fontSize: null,
   unusedTags: [],
   termBaseUrl: '',
+  synonymBaseUrl: '',
   mtSystem: '',
   termSearch: ''
 }

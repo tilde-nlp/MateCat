@@ -129,6 +129,14 @@
               @keyup.enter="openTermSearch"
             >
           </div>
+          <div
+            class="button terms"
+            @click="openTermSearch"
+          >{{ $lang.buttons.search_in_terms }}</div>
+          <div
+            class="button terms"
+            @click="openSynonymSearch"
+          >{{ $lang.buttons.search_in_synonym }}</div>
         </div>
         <div
           v-if="activeTab === 'hotkeys'"
@@ -473,6 +481,10 @@ export default {
     openTermSearch: function () {
       if (this.searchTerm === '') return
       window.open(this.$store.state.termBaseUrl + this.searchTerm + '/' + this.fromLang.substring(0, 2) + '?target=' + this.toLang.substring(0, 2), '_blank').focus()
+    },
+    openSynonymSearch: function () {
+      if (this.searchTerm === '') return
+      window.open(this.$store.state.synonymBaseUrl + this.searchTerm, '_blank').focus()
     },
     convertTags: function (text, parentId) {
       return xliffToHtml(text, parentId)

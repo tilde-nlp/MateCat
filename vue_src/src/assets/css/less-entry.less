@@ -84,6 +84,7 @@
 
 @color-red: #b71c1c;
 @color-red-darker: #931C1C;
+@color-red2: #ac1413;
 @color-green: #51b729;
 @color-green-darker: #3e8124;
 @color-green-darker2: #00ab6f;
@@ -288,6 +289,21 @@
     outline: none !important;
     box-shadow: none;
     background-color: @color-red-darker;
+  }
+
+  &.terms {
+    .border-box;
+    padding-left: 23px;
+    padding-right: 23px;
+    background-color: @color-white;
+    color: @color-red2;
+    border: solid 1px @color-blueish;
+    &:hover {
+      border: solid 1px @color-red2;
+    }
+    width: auto;
+    display: inline-block;
+    .normal;
   }
 
   &:disabled {

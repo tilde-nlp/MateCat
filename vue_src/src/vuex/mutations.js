@@ -32,6 +32,9 @@ export default {
   termBaseUrl (state, termBaseUrl) {
     state.termBaseUrl = termBaseUrl
   },
+  synonymBaseUrl (state, synonymBaseUrl) {
+    state.synonymBaseUrl = synonymBaseUrl
+  },
   sourceSearch (state, sourceSearch) {
     state.sourceSearch = sourceSearch
   },

@@ -342,6 +342,7 @@ export default {
             this.jobData.mtPretranslate = parseInt(jobRes.data.mt_pretranslate) > 0
             this.jobData.mtSystemId = jobRes.data.mtSystemId === null ? '' : jobRes.data.mtSystemId
             this.$store.commit('termBaseUrl', jobRes.data.termBaseUrl)
+            this.$store.commit('synonymBaseUrl', jobRes.data.synonymBaseUrl)
             this.checkStats()
             this.getFileUrls()
             LanguagesService.getSubjectsList()

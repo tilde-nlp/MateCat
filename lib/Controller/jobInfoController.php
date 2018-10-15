@@ -40,6 +40,7 @@ class jobInfoController {
         $result->mt_pretranslate = $jobData['mt_pretranslate'];
         $result->mtSystemId = $mtSystemId;
         $result->termBaseUrl = INIT::$TERM_BASE_URL;
+        $result->synonymBaseUrl = INIT::$SYNONYM_BASE_URL;
 
         echo json_encode($result);
     }
