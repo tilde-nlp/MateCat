@@ -39,7 +39,11 @@
       <div class="input-label ib-i w-64">
         {{ $lang.titles.concordance_search }}
       </div>
-      <div class="mt-8">
+      <div
+        id="memory-list"
+        :style="{'max-height': memoryListHeight + 'px'}"
+        class="mt-8"
+      >
         <svgicon
           v-if="$loading.isLoading('memories')"
           class="svg-loading va-middle"
@@ -92,7 +96,8 @@ export default {
   },
   data: function () {
     return {
-      memories: []
+      memories: [],
+      memoryListHeight: 300
     }
   },
   mounted: function () {
@@ -102,7 +107,14 @@ export default {
         this.memories = null
         this.memories = response.data
         this.$loading.endLoading('memories')
+        this.$nextTick(function () {
+          window.addEventListener('resize', this.setMemoryListHeight)
+          this.setMemoryListHeight()
+        })
       })
+  },
+  beforeDestroy: function () {
+    window.removeEventListener('resize', this.setMemoryListHeight)
   },
   methods: {
     setRead: function (memory, value) {
@@ -124,6 +136,10 @@ export default {
     setMtPretranslate: function (value) {
       LanguagesService.saveMtPretranslate({pretranslate: value ? 1 : 0})
       this.$store.commit('mtPretranslate', value)
+    },
+    setMemoryListHeight: function () {
+      const appHeight = document.getElementById('cat-app').clientHeight
+      this.memoryListHeight = appHeight - 319
     }
   }
 }
