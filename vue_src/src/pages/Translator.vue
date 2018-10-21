@@ -485,7 +485,7 @@ export default {
             translation: el.translation,
             isMT: true
           }
-          segment.topSuggestion = segment.mtMatch
+          segment.topSuggestion = segment.mtMatch.translation
           let array = []
           array[0] = segment.mtMatch
           segment.suggestions.splice(0, 0, segment.mtMatch)

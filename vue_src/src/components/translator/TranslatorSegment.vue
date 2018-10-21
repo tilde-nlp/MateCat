@@ -52,15 +52,18 @@
           @id="id => { editorId = id }"
         />
         <div
+          v-shortkey="['arrowdown']"
           v-if="isActive && autocompleteSuggestions.length"
           class="autocomplete-suggestions"
+          @shortkey="nextSuggestion()"
         >
           <div
             v-for="(acText, index) in autocompleteSuggestions"
             :key="index + 1"
+            :class="{active: index === activeSuggestion}"
             class="autocomplete-suggestion"
           >
-            {{ acText }}
+            {{ acText.pre }}<b>{{ acText.post }}</b>
           </div>
         </div>
         <div
@@ -149,6 +152,7 @@ export default {
       splitChar: ' & ',
       editorId: '',
       autocompleteSuggestions: [],
+      activeSuggestion: -1,
       w3: false,
       ie: false
     }
@@ -258,19 +262,25 @@ export default {
       const suggestions = _.filter(suggestionWords, el => {
         return el.startsWith(entered)
       })
-      if (suggestions[0]) {
-        return [suggestions[0]]
+      let finalSuggestions = []
+      for (let i = 0; i < suggestions.length; i++) {
+        finalSuggestions.push({pre: entered, post: suggestions[i].substring(entered.length)})
       }
-      return []
+      if (finalSuggestions[0]) {
+        this.activeSuggestion = 0
+      } else {
+        this.activeSuggestion = -1
+      }
+      return finalSuggestions
     },
     autocompleteText: function () {
       if (this.autocompleteSuggestions.length < 1) {
         return
       }
-      const lastWord = this.getLastWord(this.segment.cleanTranslation)
-      const insertText = this.autocompleteSuggestions[0].substr(lastWord.length)
+      const insertText = this.autocompleteSuggestions[this.activeSuggestion].post
       this.insertTextAtCursor(insertText)
       this.autocompleteSuggestions = []
+      this.activeSuggestion = -1
     },
     insertTextAtCursor: function (text) {
       let sel, range
@@ -300,6 +310,12 @@ export default {
         return preCaretTextRange.text.length
       }
       return 0
+    },
+    nextSuggestion: function () {
+      this.activeSuggestion++
+      if (this.activeSuggestion === this.autocompleteSuggestions.length) {
+        this.activeSuggestion = 0
+      }
     }
   }
 }
