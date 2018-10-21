@@ -89,6 +89,9 @@
     </div>
     <!-- COPY SOURCE TO TARGET END -->
     <div class="pull-right">
+      <hugo-select
+        :title="'Priekštulkot'"
+        :icon="'pretranslate'"/>
       <!-- MT TRANSLATE -->
       <div
         class="translator-toolbox-link"
@@ -142,8 +145,12 @@
 </template>
 <script>
 import JobsService from 'services/jobs'
+import HugoSelect from 'components/HugoSelect'
 export default {
   name: 'TranslatorToolbox',
+  components: {
+    'hugo-select': HugoSelect
+  },
   props: {
     jobData: {
       type: Object,
