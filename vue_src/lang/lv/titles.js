@@ -33,5 +33,7 @@ module.exports = {
   unknown: 'nezināms',
   search_target: 'tulkojumā',
   search_source: 'orģinālā',
-  search_comments: 'komentāros'
+  search_comments: 'komentāros',
+  pretranslate: 'Priekštulkot',
+  download: 'Lejupielādēt'
 }

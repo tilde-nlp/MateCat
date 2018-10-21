@@ -9,6 +9,7 @@ import {loading} from './utils/loading'
 import {Auth} from './utils/auth'
 import vSelect from 'vue-select'
 import {CONFIG} from './CONFIG'
+import {State} from './state'
 // Load Playfair Display typeface
 require('typeface-playfair-display')
 
@@ -18,6 +19,7 @@ export function main (config) {
   Vue.prototype.$Alerts = AlertsObserver
   Vue.prototype.$Auth = Auth
   Vue.prototype.$CONFIG = config
+  Vue.prototype.$state = State
   CONFIG.authRedirect = config.authRedirect
   CONFIG.baseUrl = config.baseUrl
   CONFIG.mtClientId = config.mtClientId

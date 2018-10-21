@@ -90,50 +90,17 @@
     <!-- COPY SOURCE TO TARGET END -->
     <div class="pull-right">
       <hugo-select
-        :title="'Priekštulkot'"
-        :icon="'pretranslate'"/>
-      <!-- MT TRANSLATE -->
-      <div
-        class="translator-toolbox-link"
-        @click="preTranslateMt()"
-      >{{ $lang.buttons.translate_all_mt }}</div>
-      <!-- MT TRANSLATE END -->
-      <!-- TRANSLATE 100% -->
-      <div
-        class="translator-toolbox-link"
-        @click="preTranslateTm()"
-      >{{ $lang.buttons.translate_all_tm }}</div>
-      <!-- TRANSLATE 100% END -->
-      <!-- ORIGINAL DOWNLOAD -->
-      <div
-        class="tt-icon-link-container"
-        @click="downloadFile(jobData.originalUrl)"
-      >
-        <div class="icon-container">
-          <svgicon
-            class="svg-icon va-middle"
-            name="download"
-            height="24"
-          />
-        </div>
-        <div class="translator-toolbox-link link">{{ $lang.buttons.original }}</div>
-      </div>
-      <!-- ORIGINAL DOWNLOAD END -->
-      <!-- ORIGINAL DOWNLOAD -->
-      <div
-        class="tt-icon-link-container"
-        @click="downloadFile(jobData.translatedUrl)"
-      >
-        <div class="icon-container">
-          <svgicon
-            class="svg-icon va-middle"
-            name="download"
-            height="24"
-          />
-        </div>
-        <div class="translator-toolbox-link link">{{ $lang.buttons.translation }}</div>
-      </div>
-      <!-- ORIGINAL DOWNLOAD END -->
+        :title="$lang.titles.pretranslate"
+        :icon="'pretranslate'"
+        :options="pretranslateOptions"
+        @select="pretranslate"
+      />
+      <hugo-select
+        :title="$lang.titles.download"
+        :icon="'download'"
+        :options="downloadOptions"
+        @select="download"
+      />
     </div>
     <div class="tt-triple-container">
       <div class="triple-block right">
@@ -161,12 +128,33 @@ export default {
       required: true
     }
   },
+  computed: {
+    pretranslateOptions: function () {
+      return [
+        {id: 'mt', value: this.$lang.buttons.translate_all_mt},
+        {id: 'tm', value: this.$lang.buttons.translate_all_tm}
+      ]
+    },
+    downloadOptions: function () {
+      return [
+        {id: 'original', value: this.$lang.buttons.original},
+        {id: 'translation', value: this.$lang.buttons.translation}
+      ]
+    }
+  },
   methods: {
     downloadFile: function (link) {
       window.location.href = link
     },
     goBack: function () {
       this.$router.push({name: 'file-list'})
+    },
+    pretranslate: function (id) {
+      if (id === 'mt') {
+        this.preTranslateMt()
+      } else {
+        this.preTranslateTm()
+      }
     },
     preTranslateTm: function () {
       this.$loading.startLoading('pretranslate')
@@ -181,6 +169,13 @@ export default {
         .then(() => {
           this.$emit('pretranslated')
         })
+    },
+    download: function (id) {
+      if (id === 'original') {
+        this.downloadFile(this.jobData.originalUrl)
+      } else {
+        this.downloadFile(this.jobData.translatedUrl)
+      }
     }
   }
 }

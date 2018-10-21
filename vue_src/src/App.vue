@@ -70,4 +70,5 @@ export default {
 
 <style lang="less">
   @import "~less-entry";
+  @import "../node_modules/animate.css/animate.min.css";
 </style>

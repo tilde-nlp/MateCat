@@ -33,5 +33,7 @@ module.exports = {
   unknown: 'unknown',
   search_target: 'target',
   search_source: 'source',
-  search_comments: 'comments'
+  search_comments: 'comments',
+  pretranslate: 'Pretranslate',
+  download: 'Download'
 }

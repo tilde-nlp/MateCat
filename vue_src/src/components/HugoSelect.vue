@@ -2,7 +2,7 @@
   <span class="relative">
     <div
       class="translator-toolbox-link ib pointer relative"
-      @click="() => { showOptions = !showOptions }"
+      @click="toggleOptions"
     >
       <div
         v-if="icon"
@@ -26,10 +26,15 @@
       </div>
     </div>
     <div
-      v-if="showOptions"
-      class="options translator-toolbox-link">
-      <div class="option">Ar mašīntulku</div>
-      <div class="option">Ar tulkošanas atmiņu</div>
+      v-if="state.openSelect === _uid"
+      :id="'options-container-' + _uid"
+      class="options translator-toolbox-link animated faster fadeIn">
+      <div
+        v-for="(option, index) in options"
+        :key="index +1"
+        class="option"
+        @click="select(option.id)"
+      >{{ option.value }}</div>
     </div>
   </span>
 </template>
@@ -44,11 +49,38 @@ export default {
     title: {
       type: String,
       required: true
+    },
+    options: {
+      type: Array,
+      required: true
     }
   },
   data: function () {
     return {
-      showOptions: false
+      showOptions: false,
+      state: this.$state
+    }
+  },
+  methods: {
+    toggleOptions: function () {
+      if (this.state.openSelect !== this._uid) {
+        this.showOptions = true
+      } else {
+        this.showOptions = !this.showOptions
+      }
+      if (this.showOptions) {
+        this.$state.setActiveSelect(this._uid)
+      } else {
+        this.closeOptions()
+      }
+    },
+    closeOptions: function () {
+      this.showOptions = false
+      this.$state.setActiveSelect('')
+    },
+    select: function (id) {
+      this.$emit('select', id)
+      this.closeOptions()
     }
   }
 }
@@ -67,8 +99,11 @@ export default {
     .b-blueish;
     z-index: 1000;
     min-width: 192px;
+    top: 27px;
+    left: 0px;
+    padding-bottom: 12px;
     .option {
-      height: 48px;
+      height: 36px;
       .border-box;
       margin-top: 12px;
       margin-left: 8px;
