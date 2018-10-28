@@ -30,49 +30,24 @@ class pretranslateController {
     public function doAction() {
         set_time_limit ( 3600 );
         $jobData = array_pop(Jobs_JobDao::getById($this->id));
-        WorkerClient::init( new AMQHandler() );
-        $pretranslateStruct = new \Pretranslate\PretranslateStruct();
-        $pretranslateStruct->start();
+
         if ($this->useTm || $this->useMt) {
-            $this->preTranslate($jobData);
+
+            WorkerClient::init( new AMQHandler() );
+            $pretranslateStruct = new \Pretranslate\PretranslateStruct();
+            $pretranslateStruct->id = $this->id;
+            $pretranslateStruct->password = $this->password;
+            $pretranslateStruct->job_first_segment = $jobData->job_first_segment;
+            $pretranslateStruct->job_last_segment = $jobData->job_last_segment;
+            $pretranslateStruct->useTm = $this->useTm;
+            $pretranslateStruct->useMt = $this->useMt;
+            $pretranslateStruct->source = $jobData->source;
+            $pretranslateStruct->target = $jobData->target;
+            $pretranslateStruct->mtSystem = $this->mtSystem;
+            $pretranslateStruct->start();
         }
 
         echo json_encode([]);
-    }
-
-    private function preTranslate($jobData) {
-        $emptySegments = Jobs_JobDao::getEmptySegments($this->id, $this->password, $jobData->job_first_segment, $jobData->job_last_segment);
-
-        foreach($emptySegments as $segment) {
-            $translation = '';
-            $type = '';
-            $match = '';
-            if ($this->useTm) {
-                $tms_match = TildeTM::getContributions($segment->segment, $jobData->source, $jobData->target);
-                if (!empty($tms_match)) {
-                    usort($tms_match, array( "getContributionController", "__compareScore" ));
-                    if (intval($tms_match[0]['match']) >= 100) {
-                        $translation = $tms_match[0]['translation'];
-                        $match = $tms_match[0]['match'];
-                        $type = 'TM';
-                    }
-                }
-            }
-            if (empty($translation) && $this->useMt) {
-                $mt_match = \LetsMTLite::getMatch($this->mtSystem, $segment->segment);
-                $translation = $mt_match[0]['translation'];
-                $match = 70;
-                $type = 'MT';
-            }
-
-            if (empty($translation)) {
-                continue;
-            }
-
-            Jobs_JobDao::setTranslation($segment->id, $translation, $match, $type);
-        }
-
-        Jobs_JobDao::removePretranslate($this->id);
     }
 
     public function finalize() {}

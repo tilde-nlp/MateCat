@@ -14,7 +14,15 @@ class PretranslateStruct extends DataAccess_AbstractDaoObjectStruct implements D
 
     protected $cached_results = array();
 
-   public $id = "doge";
+   public $id;
+   public $password;
+   public $job_first_segment;
+   public $job_last_segment;
+   public $useTm;
+   public $useMt;
+   public $source;
+   public $target;
+   public $mtSystem;
 
     /**
      * @return string
