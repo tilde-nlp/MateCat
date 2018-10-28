@@ -44,6 +44,9 @@ class pretranslateController {
             $pretranslateStruct->source = $jobData->source;
             $pretranslateStruct->target = $jobData->target;
             $pretranslateStruct->mtSystem = $this->mtSystem;
+            $pretranslateStruct->jwtToken = AuthCookie::getTokenFromCookie();
+            $pretranslateStruct->jwtRefreshToken = AuthCookie::getRefreshTokenFromCookie();
+            $pretranslateStruct->uid = AuthCookie::getCredentials()['uid'];
             $pretranslateStruct->start();
         }
 

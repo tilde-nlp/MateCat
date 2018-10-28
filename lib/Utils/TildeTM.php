@@ -9,6 +9,44 @@ class TildeTM {
     private $token;
     private $baseUrl;
 
+    public static function getContributionsAsync($uid, $token, $text, $sourceLang, $targetLang) {
+        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, $token);
+        $memorySettings = self::settingsToArray(Jobs_JobDao::getMemorySetting($uid));
+        $memories = $TildeTM->getMemories();
+        foreach($memories as &$mem) {
+            $readValue = empty($memorySettings[$mem->id]['read']) ? true : $memorySettings[$mem->id]['read'];
+            $concordValue = empty($memorySettings[$mem->id]['concordance']) ? false : $memorySettings[$mem->id]['concordance'];
+            $mem->read = true && $readValue;
+            $mem->concordance = false || $concordValue;
+        }
+        $tms_match = [];
+        foreach($memories as $memory) {
+            if (!$memory->read) {
+                continue;
+            }
+            $tildeMatches = $TildeTM->getMatches(
+                $memory->id,
+                $text,
+                substr($sourceLang, 0, 2),
+                substr($targetLang, 0, 2),
+                $memory->concordance
+            );
+
+            foreach($tildeMatches as $match) {
+                $tms_match[ ] = array(
+                    'created_by' => $memory->name,
+                    'match' => $match->match,
+                    'segment' => $match->source,
+                    'translation' => $match->target,
+                    'raw_segment' => $text,
+                    'raw_translation' => $match->target,
+                );
+            }
+        }
+
+        return $tms_match;
+    }
+
     public static function getContributions($text, $sourceLang, $targetLang) {
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getToken());
         $user = AuthCookie::getCredentials();

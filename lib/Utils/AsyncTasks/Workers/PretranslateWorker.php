@@ -59,7 +59,12 @@ class PretranslateWorker extends AbstractWorker {
             $type = '';
             $match = '';
             if ($pretranslateStruct->useTm) {
-                $tms_match = \TildeTM::getContributions($segment->segment, $pretranslateStruct->source, $pretranslateStruct->target);
+                $tms_match = \TildeTM::getContributionsAsync(
+                    $pretranslateStruct->uid,
+                    $pretranslateStruct->jwtToken,
+                    $segment->segment,
+                    $pretranslateStruct->source,
+                    $pretranslateStruct->target);
                 if (!empty($tms_match)) {
                     usort($tms_match, array( "getContributionController", "__compareScore" ));
                     if (intval($tms_match[0]['match']) >= 100) {
