@@ -30,7 +30,9 @@ class pretranslateController {
     public function doAction() {
         set_time_limit ( 3600 );
         $jobData = array_pop(Jobs_JobDao::getById($this->id));
-
+        WorkerClient::init( new AMQHandler() );
+        $pretranslateStruct = new \Pretranslate\PretranslateStruct();
+        $pretranslateStruct->start();
         if ($this->useTm || $this->useMt) {
             $this->preTranslate($jobData);
         }
