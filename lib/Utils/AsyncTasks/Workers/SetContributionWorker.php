@@ -36,16 +36,6 @@ class SetContributionWorker extends AbstractWorker {
      */
     protected $_engine;
 
-    protected function log_text($data) {
-        file_put_contents('/var/tmp/worker.log', $data, FILE_APPEND);
-        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
-    }
-
-    protected function log($data) {
-        file_put_contents('/var/tmp/worker.log', var_export($data, true), FILE_APPEND);
-        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
-    }
-
     /**
      * This method is for testing purpose. Set a dependency injection
      *

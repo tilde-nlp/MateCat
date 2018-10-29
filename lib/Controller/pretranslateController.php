@@ -28,7 +28,6 @@ class pretranslateController {
     }
 
     public function doAction() {
-        set_time_limit ( 3600 );
         $jobData = array_pop(Jobs_JobDao::getById($this->id));
 
         if ($this->useTm || $this->useMt) {

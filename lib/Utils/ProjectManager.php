@@ -48,7 +48,7 @@ class ProjectManager {
     protected $checkGlossary;
 
     /*
-       flag used to indicate TMX check status: 
+       flag used to indicate TMX check status:
        0-not to check, or check passed
        1-still checking, but no useful TM for this project have been found, so far (no one matches this project langpair)
      */
@@ -157,6 +157,8 @@ class ProjectManager {
                             'mt_system_id'             => null,
                             'tm_pretranslate'             => null,
                             'mt_pretranslate'             => null,
+                        'start_tm_pretranslate'             => null,
+                        'start_mt_pretranslate'             => null,
                     ] );
 
         }
@@ -1102,8 +1104,10 @@ class ProjectManager {
             $newJob->payable_rates     = $payableRates;
             $newJob->total_raw_wc      = $this->files_word_count;
             $newJob->only_private_tm   = $projectStructure[ 'only_private' ];
-            $newJob->tm_pretranslate   = $projectStructure[ 'tm_pretranslate' ];
-            $newJob->mt_pretranslate   = $projectStructure[ 'mt_pretranslate' ];
+            $newJob->tm_pretranslate   = 0;
+            $newJob->mt_pretranslate   = 0;
+            $newJob->start_tm_pretranslate   = $projectStructure[ 'tm_pretranslate' ];
+            $newJob->start_mt_pretranslate   = $projectStructure[ 'mt_pretranslate' ];
 
             $newJob = Jobs_JobDao::createFromStruct( $newJob );
 
@@ -1113,15 +1117,15 @@ class ProjectManager {
             $projectStructure[ 'array_jobs' ][ 'job_languages' ]->offsetSet( $newJob->id, $newJob->id . ":" . $target );
             $projectStructure[ 'array_jobs' ][ 'payable_rates' ]->offsetSet( $newJob->id, $payableRates );
 
-            try {
-                //prepare pre-translated segments queries
-                if ( !empty( $projectStructure[ 'translations' ] ) ) {
-                    $this->_insertPreTranslations( $newJob->id );
-                }
-            } catch ( Exception $e ) {
-                $msg = "\n\n Error, pre-translations lost, project should be re-created. \n\n " . var_export( $e->getMessage(), true );
-                Utils::sendErrMailReport( $msg );
-            }
+//            try {
+//                //prepare pre-translated segments queries
+//                if ( !empty( $projectStructure[ 'translations' ] ) ) {
+//                    $this->_insertPreTranslations( $newJob->id );
+//                }
+//            } catch ( Exception $e ) {
+//                $msg = "\n\n Error, pre-translations lost, project should be re-created. \n\n " . var_export( $e->getMessage(), true );
+//                Utils::sendErrMailReport( $msg );
+//            }
 
             foreach ( $projectStructure[ 'file_id_list' ] as $fid ) {
                 insertFilesJob( $newJob->id, $fid );

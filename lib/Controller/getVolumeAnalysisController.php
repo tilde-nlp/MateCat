@@ -45,6 +45,33 @@ class getVolumeAnalysisController extends ajaxController {
         $analysisStatus = new Analysis_WEBStatus( $_project_data, $this->featureSet );
         $this->result = $analysisStatus->fetchData()->getResult();
 
+        if (isset($this->result['data']['summary']['STATUS']) && $this->result['data']['summary']['STATUS'] === 'DONE') {
+            $data = $this->result['data'];
+            $pretranslateData = array_pop(\Jobs_JobDao::getPretranslateData($data['job_id']));
+             if ($pretranslateData['start_tm_pretranslate'] || $pretranslateData['start_mt_pretranslate']) {
+                 $jobData = array_pop(Jobs_JobDao::getById($data['job_id']));
+                 $mtSystem = array_pop(Jobs_JobDao::getMtSystem($data['project_id']));
+
+                 WorkerClient::init( new AMQHandler() );
+                 $pretranslateStruct = new \Pretranslate\PretranslateStruct();
+                 $pretranslateStruct->id = $data['job_id'];
+                 $pretranslateStruct->password = $data['job_password'];
+                 $pretranslateStruct->job_first_segment = $jobData->job_first_segment;
+                 $pretranslateStruct->job_last_segment = $jobData->job_last_segment;
+                 $pretranslateStruct->useTm = $pretranslateData['start_tm_pretranslate'];
+                 $pretranslateStruct->useMt = $pretranslateData['start_mt_pretranslate'];
+                 $pretranslateStruct->source = $jobData->source;
+                 $pretranslateStruct->target = $jobData->target;
+                 $pretranslateStruct->mtSystem = $mtSystem['mt_system_id'];
+                 $pretranslateStruct->jwtToken = AuthCookie::getTokenFromCookie();
+                 $pretranslateStruct->jwtRefreshToken = AuthCookie::getRefreshTokenFromCookie();
+                 $pretranslateStruct->uid = AuthCookie::getCredentials()['uid'];
+                 $pretranslateStruct->start();
+                 \Jobs_JobDao::removeStartPretranslate($pretranslateStruct->id);
+             } else if ($pretranslateData['tm_pretranslate'] || $pretranslateData['mt_pretranslate']) {
+                 $this->result['data']['summary']['STATUS'] = 'PRETRANSLATING';
+             }
+        }
     }
 
 }

@@ -41,6 +41,8 @@ class Jobs_JobStruct extends DataAccess_AbstractDaoSilentStruct implements DataA
     public $status;
     public $tm_pretranslate;
     public $mt_pretranslate;
+    public $start_tm_pretranslate;
+    public $start_mt_pretranslate;
 
     /**
      * Column 'completed' cannot be null, moreover it is BIT(1) and

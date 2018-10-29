@@ -260,12 +260,21 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
 
     }
 
-    public static function getMtSystem( $project_id, $ttl = 0 ) {
+    public static function getMtSystem($project_id) {
 
         $thisDao = new self();
         $conn = Database::obtain()->getConnection();
         $stmt = $conn->prepare("SELECT mt_system_id FROM projects WHERE id = ? ");
-        return $thisDao->setCacheTTL( $ttl )->_fetchObject( $stmt, new LoudArray(), [ $project_id ] );
+        return $thisDao->setCacheTTL( 0 )->_fetchObject( $stmt, new LoudArray(), [ $project_id ] );
+
+    }
+
+    public static function getPretranslateData($job_id) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT tm_pretranslate, mt_pretranslate, start_tm_pretranslate, start_mt_pretranslate FROM jobs WHERE id = ? ");
+        return $thisDao->setCacheTTL( 0 )->_fetchObject( $stmt, new LoudArray(), [ $job_id ] );
 
     }
 
@@ -305,6 +314,14 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
 
         $conn = Database::obtain()->getConnection();
         $stmt = $conn->prepare("UPDATE jobs SET tm_pretranslate = 0, mt_pretranslate = 0 WHERE id = :job_id ");
+        $stmt->execute(array('job_id' => $job_id));
+        return $stmt->rowCount();
+    }
+
+    public static function removeStartPretranslate($job_id) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE jobs SET tm_pretranslate = start_tm_pretranslate, mt_pretranslate = start_mt_pretranslate, start_tm_pretranslate = 0, start_mt_pretranslate = 0 WHERE id = :job_id ");
         $stmt->execute(array('job_id' => $job_id));
         return $stmt->rowCount();
     }
