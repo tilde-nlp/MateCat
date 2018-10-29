@@ -67,26 +67,30 @@ class PretranslateWorker extends AbstractWorker {
                         }
                     }
                 } catch (\Unauthorized $e) {
-                    $this->log_text('Caught unauthorized');
                     $refreshData = $this->refreshToken($pretranslateStruct->jwtRefreshToken);
-                    $pretranslateStruct->jwtToken = $refreshData['access'];
-                    $pretranslateStruct->jwtRefreshToken = $refreshData['refresh'];
+                    $pretranslateStruct->jwtToken = $refreshData->access;
+                    $pretranslateStruct->jwtRefreshToken = $refreshData->refresh;
 
-                    $tms_match = \TildeTM::getContributionsAsync(
-                        $pretranslateStruct->uid,
-                        $pretranslateStruct->jwtToken . '2',
-                        $segment->segment,
-                        $pretranslateStruct->source,
-                        $pretranslateStruct->target);
+                    try {
+                        $tms_match = \TildeTM::getContributionsAsync(
+                            $pretranslateStruct->uid,
+                            $pretranslateStruct->jwtToken,
+                            $segment->segment,
+                            $pretranslateStruct->source,
+                            $pretranslateStruct->target);
 
-                    if (!empty($tms_match)) {
-                        usort($tms_match, array( "getContributionController", "__compareScore" ));
-                        if (intval($tms_match[0]['match']) >= 100) {
-                            $translation = $tms_match[0]['translation'];
-                            $match = $tms_match[0]['match'];
-                            $type = 'TM';
+                        if (!empty($tms_match)) {
+                            usort($tms_match, array( "getContributionController", "__compareScore" ));
+                            if (intval($tms_match[0]['match']) >= 100) {
+                                $translation = $tms_match[0]['translation'];
+                                $match = $tms_match[0]['match'];
+                                $type = 'TM';
+                            }
                         }
+                    } catch (\Unauthorized $e2) {
+                        \Log::doLog('Can\'t refresh token for second time.');
                     }
+
                 }
             }
             if (empty($translation) && $pretranslateStruct->useMt) {
@@ -102,7 +106,6 @@ class PretranslateWorker extends AbstractWorker {
 
             \Jobs_JobDao::setTranslation($segment->id, $translation, $match, $type);
         }
-
         \Jobs_JobDao::removePretranslate($pretranslateStruct->id);
     }
 
@@ -113,14 +116,16 @@ class PretranslateWorker extends AbstractWorker {
         curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json'));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_URL, "https://hugotest.tilde.lv/ws/auth/jwt");
+        curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl,CURLOPT_POSTFIELDS, json_encode($refreshData));
         curl_setopt($curl, CURLOPT_HEADER  , true);
-        $resp = curl_exec($curl);
+        $response = curl_exec($curl);
+        $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+        $header = substr($response, 0, $header_size);
+        $body = substr($response, $header_size);
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
-        $refreshResponse =  json_decode($resp);
-        $this->log_text('refresh response');
-        $this->log($refreshResponse);
+        $refreshResponse =  json_decode($body);
         return $refreshResponse;
     }
 
