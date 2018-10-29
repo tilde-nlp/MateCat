@@ -6,7 +6,7 @@
  * Simple class that provides the most basic interface with https://www.letsmt.eu
  */
 class TildeTM {
-    private $token;
+    public $token;
     private $baseUrl;
 
     public static function getContributionsAsync($uid, $token, $text, $sourceLang, $targetLang) {
@@ -145,7 +145,15 @@ class TildeTM {
         $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
         $header = substr($response, 0, $header_size);
         $body = substr($response, $header_size);
+        $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
+//        $this->log($this->token);
+//        $this->log_text('Curl code: ');
+//        $this->log($httpcode);
+//        $this->log($body);
+        if ($httpcode == 401) {
+            throw new Unauthorized();
+        }
         return json_decode($body);
     }
 
@@ -161,5 +169,15 @@ class TildeTM {
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
         return json_decode($resp);
+    }
+
+    protected function log_text($data) {
+        file_put_contents('/var/tmp/worker.log', $data, FILE_APPEND);
+        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
+    }
+
+    protected function log($data) {
+        file_put_contents('/var/tmp/worker.log', var_export($data, true), FILE_APPEND);
+        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
     }
 }
