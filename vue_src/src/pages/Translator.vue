@@ -323,6 +323,10 @@ export default {
       this.segmentsAnalyzed = res.data.data.summary.SEGMENTS_ANALYZED
       this.jobData.id = res.data.data.job_id
       this.jobData.password = res.data.data.job_password
+      if (res.data.data.summary.STATUS === 'PRETRANSLATING') {
+        this.$loading.endLoading('segmentsAnalyze')
+        this.$loading.startLoading('pretranslate')
+      }
       if (res.data.data.summary.STATUS === 'DONE') {
         JobsService.getInfo({
           id: this.jobData.id,
@@ -330,6 +334,7 @@ export default {
         })
           .then(jobRes => {
             this.$loading.endLoading('segmentsAnalyze')
+            this.$loading.endLoading('pretranslate')
             this.jobData.lastSegmentId = parseInt(jobRes.data.active_segment_id)
             this.jobData.source = jobRes.data.source
             this.jobData.target = jobRes.data.target
