@@ -43,7 +43,6 @@ class PretranslateWorker extends AbstractWorker {
             $pretranslateStruct->password,
             $pretranslateStruct->job_first_segment,
             $pretranslateStruct->job_last_segment);
-        $pretranslateStruct->jwtToken .= '3';
 
         foreach($emptySegments as $segment) {
             $translation = '';
@@ -115,7 +114,7 @@ class PretranslateWorker extends AbstractWorker {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json'));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_URL, "https://hugotest.tilde.lv/ws/auth/jwt");
+        curl_setopt($curl, CURLOPT_URL, INIT::$TOKEN_REFRESH_URL);
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl,CURLOPT_POSTFIELDS, json_encode($refreshData));
         curl_setopt($curl, CURLOPT_HEADER  , true);

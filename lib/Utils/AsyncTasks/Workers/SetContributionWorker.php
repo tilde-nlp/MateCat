@@ -141,13 +141,9 @@ class SetContributionWorker extends AbstractWorker {
      * @throws \Exceptions\ValidationError
      */
     protected function _set( Array $config, ContributionStruct $contributionStruct ) {
-        $this->log($contributionStruct->jwt_token);
-        $this->log(INIT::$TM_BASE_URL);
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, $contributionStruct->jwt_token);
         $memories = $TildeTM->getMemories();
         $canWrite= $this->settingsToArray(Jobs_JobDao::getMemorySetting($contributionStruct->uid));
-        $this->log($canWrite);
-        $this->log($memories);
         if (empty($memories)) {
             return;
         }
@@ -155,16 +151,10 @@ class SetContributionWorker extends AbstractWorker {
             $writeValue = empty($canWrite[$mem->id]) ? true : $canWrite[$mem->id];
             $mem->write = true && $mem->canUpdate && $writeValue;
         }
-        $this->log($memories[0]);
-        $this->log($memories[1]);
         foreach($memories as $memory) {
-            $this->log_text('Write');
-            $this->log($memory);
-            $this->log($memory->write);
             if (!$memory->write) {
                 continue;
             }
-            $this->log_text('Writing');
             $TildeTM->writeMatch(
                 $memory->id,
                 $contributionStruct->segment,

@@ -93,6 +93,7 @@ MT_BASE_URL = "@@@mt_base_url@@@"
 MT_CLIENT_ID = "@@@mt_client_id@@@"
 MT_APP_ID = "@@@mt_app_id@@@"
 TM_BASE_URL = "@@@tm_base_url@@@"
+TOKEN_REFRESH_URL = "@@@token_refresh_url@@@"
 TERM_BASE_URL = "@@@term_base_url@@@"
 SyNONYM_BASE_URL = "@@@synonym_base_url@@@"
 DEV_MODE = @@@dev_mode@@@

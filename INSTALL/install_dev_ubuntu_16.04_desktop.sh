@@ -28,6 +28,7 @@ MT_BASE_URL=""
 MT_CLIENT_ID=""
 MT_APP_ID=""
 TM_BASE_URL=""
+TOKEN_REFRESH_URL=""
 TERM_BASE_URL=""
 SYNONYM_BASE_URL=""
 DEV_MODE=true
@@ -185,6 +186,7 @@ sudo sed -i "s|@@@mt_base_url@@@|$MT_BASE_URL|g" /home/$MATECAT_USER/cattool/inc
 sudo sed -i "s|@@@mt_client_id@@@|$MT_CLIENT_ID|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@mt_app_id@@@|$MT_APP_ID|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@tm_base_url@@@|$TM_BASE_URL|g" /home/$MATECAT_USER/cattool/inc/config.ini
+sudo sed -i "s|@@@token_refresh_url@@@|$TOKEN_REFRESH_URL|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@term_base_url@@@|$TERM_BASE_URL|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@synonym_base_url@@@|$SYNONYM_BASE_URL|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@dev_mode@@@|$DEV_MODE|g" /home/$MATECAT_USER/cattool/inc/config.ini
