@@ -32,6 +32,16 @@ export function htmlToXliff (inputText, segmentId) {
   const selfClosedReplaced = replaceAllHtmlSelfClosedTags(inputText, segmentId)
   return replaceAllHtmlDualTags(selfClosedReplaced, segmentId)
 }
+export function getTagList (inputText, segmentId) {
+  if (typeof (inputText) === 'undefined' || inputText === null) {
+    throw new ValueMissing()
+  }
+  const selfClosedResponse = findAllXliffSelfClosedTags(inputText, segmentId)
+  let tags = selfClosedResponse.tags
+  const dualResponse = findAllXliffDualTags(selfClosedResponse.text, segmentId)
+  tags = tags.concat(dualResponse.tags)
+  return tags
+}
 export function replaceAllXliffSelfClosedTags (inputText, segmentId) {
   const matches = inputText.match(selfClosingXliffPattern)
   if (matches === null) {
@@ -45,6 +55,22 @@ export function replaceAllXliffSelfClosedTags (inputText, segmentId) {
     outputText = selfClosingTag.replaceToHtml(outputText)
   })
   return outputText
+}
+export function findAllXliffSelfClosedTags (inputText, segmentId) {
+  const matches = inputText.match(selfClosingXliffPattern)
+  if (matches === null) {
+    return {text: inputText, tags: []}
+  }
+  let outputText = inputText
+  let tags = []
+  matches.forEach(foundTag => {
+    const selfClosingTag = new SelfClosingTag()
+    selfClosingTag.fromXliff(foundTag)
+    selfClosingTag.segmentId = segmentId
+    outputText = selfClosingTag.replaceToHtml(outputText)
+    tags.push(selfClosingTag)
+  })
+  return {text: outputText, tags: tags}
 }
 export function replaceAllXliffDualTags (inputText, segmentId) {
   let outputText = inputText
@@ -88,6 +114,51 @@ export function replaceAllXliffDualTags (inputText, segmentId) {
     throw InvalidXlifTags
   }
   return outputText
+}
+export function findAllXliffDualTags (inputText, segmentId) {
+  let outputText = inputText
+  let openTagPosition = outputText.search(dualOpenXliffPattern)
+  let closeTagPosition = outputText.search(dualCloseXliffPattern)
+  if (openTagPosition < 0 && closeTagPosition >= 0) {
+    throw InvalidXlifTags
+  }
+  if (openTagPosition < 0) {
+    return {text: outputText, tags: []}
+  }
+  let stack = []
+  let counter = 0
+  let tags = []
+  while (1) {
+    counter++
+    if (counter > 300) {
+      break
+    }
+    let openTagPosition = outputText.search(dualOpenXliffPattern)
+    let closeTagPosition = outputText.search(dualCloseXliffPattern)
+    if (openTagPosition < 0 && closeTagPosition < 0) {
+      break
+    }
+    if (openTagPosition > -1 && openTagPosition < closeTagPosition) {
+      const xliffOpenTag = outputText.match(dualOpenXliffPattern)[0]
+      const dualOpenTag = new DualOpenTag()
+      dualOpenTag.fromXliff(xliffOpenTag)
+      dualOpenTag.segmentId = segmentId
+      outputText = dualOpenTag.replaceToHtml(outputText)
+      stack.push(dualOpenTag)
+      tags.push(dualOpenTag)
+    } else {
+      const dualOpenTag = stack.pop()
+      const dualCloseTag = new DualCloseTag()
+      dualCloseTag.id = dualOpenTag.id
+      dualCloseTag.name = dualOpenTag.name
+      dualCloseTag.segmentId = dualOpenTag.segmentId
+      outputText = dualCloseTag.replaceToHtml(outputText)
+    }
+  }
+  if (stack.length > 0) {
+    throw InvalidXlifTags
+  }
+  return {text: outputText, tags: tags}
 }
 export function replaceAllHtmlSelfClosedTags (inputText, segmentId) {
   const matches = inputText.match(selfClosingHtmlPattern)

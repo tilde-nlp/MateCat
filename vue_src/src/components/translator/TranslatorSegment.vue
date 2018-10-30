@@ -42,6 +42,7 @@
       >
         <translator-editor
           v-if="segmentData.id > 0 && segmentData.id !== null"
+          ref="targetEditor"
           :is-active="isActive"
           :text="segment.translation"
           :search-term="$store.state.targetSearch"
@@ -78,9 +79,10 @@
               v-for="(tag, index) in $store.state.unusedTags"
               :key="index"
               class="tag-insert"
+              @click="insertTag(tag)"
               @shortkey="insertTag(tag)"
             >
-              {{ tag.id }}
+              {{ tag.name }}
             </div>
           </transition-group>
         </div>
@@ -238,7 +240,9 @@ export default {
     setActive: function () {
       this.$emit('click', this.segment.id)
     },
-    insertTag: function (tag) {},
+    insertTag: function (tag) {
+      this.$refs.targetEditor.insertTextAtCaret(tag.toFullHtml())
+    },
     focusEditor: function () {
       this.segment.focusToggle = !this.segment.focusToggle
     },

@@ -89,7 +89,6 @@ class PretranslateWorker extends AbstractWorker {
                     } catch (\Unauthorized $e2) {
                         \Log::doLog('Can\'t refresh token for second time.');
                     }
-
                 }
             }
             if (empty($translation) && $pretranslateStruct->useMt) {

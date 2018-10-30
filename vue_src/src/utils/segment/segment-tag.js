@@ -62,6 +62,9 @@ export class SelfClosingTag extends Tag {
   toXliff () {
     return '&lt;' + this.name + ' id="' + this.id + '"/&gt;'
   }
+  toFullHtml () {
+    return this.toHtml()
+  }
 }
 export class DualOpenTag extends Tag {
   constructor () {
@@ -71,6 +74,14 @@ export class DualOpenTag extends Tag {
   }
   toXliff () {
     return '&lt;' + this.name + ' id="' + this.id + '"&gt;'
+  }
+  toFullHtml () {
+    let html = this.toHtml()
+    const dualCloseTag = new DualCloseTag()
+    dualCloseTag.id = this.id
+    dualCloseTag.name = this.name
+    dualCloseTag.segmentId = this.segmentId
+    return html + dualCloseTag.toHtml()
   }
 }
 export class DualCloseTag extends Tag {

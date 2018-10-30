@@ -50,7 +50,10 @@ export default {
       id: null,
       isEditable: false,
       lastValidContent: '',
-      autoFocusEditor: false
+      autoFocusEditor: false,
+      caretPosition: 0,
+      w3: false,
+      ie: false
     }
   },
   computed: {
@@ -113,9 +116,12 @@ export default {
   mounted: function () {
     this.id = this._uid
     this.$emit('id', this.id)
+    this.ie = (typeof document.selection !== 'undefined' && document.selection.type !== 'Control') && true
+    this.w3 = (typeof window.getSelection !== 'undefined') && true
   },
   methods: {
     onInput: _.debounce(function () {
+      this.caretPosition = this.getCaretPosition()
       this.removeUnwantedTags()
       let cleanText
       try {
@@ -127,6 +133,7 @@ export default {
       }
       this.lastValidContent = this.editor.innerHTML
       this.$emit('input', cleanText)
+      this.$store.commit('recalculateUnusedTags')
     }, 500),
     removeUnwantedTags: function () {
       const brTag = '<div><br></div>'
@@ -136,9 +143,11 @@ export default {
     },
     cleanText: function () {
       const rawText = this.editor.innerHTML
+      console.log(rawText)
       let result
       result = TextHighlighter.remove(rawText)
       result = htmlToXliff(result, this.segmentId)
+      console.log(this.segmentId)
       return result
     },
     enableContentEdit: function () {
@@ -169,6 +178,7 @@ export default {
       if (this.editor === null) {
         return
       }
+      this.caretPosition = this.getCaretPosition()
       this.editor.focus()
     },
     checkSelection: function () {
@@ -178,6 +188,24 @@ export default {
       }
       this.$emit('termSearch', selectedText)
     },
+    insertTextAtCaret: function (text) {
+      let fullText = this.editor.innerHTML
+      this.editor.innerHTML = fullText.slice(0, this.caretPosition) + text + fullText.slice(this.caretPosition)
+      this.$nextTick(() => {
+        this.removeUnwantedTags()
+        let cleanText
+        try {
+          cleanText = this.cleanText()
+        } catch (error) {
+          this.$Alerts.add(this.$lang.messages.invalid_target_content)
+          this.editor.innerHTML = this.lastValidContent
+          return
+        }
+        this.lastValidContent = this.editor.innerHTML
+        this.$emit('input', cleanText)
+        this.$store.commit('recalculateUnusedTags', 'dud')
+      })
+    },
     getSelectionText: function () {
       if (window.getSelection) {
         return window.getSelection().toString()
@@ -185,6 +213,28 @@ export default {
         return document.selection.createRange().text
       }
       return ''
+    },
+    getCaretPosition: function () {
+      const element = document.getElementById('editor-' + this.id)
+      try {
+        if (this.w3) {
+          let range = window.getSelection().getRangeAt(0)
+          let preCaretRange = range.cloneRange()
+          preCaretRange.selectNodeContents(element)
+          preCaretRange.setEnd(range.endContainer, range.endOffset)
+          return preCaretRange.toString().length
+        }
+        if (this.ie) {
+          let textRange = document.selection.createRange()
+          let preCaretTextRange = document.body.createTextRange()
+          preCaretTextRange.moveToElementText(element)
+          preCaretTextRange.setEndPoint('EndToEnd', textRange)
+          return preCaretTextRange.text.length
+        }
+      } catch (e) {
+        return 0
+      }
+      return 0
     }
   }
 }

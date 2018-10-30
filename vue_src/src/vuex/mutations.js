@@ -1,3 +1,5 @@
+import { getTagList } from 'utils/segment/segment-text'
+
 export default {
   ready (state, ready) {
     state.ready = ready
@@ -41,14 +43,40 @@ export default {
   targetSearch (state, targetSearch) {
     state.targetSearch = targetSearch
   },
-  activeSegment (state, activeSegment) {
+  recalculateUnusedTags (state, dud) {
     state.unusedTags = null
-    if (activeSegment === null) {
-      state.unusedTags = []
-    } else {
-      state.unusedTags = []
+    state.unusedTags = []
+    if (state.activeSegment !== null) {
+      const allTags = getTagList(state.activeSegment.original, state.activeSegment.id)
+      const existingTags = getTagList(state.activeSegment.translation, state.activeSegment.id)
+      const existingIds = []
+      existingTags.forEach(el => {
+        existingIds.push(el.id)
+      })
+      allTags.forEach(el => {
+        if (existingIds.indexOf(el.id) < 0) {
+          state.unusedTags.push(el)
+        }
+      })
     }
+  },
+  activeSegment (state, activeSegment) {
     state.activeSegment = activeSegment
+    state.unusedTags = null
+    state.unusedTags = []
+    if (activeSegment !== null) {
+      const allTags = getTagList(activeSegment.original, activeSegment.id)
+      const existingTags = getTagList(activeSegment.translation, activeSegment.id)
+      const existingIds = []
+      existingTags.forEach(el => {
+        existingIds.push(el.id)
+      })
+      allTags.forEach(el => {
+        if (existingIds.indexOf(el.id) < 0) {
+          state.unusedTags.push(el)
+        }
+      })
+    }
   },
   fontSize (state, fontSize) {
     state.fontSize = fontSize
