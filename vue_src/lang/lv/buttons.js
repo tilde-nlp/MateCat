@@ -21,6 +21,6 @@ module.exports = {
   close: 'Aizvērt',
   resolve_all: 'Atrisināt visus',
   publish: 'Publicēt',
-  search_in_terms: 'Meklēt vārdnīcā',
-  search_in_synonym: 'Meklēt sinonīmos'
+  search_in_terms: 'Meklēt terminos',
+  search_in_synonym: 'Meklēt vārdnīcā'
 }

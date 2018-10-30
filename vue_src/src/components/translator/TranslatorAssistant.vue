@@ -484,7 +484,10 @@ export default {
     },
     openSynonymSearch: function () {
       if (this.searchTerm === '') return
-      window.open(this.$store.state.synonymBaseUrl + this.searchTerm, '_blank').focus()
+      let url = this.$store.state.synonymBaseUrl + this.$lang.getLang()
+      url += '?systemid=' + this.activeSystem.value
+      url += '&text=' + this.searchTerm
+      window.open(url, '_blank').focus()
     },
     convertTags: function (text, parentId) {
       return xliffToHtml(text, parentId)
