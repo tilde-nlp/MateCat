@@ -350,7 +350,7 @@ export default {
             this.$store.commit('synonymBaseUrl', jobRes.data.synonymBaseUrl)
             this.checkStats()
             this.getFileUrls()
-            LanguagesService.getSubjectsList()
+            LanguagesService.getSubjectsList(this.$lang.getLang())
               .then(langsRes => {
                 this.systems = LanguagesService.filterSystems(langsRes.data.System, this.jobData.source.substring(0, 2), this.jobData.target.substring(0, 2))
                 for (let i = 0; i < this.systems.length; i++) {
@@ -479,6 +479,7 @@ export default {
       }
       SegmentsService.getMtMatches(data)
         .then(r => {
+          segment.mtMatchLoaded = true
           if (!r.data.data.hasOwnProperty('match')) {
             return
           }
@@ -494,7 +495,6 @@ export default {
           let array = []
           array[0] = segment.mtMatch
           segment.suggestions.splice(0, 0, segment.mtMatch)
-          segment.mtMatchLoaded = true
         })
     },
     getContext: function (segment) {
@@ -611,6 +611,7 @@ export default {
                 version: el.version,
                 suggestions: [],
                 suggestionsLoaded: false,
+                mtMatchLoaded: false,
                 jobId: this.jobData.id,
                 jobPassword: this.jobData.password,
                 saveType: el.save_type,

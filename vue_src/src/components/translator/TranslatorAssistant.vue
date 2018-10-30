@@ -54,7 +54,7 @@
           >
             <label class="input-label">{{ $lang.titles.suggestions }}</label>
             <img
-              v-if="!$store.state.activeSegment.suggestionsLoaded"
+              v-if="!$store.state.activeSegment.mtMatchLoaded"
               :src="$assetPath + 'loading.svg'"
               class="splash-image"
               height="48"
@@ -109,6 +109,12 @@
                 </div>
               </transition-group>
             </div>
+            <img
+              v-if="!$store.state.activeSegment.suggestionsLoaded && $store.state.activeSegment.mtMatchLoaded"
+              :src="$assetPath + 'loading.svg'"
+              class="splash-image"
+              height="48"
+            >
           </div>
           <div
             v-shortkey="['shift', 'enter']"
