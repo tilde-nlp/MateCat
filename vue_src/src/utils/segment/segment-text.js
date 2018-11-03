@@ -13,7 +13,9 @@ import {
 
 const selfClosingXliffPattern = /&lt;.?.?.?.?.? id="[0-9]+"\/&gt;/g
 const dualOpenXliffPattern = /&lt;.?.?.?.?.? id="[0-9]+"&gt;/
+const dualOpenXliffPatternAll = /&lt;.?.?.?.?.? id="[0-9]+"&gt;/g
 const dualCloseXliffPattern = /&lt;\/(?!span).?.?.?.?.?&gt;/
+const dualCloseXliffPatternAll = /&lt;\/(?!span).?.?.?.?.?&gt;/g
 const selfClosingHtmlPattern = /<\/span><span class="tag self-closing" data-tag-name=".?.?.?.?.?-sc" data-xlif-id="[0-9]+" data-class-id="tag-[0-9]+-[0-9]+" onmouseenter="onTagMouseEnter\(this\)" onmouseleave="onTagMouseLeave\(this\)">.?.?.?.?.?<\/span><span class="editor-span" contenteditable="(true|false)">/g
 const dualOpenHtmlPattern = /<\/span><span class="tag dual-open" data-tag-name=".?.?.?.?.?-do" data-xlif-id="[0-9]+" data-class-id="tag-[0-9]+-[0-9]+" onmouseenter="onTagMouseEnter\(this\)" onmouseleave="onTagMouseLeave\(this\)">.?.?.?.?.?<\/span><span class="editor-span" contenteditable="(true|false)">/g
 const dualCloseHtmlPattern = /<\/span><span class="tag dual-close" data-tag-name=".?.?.?.?.?-dc" data-xlif-id="[0-9]+" data-class-id="tag-[0-9]+-[0-9]+" onmouseenter="onTagMouseEnter\(this\)" onmouseleave="onTagMouseLeave\(this\)">.?.?.?.?.?<\/span><span class="editor-span" contenteditable="(true|false)">/g
@@ -46,6 +48,30 @@ export function getTagList (inputText, segmentId) {
   const dualResponse = findAllXliffDualTags(selfClosedResponse.text, segmentId)
   tags = tags.concat(dualResponse.tags)
   return tags
+}
+export function stripXliffTags (inputText) {
+  console.log(inputText)
+  const selfClosingMatches = inputText.match(selfClosingXliffPattern)
+  if (selfClosingMatches !== null) {
+    for (let i = 0; i < selfClosingMatches.length; i++) {
+      inputText = inputText.replace(selfClosingMatches[i], '')
+    }
+  }
+  const dualOpenMatches = inputText.match(dualOpenXliffPatternAll)
+  console.log(dualOpenMatches)
+  if (dualOpenMatches !== null) {
+    for (let i = 0; i < dualOpenMatches.length; i++) {
+      console.log('replacing: ' + dualOpenMatches[i])
+      inputText = inputText.replace(dualOpenMatches[i], '')
+    }
+  }
+  const dualCloseMatches = inputText.match(dualCloseXliffPatternAll)
+  if (dualCloseMatches !== null) {
+    for (let i = 0; i < dualCloseMatches.length; i++) {
+      inputText = inputText.replace(dualCloseMatches[i], '')
+    }
+  }
+  return inputText
 }
 export function replaceAllXliffSelfClosedTags (inputText, segmentId) {
   const matches = inputText.match(selfClosingXliffPattern)

@@ -226,6 +226,7 @@ import TranslatorAssistant from 'components/translator/TranslatorAssistant'
 import JobsService from 'services/jobs.js'
 import FileService from 'services/file.js'
 import LanguagesService from 'services/languages'
+import { stripXliffTags } from '../utils/segment/segment-text'
 export default {
   name: 'Translator',
   components: {
@@ -466,7 +467,7 @@ export default {
           }))
           segment.topSuggestion = ''
           if (segment.suggestions.length) {
-            segment.topSuggestion = segment.suggestions[0].translation
+            segment.topSuggestion = stripXliffTags(segment.suggestions[0].translation)
           }
           segment.suggestionsLoaded = true
         })
@@ -491,7 +492,7 @@ export default {
             translation: el.translation,
             isMT: true
           }
-          segment.topSuggestion = segment.mtMatch.translation
+          segment.topSuggestion = stripXliffTags(segment.mtMatch.translation)
           let array = []
           array[0] = segment.mtMatch
           segment.suggestions.splice(0, 0, segment.mtMatch)
