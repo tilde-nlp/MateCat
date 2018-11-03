@@ -20,7 +20,7 @@ export class Tag {
   toHtml (isContentEditable) {
     isContentEditable = isContentEditable || false
     const editableString = isContentEditable ? 'true' : 'false'
-    const template = '</span><span class="tag typeClass" data-tag-name="tagName-namePostfix" data-xlif-id="tagId" data-class-id="tag-tagId-segmentId" onmouseenter="onTagMouseEnter(this)" onmouseleave="onTagMouseLeave(this)">tagName</span><span class="editor-span" contenteditable="' + editableString + '">'
+    const template = '</span><span class="tag typeClass" data-tag-name="tagName-namePostfix" data-xlif-id="tagId" data-class-id="tag-tagId-segmentId" onmouseenter="onTagMouseEnter(this)" onmouseleave="onTagMouseLeave(this)">tagName</span><span class="editor-span" onclick="onEditor(this)" onfocus="onEditor(this)" onblur="onEditor(this)" onkeyup="onEditor(this)" onpaste="onEditor(this)" oncut="onEditor(this)" onmouseup="onEditor(this)" contenteditable="' + editableString + '">'
     let result = template.replace(new RegExp('tagName', 'g'), this.name)
     result = result.replace(new RegExp('namePostfix', 'g'), this.namePostfix)
     result = result.replace(new RegExp('tagId', 'g'), this.id)

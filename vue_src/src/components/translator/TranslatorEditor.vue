@@ -122,7 +122,6 @@ export default {
   methods: {
     onInput: _.debounce(function () {
       this.caretPosition = this.getCaretPosition()
-      console.log(this.caretPosition)
       this.removeUnwantedTags()
       let cleanText
       try {
@@ -185,7 +184,6 @@ export default {
         break
       }
       this.caretPosition = this.getCaretPosition()
-      console.log(this.caretPosition)
     },
     checkSelection: function () {
       const selectedText = this.getSelectionText()
@@ -195,21 +193,23 @@ export default {
       this.$emit('termSearch', selectedText)
     },
     insertTextAtCaret: function (text) {
-      let fullText = this.editor.innerHTML
-      this.editor.innerHTML = fullText.slice(0, this.caretPosition) + text + fullText.slice(this.caretPosition)
+      // eslint-disable-next-line no-undef
+      insertHtmlAtCaret(text)
       this.$nextTick(() => {
-        this.removeUnwantedTags()
-        let cleanText
-        try {
-          cleanText = this.cleanText()
-        } catch (error) {
-          this.$Alerts.add(this.$lang.messages.invalid_target_content)
-          this.editor.innerHTML = this.lastValidContent
-          return
-        }
-        this.lastValidContent = this.editor.innerHTML
-        this.$emit('input', cleanText)
-        this.$store.commit('recalculateUnusedTags', 'dud')
+        this.$nextTick(() => {
+          this.removeUnwantedTags()
+          let cleanText
+          try {
+            cleanText = this.cleanText()
+          } catch (error) {
+            this.$Alerts.add(this.$lang.messages.invalid_target_content)
+            this.editor.innerHTML = this.lastValidContent
+            return
+          }
+          this.lastValidContent = this.editor.innerHTML
+          this.$emit('input', cleanText)
+          this.$store.commit('recalculateUnusedTags', 'dud')
+        })
       })
     },
     getSelectionText: function () {

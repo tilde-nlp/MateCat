@@ -261,6 +261,9 @@ export default {
       if (typeof (this.segmentData.topSuggestion) === 'undefined' && this.segmentData.topSuggestion === '') {
         return []
       }
+      if (entered === '') {
+        return []
+      }
       const suggestionWords = this.segmentData.topSuggestion.split(' ')
       const suggestions = _.filter(suggestionWords, el => {
         return el.startsWith(entered)

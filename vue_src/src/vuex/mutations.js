@@ -48,7 +48,8 @@ export default {
     state.unusedTags = []
     if (state.activeSegment !== null) {
       const allTags = getTagList(state.activeSegment.original, state.activeSegment.id)
-      const existingTags = getTagList(state.activeSegment.translation, state.activeSegment.id)
+      const translation = typeof (state.activeSegment.cleanTranslation) === 'undefined' ? state.activeSegment.translation : state.activeSegment.cleanTranslation
+      const existingTags = getTagList(translation, state.activeSegment.id)
       const existingIds = []
       existingTags.forEach(el => {
         existingIds.push(el.id)

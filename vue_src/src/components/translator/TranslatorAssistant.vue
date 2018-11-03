@@ -426,6 +426,7 @@ export default {
         this.$store.state.activeSegment.saveType = 'TM'
         this.$store.state.activeSegment.match = parseInt(suggestion.match)
       }
+      this.$store.commit('recalculateUnusedTags', 'dud')
     },
     resetComment: function () {
       this.newComment = {

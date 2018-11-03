@@ -531,6 +531,7 @@ export default {
       SegmentsService.setTranslation(data)
         .then(() => {
           this.$store.state.activeSegment.status = (status === 'translated' ? 'done' : '')
+          this.$store.commit('recalculateUnusedTags', 'dud')
           if (status === 'translated') {
             const activeIndex = parseInt(_.findKey(this.segments, {id: this.$store.state.activeSegment.id}))
             if (activeIndex + 1 < this.segments.length) {

@@ -16,10 +16,10 @@ const dualOpenXliffPattern = /&lt;.?.?.?.?.? id="[0-9]+"&gt;/
 const dualOpenXliffPatternAll = /&lt;.?.?.?.?.? id="[0-9]+"&gt;/g
 const dualCloseXliffPattern = /&lt;\/(?!span).?.?.?.?.?&gt;/
 const dualCloseXliffPatternAll = /&lt;\/(?!span).?.?.?.?.?&gt;/g
-const selfClosingHtmlPattern = /<\/span><span class="tag self-closing" data-tag-name=".?.?.?.?.?-sc" data-xlif-id="[0-9]+" data-class-id="tag-[0-9]+-[0-9]+" onmouseenter="onTagMouseEnter\(this\)" onmouseleave="onTagMouseLeave\(this\)">.?.?.?.?.?<\/span><span class="editor-span" contenteditable="(true|false)">/g
-const dualOpenHtmlPattern = /<\/span><span class="tag dual-open" data-tag-name=".?.?.?.?.?-do" data-xlif-id="[0-9]+" data-class-id="tag-[0-9]+-[0-9]+" onmouseenter="onTagMouseEnter\(this\)" onmouseleave="onTagMouseLeave\(this\)">.?.?.?.?.?<\/span><span class="editor-span" contenteditable="(true|false)">/g
-const dualCloseHtmlPattern = /<\/span><span class="tag dual-close" data-tag-name=".?.?.?.?.?-dc" data-xlif-id="[0-9]+" data-class-id="tag-[0-9]+-[0-9]+" onmouseenter="onTagMouseEnter\(this\)" onmouseleave="onTagMouseLeave\(this\)">.?.?.?.?.?<\/span><span class="editor-span" contenteditable="(true|false)">/g
-const editorStart = '<span class="editor-span" contenteditable="false">'
+const selfClosingHtmlPattern = /<\/span><span class="tag self-closing" data-tag-name=".?.?.?.?.?-sc" data-xlif-id="[0-9]+" data-class-id="tag-[0-9]+-[0-9]+" onmouseenter="onTagMouseEnter\(this\)" onmouseleave="onTagMouseLeave\(this\)">.?.?.?.?.?<\/span><span class="editor-span" onclick="onEditor\(this\)" onfocus="onEditor\(this\)" onblur="onEditor\(this\)" onkeyup="onEditor\(this\)" onpaste="onEditor\(this\)" oncut="onEditor\(this\)" onmouseup="onEditor\(this\)" contenteditable="(true|false)">/g
+const dualOpenHtmlPattern = /<\/span><span class="tag dual-open" data-tag-name=".?.?.?.?.?-do" data-xlif-id="[0-9]+" data-class-id="tag-[0-9]+-[0-9]+" onmouseenter="onTagMouseEnter\(this\)" onmouseleave="onTagMouseLeave\(this\)">.?.?.?.?.?<\/span><span class="editor-span" onclick="onEditor\(this\)" onfocus="onEditor\(this\)" onblur="onEditor\(this\)" onkeyup="onEditor\(this\)" onpaste="onEditor\(this\)" oncut="onEditor\(this\)" onmouseup="onEditor\(this\)" contenteditable="(true|false)">/g
+const dualCloseHtmlPattern = /<\/span><span class="tag dual-close" data-tag-name=".?.?.?.?.?-dc" data-xlif-id="[0-9]+" data-class-id="tag-[0-9]+-[0-9]+" onmouseenter="onTagMouseEnter\(this\)" onmouseleave="onTagMouseLeave\(this\)">.?.?.?.?.?<\/span><span class="editor-span" onclick="onEditor\(this\)" onfocus="onEditor\(this\)" onblur="onEditor\(this\)" onkeyup="onEditor\(this\)" onpaste="onEditor\(this\)" oncut="onEditor\(this\)" onmouseup="onEditor\(this\)" contenteditable="(true|false)">/g
+const editorStart = '<span class="editor-span" onclick="onEditor(this)" onfocus="onEditor(this)" onblur="onEditor(this)" onkeyup="onEditor(this)" onpaste="onEditor(this)" oncut="onEditor(this)" onmouseup="onEditor(this)" contenteditable="false">'
 const editorEnd = '</span>'
 
 export function xliffToHtml (inputText, segmentId) {
@@ -34,6 +34,7 @@ export function htmlToXliff (inputText, segmentId) {
   if (typeof (inputText) === 'undefined' || inputText === null) {
     throw new ValueMissing()
   }
+  inputText = inputText.replace(' id="active-editor-span"', '')
   inputText = inputText.substr(editorStart.length - 1)
   inputText = inputText.slice(0, -1 * editorEnd.length)
   const selfClosedReplaced = replaceAllHtmlSelfClosedTags(inputText, segmentId)
@@ -50,7 +51,6 @@ export function getTagList (inputText, segmentId) {
   return tags
 }
 export function stripXliffTags (inputText) {
-  console.log(inputText)
   const selfClosingMatches = inputText.match(selfClosingXliffPattern)
   if (selfClosingMatches !== null) {
     for (let i = 0; i < selfClosingMatches.length; i++) {
@@ -58,10 +58,8 @@ export function stripXliffTags (inputText) {
     }
   }
   const dualOpenMatches = inputText.match(dualOpenXliffPatternAll)
-  console.log(dualOpenMatches)
   if (dualOpenMatches !== null) {
     for (let i = 0; i < dualOpenMatches.length; i++) {
-      console.log('replacing: ' + dualOpenMatches[i])
       inputText = inputText.replace(dualOpenMatches[i], '')
     }
   }
