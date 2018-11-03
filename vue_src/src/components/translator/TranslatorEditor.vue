@@ -51,7 +51,6 @@ export default {
       isEditable: false,
       lastValidContent: '',
       autoFocusEditor: false,
-      caretPosition: 50,
       w3: false,
       ie: false
     }
@@ -121,7 +120,6 @@ export default {
   },
   methods: {
     onInput: _.debounce(function () {
-      this.caretPosition = this.getCaretPosition()
       this.removeUnwantedTags()
       let cleanText
       try {
@@ -183,7 +181,6 @@ export default {
         this.editor.childNodes[i].focus()
         break
       }
-      this.caretPosition = this.getCaretPosition()
     },
     checkSelection: function () {
       const selectedText = this.getSelectionText()
@@ -219,28 +216,6 @@ export default {
         return document.selection.createRange().text
       }
       return ''
-    },
-    getCaretPosition: function () {
-      const element = document.getElementById('editor-' + this.id)
-      try {
-        if (this.w3) {
-          let range = window.getSelection().getRangeAt(0)
-          let preCaretRange = range.cloneRange()
-          preCaretRange.selectNodeContents(element)
-          preCaretRange.setEnd(range.endContainer, range.endOffset)
-          return preCaretRange.toString().length
-        }
-        if (this.ie) {
-          let textRange = document.selection.createRange()
-          let preCaretTextRange = document.body.createTextRange()
-          preCaretTextRange.moveToElementText(element)
-          preCaretTextRange.setEndPoint('EndToEnd', textRange)
-          return preCaretTextRange.text.length
-        }
-      } catch (e) {
-        return 0
-      }
-      return 0
     }
   }
 }
