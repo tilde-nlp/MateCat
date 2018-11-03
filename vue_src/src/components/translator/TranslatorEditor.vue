@@ -143,11 +143,9 @@ export default {
     },
     cleanText: function () {
       const rawText = this.editor.innerHTML
-      console.log(rawText)
       let result
       result = TextHighlighter.remove(rawText)
       result = htmlToXliff(result, this.segmentId)
-      console.log(this.segmentId)
       return result
     },
     enableContentEdit: function () {
@@ -178,8 +176,14 @@ export default {
       if (this.editor === null) {
         return
       }
+      for (let i = 0; i < this.editor.childNodes.length; i++) {
+        if (this.editor.childNodes[i].className !== 'editor-span') {
+          continue
+        }
+        this.editor.childNodes[i].focus()
+        break
+      }
       this.caretPosition = this.getCaretPosition()
-      this.editor.focus()
     },
     checkSelection: function () {
       const selectedText = this.getSelectionText()

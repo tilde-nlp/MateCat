@@ -13,15 +13,18 @@ import {
 
 const selfClosingXliffPattern = /&lt;.?.?.?.?.? id="[0-9]+"\/&gt;/g
 const dualOpenXliffPattern = /&lt;.?.?.?.?.? id="[0-9]+"&gt;/
-const dualCloseXliffPattern = /&lt;\/.?.?.?.?.?&gt;/
-const selfClosingHtmlPattern = /<span contenteditable="false" class="tag self-closing" data-tag-name=".?.?.?.?.?-sc" data-xlif-id="[0-9]+" data-class-id="tag-[0-9]+-[0-9]+" onmouseenter="onTagMouseEnter\(this\)" onmouseleave="onTagMouseLeave\(this\)">.?.?.?.?.?<\/span>/g
-const dualOpenHtmlPattern = /<span contenteditable="false" class="tag dual-open" data-tag-name=".?.?.?.?.?-do" data-xlif-id="[0-9]+" data-class-id="tag-[0-9]+-[0-9]+" onmouseenter="onTagMouseEnter\(this\)" onmouseleave="onTagMouseLeave\(this\)">.?.?.?.?.?<\/span>/g
-const dualCloseHtmlPattern = /<span contenteditable="false" class="tag dual-close" data-tag-name=".?.?.?.?.?-dc" data-xlif-id="[0-9]+" data-class-id="tag-[0-9]+-[0-9]+" onmouseenter="onTagMouseEnter\(this\)" onmouseleave="onTagMouseLeave\(this\)">.?.?.?.?.?<\/span>/g
+const dualCloseXliffPattern = /&lt;\/(?!span).?.?.?.?.?&gt;/
+const selfClosingHtmlPattern = /<\/span><span class="tag self-closing" data-tag-name=".?.?.?.?.?-sc" data-xlif-id="[0-9]+" data-class-id="tag-[0-9]+-[0-9]+" onmouseenter="onTagMouseEnter\(this\)" onmouseleave="onTagMouseLeave\(this\)">.?.?.?.?.?<\/span><span class="editor-span" contenteditable="(true|false)">/g
+const dualOpenHtmlPattern = /<\/span><span class="tag dual-open" data-tag-name=".?.?.?.?.?-do" data-xlif-id="[0-9]+" data-class-id="tag-[0-9]+-[0-9]+" onmouseenter="onTagMouseEnter\(this\)" onmouseleave="onTagMouseLeave\(this\)">.?.?.?.?.?<\/span><span class="editor-span" contenteditable="(true|false)">/g
+const dualCloseHtmlPattern = /<\/span><span class="tag dual-close" data-tag-name=".?.?.?.?.?-dc" data-xlif-id="[0-9]+" data-class-id="tag-[0-9]+-[0-9]+" onmouseenter="onTagMouseEnter\(this\)" onmouseleave="onTagMouseLeave\(this\)">.?.?.?.?.?<\/span><span class="editor-span" contenteditable="(true|false)">/g
+const editorStart = '<span class="editor-span" contenteditable="false">'
+const editorEnd = '</span>'
 
 export function xliffToHtml (inputText, segmentId) {
   if (typeof (inputText) === 'undefined' || inputText === null) {
     throw new ValueMissing()
   }
+  inputText = editorStart + inputText + editorEnd
   const selfClosedReplaced = replaceAllXliffSelfClosedTags(inputText, segmentId)
   return replaceAllXliffDualTags(selfClosedReplaced, segmentId)
 }
@@ -29,6 +32,8 @@ export function htmlToXliff (inputText, segmentId) {
   if (typeof (inputText) === 'undefined' || inputText === null) {
     throw new ValueMissing()
   }
+  inputText = inputText.substr(editorStart.length - 1)
+  inputText = inputText.slice(0, -1 * editorEnd.length)
   const selfClosedReplaced = replaceAllHtmlSelfClosedTags(inputText, segmentId)
   return replaceAllHtmlDualTags(selfClosedReplaced, segmentId)
 }

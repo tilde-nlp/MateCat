@@ -48,7 +48,6 @@
           :search-term="$store.state.targetSearch"
           :focus-toggle="segment.focusToggle"
           :segment-id="segmentData.id"
-          :contenteditable="isActive"
           @input="onSegmentInput"
           @id="id => { editorId = id }"
         />
