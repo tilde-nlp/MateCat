@@ -51,7 +51,7 @@ export default {
       isEditable: false,
       lastValidContent: '',
       autoFocusEditor: false,
-      caretPosition: 0,
+      caretPosition: 50,
       w3: false,
       ie: false
     }
@@ -122,6 +122,7 @@ export default {
   methods: {
     onInput: _.debounce(function () {
       this.caretPosition = this.getCaretPosition()
+      console.log(this.caretPosition)
       this.removeUnwantedTags()
       let cleanText
       try {
@@ -184,6 +185,7 @@ export default {
         break
       }
       this.caretPosition = this.getCaretPosition()
+      console.log(this.caretPosition)
     },
     checkSelection: function () {
       const selectedText = this.getSelectionText()

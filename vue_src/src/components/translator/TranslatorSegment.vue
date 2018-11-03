@@ -240,7 +240,7 @@ export default {
       this.$emit('click', this.segment.id)
     },
     insertTag: function (tag) {
-      this.$refs.targetEditor.insertTextAtCaret(tag.toFullHtml())
+      this.$refs.targetEditor.insertTextAtCaret(tag.toFullHtml(true))
     },
     focusEditor: function () {
       this.segment.focusToggle = !this.segment.focusToggle
