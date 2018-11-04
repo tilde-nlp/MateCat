@@ -138,6 +138,13 @@
               name="terms-search"
               @keyup.enter="openTermSearch"
             >
+            <svgicon
+              v-if="showConcordance || searchTerm !== ''"
+              class="svg-icon icon-blueish-darker-still clear-single-search"
+              name="close-circle"
+              height="24"
+              @click="removeConcordance"
+            />
           </div>
           <div
             class="button terms"
@@ -151,6 +158,12 @@
             class="button terms"
             @click="openConcordanceSearch"
           >{{ $lang.buttons.search_in_concordance }}</div>
+          <img
+            v-if="$loading.isLoading('concordance')"
+            :src="$assetPath + 'loading.svg'"
+            class="splash-image"
+            height="48"
+          >
           <div
             v-if="showConcordance"
             id="concordance-list"
@@ -544,7 +557,10 @@ export default {
       window.open(url, '_blank').focus()
     },
     openConcordanceSearch: function () {
+      this.concordanceMatches = null
+      this.concordanceMatches = []
       if (this.searchTerm === '') return
+      this.$loading.startLoading('concordance')
       SegmentsService.getConcordanceContribution({
         text: this.searchTerm,
         source: this.fromLang,
@@ -562,6 +578,10 @@ export default {
               })
             }
           }
+          this.$loading.endLoading('concordance')
+        })
+        .catch(() => {
+          this.$loading.endLoading('concordance')
         })
     },
     convertTags: function (text, parentId) {
@@ -573,6 +593,10 @@ export default {
     setConcordanceListHeight: function () {
       const appHeight = document.getElementById('cat-app').clientHeight
       this.concordanceListHeight = appHeight - 203
+    },
+    removeConcordance: function () {
+      this.searchTerm = ''
+      this.concordanceMatches = null
     }
   }
 }
