@@ -11,6 +11,9 @@ export default {
   getContribution: function (data) {
     return HTTP.post(CONFIG.baseUrl + '?action=getContribution', FormGenerator.generateForm(data))
   },
+  getConcordanceContribution: function (data) {
+    return HTTP.post(CONFIG.baseUrl + '?action=getConcordanceContribution', FormGenerator.generateForm(data))
+  },
   getMtMatches: function (data) {
     return HTTP.post(CONFIG.baseUrl + '?action=getMTMatches', FormGenerator.generateForm(data))
   },

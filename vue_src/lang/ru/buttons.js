@@ -22,5 +22,6 @@ module.exports = {
   resolve_all: 'Resolve all',
   publish: 'Publish',
   search_in_terms: 'Search terms',
-  search_in_synonym: 'Search dictionary'
+  search_in_synonym: 'Search dictionary',
+  search_in_concordance: 'Search concordance'
 }

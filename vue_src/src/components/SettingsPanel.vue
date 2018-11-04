@@ -36,9 +36,6 @@
       <div class="input-label ib-i w-64">
         {{ $lang.titles.write }}
       </div>
-      <div class="input-label ib-i w-64">
-        {{ $lang.titles.concordance_search }}
-      </div>
       <div
         id="memory-list"
         :style="{'max-height': memoryListHeight + 'px'}"
@@ -70,11 +67,6 @@
                 :disabled="!memory.canUpdate"
                 class="ib w-64"
                 @change="val => { setWrite(memory, val) }"
-              />
-              <check-box
-                :value="memory.concordance"
-                class="ib w-64"
-                @change="val => { setConcordance(memory, val) }"
               />
               <div class="ib va-top">{{ memory.name }}</div>
             </div>

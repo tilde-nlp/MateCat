@@ -1527,6 +1527,10 @@ select::-ms-expand {
     &.mt-match {
       border-right: solid @color-red 3px;
     }
+    &.concordance {
+      border-right: none;
+      width: calc(~"100% - 15px");
+    }
   }
 }
 
@@ -1829,5 +1833,11 @@ select::-ms-expand {
 
 #memory-list {
   overflow-y: scroll;
+  min-height: 55px;
+}
+
+#concordance-list {
+  overflow-y: scroll;
+  overflow-x: hidden;
   min-height: 55px;
 }

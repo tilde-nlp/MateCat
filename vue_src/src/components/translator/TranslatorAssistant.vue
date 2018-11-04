@@ -35,87 +35,91 @@
           v-if="activeTab === 'translate'"
           class="tab"
         >
-          <label
-            class="input-label"
-            for="mt"
-          >{{ $lang.titles.mt }}</label>
-          <div class="select-container">
-            <v-select
-              id="mt"
-              v-model="activeSystem"
-              :options="systems"
-              name="mt"
-              @input="onMtChange"
-            />
-          </div>
-          <div
-            v-if="$store.state.activeSegment"
-            class="mt-24"
+          <span
+            v-if="!showConcordance"
           >
-            <label class="input-label">{{ $lang.titles.suggestions }}</label>
-            <img
-              v-if="!$store.state.activeSegment.mtMatchLoaded"
-              :src="$assetPath + 'loading.svg'"
-              class="splash-image"
-              height="48"
-            >
-            <div
-              v-else-if="$store.state.activeSegment.suggestions.length < 1">
-              {{ $lang.titles.no_suggestions }}
+            <label
+              class="input-label"
+              for="mt"
+            >{{ $lang.titles.mt }}</label>
+            <div class="select-container">
+              <v-select
+                id="mt"
+                v-model="activeSystem"
+                :options="systems"
+                name="mt"
+                @input="onMtChange"
+              />
             </div>
             <div
-              v-else
-              :style="{'max-height': maxHeight + 'px'}"
-              class="suggestions-container"
+              v-if="$store.state.activeSegment"
+              class="mt-24"
             >
-              <transition-group
-                name="ffade"
-                mode="out-in"
+              <label class="input-label">{{ $lang.titles.suggestions }}</label>
+              <img
+                v-if="!$store.state.activeSegment.mtMatchLoaded"
+                :src="$assetPath + 'loading.svg'"
+                class="splash-image"
+                height="48"
               >
-                <div
-                  v-shortkey="['ctrl', parseInt(index + 1)]"
-                  v-for="(suggestion, index) in $store.state.activeSegment.suggestions"
-                  :id="'suggestion-' + index"
-                  :key="index"
-                  :class="{'last': index === $store.state.activeSegment.suggestions.length - 1}"
-                  class="suggestion"
-                  @click="setSuggestion(suggestion)"
-                  @shortkey="setSuggestion(suggestion)"
+              <div
+                v-else-if="$store.state.activeSegment.suggestions.length < 1">
+                {{ $lang.titles.no_suggestions }}
+              </div>
+              <div
+                v-else
+                :style="{'max-height': maxHeight + 'px'}"
+                class="suggestions-container"
+              >
+                <transition-group
+                  name="ffade"
+                  mode="out-in"
                 >
-                  <div class="suggestion-nr">{{ index + 1 }}</div>
                   <div
-                    :class="{'high-match': suggestion.rawMatch > 69, 'mid-match': suggestion.rawMatch > 49 && suggestion.rawMatch < 70, 'mt-match': suggestion.isMT}"
-                    class="suggestion-text"
+                    v-shortkey="['ctrl', parseInt(index + 1)]"
+                    v-for="(suggestion, index) in $store.state.activeSegment.suggestions"
+                    :id="'suggestion-' + index"
+                    :key="index"
+                    :class="{'last': index === $store.state.activeSegment.suggestions.length - 1}"
+                    class="suggestion"
+                    @click="setSuggestion(suggestion)"
+                    @shortkey="setSuggestion(suggestion)"
                   >
-                    <span
-                      v-if="suggestion.isMT"
-                      v-html="convertTags(suggestion.translation, $store.state.activeSegment.id)"
-                    />
+                    <div class="suggestion-nr">{{ index + 1 }}</div>
                     <div
-                      v-else
-                      :title="$lang.tooltips.created_by + ': ' + suggestion.createdBy"
+                      :class="{'high-match': suggestion.rawMatch > 69, 'mid-match': suggestion.rawMatch > 49 && suggestion.rawMatch < 70, 'mt-match': suggestion.isMT}"
+                      class="suggestion-text"
                     >
-                      <div
-                        class="mb-8 bb-light-darker"
-                        v-html="convertTags(suggestion.segment, $store.state.activeSegment.id)"
+                      <span
+                        v-if="suggestion.isMT"
+                        v-html="convertTags(suggestion.translation, $store.state.activeSegment.id)"
                       />
-                      <div v-html="convertTags(suggestion.translation, $store.state.activeSegment.id)" />
+                      <div
+                        v-else
+                        :title="$lang.tooltips.created_by + ': ' + suggestion.createdBy"
+                      >
+                        <div
+                          class="mb-8 bb-light-darker"
+                          v-html="convertTags(suggestion.segment, $store.state.activeSegment.id)"
+                        />
+                        <div v-html="convertTags(suggestion.translation, $store.state.activeSegment.id)" />
+                      </div>
                     </div>
+                    <div
+                      :class="{'high-match': suggestion.rawMatch > 69, 'mid-match': suggestion.rawMatch > 49 && suggestion.rawMatch < 70, 'mt-match': suggestion.isMT}"
+                      class="suggestion-match"
+                    >{{ suggestion.match }}</div>
                   </div>
-                  <div
-                    :class="{'high-match': suggestion.rawMatch > 69, 'mid-match': suggestion.rawMatch > 49 && suggestion.rawMatch < 70, 'mt-match': suggestion.isMT}"
-                    class="suggestion-match"
-                  >{{ suggestion.match }}</div>
-                </div>
-              </transition-group>
+                </transition-group>
+              </div>
+              <img
+                v-if="!$store.state.activeSegment.suggestionsLoaded && $store.state.activeSegment.mtMatchLoaded"
+                :src="$assetPath + 'loading.svg'"
+                class="splash-image"
+                height="48"
+              >
             </div>
-            <img
-              v-if="!$store.state.activeSegment.suggestionsLoaded && $store.state.activeSegment.mtMatchLoaded"
-              :src="$assetPath + 'loading.svg'"
-              class="splash-image"
-              height="48"
-            >
-          </div>
+          </span>
           <div
             v-shortkey="['shift', 'enter']"
             class="relative mt-32 mb-8 mr-32"
@@ -143,6 +147,36 @@
             class="button terms"
             @click="openSynonymSearch"
           >{{ $lang.buttons.search_in_synonym }}</div>
+          <div
+            class="button terms"
+            @click="openConcordanceSearch"
+          >{{ $lang.buttons.search_in_concordance }}</div>
+          <div
+            v-if="showConcordance"
+            id="concordance-list"
+            :style="{'max-height': concordanceListHeight + 'px'}"
+            class="mt-8"
+          >
+            <div
+              v-for="(match, index) in concordanceMatches"
+              :key="index + 1"
+              :class="{'last': index === concordanceMatches.length - 1}"
+              class="suggestion"
+            >
+              <div class="suggestion-nr">{{ index + 1 }}</div>
+              <div
+                class="suggestion-text concordance"
+              >
+                <div>
+                  <div
+                    class="mb-8 bb-light-darker"
+                    v-html="match.segment"
+                  />
+                  <div v-html="match.translation" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div
           v-if="activeTab === 'hotkeys'"
@@ -335,7 +369,8 @@
   </div>
 </template>
 <script>
-import CommentsService from 'services/comments.js'
+import CommentsService from 'services/comments'
+import SegmentsService from 'services/segments'
 import _ from 'lodash'
 import {DateConverter} from 'utils/date-converter'
 import {
@@ -379,7 +414,9 @@ export default {
       newComment: {},
       commentSearch: '',
       searchTerm: '',
-      activeSystem: null
+      activeSystem: null,
+      concordanceMatches: null,
+      concordanceListHeight: 200
     }
   },
   computed: {
@@ -403,6 +440,9 @@ export default {
         }
       })
       return count
+    },
+    showConcordance: function () {
+      return this.concordanceMatches && this.concordanceMatches.length > 0
     }
   },
   watch: {
@@ -415,6 +455,13 @@ export default {
   },
   mounted: function () {
     this.resetComment()
+    this.$nextTick(function () {
+      window.addEventListener('resize', this.setConcordanceListHeight)
+      this.setConcordanceListHeight()
+    })
+  },
+  beforeDestroy: function () {
+    window.removeEventListener('resize', this.setConcordanceListHeight)
   },
   methods: {
     setSuggestion: function (suggestion) {
@@ -496,11 +543,36 @@ export default {
       url += '&text=' + this.searchTerm
       window.open(url, '_blank').focus()
     },
+    openConcordanceSearch: function () {
+      if (this.searchTerm === '') return
+      SegmentsService.getConcordanceContribution({
+        text: this.searchTerm,
+        source: this.fromLang,
+        target: this.toLang
+      })
+        .then(response => {
+          this.concordanceMatches = null
+          this.concordanceMatches = []
+          if (typeof (response.data.data.matches) !== 'undefined') {
+            const matches = response.data.data.matches
+            for (let i = 0; i < matches.length; i++) {
+              this.concordanceMatches.push({
+                segment: matches[i].raw_segment,
+                translation: matches[i].translation
+              })
+            }
+          }
+        })
+    },
     convertTags: function (text, parentId) {
       return xliffToHtml(text, parentId)
     },
     onMtChange: function (value) {
       this.$emit('mtSystemChange', value)
+    },
+    setConcordanceListHeight: function () {
+      const appHeight = document.getElementById('cat-app').clientHeight
+      this.concordanceListHeight = appHeight - 203
     }
   }
 }
