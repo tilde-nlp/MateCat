@@ -17,6 +17,7 @@
           @toPrevious="searchUnconfirmed(-1)"
           @toNext="searchUnconfirmed(1)"
           @pretranslated="reloadSegments"
+          @toggleSettings="() => { settingsOpen = true }"
         />
       </section>
       <div class="bb-blueish"/>
@@ -213,6 +214,14 @@
         />
       </section>
     </div>
+    <transition
+      name="ffade">
+      <settings-panel
+        v-if="settingsOpen"
+        :key="1"
+        @closeSettings="() => { settingsOpen = false }"
+      />
+    </transition>
   </div>
 </template>
 
@@ -227,12 +236,14 @@ import JobsService from 'services/jobs.js'
 import FileService from 'services/file.js'
 import LanguagesService from 'services/languages'
 import { stripXliffTags } from '../utils/segment/segment-text'
+import SettingsPanel from 'components/SettingsPanel'
 export default {
   name: 'Translator',
   components: {
     'translator-toolbox': TranslatorToolbox,
     'translator-segment': TranslatorSegment,
-    'translator-assistant': TranslatorAssistant
+    'translator-assistant': TranslatorAssistant,
+    'settings-panel': SettingsPanel
   },
   data: function () {
     return {
@@ -243,6 +254,7 @@ export default {
       segmentListHeight: 600,
       suggestionsListHeight: 500,
       splitActive: false,
+      settingsOpen: false,
       jobData: {
         id: 0,
         password: '',

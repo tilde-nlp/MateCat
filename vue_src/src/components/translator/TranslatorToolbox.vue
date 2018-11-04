@@ -101,6 +101,18 @@
         :options="downloadOptions"
         @select="download"
       />
+      <div
+        class="icon-span mr-24"
+        @click="() => { $emit('toggleSettings') }"
+      >
+        <svgicon
+          class="svg-icon va-middle"
+          name="cog"
+          height="24"
+        />
+        <div
+          class="link ib">{{ $lang.buttons.settings }}</div>
+      </div>
     </div>
     <div class="tt-triple-container">
       <div class="triple-block right">
