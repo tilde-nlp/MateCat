@@ -274,7 +274,7 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         $thisDao = new self();
         $conn = Database::obtain()->getConnection();
         $stmt = $conn->prepare("SELECT tm_pretranslate, mt_pretranslate, start_tm_pretranslate, start_mt_pretranslate FROM jobs WHERE id = ? ");
-        return $thisDao->setCacheTTL( 0 )->_fetchObject( $stmt, new LoudArray(), [ $job_id ] );
+        return $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $job_id ] );
 
     }
 
@@ -311,7 +311,6 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
     }
 
     public static function removePretranslate($job_id) {
-        self::log_text('Calling remove pretranslate');
         $conn = Database::obtain()->getConnection();
         $stmt = $conn->prepare("UPDATE jobs SET tm_pretranslate = 0, mt_pretranslate = 0 WHERE id = :job_id ");
         $stmt->execute(array('job_id' => $job_id));
@@ -447,11 +446,6 @@ WHERE j.id = ?");
 
 
 
-    }
-
-    protected static function log_text($data) {
-        file_put_contents('/var/tmp/worker.log', $data, FILE_APPEND);
-        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
     }
 
     /**

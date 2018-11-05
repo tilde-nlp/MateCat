@@ -18,8 +18,6 @@ class PretranslateWorker extends AbstractWorker {
      * @throws \Exception
      */
     public function process( AbstractElement $queueElement ) {
-        $this->log_text( 'Processing pretranslate');
-
         /**
          * @var $queueElement QueueElement
          */
@@ -38,14 +36,11 @@ class PretranslateWorker extends AbstractWorker {
      *
      */
     protected function _execContribution( PretranslateStruct $pretranslateStruct ){
-        $threadId = uniqid();
-        $this->log_text($threadId . ': Starting pretranslate thread');
         $emptySegments = \Jobs_JobDao::getEmptySegments(
             $pretranslateStruct->id,
             $pretranslateStruct->password,
             $pretranslateStruct->job_first_segment,
             $pretranslateStruct->job_last_segment);
-        $this->log_text($threadId . ': Empty segments found - ' . count($emptySegments));
         foreach($emptySegments as $segment) {
             $translation = '';
             $type = '';
@@ -68,7 +63,6 @@ class PretranslateWorker extends AbstractWorker {
                         }
                     }
                 } catch (\Unauthorized $e) {
-                    $this->log_text($threadId . ': Refreshing TM token');
                     $refreshData = $this->refreshToken($pretranslateStruct->jwtRefreshToken);
                     $pretranslateStruct->jwtToken = $refreshData->access;
                     $pretranslateStruct->jwtRefreshToken = $refreshData->refresh;
@@ -90,7 +84,7 @@ class PretranslateWorker extends AbstractWorker {
                             }
                         }
                     } catch (\Unauthorized $e2) {
-                        $this->log_text($threadId . ': Can\'t refresh token for second time.');
+                        \Log::doLog('Can\'t refresh token for second time.');
                     }
                 }
             }
@@ -107,9 +101,7 @@ class PretranslateWorker extends AbstractWorker {
 
             \Jobs_JobDao::setTranslation($segment->id, $translation, $match, $type);
         }
-        $this->log_text($threadId . ': Pretranslating done');
         $rowCount = \Jobs_JobDao::removePretranslate($pretranslateStruct->id);
-        $this->log_text($threadId . ': Row count: ' . $rowCount);
     }
 
     private function refreshToken($refreshToken) {

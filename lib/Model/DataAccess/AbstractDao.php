@@ -350,6 +350,14 @@ abstract class DataAccess_AbstractDao {
 
     }
 
+    protected function _fetchObjectNoCache( PDOStatement $stmt, DataAccess_IDaoStruct $fetchClass, Array $bindParams ) {
+        $stmt->setFetchMode( PDO::FETCH_CLASS, get_class( $fetchClass ) );
+        $stmt->execute( $bindParams );
+        $result = $stmt->fetchAll();
+        return $result;
+
+    }
+
     /**
      * @param PDOStatement $stmt
      * @param array        $bindParams
