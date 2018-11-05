@@ -68,6 +68,7 @@ class getVolumeAnalysisController extends ajaxController {
                  $pretranslateStruct->uid = AuthCookie::getCredentials()['uid'];
                  $pretranslateStruct->start();
                  \Jobs_JobDao::removeStartPretranslate($pretranslateStruct->id);
+                 $this->result['data']['summary']['STATUS'] = 'PRETRANSLATING';
              } else if ($pretranslateData['tm_pretranslate'] || $pretranslateData['mt_pretranslate']) {
                  $this->result['data']['summary']['STATUS'] = 'PRETRANSLATING';
              }
