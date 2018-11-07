@@ -8,6 +8,7 @@ use TaskRunner\Commons\AbstractWorker,
 
         TaskRunner\Commons\AbstractElement;
 use Pretranslate\PretranslateStruct;
+use INIT;
 
 class PretranslateWorker extends AbstractWorker {
     private $uid;
@@ -45,6 +46,7 @@ class PretranslateWorker extends AbstractWorker {
             $pretranslateStruct->job_first_segment,
             $pretranslateStruct->job_last_segment);
         $this->log_text($this->uid . ' worker: Empty segments found: ' . count($emptySegments));
+        $refreshData = $this->refreshToken($pretranslateStruct->jwtRefreshToken);
 
         foreach($emptySegments as $segment) {
             $translation = '';
@@ -136,7 +138,7 @@ class PretranslateWorker extends AbstractWorker {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json'));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_URL, INIT::$TOKEN_REFRESH_URL);
+        curl_setopt($curl, CURLOPT_URL, \INIT::$TOKEN_REFRESH_URL);
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl,CURLOPT_POSTFIELDS, json_encode($refreshData));
         curl_setopt($curl, CURLOPT_HEADER  , true);
