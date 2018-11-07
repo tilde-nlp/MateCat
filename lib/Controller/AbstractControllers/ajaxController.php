@@ -71,13 +71,17 @@ abstract class ajaxController extends controller {
     }
 
     protected function log_text($data) {
-        file_put_contents('/var/tmp/matecat_workers.log', $data, FILE_APPEND);
-        file_put_contents('/var/tmp/matecat_workers.log', "\n", FILE_APPEND);
+        $oldFile = \Log::$fileName;
+        \Log::$fileName = 'pretranslate_debug';
+        \Log::doLog($data);
+        \Log::$fileName = $oldFile;
     }
 
     protected function log($data) {
-        file_put_contents('/var/tmp/matecat_workers.log', var_export($data, true), FILE_APPEND);
-        file_put_contents('/var/tmp/matecat_workers.log', "\n", FILE_APPEND);
+        $oldFile = \Log::$fileName;
+        \Log::$fileName = 'pretranslate_debug';
+        \Log::doLog($data);
+        \Log::$fileName = $oldFile;
     }
 
 }
