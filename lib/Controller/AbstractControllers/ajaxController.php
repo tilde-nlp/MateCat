@@ -70,4 +70,14 @@ abstract class ajaxController extends controller {
         @list( $this->id_segment, $this->split_num ) = explode( "-", $this->id_segment );
     }
 
+    protected function log_text($data) {
+        file_put_contents('/var/tmp/matecat_workers.log', $data, FILE_APPEND);
+        file_put_contents('/var/tmp/matecat_workers.log', "\n", FILE_APPEND);
+    }
+
+    protected function log($data) {
+        file_put_contents('/var/tmp/matecat_workers.log', var_export($data, true), FILE_APPEND);
+        file_put_contents('/var/tmp/matecat_workers.log', "\n", FILE_APPEND);
+    }
+
 }

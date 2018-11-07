@@ -10,6 +10,7 @@ use TaskRunner\Commons\AbstractWorker,
 use Pretranslate\PretranslateStruct;
 
 class PretranslateWorker extends AbstractWorker {
+    private $uid;
 
     /**
      * @param AbstractElement $queueElement
@@ -18,6 +19,8 @@ class PretranslateWorker extends AbstractWorker {
      * @throws \Exception
      */
     public function process( AbstractElement $queueElement ) {
+        $this->uid = uniqid();
+        $this->log_text($this->uid . ' worker: Starting up');
         /**
          * @var $queueElement QueueElement
          */
@@ -41,11 +44,16 @@ class PretranslateWorker extends AbstractWorker {
             $pretranslateStruct->password,
             $pretranslateStruct->job_first_segment,
             $pretranslateStruct->job_last_segment);
+        $this->log_text($this->uid . ' worker: Empty segments found: ' . count($emptySegments));
+
         foreach($emptySegments as $segment) {
             $translation = '';
             $type = '';
             $match = '';
+            $this->log_text($this->uid . ' worker: Processing segment: ');
+            $this->log($segment);
             if ($pretranslateStruct->useTm) {
+                $this->log_text($this->uid . ' worker: Using TM');
                 try {
                     $tms_match = \TildeTM::getContributionsAsync(
                         $pretranslateStruct->uid,
@@ -57,13 +65,18 @@ class PretranslateWorker extends AbstractWorker {
                     if (!empty($tms_match)) {
                         usort($tms_match, array( "getContributionController", "__compareScore" ));
                         if (intval($tms_match[0]['match']) >= 100) {
+                            $this->log_text($this->uid . ' worker: Setting TM match: ');
+                            $this->log($tms_match[0]);
                             $translation = $tms_match[0]['translation'];
                             $match = $tms_match[0]['match'];
                             $type = 'TM';
                         }
                     }
                 } catch (\Unauthorized $e) {
+                    $this->log_text($this->uid . ' worker: Caught unauthorized.');
                     $refreshData = $this->refreshToken($pretranslateStruct->jwtRefreshToken);
+                    $this->log_text($this->uid . ' worker: Token refresh data: ');
+                    $this->log($refreshData);
                     $pretranslateStruct->jwtToken = $refreshData->access;
                     $pretranslateStruct->jwtRefreshToken = $refreshData->refresh;
 
@@ -74,34 +87,47 @@ class PretranslateWorker extends AbstractWorker {
                             $segment->segment,
                             $pretranslateStruct->source,
                             $pretranslateStruct->target);
-
-                        if (!empty($tms_match)) {
+                        $this->log_text($this->uid . ' worker: Matches after refreshing token: ');
+                        $this->log($tms_match);
+                        if (!empty($tms_match[0])) {
                             usort($tms_match, array( "getContributionController", "__compareScore" ));
                             if (intval($tms_match[0]['match']) >= 100) {
+                                $this->log_text($this->uid . ' worker: Setting TM match: ');
+                                $this->log($tms_match[0]);
                                 $translation = $tms_match[0]['translation'];
                                 $match = $tms_match[0]['match'];
                                 $type = 'TM';
                             }
                         }
                     } catch (\Unauthorized $e2) {
+                        $this->log_text($this->uid . ' worker: Caught second Unauthorized in a row.');
                         \Log::doLog('Can\'t refresh token for second time.');
                     }
                 }
             }
             if (empty($translation) && $pretranslateStruct->useMt) {
+                $this->log_text($this->uid . ' worker: Using MT');
                 $mt_match = \LetsMTLite::getMatch($pretranslateStruct->mtSystem, $segment->segment);
-                $translation = $mt_match[0]['translation'];
-                $match = 70;
-                $type = 'MT';
+                if (!empty($mt_match[0])) {
+                    $translation = $mt_match[0]['translation'];
+                    $this->log_text($this->uid . ' worker: Setting MT match: ');
+                    $this->log($mt_match[0]);
+                    $match = 70;
+                    $type = 'MT';
+                }
             }
 
             if (empty($translation)) {
+                $this->log_text($this->uid . ' worker: Didn\'t found match.');
                 continue;
             }
 
-            \Jobs_JobDao::setTranslation($segment->id, $translation, $match, $type);
+            $rowCount = \Jobs_JobDao::setTranslation($segment->id, $translation, $match, $type);
+            $this->log_text($this->uid . ' worker: Row count of setting translation: ' . $rowCount);
+
         }
         $rowCount = \Jobs_JobDao::removePretranslate($pretranslateStruct->id);
+        $this->log_text($this->uid . ' worker: Row count of clearing tm and mt flags: ' . $rowCount);
     }
 
     private function refreshToken($refreshToken) {

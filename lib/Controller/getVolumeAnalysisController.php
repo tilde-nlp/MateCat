@@ -46,9 +46,13 @@ class getVolumeAnalysisController extends ajaxController {
         $this->result = $analysisStatus->fetchData()->getResult();
 
         if (isset($this->result['data']['summary']['STATUS']) && $this->result['data']['summary']['STATUS'] === 'DONE') {
+            $this->log_text('Status DONE, checking pretranslate status.');
             $data = $this->result['data'];
             $pretranslateData = array_pop(\Jobs_JobDao::getPretranslateData($data['job_id']));
+            $this->log_text('Pretranslate data from db.');
+            $this->log($pretranslateData);
              if ($pretranslateData['start_tm_pretranslate'] || $pretranslateData['start_mt_pretranslate']) {
+                 $this->log_text('Queuing pretranslate worker.');
                  $jobData = array_pop(Jobs_JobDao::getById($data['job_id']));
                  $mtSystem = array_pop(Jobs_JobDao::getMtSystem($data['project_id']));
 
@@ -66,11 +70,15 @@ class getVolumeAnalysisController extends ajaxController {
                  $pretranslateStruct->jwtToken = AuthCookie::getTokenFromCookie();
                  $pretranslateStruct->jwtRefreshToken = AuthCookie::getRefreshTokenFromCookie();
                  $pretranslateStruct->uid = AuthCookie::getCredentials()['uid'];
+                 $this->log_text('Pretranslate struct for worker.');
+                 $this->log($pretranslateStruct);
                  $pretranslateStruct->start();
-                 \Jobs_JobDao::removeStartPretranslate($pretranslateStruct->id);
+                 $rowCount = \Jobs_JobDao::removeStartPretranslate($pretranslateStruct->id);
+                 $this->log_text('Affected row for clearing start_xx_pretranslate: ' . $rowCount);
                  $this->result['data']['summary']['STATUS'] = 'PRETRANSLATING';
              } else if ($pretranslateData['tm_pretranslate'] || $pretranslateData['mt_pretranslate']) {
                  $this->result['data']['summary']['STATUS'] = 'PRETRANSLATING';
+                 $this->log_text('Still pretranslating.');
              }
         }
     }
