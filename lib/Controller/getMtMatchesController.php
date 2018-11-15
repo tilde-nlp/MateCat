@@ -30,7 +30,7 @@ class getMtMatchesController extends ajaxController
 
     function doAction()
     {
-        $matches = \LetsMTLite::getMatch($this->mt_id, $this->text);
+        $matches = \LetsMTLite::getMatch($this->mt_id, $this->text, AuthCookie::getToken());
         if (empty($matches[0])) {
             $this->result[ 'data' ] = [];
             return;

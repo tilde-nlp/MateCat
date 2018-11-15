@@ -16,9 +16,7 @@ export default {
     return HTTP.get(CONFIG.baseUrl + '?action=getLanguages')
   },
   getSubjectsList: function (lang) {
-    return HTTP.get(CONFIG.mtBaseUrl + 'GetSystemList?appID=' + CONFIG.mtAppId + '&uiLanguageID=' + lang + '&options=public', {
-      headers: { 'client-id': CONFIG.mtClientId }
-    })
+    return HTTP.get(CONFIG.baseUrl + '?action=getMachineTranslators&lang=' + lang)
   },
   saveMtSystem: function (data) {
     return HTTP.post(CONFIG.baseUrl + '?action=saveMtSystem', FormGenerator.generateForm(data))

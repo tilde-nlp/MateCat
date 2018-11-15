@@ -6,12 +6,12 @@
  * Simple class that provides the most basic interface with https://www.letsmt.eu
  */
 class LetsMTLite {
-    private $clientId;
+    private $jwt;
     private $baseUrl;
     private $appId;
 
-    public static function getMatch($mtSystem, $text) {
-        $LetsMTLite = new \LetsMTLite(INIT::$MT_BASE_URL, INIT::$MT_CLIENT_ID, INIT::$MT_APP_ID);
+    public static function getMatch($mtSystem, $text, $jwt) {
+        $LetsMTLite = new \LetsMTLite(INIT::$MT_BASE_URL, $jwt, INIT::$MT_APP_ID);
         $letsmtTranslation = $LetsMTLite->translate($mtSystem, $text);
         $matches = [];
         if ( !empty( $letsmtTranslation ) && $letsmtTranslation->translation != null ) {
@@ -28,15 +28,15 @@ class LetsMTLite {
         return $matches;
     }
 
-    public function __construct($baseUrl, $clientId, $appId)
+    public function __construct($baseUrl, $jwt, $appId)
     {
-        $this->clientId = $clientId;
         $this->baseUrl = $baseUrl;
         $this->appId = $appId;
+        $this->jwt = $jwt;
     }
 
-    public function getSystems() {
-        return $this->get('GetSystemList?appID=' . $this->appId . '&options=public');
+    public function getSystems($lang = 'en') {
+        return $this->get('GetSystemList?appID=' . $this->appId . '&options=public&uiLanguage=' . $lang);
     }
 
     public function translate($systemId, $text) {
@@ -50,36 +50,32 @@ class LetsMTLite {
     }
 
     protected function get($request) {
-        // Get cURL resource
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'client-id: ' . $this->clientId));
-        // Will return the response, if false it print the response
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'Authorization: Bearer ' . $this->jwt));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POST, 1);
-        // Set the url
         curl_setopt($curl, CURLOPT_URL,$this->baseUrl . $request);
-        // Send the request & save response to $resp
-        $resp = curl_exec($curl);
-        // Close request to clear up some resources
+        $response = curl_exec($curl);
         curl_close($curl);
-        return json_decode($resp);
+        return json_decode($response);
     }
 
-
     protected function post($request, $data) {
-        // Get cURL resource
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'client-id: ' . $this->clientId));
-        // Will return the response, if false it print the response
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'Authorization: Bearer ' . $this->jwt));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        // Set the url
         curl_setopt($curl, CURLOPT_URL,$this->baseUrl . $request);
         curl_setopt($curl,CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($curl, CURLOPT_HEADER  , true);
 
-        // Send the request & save response to $resp
-        $resp = curl_exec($curl);
-        // Close request to clear up some resources
+        $response = curl_exec($curl);
+        $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+        $header = substr($response, 0, $header_size);
+        $body = substr($response, $header_size);
+        $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
-        return json_decode($resp);
+        if ($httpcode == 401) {
+            throw new Unauthorized();
+        }
+        return json_decode($body);
     }
 }

@@ -183,10 +183,6 @@ class TildeTM {
         $body = substr($response, $header_size);
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
-//        $this->log($this->token);
-//        $this->log_text('Curl code: ');
-//        $this->log($httpcode);
-//        $this->log($body);
         if ($httpcode == 401) {
             throw new Unauthorized();
         }
