@@ -26,7 +26,7 @@ class MembershipDao extends \DataAccess_AbstractDao {
 
     protected static $_query_team_from_uid_and_id = " SELECT teams.* FROM teams
               JOIN teams_users ON teams_users.id_team = teams.id
-            WHERE teams_users.uid = ? AND teams.id = ?
+            WHERE teams_users.uid = ?
             ";
 
     protected static $_query_user_teams = " 
@@ -103,7 +103,7 @@ class MembershipDao extends \DataAccess_AbstractDao {
      */
     public function findTeamByIdAndUser( $id, \Users_UserStruct $user ) {
         $stmt = $this->_getStatementForCache( self::$_query_team_from_uid_and_id );
-        return static::resultOrNull( $this->_fetchObject( $stmt, ( new TeamStruct() ), [ $user->uid, $id ] )[ 0 ] );
+        return static::resultOrNull( $this->_fetchObject( $stmt, ( new TeamStruct() ), [ $user->uid ] )[ 0 ] );
     }
 
     /**
@@ -116,7 +116,7 @@ class MembershipDao extends \DataAccess_AbstractDao {
      */
     public function destroyCacheTeamByIdAndUser( $id, \Users_UserStruct $user ) {
         $stmt = $this->_getStatementForCache( self::$_query_team_from_uid_and_id );
-        return $this->_destroyObjectCache( $stmt, [ $user->uid, $id ] );
+        return $this->_destroyObjectCache( $stmt, [ $user->uid] );
     }
 
     /**

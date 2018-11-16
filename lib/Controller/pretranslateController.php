@@ -47,6 +47,7 @@ class pretranslateController {
             $pretranslateStruct->jwtRefreshToken = AuthCookie::getRefreshTokenFromCookie();
             $pretranslateStruct->uid = AuthCookie::getCredentials()['uid'];
             $pretranslateStruct->start();
+            $rowCount = \Jobs_JobDao::setPretranslating($pretranslateStruct->id, $this->useTm ? 1 : 0, $this->useMt ? 1 : 0);
         }
 
         echo json_encode([]);

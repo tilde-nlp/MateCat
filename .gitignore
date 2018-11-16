@@ -2,6 +2,7 @@
 .settings
 .idea
 .project
+.vscode
 nbproject/
 
 
