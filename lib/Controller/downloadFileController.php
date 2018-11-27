@@ -12,6 +12,7 @@ class downloadFileController extends downloadController {
     protected $jobInfo;
     protected $forceXliff;
     protected $downloadToken;
+    protected $jwt;
 
     /**
      * @var GDrive\RemoteFileService
@@ -39,6 +40,7 @@ class downloadFileController extends downloadController {
                 ],
                 'id_file'       => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
                 'id_job'        => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
+                'jwt'        => [ 'filter' => FILTER_UNSAFE_RAW ],
                 'download_type' => [
                         'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
                 ],
@@ -61,6 +63,9 @@ class downloadFileController extends downloadController {
         $this->download_type = $__postInput[ 'download_type' ];
         $this->password      = $__postInput[ 'password' ];
         $this->downloadToken = $__postInput[ 'downloadToken' ];
+        $this->jwt = $__postInput['jwt'];
+
+        AuthCookie::getCredentialsFromCookie($this->jwt);
 
         $this->forceXliff        = ( isset( $__postInput[ 'forceXliff' ] ) && !empty( $__postInput[ 'forceXliff' ] ) && $__postInput[ 'forceXliff' ] == 1 );
         $this->openOriginalFiles = ( isset( $__postInput[ 'original' ] ) && !empty( $__postInput[ 'original' ] ) && $__postInput[ 'original' ] == 1 );
@@ -396,7 +401,7 @@ class downloadFileController extends downloadController {
     }
 
     public function setUserCredentials() {
-        $username_from_cookie = AuthCookie::getCredentialsFromCookie();
+        $username_from_cookie = AuthCookie::getCredentialsFromCookie($this->jwt);
         $this->user        = new Users_UserStruct();
         if ( $username_from_cookie ) {
             $_SESSION[ 'cid' ] = $username_from_cookie['username'];

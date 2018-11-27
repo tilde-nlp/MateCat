@@ -10,6 +10,7 @@ class downloadOriginalController extends downloadController {
     private $download_type;
     private $id_file;
     private $id_project;
+    private $jwt;
 
     public function __construct() {
 
@@ -20,6 +21,8 @@ class downloadOriginalController extends downloadController {
                 ),
                 'id_file'       => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
                 'id_job'        => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
+                'jwt'        => [ 'filter' => FILTER_UNSAFE_RAW ],
+
                 'download_type' => array(
                         'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
                 ),
@@ -39,6 +42,9 @@ class downloadOriginalController extends downloadController {
         $this->id_job        = $__postInput[ 'id_job' ];
         $this->download_type = $__postInput[ 'download_type' ];
         $this->password      = $__postInput[ 'password' ];
+        $this->jwt = $__postInput['jwt'];
+
+        AuthCookie::getCredentialsFromCookie($this->jwt);
 
     }
 
@@ -124,7 +130,7 @@ class downloadOriginalController extends downloadController {
     }
 
     public function setUserCredentials() {
-        $username_from_cookie = AuthCookie::getCredentialsFromCookie();
+        $username_from_cookie = AuthCookie::getCredentialsFromCookie($this->jwt);
         $this->user        = new Users_UserStruct();
         if ( $username_from_cookie ) {
             $_SESSION[ 'cid' ] = $username_from_cookie['username'];

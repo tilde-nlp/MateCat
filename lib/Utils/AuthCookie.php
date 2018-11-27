@@ -15,9 +15,8 @@ class AuthCookie {
         return $payload;
     }
 
-    public static function getCredentialsFromCookie() {
-        $payload = self::getDataFromCookie();
-        return $payload;
+    public static function getCredentialsFromCookie($jwt) {
+        return AuthCookie::getData($jwt);
     }
 
     public static function getToken() {
@@ -26,20 +25,6 @@ class AuthCookie {
         $headers = apache_request_headers();
         if ( isset( $headers['Authorization'] ) and !empty( $headers['Authorization'] ) ) {
             $jwtToken = str_replace('Bearer ', '', $headers['Authorization']);
-        }
-
-        if ($jwtToken === '' && INIT::$DEV_MODE) {
-            $jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2YWx0ZXJzLnNpY3NAdGlsZGUubHYiLCJncnAiOiJ0ZXN0ZXJUaWxkZUBnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiVmFsdGVycyIsInJvbGVzIjpbImFkbSIsInRtYWRtIl0sImp0aSI6IjRhMGY2MmUwLTBhYjMtNDI2MC05NmI0LTZkMmI1NjdmNGM0ZiIsIm5iZiI6MTUzMzYzMDI5MCwiZXhwIjoxNTM4OTAwNjkwLCJpc3MiOiJMZXRzTVRTZXJ2aWNlIn0.0yqkUSkSaxvHNnVzG83in2Qq_tunTv2iXm1kcdnhClU';
-        }
-
-        return $jwtToken;
-    }
-
-    public static function getTokenFromCookie() {
-        $jwtToken = '';
-
-        if ( isset( $_COOKIE['jwt'] ) and !empty( $_COOKIE['jwt'] ) ) {
-            $jwtToken = $_COOKIE['jwt'];
         }
 
         if ($jwtToken === '' && INIT::$DEV_MODE) {
@@ -67,11 +52,6 @@ class AuthCookie {
      */
     private static function getDataFromHeader() {
         $jwtToken = AuthCookie::getToken();
-        return AuthCookie::getData($jwtToken);
-    }
-
-    private static function getDataFromCookie() {
-        $jwtToken = AuthCookie::getTokenFromCookie();
         return AuthCookie::getData($jwtToken);
     }
 
