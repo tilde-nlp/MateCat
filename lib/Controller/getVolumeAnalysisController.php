@@ -63,8 +63,8 @@ class getVolumeAnalysisController extends ajaxController {
                  $pretranslateStruct->source = $jobData->source;
                  $pretranslateStruct->target = $jobData->target;
                  $pretranslateStruct->mtSystem = $mtSystem['mt_system_id'];
-                 $pretranslateStruct->jwtToken = AuthCookie::getTokenFromCookie();
-                 $pretranslateStruct->jwtRefreshToken = AuthCookie::getRefreshTokenFromCookie();
+                 $pretranslateStruct->jwtToken = AuthCookie::getToken();
+                 $pretranslateStruct->jwtRefreshToken = AuthCookie::getRefreshToken();
                  $pretranslateStruct->uid = AuthCookie::getCredentials()['uid'];
                  $pretranslateStruct->start();
                  $rowCount = \Jobs_JobDao::removeStartPretranslate($pretranslateStruct->id);

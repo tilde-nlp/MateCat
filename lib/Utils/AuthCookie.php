@@ -49,14 +49,15 @@ class AuthCookie {
         return $jwtToken;
     }
 
-    public static function getRefreshTokenFromCookie() {
-        $jwtToken = '';
+    public static function getRefreshToken() {
+        $refreshToken = '';
 
-        if ( isset( $_COOKIE['refresh'] ) and !empty( $_COOKIE['refresh'] ) ) {
-            $jwtToken = $_COOKIE['refresh'];
+        $headers = apache_request_headers();
+        if ( isset( $headers['Refresh'] ) and !empty( $headers['Refresh'] ) ) {
+            $refreshToken = $headers['Refresh'];
         }
 
-        return $jwtToken;
+        return $refreshToken;
     }
 
     /**
