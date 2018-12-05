@@ -121,7 +121,7 @@ class FastAnalysis extends AbstractDaemon {
      * @return void
      */
     public function main( $args = null ) {
-
+        // $this->log_text("Start analysis");
         do {
 
             try {
@@ -148,12 +148,12 @@ class FastAnalysis extends AbstractDaemon {
                 $pid = $this->actual_project_row[ 'id' ];
                 self::_TimeStampMsg( "Analyzing $pid, querying data..." );
 
-                $perform_Tms_Analysis = true;
+                $perform_Tms_Analysis = false;
                 $status               = ProjectStatus::STATUS_FAST_OK;
 
                 // disable TM analysis
 
-                $disable_Tms_Analysis = $this->actual_project_row[ 'id_tms' ] == 0 && $this->actual_project_row[ 'id_mt_engine' ] == 0 ;
+                $disable_Tms_Analysis = true;
                 
                 if ( $disable_Tms_Analysis ) {
 
@@ -167,8 +167,7 @@ class FastAnalysis extends AbstractDaemon {
                 }
 
                 try {
-                    $fastReport = $this->_fetchMyMemoryFast( $pid );
-                    self::_TimeStampMsg( "Fast $pid result: " . count( $fastReport->responseData ) . " segments." );
+                    $this->_fetchFast( $pid );
                 } catch ( Exception $e ) {
                     if( $e->getCode() == self::ERR_TOO_LARGE ){
                         self::_updateProject( $pid, ProjectStatus::STATUS_NOT_TO_ANALYZE );
@@ -185,25 +184,6 @@ class FastAnalysis extends AbstractDaemon {
                     }
                 }
 
-                if ( $fastReport->responseStatus == 200 ) {
-                    $fastResultData = $fastReport->responseData;
-                } else {
-                    self::_TimeStampMsg( "Pid $pid failed fast analysis." );
-                    $fastResultData = array();
-                }
-
-                unset( $fastReport );
-
-                foreach ( $fastResultData as $k => $v ) {
-
-                    if ( in_array( $v[ 'type' ], array( "50%-74%" ) ) ) {
-                        $fastResultData[ $k ][ 'type' ] = "NO_MATCH";
-                    }
-
-                    $this->segments[ $this->segment_hashes[ $k ] ][ 'wc' ]         = $fastResultData[ $k ][ 'wc' ];
-                    $this->segments[ $this->segment_hashes[ $k ] ][ 'match_type' ] = strtoupper( $fastResultData[ $k ][ 'type' ] );
-
-                }
                 //clean the reverse lookup array
                 $this->segment_hashes = null;
 
@@ -247,20 +227,13 @@ class FastAnalysis extends AbstractDaemon {
      * @return \Engines_Results_MyMemory_AnalyzeResponse
      * @throws Exception
      */
-    protected function _fetchMyMemoryFast( $pid ) {
-
-        /**
-         * @var $myMemory \Engines_MyMemory
-         */
-        $myMemory = Engine::getInstance( 1 /* MyMemory */ );
-
+    protected function _fetchFast( $pid ) {
         try {
 
             self::_TimeStampMsg( "Fetching data from disk" );
             $this->segments = FilesStorage::getFastAnalysisData( $pid );
 
         } catch ( UnexpectedValueException $e ) {
-
             self::_TimeStampMsg( "Error Fetching data from disk. Fallback to database." );
 
             try {
@@ -268,19 +241,6 @@ class FastAnalysis extends AbstractDaemon {
             } catch ( PDOException $e ) {
                 throw new Exception( "Error Fetching data for Project. Too large. Skip.", self::ERR_TOO_LARGE );
             }
-
-        }
-
-        if ( count( $this->segments ) == 0 ) {
-            //there is no analysis on that file, it is ALL Pre-Translated
-            $exceptionMsg = 'There is no analysis on that file, it is ALL Pre-Translated';
-            self::_TimeStampMsg( $exceptionMsg );
-            throw new Exception( $exceptionMsg, self::ERR_NO_SEGMENTS );
-        }
-
-        //TODO Remove when MyMemory FastAnalysis will be rewritten
-        if( count( $this->segments ) > 100000 ){
-            throw new Exception( "Project too large. Skip.", self::ERR_TOO_LARGE );
         }
 
         //compose a lookup array
@@ -301,25 +261,6 @@ class FastAnalysis extends AbstractDaemon {
 
         self::_TimeStampMsg( "Done." );
         self::_TimeStampMsg( "Pid $pid: " . count( $this->segments ) . " segments" );
-        self::_TimeStampMsg( "Sending query to MyMemory analysis..." );
-
-        $myMemory->doLog = true; //tell to the engine to not log the output
-
-        /**
-         * @var $result \Engines_Results_MyMemory_AnalyzeResponse
-         */
-        $result = $myMemory->fastAnalysis( $fastSegmentsRequest );
-
-        if ( isset( $result->error->code ) && $result->error->code == -28 ) { //curl timed out
-            throw new Exception( "MyMemory Fast Analysis Failed. {$result->error->message}", self::ERR_TOO_LARGE );
-        } elseif ( $result->responseStatus == 500 ) {
-            throw new Exception("MyMemory Internal Server Error. Pid: " . $pid , self::ERR_500 );
-        } elseif( !empty( $fastSegmentsRequest ) && empty( $result->responseData )) {
-            throw new Exception("MyMemory Fast Analysis Failed. Pid: " . $pid , self::ERR_EMPTY_RESPONSE );
-        }
-
-        return $result;
-
     }
 
     public static function sigSwitch( $sig_no ) {
@@ -379,7 +320,7 @@ class FastAnalysis extends AbstractDaemon {
      * @return mixed
      * @throws Exception
      */
-    protected function _insertFastAnalysis( $pid, $equivalentWordMapping, $perform_Tms_Analysis = true ) {
+    protected function _insertFastAnalysis( $pid, $equivalentWordMapping, $perform_Tms_Analysis = false ) {
 
         /**
          * Ensure we have fresh data from master node
