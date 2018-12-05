@@ -1,6 +1,6 @@
 <?php
 
-class getProfileController {
+class getProfileController extends ajaxController {
     public function doAction() {
         $userData = AuthCookie::getCredentials();
         $UserDao = new Users_UserDao();
