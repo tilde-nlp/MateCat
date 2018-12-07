@@ -101,10 +101,11 @@ class UploadHandler {
         // param_name is an array identifier like "files[]",
         // $_FILES is a multi-dimensional array:
         foreach ( $upload[ 'tmp_name' ] as $index => $value ) {
-            $this->file_name = $upload[ 'name' ][ $index ];
+            $convertedName = $this->checkBase64($upload[ 'name' ][ $index ]);
+            $this->file_name = $convertedName;
             $info[] = $this->handle_file_upload(
                 $upload[ 'tmp_name' ][ $index ],
-                $upload[ 'name' ][ $index ],
+                $convertedName,
                 $upload[ 'size' ][ $index ],
                 $upload[ 'type' ][ $index ],
                 $upload[ 'error' ][ $index ],
@@ -229,9 +230,6 @@ class UploadHandler {
         $this->uploadLog('Working on file: ' . $name);
         Log::$fileName = "upload.log";
         Log::doLog( $uploaded_file );
-
-        $name = $this->checkBase64($name);
-        $this->uploadLog('Name after base 64 convert: ' . $name);
 
         $file       = new stdClass();
         $file->name = $this->trim_file_name( $name );
