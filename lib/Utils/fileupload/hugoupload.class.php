@@ -91,13 +91,10 @@ class UploadHandler {
     }
 
     public function post() {
-        
         if ( isset( $_REQUEST[ '_method' ] ) && $_REQUEST[ '_method' ] === 'DELETE' ) {
             return $this->delete();
         }
-
-
-
+        
         $upload = isset( $_FILES[ $this->options[ 'param_name' ] ] ) ? $_FILES[ $this->options[ 'param_name' ] ] : null;
 
         $info = [];
@@ -231,16 +228,13 @@ class UploadHandler {
         Log::$fileName = "upload.log";
         Log::doLog( $uploaded_file );
 
+        $name = $this->checkBase64($name);
+
         $file       = new stdClass();
         $file->name = $this->trim_file_name( $name );
         $file->size = intval( $size );
         $file->tmp_name = $uploaded_file;
         $file->type = mime_content_type( $file->tmp_name );
-
-        $this->uploadLog('Processing file');
-        $this->uploadLogData($file);
-        $this->uploadLogData($_POST);
-        $this->uploadLogData($_FILES);
 
         if ( $this->validate( $uploaded_file, $file, $error, $index ) ) {
             $destination = $this->options['upload_dir'];
@@ -276,6 +270,20 @@ class UploadHandler {
         }
 
         return $file;
+    }
+
+    private function checkBase64($name) {
+        $b64Start = "=?utf-8?B?";
+        $b64End = "?=";
+        if (substr($name, 0, strlen($b64Start)) === $b64Start &&
+            substr($name, -strlen($b64End)) === $b64End
+        ) {
+            $name = ltrim($name, $b64Start);
+            $name = rtrim($name, $b64End);
+            $name = base64_decode($name);
+        }
+
+        return $name;
     }
 
     public function handle_convert() {
