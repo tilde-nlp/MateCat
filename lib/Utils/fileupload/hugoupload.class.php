@@ -91,7 +91,7 @@ class UploadHandler {
     }
 
     public function post() {
-
+        
         if ( isset( $_REQUEST[ '_method' ] ) && $_REQUEST[ '_method' ] === 'DELETE' ) {
             return $this->delete();
         }
@@ -236,6 +236,11 @@ class UploadHandler {
         $file->size = intval( $size );
         $file->tmp_name = $uploaded_file;
         $file->type = mime_content_type( $file->tmp_name );
+
+        $this->uploadLog('Processing file');
+        $this->uploadLogData($file);
+        $this->uploadLogData($_POST);
+        $this->uploadLogData($_FILES);
 
         if ( $this->validate( $uploaded_file, $file, $error, $index ) ) {
             $destination = $this->options['upload_dir'];
