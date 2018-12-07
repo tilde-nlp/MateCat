@@ -242,8 +242,12 @@ class UploadHandler {
         if ( $this->validate( $uploaded_file, $file, $error, $index ) ) {
             $destination = $this->options['upload_dir'];
             $file->full_path   = $destination . $file->name;
+            $this->uploadLog('Uploaded file');
+            $this->uploadLogData($uploaded_file);
+            $this->uploadLogData($this->full_path);
             $res = move_uploaded_file( $uploaded_file, $file->full_path );
-
+            $this->uploadLog('Move res: ');
+            $this->uploadLogData($res);
             $file_size = filesize( $file->full_path );
             if ( $file_size === $file->size ) {
                 $file->url = $destination . rawurlencode( $file->name );
