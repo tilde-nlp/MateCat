@@ -112,8 +112,6 @@ class UploadHandler {
                 $index
             );
         }
-        $this->uploadLog('Info after all file uploads');
-        $this->uploadLogData($info);
         if (!empty($info[0]->error)) {
             return $this->sendError($info[0]->error);
         }
@@ -227,7 +225,6 @@ class UploadHandler {
     }
 
     protected function handle_file_upload( $uploaded_file, $name, $size, $type, $error, $index = null ) {
-        $this->uploadLog('Working on file: ' . $name);
         Log::$fileName = "upload.log";
         Log::doLog( $uploaded_file );
 
@@ -237,19 +234,11 @@ class UploadHandler {
         $file->tmp_name = $uploaded_file;
         $file->type = mime_content_type( $file->tmp_name );
 
-        $this->uploadLog('Files');
-        $this->uploadLogData($_FILES);
         if ( $this->validate( $uploaded_file, $file, $error, $index ) ) {
             $destination = $this->options['upload_dir'];
             $file->full_path   = $destination . $file->name;
-            $this->uploadLog('Uploaded file');
-            $this->uploadLogData($uploaded_file);
-            $this->uploadLogData($file->full_path);
             $res = move_uploaded_file( $uploaded_file, $file->full_path );
-            $this->uploadLog('Move res: ');
-            $this->uploadLogData($res);
             $file_size = filesize( $file->full_path );
-            $this->uploadLog('Filesize: ' . $file_size);
             if ( $file_size === $file->size ) {
                 $file->url = $destination . rawurlencode( $file->name );
             } else {
@@ -259,8 +248,6 @@ class UploadHandler {
             }
             $file->size = $file_size;
             $this->set_file_delete_url( $file );
-            $this->uploadLog('File after mods');
-            $this->uploadLogData($file);
             //As opposed with isset(), property_exists() returns TRUE even if the property has the value NULL.
             if ( property_exists( $file, 'error' ) ) {
                 $this->uploadLog("File error: " . $file->error);
@@ -341,14 +328,10 @@ class UploadHandler {
         $conversionHandler->setErrDir( $this->errDir );
         $conversionHandler->setFeatures( $this->featureSet );
         $conversionHandler->setUserIsLogged( true );
-        $this->uploadLog('Conversion handler');
-        $this->uploadLogData($conversionHandler);
 
         $conversionHandler->doAction();
 
         $this->result = $conversionHandler->getResult();
-        $this->uploadLog('conversion result');
-        $this->uploadLogData($this->result);
 
         ( isset( $this->result[ 'errors' ] ) ) ? null : $this->result[ 'errors' ] = array();
 
