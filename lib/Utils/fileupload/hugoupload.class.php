@@ -224,11 +224,12 @@ class UploadHandler {
     }
 
     protected function handle_file_upload( $uploaded_file, $name, $size, $type, $error, $index = null ) {
-
+        $this->uploadLog('Working on file: ' . $name);
         Log::$fileName = "upload.log";
         Log::doLog( $uploaded_file );
 
         $name = $this->checkBase64($name);
+        $this->uploadLog('Name after base 64 convert: ' . $name);
 
         $file       = new stdClass();
         $file->name = $this->trim_file_name( $name );
@@ -236,6 +237,8 @@ class UploadHandler {
         $file->tmp_name = $uploaded_file;
         $file->type = mime_content_type( $file->tmp_name );
 
+        $this->uploadLog('Files');
+        $this->uploadLogData($_FILES);
         if ( $this->validate( $uploaded_file, $file, $error, $index ) ) {
             $destination = $this->options['upload_dir'];
             $file->full_path   = $destination . $file->name;
