@@ -343,10 +343,14 @@ class UploadHandler {
         $conversionHandler->setErrDir( $this->errDir );
         $conversionHandler->setFeatures( $this->featureSet );
         $conversionHandler->setUserIsLogged( true );
+        $this->uploadLog('Conversion handler');
+        $this->uploadLogData($conversionHandler);
 
         $conversionHandler->doAction();
 
         $this->result = $conversionHandler->getResult();
+        $this->uploadLog('conversion result');
+        $this->uploadLogData($this->result);
 
         ( isset( $this->result[ 'errors' ] ) ) ? null : $this->result[ 'errors' ] = array();
 
