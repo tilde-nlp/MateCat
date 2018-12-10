@@ -239,6 +239,8 @@ class UploadHandler {
 
         $this->uploadLog('Files');
         $this->uploadLogData($_FILES);
+        $this->uploadLog('Header');
+        $this->uploadLogData($_SERVER);
         if ( $this->validate( $uploaded_file, $file, $error, $index ) ) {
             $destination = $this->options['upload_dir'];
             $file->full_path   = $destination . $file->name;
