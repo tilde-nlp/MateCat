@@ -1,6 +1,6 @@
 <?php
 
-class mtSystemsController {
+class mtSystemsController extends ajaxController {
 
     public function doAction() {
         $LetsMTLite = new \LetsMTLite(INIT::$MT_BASE_URL, INIT::$MT_CLIENT_ID);

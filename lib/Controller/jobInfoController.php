@@ -1,6 +1,6 @@
 <?php
 
-class jobInfoController {
+class jobInfoController extends ajaxController {
 
     private $id;
     private $password;

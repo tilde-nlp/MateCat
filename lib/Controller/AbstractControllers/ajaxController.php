@@ -27,7 +27,6 @@ abstract class ajaxController extends controller {
      * Class constructor, initialize the header content type.
      */
     protected function __construct() {
-        $this->nocache();
         $buffer = ob_get_contents();
         ob_get_clean();
         // ob_start("ob_gzhandler");        // compress page before sending //Not supported for json response on ajax calls
@@ -44,6 +43,7 @@ abstract class ajaxController extends controller {
 		}
 
 		$this->featureSet = new FeatureSet();
+        $this->nocache();
 
     }
 

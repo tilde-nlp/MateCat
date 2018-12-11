@@ -1,7 +1,7 @@
 <?php
 
 use AuthCookie;
-class setEditingTimeController {
+class setEditingTimeController extends ajaxController {
 
     private $id;
     private $editingTime;

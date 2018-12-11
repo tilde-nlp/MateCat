@@ -1,6 +1,6 @@
 <?php
 
-class saveMtSystemController {
+class saveMtSystemController extends ajaxController {
 
     private $id;
     private $systemId;

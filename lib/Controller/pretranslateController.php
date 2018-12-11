@@ -1,6 +1,6 @@
 <?php
 
-class pretranslateController {
+class pretranslateController extends ajaxController {
 
     private $useTm;
     private $useMt;

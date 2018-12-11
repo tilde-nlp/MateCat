@@ -1,7 +1,7 @@
 <?php
 
 use AuthCookie;
-class saveSettingsController {
+class saveSettingsController extends ajaxController {
 
     private $memory_id;
     private $read;
