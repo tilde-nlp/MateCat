@@ -11,11 +11,8 @@ class LetsMTLite {
     private $appId;
 
     public static function getMatch($mtSystem, $text, $jwt) {
-        self::writeLog('Get MT match');
         $LetsMTLite = new \LetsMTLite(INIT::$MT_BASE_URL, $jwt, INIT::$MT_APP_ID);
         $letsmtTranslation = $LetsMTLite->translate($mtSystem, $text);
-        self::writeLog('MT match');
-        self::writeLogData($letsmtTranslation);
         $matches = [];
         if ( !empty( $letsmtTranslation ) && $letsmtTranslation->translation != null ) {
             $matches[] = array(
@@ -49,8 +46,6 @@ class LetsMTLite {
             'systemID' => $systemId,
             'text' => html_entity_decode($text)
         );
-        self::writeLog('Translate segment');
-        self::writeLogData($data);
         return $this->post('TranslateEx', $data);
     }
 
@@ -65,7 +60,6 @@ class LetsMTLite {
     }
 
     protected function post($request, $data) {
-        self::writeLog('MT post: ' . $this->baseUrl . $request);
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'Authorization: Bearer ' . $this->jwt));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -77,27 +71,11 @@ class LetsMTLite {
         $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
         $header = substr($response, 0, $header_size);
         $body = substr($response, $header_size);
-        self::writeLog('MT post response');
-        self::writeLogData($header);
-        self::writeLogData($body);
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
         if ($httpcode == 401) {
             throw new Unauthorized();
         }
         return json_decode($body);
-    }
-
-    private static function writeLog($text)
-    {
-        $oldFileName = \Log::$fileName;
-        \Log::$fileName = "mt-debug.log";
-        \Log::doLog($text);
-        \Log::$fileName = $oldFileName;
-    }
-
-    private static function writeLogData($data)
-    {
-        self::writeLog(var_export($data, true));
     }
 }

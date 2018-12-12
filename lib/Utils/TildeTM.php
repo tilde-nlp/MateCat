@@ -140,7 +140,6 @@ class TildeTM {
     }
 
     public function getMemories() {
-        $this->writeLog('Getting TM list');
         return $this->get('tm');
     }
 
@@ -171,7 +170,6 @@ class TildeTM {
     }
 
     protected function get($request) {
-        $this->writeLog('TM called: ' . $this->baseUrl . $request);
         // Get cURL resource
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'Authorization: Bearer ' . $this->token));
@@ -183,9 +181,6 @@ class TildeTM {
         $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
         $header = substr($response, 0, $header_size);
         $body = substr($response, $header_size);
-        $this->writeLog('TM response');
-        $this->writeLogData($header);
-        $this->writeLogData($body);
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
         if ($httpcode == 401) {
@@ -216,18 +211,5 @@ class TildeTM {
     protected function log($data) {
         file_put_contents('/var/tmp/worker.log', var_export($data, true), FILE_APPEND);
         file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
-    }
-
-    private function writeLog($text)
-    {
-        $oldFileName = Log::$fileName;
-        Log::$fileName = "tm-debug.log";
-        Log::doLog($text);
-        Log::$fileName = $oldFileName;
-    }
-
-    private function writeLogData($data)
-    {
-        $this->writeLog(var_export($data, true));
     }
 }
