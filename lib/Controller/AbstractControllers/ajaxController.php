@@ -70,16 +70,16 @@ abstract class ajaxController extends controller {
         @list( $this->id_segment, $this->split_num ) = explode( "-", $this->id_segment );
     }
 
-    protected function log_text($data) {
+    protected function log_text($data, $name = 'debug') {
         $oldFile = \Log::$fileName;
-        \Log::$fileName = 'pretranslate_debug';
+        \Log::$fileName = $name . '.log';
         \Log::doLog($data);
         \Log::$fileName = $oldFile;
     }
 
-    protected function log($data) {
+    protected function log($data, $name = 'debug') {
         $oldFile = \Log::$fileName;
-        \Log::$fileName = 'pretranslate_debug';
+        \Log::$fileName = $name . '.log';
         \Log::doLog($data);
         \Log::$fileName = $oldFile;
     }

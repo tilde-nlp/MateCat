@@ -24,6 +24,12 @@ class StatsController extends KleinController {
      */
     public function stats() {
 
+        header("Expires: Tue, 03 Jul 2001 06:00:00 GMT");
+        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+        header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+        header("Cache-Control: post-check=0, pre-check=0", false);
+        header("Pragma: no-cache");
+
         $wStruct = new \WordCount_Struct();
 
         $wStruct->setIdJob( $this->chunk->id );
@@ -35,6 +41,9 @@ class StatsController extends KleinController {
         $wStruct->setRejectedWords( $this->chunk->rejected_words );
 
         $job_stats = \CatUtils::getFastStatsForJob( $wStruct );
+        $translatedWords = $this->chunk->translated_words < 0 ? 0 : $this->chunk->translated_words;
+        $totalWords = $this->chunk->total_raw_wc;
+        $job_stats['TRANSLATED_PERC'] = $translatedWords / $totalWords * 100;
 
         $job_stats['ANALYSIS_COMPLETE'] = $this->chunk->getProject()->analysisComplete() ;
 
