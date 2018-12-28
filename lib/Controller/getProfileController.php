@@ -12,6 +12,7 @@ class getProfileController extends ajaxController {
         $user->last_name = $userStruct->last_name;
         $user->mt_pretranslate = $userStruct->mt_pretranslate;
         $user->tm_pretranslate = $userStruct->tm_pretranslate;
+        $user->update_mt = $userStruct->update_mt;
         $user->uid = $userStruct->uid;
         echo json_encode($user);
     }

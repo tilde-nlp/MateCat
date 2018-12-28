@@ -302,6 +302,14 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         return $stmt->rowCount();
     }
 
+    public static function saveUpdateMt($userId, $update_mt) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE users SET update_mt = :update_mt WHERE uid = :user_id ");
+        $stmt->execute(array('user_id' => $userId, 'update_mt' => $update_mt));
+        return $stmt->rowCount();
+    }
+
     public static function saveEditingTime( $job_id, $editingTime, $ttl = 0 ) {
 
         $conn = Database::obtain()->getConnection();

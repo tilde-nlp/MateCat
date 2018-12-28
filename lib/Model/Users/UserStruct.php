@@ -22,6 +22,7 @@ class Users_UserStruct extends DataAccess_AbstractDaoSilentStruct   implements D
     public $pass;
     public $tm_pretranslate;
     public $mt_pretranslate;
+    public $update_mt;
     public $oauth_access_token ;
 
     public $email_confirmed_at ;
