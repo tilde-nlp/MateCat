@@ -49,6 +49,19 @@ class LetsMTLite {
         return $this->post('TranslateEx', $data);
     }
 
+    public function updateMT($systemId, $text, $translation)
+    {
+        $data = array(
+            'appID' => $this->appId,
+            'options' => '',
+            'systemID' => $systemId,
+            'text' => $text,
+            'translation' => $translation
+        );
+
+        return $this->post('UpdateTranslation', $data);
+    }
+
     protected function get($request) {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'Authorization: Bearer ' . $this->jwt));
@@ -77,5 +90,15 @@ class LetsMTLite {
             throw new Unauthorized();
         }
         return json_decode($body);
+    }
+
+    protected function log_text($data) {
+        file_put_contents('/var/tmp/worker.log', $data, FILE_APPEND);
+        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
+    }
+
+    protected function log($data) {
+        file_put_contents('/var/tmp/worker.log', var_export($data, true), FILE_APPEND);
+        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
     }
 }

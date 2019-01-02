@@ -36,6 +36,7 @@ class setTranslationController extends ajaxController {
     protected $chosen_suggestion_index;
     protected $status;
     protected $split_statuses;
+    protected $mtId;
 
     /**
      * @var Jobs_JobStruct
@@ -85,6 +86,7 @@ class setTranslationController extends ajaxController {
                 ],
                 'translation'             => [ 'filter' => FILTER_UNSAFE_RAW ],
                 'segment'                 => [ 'filter' => FILTER_UNSAFE_RAW ],
+                'mtId'                 => [ 'filter' => FILTER_UNSAFE_RAW ],
                 'version'                 => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
                 'chosen_suggestion_index' => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
                 'status'                  => [
@@ -103,6 +105,8 @@ class setTranslationController extends ajaxController {
 
         $this->id_job                = $this->__postInput[ 'id_job' ];
         $this->password              = $this->__postInput[ 'password' ];
+        $this->mtId              = $this->__postInput[ 'mtId' ];
+
 
         /*
          * set by the client, mandatory
@@ -907,6 +911,7 @@ class setTranslationController extends ajaxController {
                 'filterContributionStructOnSetTranslation', $contributionStruct,  $this->project );
 
         $this->writeTM($direction, $contributionStruct);
+        $this->writeMT($contributionStruct);
 
         /** TODO Remove , is only for debug purposes */
         try {
@@ -923,6 +928,26 @@ class setTranslationController extends ajaxController {
 
         $contributionStruct = $this->featureSet->filter( 'filterSetContributionMT', null, $contributionStruct, $this->project ) ;
         Set::contributionMT( $contributionStruct );
+    }
+
+    protected function writeMT($contributionStruct)
+    {
+        if (!in_array( $this->status, array(Constants_TranslationStatus::STATUS_TRANSLATED))) {
+            return;
+        }
+
+        $userData = AuthCookie::getCredentials();
+        $UserDao = new Users_UserDao();
+        $userStruct = $UserDao->getByUid($userData['uid']);
+
+        if ($userStruct->update_mt < 1) {
+            return;
+        }
+
+        $LetsMTLite = new \LetsMTLite(INIT::$MT_BASE_URL, AuthCookie::getToken(), INIT::$MT_APP_ID);
+        $taglessSource = CatUtils::stripTags($contributionStruct->segment);
+        $taglessTarget = CatUtils::stripTags($contributionStruct->translation);
+        $LetsMTLite->updateMT($this->mtId, $taglessSource, $taglessTarget);
     }
 
     /**
