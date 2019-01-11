@@ -946,8 +946,8 @@ class setTranslationController extends ajaxController {
 
         $LetsMTLite = new \LetsMTLite(INIT::$MT_BASE_URL, AuthCookie::getToken(), INIT::$MT_APP_ID);
         $this->log('saving to MT', 'placeholders');
-        $taglessSource = CatUtils::stripTags($contributionStruct->segment);
-        $taglessSource = PlaceholderParser::toSpaces($taglessSource);
+        $taglessSource = PlaceholderParser::toSpaces($contributionStruct->segment);
+        $taglessSource = CatUtils::stripTags($taglessSource);
         $this->log($taglessSource, 'placeholders');
         $taglessTarget = CatUtils::stripTags($contributionStruct->translation);
         $LetsMTLite->updateMT($this->mtId, $taglessSource, $taglessTarget);
