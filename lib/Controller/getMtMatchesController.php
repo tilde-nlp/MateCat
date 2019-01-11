@@ -30,8 +30,11 @@ class getMtMatchesController extends ajaxController
 
     function doAction()
     {
-
-        $matches = \LetsMTLite::getMatch($this->mt_id, PlaceholderParser::toXliff($this->text), AuthCookie::getToken());
+        $parsedText = PlaceholderParser::toXliff($this->text);
+        $this->log('------=======-------', 'placeholders');
+        $this->log($this->text, 'placeholders');
+        $this->log($parsedText, 'placeholders');
+        $matches = \LetsMTLite::getMatch($this->mt_id, $parsedText, AuthCookie::getToken());
         if (empty($matches[0])) {
             $this->result[ 'data' ] = [];
             return;
@@ -42,8 +45,11 @@ class getMtMatchesController extends ajaxController
         $QA = new PostProcess( $match[ 'raw_segment' ], $match[ 'raw_translation' ] );
         $QA->realignMTSpaces();
         $match[ 'raw_translation' ] = $QA->getTrgNormalized();
-        $match[ 'translation' ]     = CatUtils::rawxliff2view( $match[ 'raw_translation' ] );
+        $this->log($match[ 'raw_translation' ], 'placeholders');
+        $match[ 'translation' ] = CatUtils::rawxliff2view( $match[ 'raw_translation' ] );
+        $this->log($match[ 'translation' ], 'placeholders');
         $match[ 'translation' ] = PlaceholderParser::toPlaceholders($match[ 'translation' ]);
+        $this->log($match[ 'translation' ], 'placeholders');
         $match = $this->_matchRewrite( $match );
 
         $this->result[ 'data' ][ 'match' ] = $match;
