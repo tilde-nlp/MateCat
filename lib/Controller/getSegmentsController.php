@@ -87,16 +87,9 @@ class getSegmentsController extends ajaxController {
 
 		if ($this->ref_segment == '') {
 			$this->ref_segment = 0;
-		}
-
-
-        $data = getMoreSegments(
-                $this->jid, $this->password, $this->step,
-                $this->ref_segment, $this->where,
-                $this->getOptionalQueryFields(),
-                $this->searchInSource, $this->searchInTarget,
-                $this->searchInComments
-        );
+        }
+        
+        $data = $this->searchSegments();
 
         $this->prepareNotes( $data );
         $data = $this->prepareComments( $data );
@@ -214,6 +207,96 @@ class getSegmentsController extends ajaxController {
         $this->result['data']['where'] = $this->where;
     }
 
+    private function searchSegments() {
+        $foundSegments = [];
+        $lastSegmentId = $this->ref_segment - 1;
+
+        while(count($foundSegments) < $this->step) {
+            $data = getMoreSegments(
+                $this->jid, $this->password, $this->step,
+                $lastSegmentId + 1, $this->where,
+                $this->getOptionalQueryFields(),
+                $this->searchInSource, $this->searchInTarget,
+                $this->searchInComments
+            );
+            $this->where = 'after';
+            if (empty($data)) {
+                break;
+            }
+            $lastSegmentId = $data[count($data) -1]['sid'];
+
+            $data = $this->stripTagMatches($data);
+            if (empty($data)) {
+                continue;
+            }
+
+            foreach($data as $row) {
+                $foundSegments[] = $row;
+                if (count($foundSegments) == $this->step) {
+                    break;
+                }
+            }
+        }
+
+        return $foundSegments;
+    }
+
+    private function stripTagMatches($data) {
+        if ($this->searchInSource == "" && $this->searchInTarget == "") {
+            return $data;
+        }
+
+        $filteredData = [];
+        foreach($data as $row) {
+            $sourceIsTagged = $this->isSourceTagged($row['segment']);
+            $targetIsTagged = $this->isTargetTagged($row['translation']);
+
+            if ($this->searchInSource != "" && !$sourceIsTagged) {
+                $filteredData[] = $row;
+                continue;
+            }
+
+            if ($this->searchInTarget != "" && !$targetIsTagged) {
+                $filteredData[] = $row;
+            }
+        }
+
+        return $filteredData;
+    }
+
+    private function isSourceTagged($segment) {
+        if ($this->searchInSource == "") {
+            return 0;
+        }
+
+        $taggedMatches = $this->findAllMatches('<' . $this->searchInSource, $segment);
+        $allMatches = $this->findAllMatches($this->searchInSource, $segment);
+
+        return (count($allMatches) == count($taggedMatches));
+    }
+
+    private function isTargetTagged($segment) {
+        if ($this->searchInTarget == "") {
+            return false;
+        }
+
+        $taggedMatches = $this->findAllMatches('<' . $this->searchInTarget, $segment);
+        $allMatches = $this->findAllMatches($this->searchInTarget, $segment);
+
+        return (count($allMatches) == count($taggedMatches));
+    }
+
+    private function findAllMatches($needle, $haystack) {
+        $positions = [];
+        $lastPosition = 0;
+
+        while(($lastPosition = strpos($haystack, $needle, $lastPosition)) !== false) {
+            $positions[] = $lastPosition;
+            $lastPosition += strlen($needle);
+        }
+
+        return $positions;
+    }
 
     private function getOptionalQueryFields() {
         $feature = $this->job->getProject()->isFeatureEnabled('translation_versions');
