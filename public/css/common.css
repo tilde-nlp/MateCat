@@ -193,7 +193,7 @@ footer ul.external-links li:last-child
     float: right;
 }
 
-footer a
+footer a, footer #stat-todo span
 {
     color: #fff;
     text-shadow: none;
@@ -202,7 +202,7 @@ footer a
     cursor: pointer;
 }
 
-footer a:hover
+footer a:hover, footer #stat-todo span:hover
 {
     text-decoration: none;
     color: #ffffff;
@@ -755,7 +755,6 @@ color:#333;}
 	    color: #000 !important;
 	    -webkit-box-shadow: 0 1px 20px #000;
 	    box-shadow: 0 1px 20px #000;
-	    width: 500px;
 	    background: #fff;
 	    /*margin: -200px 0 0 -250px;*/
 	    padding: 0 0px 20px 0px;
@@ -1649,6 +1648,7 @@ select#mt_engine_int {
     width: 100%;
     margin-bottom: 20px;
     border: 1px solid #ccc;
+    border-spacing: 0;
 }
 
 .privatekey .btn-ok {
@@ -3389,13 +3389,16 @@ header .filter:before,
 .canceladd-export-tmx:before,
 .icon-copy-key:before,
 .login-modal .login-container-right li:before,
+body.tagModes:not(.tagmode-default-extended) section[data-tagmode='crunched'] .targetarea .locked.startTag:before,
 body.tagModes:not(.tagmode-default-extended) section[data-tagmode='crunched'] .editarea .locked.startTag:before,
 body.tagModes:not(.tagmode-default-extended) section[data-tagmode='crunched'] .source .locked.startTag:before,
 body.tagModes:not(.tagmode-default-extended) section[data-tagmode='crunched'] .splitArea .locked.startTag:before,
 body.tagModes:not(.tagmode-default-extended) section[data-tagmode='crunched'] .editarea .locked.selfClosingTag:before,
+body.tagModes:not(.tagmode-default-extended) section[data-tagmode='crunched'] .targetarea .locked.selfClosingTag:before,
 body.tagModes:not(.tagmode-default-extended) section[data-tagmode='crunched'] .source .locked.selfClosingTag:before,
 body.tagModes:not(.tagmode-default-extended) section[data-tagmode='crunched'] .splitArea .locked.selfClosingTag:before,
 body.tagModes:not(.tagmode-default-extended) section[data-tagmode='crunched'] .editarea .locked.endTag:before,
+body.tagModes:not(.tagmode-default-extended) section[data-tagmode='crunched'] .targetarea .locked.endTag:before,
 body.tagModes:not(.tagmode-default-extended) section[data-tagmode='crunched'] .source .locked.endTag:before,
 body.tagModes:not(.tagmode-default-extended) section[data-tagmode='crunched'] .splitArea .locked.endTag:before,
 body.tagModes:not(.tagmode-default-extended) section[data-tagmode='crunched'] .suggestion_source .locked.startTag:before,

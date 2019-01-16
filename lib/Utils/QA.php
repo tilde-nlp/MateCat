@@ -322,7 +322,7 @@ class QA {
          *  3 =>  'bad target xml',
          */
         29 => "Should be < g ... > ... < /g >",
-        1000 => "Press the < key to add tags."
+        1000 => "Press the < key to add tags or delete extra tags."
 
     );
 
@@ -1248,7 +1248,7 @@ class QA {
 //        Log::doLog($closing_malformedXmlTrgStruct);
 
         foreach ( $open_malformedXmlTrgStruct as $pos => $tag ) {
-            if ( trim( $open_malformedXmlSrcStruct[ $pos ] ) != trim( $tag ) ) {
+            if ( str_replace(" ", "", $open_malformedXmlSrcStruct[ $pos ] ) != str_replace(" ", "", $tag ) ) {
                 $this->_addError( self::ERR_TAG_ORDER );
                 $this->tagPositionError[] = CatUtils::restore_xliff_tags_for_view( $complete_malformedTrgStruct[ $pos ] );
 
@@ -1257,7 +1257,7 @@ class QA {
         }
 
         foreach ( $closing_malformedXmlTrgStruct as $pos => $tag ) {
-            if ( trim( $closing_malformedXmlSrcStruct[ $pos ] ) != trim( $tag ) ) {
+            if ( str_replace(" ", "", $closing_malformedXmlSrcStruct[ $pos ] ) != str_replace(" ", "", $tag ) ) {
                 $this->_addError( self::ERR_TAG_ORDER );
                 $this->tagPositionError[] = CatUtils::restore_xliff_tags_for_view( $complete_malformedTrgStruct[ $pos ] );
 
@@ -1273,7 +1273,7 @@ class QA {
         $selfClosingTags_src = $selfClosingTags_src[ 1 ];
         $selfClosingTags_trg = $selfClosingTags_trg[ 1 ];
         foreach ( $selfClosingTags_trg as $pos => $tag ) {
-            if ( trim( $selfClosingTags_src[ $pos ] ) != trim( $tag ) ) {
+            if ( str_replace(" ", "", $selfClosingTags_src[ $pos ] ) != str_replace(" ", "", $tag ) ) {
                 $this->_addError( self::ERR_TAG_ORDER );
                 $this->tagPositionError[] = CatUtils::restore_xliff_tags_for_view( $selfClosingTags_trg[ $pos ] );
 
@@ -1306,8 +1306,8 @@ class QA {
         //</g> ...
         // <g ... >
         // <x ... />
-        preg_match_all( '#</g>[\s\t\x{a0}\r\n]+|[\s\t\x{a0}\r\n]+<(?:(?:x|ph)[^>]+|[^/>]+)>#u', rtrim( $this->source_seg ), $source_tags );
-        preg_match_all( '#</g>[\s\t\x{a0}\r\n]+|[\s\t\x{a0}\r\n]+<(?:(?:x|ph)[^>]+|[^/>]+)>#u', rtrim( $this->target_seg ), $target_tags );
+        preg_match_all( '#</g>[\s\t\x{a0}\r\n\.\,\;\!\?]+|[\s\t\x{a0}\r\n]+<(?:(?:x|ph)[^>]+|[^/>]+)>#u', rtrim( $this->source_seg ), $source_tags );
+        preg_match_all( '#</g>[\s\t\x{a0}\r\n\.\,\;\!\?]+|[\s\t\x{a0}\r\n]+<(?:(?:x|ph)[^>]+|[^/>]+)>#u', rtrim( $this->target_seg ), $target_tags );
 //        preg_match_all('#[\s\t\x{a0}\r\n]+<(?:x[^>]+|[^/>]+)>#u', rtrim($this->source_seg), $source_tags);
 //        preg_match_all('#[\s\t\x{a0}\r\n]+<(?:x[^>]+|[^/>]+)>#u', rtrim($this->target_seg), $target_tags);
         $source_tags = $source_tags[ 0 ];
@@ -1326,8 +1326,8 @@ class QA {
         //get all special chars ( and spaces ) after a tag x or ph
         //</x> ...
         //</ph> ...
-        preg_match_all( '#<(?:(?:x|ph)[^>]+|[^/>]+)>+[\s\t\x{a0}\r\n]#u', $this->source_seg, $source_tags );
-        preg_match_all( '#<(?:(?:x|ph)[^>]+|[^/>]+)>+[\s\t\x{a0}\r\n]#u', $this->target_seg, $target_tags );
+        preg_match_all( '#<(?:(?:x|ph)[^>]+|[^/>]+)>+[\s\t\x{a0}\r\n\,\.\;\!\?]#u', $this->source_seg, $source_tags );
+        preg_match_all( '#<(?:(?:x|ph)[^>]+|[^/>]+)>+[\s\t\x{a0}\r\n\,\.\;\!\?]#u', $this->target_seg, $target_tags );
         $source_tags = $source_tags[ 0 ];
         $target_tags = $target_tags[ 0 ];
         if ( ( count( $source_tags ) != count( $target_tags ) ) ) {

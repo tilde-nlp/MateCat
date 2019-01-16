@@ -9,7 +9,7 @@
 
 namespace AsyncTasks\Workers;
 
-use Contribution\ContributionStruct,
+use Contribution\ContributionSetStruct,
         Engine,
         TaskRunner\Commons\AbstractWorker,
         TaskRunner\Commons\QueueElement,
@@ -61,7 +61,7 @@ class SetContributionWorker extends AbstractWorker {
          */
         $this->_checkForReQueueEnd( $queueElement );
 
-        $contributionStruct = new ContributionStruct( $queueElement->params->toArray() );
+        $contributionStruct = new ContributionSetStruct( $queueElement->params->toArray() );
 
         $this->_checkDatabaseConnection();
 
@@ -70,13 +70,14 @@ class SetContributionWorker extends AbstractWorker {
     }
 
     /**
-     * @param ContributionStruct $contributionStruct
+     * @param ContributionSetStruct $contributionStruct
      *
      * @throws ReQueueException
      * @throws \Exception
      * @throws \Exceptions\ValidationError
      */
-    protected function _execContribution( ContributionStruct $contributionStruct ){
+    protected function _execContribution( ContributionSetStruct $contributionStruct ){
+
         $jobStruct = $contributionStruct->getJobStruct();
         $this->_loadEngine( $contributionStruct );
 
@@ -119,12 +120,12 @@ class SetContributionWorker extends AbstractWorker {
      * !Important Refresh the engine ID for each queueElement received
      * to avoid set contributions on the wrong engine ID
      *
-     * @param ContributionStruct $contributionStruct
+     * @param ContributionSetStruct $contributionStruct
      *
      * @throws \Exception
      * @throws \Exceptions\ValidationError
      */
-    protected function _loadEngine( ContributionStruct $contributionStruct ){
+    protected function _loadEngine( ContributionSetStruct $contributionStruct ){
 
         $jobStruct = $contributionStruct->getJobStruct();
         if( empty( $this->_engine ) ){
@@ -134,13 +135,13 @@ class SetContributionWorker extends AbstractWorker {
     }
 
     /**
-     * @param array              $config
-     * @param ContributionStruct $contributionStruct
+     * @param array                 $config
+     * @param ContributionSetStruct $contributionStruct
      *
      * @throws ReQueueException
      * @throws \Exceptions\ValidationError
      */
-    protected function _set( Array $config, ContributionStruct $contributionStruct ) {
+    protected function _set( Array $config, ContributionSetStruct $contributionStruct ) {
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, $contributionStruct->jwt_token);
         $memories = $TildeTM->getMemories();
         $canWrite= $this->settingsToArray(Jobs_JobDao::getMemorySetting($contributionStruct->uid));
@@ -173,11 +174,11 @@ class SetContributionWorker extends AbstractWorker {
         return $settingsArray;
     }
 
-    protected function _update( Array $config, ContributionStruct $contributionStruct ){
+    protected function _update( Array $config, ContributionSetStruct $contributionStruct ){
         $this->_set($config, $contributionStruct);
     }
 
-    protected function _extractAvailableKeysForUser( ContributionStruct $contributionStruct, Jobs_JobStruct $jobStruct ){
+    protected function _extractAvailableKeysForUser( ContributionSetStruct $contributionStruct, Jobs_JobStruct $jobStruct ){
 
         if ( $contributionStruct->fromRevision ) {
             $userRole = TmKeyManagement_Filter::ROLE_REVISOR;

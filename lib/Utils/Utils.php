@@ -36,6 +36,28 @@ class Utils {
         return 0;
     }
 
+    public static function create_guid( $namespace = '' ) { 
+        static $guid = ''; 
+        $uid = uniqid( "", true ); 
+        $data = $namespace; 
+        $data .= $_SERVER[ 'REQUEST_TIME' ]; 
+        $data .= @$_SERVER[ 'HTTP_USER_AGENT' ]; 
+        
+        if ( isset( $_SERVER[ 'LOCAL_ADDR' ] ) ) { 
+            $data .= $_SERVER[ 'LOCAL_ADDR' ]; // Windows only 
+        } 
+        if ( isset( $_SERVER[ 'LOCAL_PORT' ] ) ) { 
+            $data .= $_SERVER[ 'LOCAL_PORT' ]; // Windows only 
+        } 
+        
+        $data .= $_SERVER[ 'REMOTE_ADDR' ]; 
+        $data .= $_SERVER[ 'REMOTE_PORT' ]; 
+        $hash = strtoupper( hash( 'ripemd128', $uid . $guid . md5( $data ) ) ); 
+        $guid = '{' . substr( $hash, 0, 8 ) . '-' . substr( $hash, 8, 4 ) . '-' . substr( $hash, 12, 4 ) . '-' . substr( $hash, 16, 4 ) . '-' . substr( $hash, 20, 12 ) . '}'; 
+        \Log::doLog('created GUID', $guid ); 
+        return $guid; 
+    } 
+
     static public function getBrowser() {
         $u_agent  = $_SERVER[ 'HTTP_USER_AGENT' ];
 
@@ -151,7 +173,7 @@ class Utils {
                         'token'  => md5( $globalMessage[ 'message' ] ),
                         'expire' => ( new DateTime( $globalMessage[ 'expire' ] ) )->format( DateTime::W3C )
                 ];
-                $retString = json_encode( $resObject );
+                $retString = json_encode( [ $resObject ] );
             }
         }
         return [ 'messages' => $retString ];
@@ -382,7 +404,7 @@ class Utils {
 
     }
 
-    public static function create_guid( $namespace = '' ) {
+    public static function createToken( $namespace = '' ) {
 
         static $guid = '';
         $uid  = uniqid( "", true );
@@ -417,6 +439,18 @@ class Utils {
         \Log::doLog('created GUID', $guid ); 
 
         return $guid;
+    }
+
+    /**
+     * @param $token
+     *
+     * @return bool
+     */
+    public static function isTokenValid( $token = null ){
+        if( empty( $token ) || !preg_match( '|^\{[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}\}$|', $token ) ){
+            return false;
+        }
+        return true;
     }
 
     public static function filterLangDetectArray( $arr ) {

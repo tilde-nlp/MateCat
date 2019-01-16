@@ -97,7 +97,7 @@ class FeatureSet {
      * @param $metadata
      *
      * @throws Exception
-     * @throws Exceptions_RecordNotFound
+     * @throws \Exceptions\NotFoundException
      * @throws ValidationError
      */
     public function loadProjectDependenciesFromProjectMetadata( $metadata ) {
@@ -197,9 +197,11 @@ class FeatureSet {
      *
      * FIXME: this is not a real filter since the input params are not passed
      * modified in cascade to the next function in the queue.
-     * @throws Exceptions_RecordNotFound
+     * @throws \Exceptions\NotFoundException
      * @throws ValidationError
      * @throws AuthenticationError
+     * @throws \TaskRunner\Exceptions\ReQueueException
+     * @throws \TaskRunner\Exceptions\EndQueueException
      */
     public function filter($method, $filterable) {
         $args = array_slice( func_get_args(), 1);
@@ -228,11 +230,16 @@ class FeatureSet {
                         $filterable = call_user_func_array( array( $obj, $method ), $args );
                     } catch ( ValidationError $e ) {
                         throw $e ;
-                    } catch ( Exceptions_RecordNotFound $e ) {
+                    } catch ( \Exceptions\NotFoundException $e ) {
                         throw $e ;
                     } catch ( AuthenticationError $e ) {
                         throw $e ;
-                    } catch ( Exception $e ) {
+                    } catch( \TaskRunner\Exceptions\ReQueueException $e ){
+                        throw $e;
+                    } catch( \TaskRunner\Exceptions\EndQueueException $e ){
+                        throw $e;
+                    }
+                    catch ( Exception $e ) {
                         Log::doLog("Exception running filter " . $method . ": " . $e->getMessage() );
                     }
                 }

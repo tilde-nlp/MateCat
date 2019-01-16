@@ -25,11 +25,13 @@ $.extend( UI, {
          */
     },
     keydownEditAreaEventHandler: function (e) {
-
+        var code = e.which || e.keyCode;
         if (e.ctrlKey || e.shiftKey || e.metaKey){
+            if ( code === 37 || code === 39 ) { //ctrl + left/right arrows
+                UI.saveInUndoStack('arrow');
+            }
             return;
         }
-        var code = e.which || e.keyCode;
         var selection, range, r, rr, referenceNode;
         if ((code == 8) && (!UI.body.hasClass('tagmode-default-extended'))) {
             return true;
@@ -94,7 +96,7 @@ $.extend( UI, {
                     // detect if selection ph is inside a monad tag
                     if($('.monad .rangySelectionBoundary', UI.editarea).length) {
                         $('.monad:has(.rangySelectionBoundary)', UI.editarea).after($('.monad .rangySelectionBoundary', UI.editarea));
-                        // move selboundary after the
+                        // move selboundary after the monad
                     }
                     restoreSelection();
                     var numTagsAfter = (UI.editarea.text().match(/<.*?\>/gi) !== null)? UI.editarea.text().match(/<.*?\>/gi).length : 0;
@@ -150,8 +152,6 @@ $.extend( UI, {
                 r = range.startContainer.innerText;
                 if (r && (r[0] == '<') && (r[r.length - 1] == '>')) { // if a tag is selected
                     e.preventDefault();
-
-
                     saveSelection();
                     rr = document.createRange();
                     referenceNode = $('.rangySelectionBoundary', UI.editarea).first().get(0);
@@ -173,9 +173,9 @@ $.extend( UI, {
             }
             selection = window.getSelection();
             range = selection.getRangeAt(0);
-            if (range.startOffset != range.endOffset) {
+            if (range.startOffset != range.endOffset) { // if something is selected when the left button is pressed...
                 r = range.startContainer.data;
-                if (r &&(r[0] == '<') && (r[r.length - 1] == '>')) {
+                if (r &&(r[0] == '<') && (r[r.length - 1] == '>')) { // if a tag is selected
                     saveSelection();
                     rr = document.createRange();
                     referenceNode = $('.rangySelectionBoundary', UI.editarea).last().get(0);
@@ -207,7 +207,6 @@ $.extend( UI, {
                 }
             }
             UI.closeTagAutocompletePanel();
-            UI.jumpTag(range, 'end');
         }
 
         if (code == 40) { // down arrow
@@ -269,7 +268,7 @@ $.extend( UI, {
         }
 
         UI.closeTagAutocompletePanel();
-        UI.removeHighlightCorrespondingTags();
+        UI.removeHighlightCorrespondingTags($(target).closest('section'));
 
         var segmentNotYetOpened = ($(target).is(UI.editarea) && !$(target).closest('section').hasClass("opened"));
 
@@ -283,7 +282,6 @@ $.extend( UI, {
             }
 
             UI.lastOperation = operation;
-
             UI.openSegment(target, operation);
 
             if (operation != 'moving') {
@@ -295,8 +293,11 @@ $.extend( UI, {
                 }
             }
         }
-        UI.saveInUndoStack();
-        UI.checkTagProximity();
+
+        setTimeout(function() {
+            UI.saveInUndoStack();
+            UI.checkTagProximity();
+        }, 100);
 
 
         // if (UI.debug) { console.log('Total onclick Editarea: ' + ((new Date()) - this.onclickEditarea)); }

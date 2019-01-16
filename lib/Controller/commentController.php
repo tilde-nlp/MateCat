@@ -97,6 +97,7 @@ class commentController extends ajaxController {
         $this->new_record = $commentDao->resolveThread( $this->struct );
 
         $this->enqueueComment();
+        $this->users = $this->resolveUsers();
         $this->sendEmail();
         $this->result[ 'data' ][ 'entries' ] = array( $this->payload );
     }
@@ -115,7 +116,13 @@ class commentController extends ajaxController {
         $commentDao = new Comments_CommentDao( Database::obtain() );
         $this->new_record = $commentDao->saveComment( $this->struct );
 
+        foreach($this->users_mentioned as $user_mentioned){
+            $mentioned_comment = $this->prepareMentionCommentData($user_mentioned);
+            $commentDao->saveComment($mentioned_comment);
+        }
+
         $this->enqueueComment();
+        $this->users = $this->resolveUsers();
         $this->sendEmail();
         $this->result[ 'data' ][ 'entries' ] = array( $this->payload ) ;
         $this->appendUser();
@@ -131,6 +138,28 @@ class commentController extends ajaxController {
         $this->struct->message    = $this->__postInput[ 'message' ];
         $this->struct->email      = $this->getEmail();
         $this->struct->uid        = $this->getUid();
+
+        $user_mentions = $this->resolveUserMentions();
+        $user_team_mentions = $this->resolveTeamMentions();
+        $userDao = new Users_UserDao( Database::obtain() );
+        $this->users_mentioned_id = array_unique(array_merge($user_mentions, $user_team_mentions));
+
+
+        $this->users_mentioned = $this->filterUsers($userDao->getByUids( $this->users_mentioned_id ));
+    }
+
+    private function prepareMentionCommentData(Users_UserStruct $user){
+        $struct = new Comments_CommentStruct();
+
+        $struct->id_segment   = $this->__postInput[ 'id_segment' ];
+        $struct->id_job       = $this->__postInput[ 'id_job' ];
+        $struct->full_name    = $user->fullName();
+        $struct->source_page  = $this->__postInput[ 'source_page' ];
+        $struct->message      = "";
+        $struct->message_type = Comments_CommentDao::TYPE_MENTION;
+        $struct->email        = $user->getEmail();
+        $struct->uid          = $user->getUid();
+        return $struct;
     }
 
     private function sendEmail() {
@@ -146,14 +175,21 @@ class commentController extends ajaxController {
         $url .= '#' . $this->struct->id_segment ;
         Log::doLog($url);
 
-        $users = $this->resolveUsers();
-        $project_data = $this->projectData(); 
+        $project_data = $this->projectData();
 
-        foreach($users as $user) {
-            $email = new Comments_CommentEmail($user, $this->struct, $url,
-                $project_data[0]['name']
-            );
-            $email->deliver();
+        foreach($this->users_mentioned as $user_mentioned) {
+            $email = new \Email\CommentMentionEmail($user_mentioned, $this->struct, $url, $project_data[0], $this->job);
+            $email->send();
+        }
+
+        foreach($this->users as $user) {
+            if($this->struct->message_type == Comments_CommentDao::TYPE_RESOLVE){
+                $email = new \Email\CommentResolveEmail($user, $this->struct, $url, $project_data[0], $this->job);
+            } else{
+                $email = new \Email\CommentEmail($user, $this->struct, $url, $project_data[0], $this->job );
+            }
+
+            $email->send();
         }
     }
 
@@ -177,23 +213,48 @@ class commentController extends ajaxController {
 
         $userDao = new Users_UserDao( Database::obtain() );
         $users = $userDao->getByUids( $result );
+        $userDao->setCacheTTL( 60 * 60 * 24 );
         $owner = $userDao->getProjectOwner( $this->job['id'] );
 
         if ( !empty( $owner->uid ) && !empty( $owner->email ) ) {
             array_push( $users, $owner );
         }
 
+        $userDao->setCacheTTL( 60 * 10 );
         $assignee = $userDao->getProjectAssignee( $this->job[ 'id_project' ] );
         if ( !empty( $assignee->uid ) && !empty( $assignee->email ) ) {
             array_push( $users, $assignee );
         }
 
+        return $this->filterUsers($users, $this->users_mentioned_id);
+
+    }
+
+
+    private function resolveUserMentions() {
+        return Comments_CommentDao::getUsersIdFromContent($this->struct->message);
+    }
+
+    private function resolveTeamMentions() {
+        $users = [];
+
+        if ( strstr( $this->struct->message, "{@team@}" ) ) {
+            $project =  $this->job->getProject();
+            $memberships = ( new \Teams\MembershipDao() )->setCacheTTL( 60 * 60 * 24 )->getMemberListByTeamId( $project->id_team, false );
+            foreach ( $memberships as $membership ) {
+                $users[] = $membership->uid;
+            }
+        }
+
+        return $users;
+    }
+
+    private function filterUsers($users, $uidSentList = array()){
         $userIsLogged = $this->userIsLogged ;
         $current_uid = $this->current_user->uid ;
 
         // find deep duplicates
-        $uidSentList = array();
-        $users = array_filter($users, function($item) use ( $userIsLogged, $current_uid, &$uidSentList ) {
+        $users = array_filter($users, function($item) use (  $userIsLogged, $current_uid, &$uidSentList ) {
             if ( $userIsLogged && $current_uid == $item->uid ) {
                 return false;
             }
@@ -206,7 +267,6 @@ class commentController extends ajaxController {
             return true ;
 
         });
-
         return $users;
     }
 
@@ -270,7 +330,7 @@ class commentController extends ajaxController {
 
         $stomp = new Stomp( INIT::$QUEUE_BROKER_ADDRESS );
         $stomp->connect();
-        $stomp->send( INIT::$SSE_COMMENTS_QUEUE_NAME,
+        $stomp->send( INIT::$SSE_NOTIFICATIONS_QUEUE_NAME,
             $message,
             array( 'persistent' => 'true' )
         );

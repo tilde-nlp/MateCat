@@ -51,7 +51,9 @@ if ( QaCheckGlossary.enabled() )
     }
 
     function startLocalUnusedGlossaryHighlight( segment ) {
-        updateGlossaryUnusedMatches( segment, globalWarnings[segment.id] ) ;
+        if (globalWarnings) {
+            updateGlossaryUnusedMatches( segment, globalWarnings[segment.id] ) ;
+        }
     }
     /*
     * Can be called externaly (by LexiQA) to reload powerip
@@ -78,9 +80,6 @@ if ( QaCheckGlossary.enabled() )
             var entry = _.chain(unusedMatches).filter(function findMatch(match, index) {
                 return match.id == el.data('id');
             }).first().value();
-
-            console.log( entry );
-
             el.powerTip({ placement : 's' });
             el.data({ 'powertipjq' : $('<div class="unusedGlossaryTip" style="padding: 4px;">Unused glossary term</div>') });
         });
@@ -88,17 +87,21 @@ if ( QaCheckGlossary.enabled() )
 
     function updateGlossaryUnusedMatches( segment, unusedMatches ) {
         // read the segment source, find with a regexp and replace with a span
-        var container = segment.el.find('.source');
+        var container = segment.el.find('.source').clone();
 
         removeUnusedGlossaryMarks( container ) ;
         if (_.isUndefined(unusedMatches) || unusedMatches.length === 0) {
             return;
         }
-        var newHTML = container.html();
-        //clean up lexiqa highlighting - if enabled
-        if (LXQ.enabled()) {
-            newHTML = LXQ.cleanUpHighLighting(newHTML);
-        }
+        container.find('.inside-attribute').remove();
+        var newHTML = htmlEncode(container.text());
+
+        //Replace ph tags
+        var base64Tags=[];
+        newHTML = newHTML.replace( /&lt;ph.*?equiv-text="base64:(.*?)".*?\/&gt;/gi, function (match, text) {
+            base64Tags.push(match);
+            return "###" + text +"###";
+        });
         unusedMatches = unusedMatches.sort(function(a, b){
             return b.raw_segment.length - a.raw_segment.length;
         });
@@ -107,24 +110,32 @@ if ( QaCheckGlossary.enabled() )
             value = escapeRegExp( value );
             value = value.replace(/ /g, '(?: *<\/*(?:mark)*(?:span *)*(?: (data-id="(.*?)" )*class="(unusedGlossaryTerm)*(inGlossary)*")*> *)* *');
             var re = new RegExp( sprintf( matchRegExp, value ), QaCheckGlossary.qaCheckRegExpFlags);
-            //Check if value match inside the span (Ex: ID, class, data, span)
-            var check = re.test( '<span data-id="' + index + '" class="unusedGlossaryTerm">$1</span>' );
+
+            var check = re.test( '<span class="unusedGlossaryTerm">$1</span>' );
             if ( !check ){
                 newHTML = newHTML.replace(
-                    re , '<span data-id="' + this.id + '" class="unusedGlossaryTerm">$1</span>'
+                    re , '<span class="unusedGlossaryTerm">$1</span>'
                 );
             } else  {
                 re = new RegExp( sprintf( "\\s\\b(%s)\\s\\b", value ), QaCheckGlossary.qaCheckRegExpFlags);
                 newHTML = newHTML.replace(
-                    re , ' <span data-id="' + this.id + '" class="unusedGlossaryTerm">$1</span> '
+                    re , ' <span class="unusedGlossaryTerm">$1</span> '
                 );
             }
         });
-        setTimeout(function (  ) {
-            SegmentActions.replaceSourceText(UI.getSegmentId(container), UI.getSegmentFileId(container), newHTML);
-            bindEvents( container, unusedMatches );
+        newHTML = newHTML.replace( /###(.*?)###/gi, function (match, text) {
+            var tag = base64Tags.shift();
+            return tag;
+        });
+        if ( newHTML.indexOf('unusedGlossaryTerm') > -1 ) {
+            (function (cont, html, matches) {
+                setTimeout(function (  ) {
+                    SegmentActions.replaceSourceText(UI.getSegmentId(cont), UI.getSegmentFileId(cont), UI.transformTextForLockTags(html));
+                    bindEvents( cont, matches );
+                }, 200);
+            })(segment.el, newHTML, unusedMatches);
+        }
 
-        }, 200);
 
     }
 

@@ -566,6 +566,12 @@ APP = {
         }
     },
 
+    removeAllNotifications: function () {
+        if (APP.notificationBox) {
+            APP.notificationBox.removeAllNotifications();
+        }
+    },
+
     getParameterByName : function(name, url) {
         if (!url) url = window.location.href;
         name = name.replace(/[\[\]]/g, "\\$&");
@@ -810,7 +816,9 @@ APP = {
         }
 
         var winName ;
-
+        if (UI.isSafari) {
+            var windowReference = window.open();
+        }
         var driveUpdateDone = function(data) {
             if( !data.urls || data.urls.length === 0 ) {
                 APP.alert({msg: "MateCat was not able to update project files on Google Drive. Maybe the project owner revoked privileges to access those files. Ask the project owner to login again and grant Google Drive privileges to MateCat."});
@@ -822,12 +830,14 @@ APP = {
 
             $.each( data.urls, function(index, item) {
                 winName = 'window' + item.localId ;
-
-                if ( typeof window.googleDriveWindows[ winName ] != 'undefined' && window.googleDriveWindows[ winName ].opener != null ) {
+                if (UI.isSafari) {
+                    windowReference.location = item.alternateLink;
+                } else if ( typeof window.googleDriveWindows[ winName ] != 'undefined' && typeof window.googleDriveWindows[ winName ] != 'null' && window.googleDriveWindows[ winName ].location != null ) {
                     window.googleDriveWindows[ winName ].location.href = item.alternateLink ;
                     window.googleDriveWindows[ winName ].focus();
                 } else {
                     window.googleDriveWindows[ winName ] = window.open( item.alternateLink );
+
                 }
             });
         };

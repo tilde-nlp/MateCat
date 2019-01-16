@@ -9,6 +9,7 @@ class Comments_CommentDao extends DataAccess_AbstractDao {
 
     const TYPE_COMMENT = 1;
     const TYPE_RESOLVE = 2;
+    const TYPE_MENTION = 3;
 
     const SOURCE_PAGE_REVISE    = 2;
     const SOURCE_PAGE_TRANSLATE = 2;
@@ -66,7 +67,7 @@ class Comments_CommentDao extends DataAccess_AbstractDao {
 
         $obj = $this->sanitize( $input );
 
-        $this->validateForCommentAndResolve( $obj );
+        $this->validateComment( $obj );
 
         $query = " INSERT INTO comments " .
                 " ( " .
@@ -147,6 +148,24 @@ class Comments_CommentDao extends DataAccess_AbstractDao {
         return $arr_result;
     }
 
+    public function getThreadsBySegments( $segments_id, $job_id ) {
+
+        $prepare_str_segments_id = str_repeat( 'UNION SELECT ? ', count( $segments_id ) - 1 );
+
+        $db             = Database::obtain()->getConnection();
+        $comments_query = "SELECT * FROM comments 
+        JOIN ( 
+                SELECT ? as id_segment
+                " . $prepare_str_segments_id . "
+        ) AS SLIST USING( id_segment )
+        WHERE message_type IN (1,2) AND id_job = ? ";
+
+        $stmt = $db->prepare( $comments_query );
+        $stmt->setFetchMode( PDO::FETCH_CLASS, "\Comments_BaseCommentStruct" );
+        $stmt->execute( array_merge($segments_id, array($job_id)) );
+
+        return $stmt->fetchAll();
+    }
 
     /**
      *
@@ -224,7 +243,7 @@ class Comments_CommentDao extends DataAccess_AbstractDao {
     }
 
 
-    private function validateForCommentAndResolve( $obj ) {
+    private function validateComment( $obj ) {
         if ( empty( $obj->message ) && $obj->message_type == self::TYPE_COMMENT ) {
             throw new Exception( "Comment message can't be blank." );
         }
@@ -280,6 +299,31 @@ class Comments_CommentDao extends DataAccess_AbstractDao {
         $cloned->resolve_date = self::escapeWithNull( $input->resolve_date );
 
         return $cloned;
+    }
+
+    public static function placeholdContent($content){
+        $users_ids = self::getUsersIdFromContent($content);
+        $userDao = new Users_UserDao( Database::obtain() );
+        $users = $userDao->getByUids( $users_ids );
+        foreach($users as $user){
+            $content = str_replace("{@".$user->uid."@}", "@".$user->first_name, $content);
+        }
+
+        $content = str_replace("{@team@}", "@team", $content);
+        return $content;
+    }
+
+    public static function getUsersIdFromContent($content){
+
+        $users = [];
+
+        preg_match_all( "/\{\@([\d]+)\@\}/", $content, $find_users );
+        if ( isset( $find_users[ 1 ] ) ) {
+            $users = $find_users[1];
+        }
+
+        return $users;
+
     }
 
     private static function escapeWithNull( $value ) {

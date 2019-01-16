@@ -731,6 +731,12 @@ class UploadHandler {
             return $this->delete();
         }
 
+        if( !Utils::isTokenValid( $_COOKIE[ 'upload_session' ] ) ){
+            $info = [ new stdClass() ];
+            $info[ 0 ]->error = "Invalid Upload Token. Check your browser, cookies must be enabled for this domain.";
+            $this->flush( $info );
+        }
+
         $upload = isset( $_FILES[ $this->options[ 'param_name' ] ] ) ? $_FILES[ $this->options[ 'param_name' ] ] : null;
 
         $info = [];
@@ -799,13 +805,10 @@ class UploadHandler {
             return;
         }
 
-        if ( isset( $_SERVER[ 'HTTP_ACCEPT' ] ) && ( strpos( $_SERVER[ 'HTTP_ACCEPT' ], 'application/json' ) !== false ) ) {
-            header( 'Content-type: application/json' );
-        } else {
-            header( 'Content-type: text/plain' );
-        }
-
         echo $json;
+
+        die();
+
     }
 
     public function delete() {
@@ -977,8 +980,12 @@ class UploadHandler {
     protected function _isValidFileName( $fileUp ) {
 
         if (
-                strpos( $this->options[ 'upload_dir' ] . $fileUp->name, '..' ) !== false ||
-                strpos( $this->options[ 'upload_dir' ] . $fileUp->name, '%2E%2E' ) !== false ||
+                strpos( $this->options[ 'upload_dir' ] . $fileUp->name, '../' ) !== false ||
+                strpos( $this->options[ 'upload_dir' ] . $fileUp->name, '/../' ) !== false ||
+                strpos( $this->options[ 'upload_dir' ] . $fileUp->name, '/..' ) !== false ||
+                strpos( $this->options[ 'upload_dir' ] . $fileUp->name, '%2E%2E%2F' ) !== false ||
+                strpos( $this->options[ 'upload_dir' ] . $fileUp->name, '%2F%2E%2E%2F' ) !== false ||
+                strpos( $this->options[ 'upload_dir' ] . $fileUp->name, '%2F%2E%2E' ) !== false ||
                 strpos( $fileUp->name, '.' ) === 0 ||
                 strpos( $fileUp->name, '%2E' ) === 0
         ) {

@@ -68,7 +68,7 @@ class JobContainer extends React.Component {
     }
 
     getQAReport() {
-        if (this.props.project.get('features') && this.props.project.get('features').indexOf('review_improved') > -1) {
+        if (this.props.project.get('features') && this.props.project.get('features').indexOf('review_improved') > -1 ){
             return '/plugins/review_improved/quality_report/' + this.props.job.get('id') + '/' + this.props.job.get('password');
         } else {
             return '/revise-summary/' + this.props.job.get('id') + '-' + this.props.job.get('password');
@@ -84,7 +84,7 @@ class JobContainer extends React.Component {
                     title: 'Change job password',
                     text: 'The password has been changed. <a class="undo-password">Undo</a>',
                     type: 'warning',
-                    position: 'tc',
+                    position: 'bl',
                     allowHtml: true,
                     timer: 10000
                 };
@@ -101,7 +101,7 @@ class JobContainer extends React.Component {
                                     title: 'Change job password',
                                     text: 'The previous password has been restored.',
                                     type: 'warning',
-                                    position: 'tc',
+                                    position: 'bl',
                                     timer: 7000
                                 };
                                 APP.addNotification(notification);
@@ -123,7 +123,7 @@ class JobContainer extends React.Component {
                     title: 'Job unassigned',
                     text: 'The translator has been removed and the password changed. <a class="undo-password">Undo</a>',
                     type: 'warning',
-                    position: 'tc',
+                    position: 'bl',
                     allowHtml: true,
                     timer: 10000
                 };
@@ -140,7 +140,7 @@ class JobContainer extends React.Component {
                                     title: 'Change job password',
                                     text: 'The previous password has been restored.',
                                     type: 'warning',
-                                    position: 'tc',
+                                    position: 'bl',
                                     timer: 7000
                                 };
                                 APP.addNotification(notification);
@@ -460,7 +460,7 @@ class JobContainer extends React.Component {
         if (this.props.job.get('outsource')) {
             if (this.props.job.get('outsource').get('id_vendor') == "1") {
                 outsourceJobLabel =
-                    <a className="outsource-logo-box" href={this.props.job.get('outsource').get('quote_review_link')} target="_blank"><img className='outsource-logo' src="/public/img/logo_translated.png" title="Outsourced to translated.net" alt="Translated logo"/></a>;
+                    <a className="outsource-logo-box" href={this.props.job.get('outsource').get('quote_review_link')} target="_blank"><img className='outsource-logo' src="/public/img/matecat-logo-translated.svg" title="Outsourced to translated.net" alt="Translated logo"/></a>;
             }
         } else if (this.props.job.get('translator')) {
             let email = this.props.job.get('translator').get('email');

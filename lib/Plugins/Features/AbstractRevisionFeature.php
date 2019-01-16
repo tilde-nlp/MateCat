@@ -5,7 +5,7 @@ namespace Features ;
 use API\V2\Exceptions\ValidationError;
 use Chunks_ChunkCompletionEventStruct;
 use Chunks_ChunkDao;
-use Contribution\ContributionStruct;
+use Contribution\ContributionSetStruct;
 use Database;
 use Exception;
 use Features\ReviewImproved\ChunkReviewModel;
@@ -41,12 +41,12 @@ abstract class AbstractRevisionFeature extends BaseFeature {
      *
      * XXX: not sure this was the best way to solve this problem.
      *
-     * @param ContributionStruct     $contributionStruct
+     * @param ContributionSetStruct  $contributionStruct
      * @param Projects_ProjectStruct $project
      *
-     * @return ContributionStruct
+     * @return ContributionSetStruct
      */
-    public function filterContributionStructOnSetTranslation( ContributionStruct $contributionStruct, Projects_ProjectStruct $project ) {
+    public function filterContributionStructOnSetTranslation( ContributionSetStruct $contributionStruct, Projects_ProjectStruct $project ) {
 
         if ( $contributionStruct->fromRevision ) {
             $contributionStruct->propagationRequest = true ;
@@ -73,7 +73,7 @@ abstract class AbstractRevisionFeature extends BaseFeature {
                 $review_password, $id_job );
 
         if ( ! $chunk_review ) {
-            throw new \Exceptions_RecordNotFound('Review record was not found');
+            throw new \Exceptions\NotFoundException('Review record was not found');
         }
 
         return $chunk_review->password ;
@@ -87,7 +87,7 @@ abstract class AbstractRevisionFeature extends BaseFeature {
         $chunk_review = $chunk_reviews[0];
 
         if ( ! $chunk_review ) {
-            throw new \Exceptions_RecordNotFound('Review record was not found');
+            throw new \Exceptions\NotFoundException('Review record was not found');
         }
 
         return $chunk_review->review_password ;
@@ -279,13 +279,17 @@ abstract class AbstractRevisionFeature extends BaseFeature {
         $translation_model = new SegmentTranslationModel( $new_translation_struct );
         $translation_model->setOldTranslation( $old_translation_struct );
 
+        $this->attachObserver( $translation_model );
+        $translation_model->notify();
+    }
+
+    protected function attachObserver( SegmentTranslationModel $translation_model ){
         /**
          * This implementation may seem overkill since we are already into review improved feature
          * so we could avoid to delegate to an observer. This is done with aim to the future when
          * the SegmentTranslationModel will be used directly into setTranslation controller.
          */
         $translation_model->attach( new SegmentTranslationObserver() );
-        $translation_model->notify();
     }
 
     /**

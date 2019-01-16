@@ -151,7 +151,7 @@ UI = {
 
     autopropagateConfirmNeeded: function () {
         var segment = UI.currentSegment;
-        if(this.currentSegmentTranslation.trim() == this.editarea.text().trim()) { //segment not modified
+        if(this.currentSegmentTranslation.trim() == this.editarea.text().trim() && !config.isReview) { //segment not modified
             return false;
         }
 
@@ -237,20 +237,6 @@ UI = {
     maxNumSegmentsReached : function() {
         return $('section').length > config.maxNumSegments  ;
     },
-
-    checkIfFinished: function(closing) {
-       if (((this.progress_perc != this.done_percentage) && (this.progress_perc == '100')) || ((closing) && (this.progress_perc == '100'))) {
-               this.body.addClass('justdone');
-       } else {
-               this.body.removeClass('justdone');
-       }
-    },
-
-    checkIfFinishedFirst: function() {
-       if ($('section').length == $('section.status-translated, section.status-approved').length) {
-           this.body.addClass('justdone');
-       }
-    },
     closeSegment: function(segment, byButton, operation) {
         if ( typeof segment !== 'undefined' ) {
             segment.find('.editarea').attr('contenteditable', 'false');
@@ -261,7 +247,6 @@ UI = {
                 segment: segment
             });
 
-            clearTimeout(this.liveConcordanceSearchReq);
 
             var saveBehaviour = true;
             if (operation != 'noSave') {
@@ -273,14 +258,9 @@ UI = {
                 this.saveSegment(segment);
             }
             this.deActivateSegment(byButton, segment);
-            this.removeGlossaryMarksFormSource();
+            this.removeGlossaryMarksFormSource(segment);
 
             $('span.locked.mismatch', segment).removeClass('mismatch');
-
-
-            if (!this.opening) {
-                this.checkIfFinished(1);
-            }
 
             // close split segment
             $('.sid .actions .split').removeClass('cancel');
@@ -425,16 +405,16 @@ UI = {
         var sameButton = (nextSegment.hasClass('status-new')) || (nextSegment.hasClass('status-draft'));
         if (this.currentSegmentTPEnabled) {
             nextUntranslated = "";
-            currentButton = '<li><a id="segment-' + this.currentSegmentId +
+            currentButton = '<li ><a draggable="false" id="segment-' + this.currentSegmentId +
                 '-button-guesstags" data-segmentid="segment-' + this.currentSegmentId +
                 '" href="#" class="guesstags"' + disabled + ' >' + 'GUESS TAGS' + '</a><p>' +
                 ((UI.isMac) ? 'CMD' : 'CTRL') + '+ENTER</p></li>';
         } else {
-            nextUntranslated = (sameButton || filtering)? '' : '<li><a id="segment-' + this.currentSegmentId +
+            nextUntranslated = (sameButton || filtering)? '' : '<li><a draggable="false" id="segment-' + this.currentSegmentId +
                 '-nextuntranslated" href="#" class="btn next-untranslated" data-segmentid="segment-' +
                 this.currentSegmentId + '" title="Translate and go to next untranslated">' + label_first_letter + '+&gt;&gt;</a><p>' +
                 ((UI.isMac) ? 'CMD' : 'CTRL') + '+SHIFT+ENTER</p></li>';
-            currentButton = '<li><a id="segment-' + this.currentSegmentId +
+            currentButton = '<li><a draggable="false" id="segment-' + this.currentSegmentId +
                 '-button-translated" data-segmentid="segment-' + this.currentSegmentId +
                 '" href="#" class="translated"' + disabled + ' >' + button_label + '</a><p>' +
                 ((UI.isMac) ? 'CMD' : 'CTRL') + '+ENTER</p></li>';
@@ -838,7 +818,7 @@ UI = {
 				if (SearchUtils.searchMode == 'normal') {
 					$('#segment-' + options.segmentToScroll + ' mark.searchMarker').first().addClass('currSearchItem');
 				} else {
-					$('#segment-' + options.segmentToScroll + ' .editarea mark.searchMarker').first().addClass('currSearchItem');
+					$('#segment-' + options.segmentToScroll + ' .targetarea mark.searchMarker').first().addClass('currSearchItem');
 				}
 			}
 		}
@@ -906,13 +886,11 @@ UI = {
      * react components, closing side panel etc.
      */
     unmountSegments : function() {
-        $('[data-mount=translation-issues-button]').each( function() {
-            ReactDOM.unmountComponentAtNode(this);
-        });
         $('.article-segments-container').each(function (index, value) {
             ReactDOM.unmountComponentAtNode(value);
             delete UI.SegmentsContainers;
         });
+        this.removeWaypoints();
         $('#outer').empty();
     },
 
@@ -1034,7 +1012,7 @@ UI = {
 					$('#file-' + fid).append(newFile);
 				}
 			}
-            console.time("Time: RenderSegments"+fid);
+            // console.time("Time: RenderSegments"+fid);
             UI.renderSegments(this.segments, false, fid, where);
             // console.timeEnd("Time: RenderSegments"+fid);
             // console.timeEnd("Time: from start()");
@@ -1061,7 +1039,7 @@ UI = {
                 this.SegmentsContainers[fid] = ReactDOM.render(React.createElement(SegmentsContainer, {
                     fid: fid,
                     isReviewImproved: ReviewImproved.enabled() && Review.enabled(),
-                    isReviewExtended: ReviewExtended.enabled() && Review.enabled(),
+                    isReviewExtended: ReviewExtended.enabled(),
                     reviewType: Review.type,
                     enableTagProjection: UI.enableTagProjection,
                     decodeTextFn: UI.decodeText,
@@ -1310,6 +1288,7 @@ UI = {
 		var r_perc_formatted = s.REJECTED_PERC_FORMATTED;
 
 		var t_formatted = s.TODO_FORMATTED;
+		var revise_todo_formatted = Math.round(s.TRANSLATED + s.DRAFT);
 
 		var wph = s.WORDS_PER_HOUR;
 		var completion = s.ESTIMATED_COMPLETION;
@@ -1326,7 +1305,6 @@ UI = {
 		}
 
 		this.progress_perc = s.PROGRESS_PERC_FORMATTED;
-        this.checkIfFinished();
         this.done_percentage = this.progress_perc;
 
 		$('.approved-bar', m).css('width', a_perc + '%').attr('title', 'Approved ' + a_perc_formatted + '%');
@@ -1335,8 +1313,11 @@ UI = {
 		$('.rejected-bar', m).css('width', r_perc + '%').attr('title', 'Rejected ' + r_perc_formatted + '%');
 
 		$('#stat-progress').html(this.progress_perc);
-
-		$('#stat-todo strong').html(t_formatted);
+        if ( config.isReview ) {
+            $('#stat-todo strong').html(revise_todo_formatted);
+        } else {
+            $('#stat-todo strong').html(t_formatted);
+        }
 		$('#stat-wph strong').html(wph);
 		$('#stat-completion strong').html(completion);
         $('#total-payable').html(s.TOTAL_FORMATTED);
@@ -1538,7 +1519,12 @@ UI = {
 	startWarning: function() {
 		clearTimeout(UI.startWarningTimeout);
 		UI.startWarningTimeout = setTimeout(function() {
-			UI.checkWarnings(false);
+            // If the tab is not active avoid to make the warnings call
+            if (document.visibilityState === "hidden") {
+                UI.startWarning();
+            } else {
+                UI.checkWarnings(false);
+            }
 		}, config.warningPollingInterval);
 	},
 
@@ -1647,16 +1633,6 @@ UI = {
             APP.addNotification(notification);
 		}
 	},
-    segmentLexiQA: function (_segment) {
-        var segment = _segment;
-        //new API?
-        if (_segment.raw) {
-            segment = _segment.raw
-        }
-        var translation = $('.editarea', segment).text().replace(/\uFEFF/g, '');
-        var id_segment = UI.getSegmentId(segment);
-        LXQ.doLexiQA(segment, translation, id_segment, false, function () {});
-    },
     segmentQA : function( segment ) {
         if ( ! ( segment instanceof UI.Segment) ) {
             segment = new UI.Segment( segment );
@@ -1697,10 +1673,12 @@ UI = {
 				UI.failedConnection(0, 'getWarning');
 			},
 			success: function(d) {
-			    if(d.details){
+			    if(d.details && d.details.id_segment){
                     SegmentActions.setSegmentWarnings(d.details.id_segment,d.details.issues_info);
+                    UI.markTagMismatch(d.details);
                 }else{
                     SegmentActions.setSegmentWarnings(segment.id,{});
+                    UI.removeHighlightCorrespondingTags(UI.getSegmentById(segment.id));
                 }
                 $(document).trigger('getWarning:local:success', { resp : d, segment: segment }) ;
 			}
@@ -1711,7 +1689,7 @@ UI = {
     translationIsToSave : function( segment ) {
         // add to setTranslation tail
         var alreadySet = this.alreadyInSetTranslationTail( segment.id );
-        var emptyTranslation = ( segment && segment.el.find('.editarea').text().trim().length )? false : true;
+        var emptyTranslation = ( segment && segment.el.find('.targetarea').text().trim().length )? false : true;
 
         return ((!alreadySet)&&(!emptyTranslation));
     },
@@ -1810,9 +1788,11 @@ UI = {
         var reqArguments = arguments;
 		var segment = $('#segment-' + id_segment);
 		var contextBefore = UI.getContextBefore(id_segment);
-		var contextAfter = UI.getContextAfter(id_segment);
+        var idBefore = UI.getIdBefore(id_segment);
+        var contextAfter = UI.getContextAfter(id_segment);
+        var idAfter = UI.getIdAfter(id_segment);
 
-		this.lastTranslatedSegmentId = id_segment;
+        this.lastTranslatedSegmentId = id_segment;
 
 		caller = (typeof caller == 'undefined') ? false : caller;
 		var file = $(segment).parents('article');
@@ -1858,7 +1838,9 @@ UI = {
             version: segment.attr('data-version'),
             propagate: propagate,
             context_before: contextBefore,
-            context_after: contextAfter
+            id_before: idBefore,
+            context_after: contextAfter,
+            id_after: idAfter,
         };
         if(isSplitted) {
             this.setStatus($('#segment-' + id_segment), status);
@@ -2047,58 +2029,6 @@ UI = {
         var deferred = new jQuery.Deferred() ;
         return deferred.resolve();
     },
-    /**
-     * Called when a Segment string returned by server has to be visualized, it replace placeholders with tags
-     * @param str
-     * @returns {XML|string}
-     */
-    decodePlaceholdersToText: function (str) {
-        if(!UI.hiddenTextEnabled) return str;
-		var _str = str;
-        if(UI.markSpacesEnabled) {
-            if(jumpSpacesEncode) {
-                _str = this.encodeSpacesAsPlaceholders(htmlDecode(_str), true);
-            }
-        }
-
-		_str = _str.replace( config.lfPlaceholderRegex, '<span class="monad marker softReturn ' + config.lfPlaceholderClass +'"><br /></span>' )
-					.replace( config.crPlaceholderRegex, '<span class="monad marker ' + config.crPlaceholderClass +'"><br /></span>' )
-		_str = _str.replace( config.lfPlaceholderRegex, '<span class="monad marker softReturn ' + config.lfPlaceholderClass +'" contenteditable="false"><br /></span>' )
-					.replace( config.crPlaceholderRegex, '<span class="monad marker ' + config.crPlaceholderClass +'" contenteditable="false"><br /></span>' )
-					.replace( config.crlfPlaceholderRegex, '<br class="' + config.crlfPlaceholderClass +'" />' )
-					.replace( config.tabPlaceholderRegex, '<span class="tab-marker monad marker ' + config.tabPlaceholderClass +'" contenteditable="false">&#8677;</span>' )
-					.replace( config.nbspPlaceholderRegex, '<span class="nbsp-marker monad marker ' + config.nbspPlaceholderClass +'" contenteditable="false">&nbsp;</span>' )
-                    .replace(/(<\/span\>)$/gi, "</span><br class=\"end\">"); // For rangy cursor after a monad marker
-
-		return _str;
-    },
-
-	encodeSpacesAsPlaceholders: function(str, root) {
-        if(!UI.hiddenTextEnabled) return str;
-
-		var newStr = '';
-		$.each($.parseHTML(str), function() {
-
-			if(this.nodeName == '#text') {
-				newStr += $(this).text().replace(/\s/gi, '<span class="space-marker marker monad" contenteditable="false"> </span>');
-			} else {
-				match = this.outerHTML.match(/<.*?>/gi);
-				if(match.length == 1) { // se è 1 solo, è un tag inline
-
-				} else if(match.length == 2) { // se sono due, non ci sono tag innestati
-					newStr += htmlEncode(match[0]) + this.innerHTML.replace(/\s/gi, '#@-lt-@#span#@-space-@#class="space-marker#@-space-@#marker#@-space-@#monad"#@-space-@#contenteditable="false"#@-gt-@# #@-lt-@#/span#@-gt-@#') + htmlEncode(match[1]);
-				} else { // se sono più di due, ci sono tag innestati
-
-					newStr += htmlEncode(match[0]) + UI.encodeSpacesAsPlaceholders(this.innerHTML) + htmlEncode(match[1], false);
-
-				}
-			}
-		});
-		if(root) {
-			newStr = newStr.replace(/#@-lt-@#/gi, '<').replace(/#@-gt-@#/gi, '>').replace(/#@-space-@#/gi, ' ');
-		}
-		return newStr;
-	},
 
 	unnestMarkers: function() {
 		$('.editor .editarea .marker .marker').each(function() {
@@ -2220,7 +2150,7 @@ UI = {
 
                 SegmentActions.setSegmentPropagation(UI.getSegmentId(this), UI.getSegmentFileId(this), true ,UI.getSegmentId(segment));
 
-                var trans = $('.editarea', this ).text().replace(/\uFEFF/g,'');
+                var trans = UI.postProcessEditarea(segment, '.targetarea').replace(/\uFEFF/g,'');
                 LXQ.doLexiQA(this,trans,UI.getSegmentId(this),true,null);
             });
 
@@ -2284,6 +2214,13 @@ UI = {
         this.settedWaypoints = true;
 	},
 
+    removeWaypoints: function (  ) {
+        if (this.settedWaypoints) {
+            Waypoint.destroyAll();
+            this.settedWaypoints = false;
+        }
+    },
+
     storeClientInfo: function () {
         clientInfo = {
             xRes: window.screen.availWidth,
@@ -2305,13 +2242,16 @@ UI = {
 	},
 	undoInSegment: function() {
 		console.log('undoInSegment');
-		if (this.undoStackPosition === 0)
-			this.saveInUndoStack('undo');
-		var ind = 0;
+        if (this.undoStack.length === 0) {
+            return;
+        }
+        if (this.undoStackPosition === 0) {
+            this.saveInUndoStack( 'undo' );
+        }
+        var ind = 0;
 		if (this.undoStack[this.undoStack.length - 1 - this.undoStackPosition - 1])
 			ind = this.undoStack.length - 1 - this.undoStackPosition - 1;
         SegmentActions.replaceEditAreaTextContent(UI.getSegmentId(this.editarea), UI.getSegmentFileId(this.editarea), this.undoStack[ind]);
-        // this.editarea.html(this.undoStack[ind]);
         setTimeout(function () {
             setCursorPosition(document.getElementsByClassName("undoCursorPlaceholder")[0]);
             $('.undoCursorPlaceholder').remove();
@@ -2322,7 +2262,11 @@ UI = {
 		this.registerQACheck();
 	},
 	redoInSegment: function() {
-        var html = this.undoStack[this.undoStack.length - 1 - this.undoStackPosition - 1 + 2]
+        var index = this.undoStack.length - 1 - this.undoStackPosition - 1 + 2;  //??
+        if ( index >= this.undoStack.length ) {
+            return false;
+        }
+        var html = this.undoStack[index];
         SegmentActions.replaceEditAreaTextContent(UI.getSegmentId(this.editarea), UI.getSegmentFileId(this.editarea), html);
         setTimeout(function () {
             setCursorPosition(document.getElementsByClassName("undoCursorPlaceholder")[0]);
@@ -2350,12 +2294,12 @@ UI = {
 		if (this.editarea.html() === '') return;
         if (this.editarea.length === 0 ) return ;
 
-		var ss = this.editarea.html().match(/<span.*?contenteditable\="false".*?\>/gi);
-		var tt = this.editarea.html().match(/&lt;/gi);
-        if ( tt ) {
-            if ( (tt.length) && (!ss) )
-                return;
-        }
+        // var ss = this.editarea.html().match(/<span.*?contenteditable\="false".*?\>/gi);
+        // var tt = this.editarea.html().match(/&lt;/gi);
+        // if ( tt ) {
+        //     if ( (tt.length) && (!ss) )
+        //         return;
+        // }
 
 		var pos = this.undoStackPosition;
 		if (pos > 0) {
@@ -2397,45 +2341,6 @@ UI = {
     isKorean: function () {
         var l = config.target_rfc;
         return l == 'ko-KR';
-    },
-    start: function () {
-
-        // TODO: the following variables used to be set in UI.init() which is called
-        // very during rendering. Those have been moved here because of the init change
-        // of SegmentFilter, see below.
-        UI.firstLoad = true;
-        UI.body = $('body');
-        UI.checkSegmentsArray = {} ;
-        UI.localStorageCurrentSegmentId = "currentSegmentId-"+config.id_job+config.password;
-        UI.setShortcuts();
-        // If some icon is added on the top header menu, the file name is resized
-        APP.addDomObserver($('.header-menu')[0], function() {
-            APP.fitText($('.breadcrumbs'), $('#pname'), 30);
-        });
-        setBrowserHistoryBehavior();
-        $("article").each(function() {
-            APP.fitText($('.filename h2', $(this)), $('.filename h2', $(this)), 30);
-        });
-
-        var initialRenderPromise = UI.render();
-
-        initialRenderPromise.done(function() {
-            if ( SegmentFilter.enabled() && SegmentFilter.getStoredState().reactState ) {
-                SegmentFilter.openFilter();
-            }
-            UI.checkWarnings(true);
-        });
-
-        $('html').trigger('start');
-
-        if (LXQ.enabled()) {
-            $('#lexiqabox').removeAttr("style");
-            LXQ.initPopup();
-        }
-    },
-    restart: function () {
-        UI.unmountSegments();
-        this.start();
     },
     /**
      * After User click on Translated or T+>> Button

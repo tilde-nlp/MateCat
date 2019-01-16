@@ -86,7 +86,7 @@ class ConversionHandler {
             return -1;
         }
 
-        $forceXliff = $this->features->filter( 'forceXLIFFConversion', INIT::$FORCE_XLIFF_CONVERSION, $this->_userIsLogged );
+        $forceXliff = $this->features->filter( 'forceXLIFFConversion', INIT::$FORCE_XLIFF_CONVERSION, $this->_userIsLogged, $file_path );
 
         //XLIFF Conversion management
         $fileMustBeConverted = DetectProprietaryXliff::fileMustBeConverted( $file_path, $forceXliff );
@@ -294,7 +294,9 @@ class ConversionHandler {
                 return null;
             }
 
-            return array_map( "Upload::fixFileName", $za->treeList );
+            return array_map( function( $fileName ) use( $uploadFile ) {
+                return $uploadFile->fixFileName( $fileName, false );
+            }, $za->treeList );
 
         } catch ( Exception $e ) {
 

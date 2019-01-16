@@ -1,10 +1,11 @@
 <?php
 
-use Constants\Ices;
+use Contribution\Request;
 
 class getContributionController extends ajaxController {
 
     protected $id_segment;
+    protected $id_client;
     private $concordance_search;
     private $switch_languages;
     private $id_job;
@@ -21,11 +22,8 @@ class getContributionController extends ajaxController {
 
     protected $context_before;
     protected $context_after;
-
-    /**
-     * @var Jobs_JobStruct
-     */
-    private $jobData;
+    protected $id_before;
+    protected $id_after;
 
     private $__postInput = array();
 
@@ -45,15 +43,21 @@ class getContributionController extends ajaxController {
                 'context_before' => [ 'filter' => FILTER_UNSAFE_RAW ],
                 'context_after'  => [ 'filter' => FILTER_UNSAFE_RAW ],
                 'mt_system'  => [ 'filter' => FILTER_SANITIZE_STRING],
+                'id_before'      => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
+                'id_after'       => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
+                'id_client'      => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ]
         ];
 
         $this->__postInput = filter_input_array( INPUT_POST, $filterArgs );
 
         //NOTE: This is for debug purpose only,
         //NOTE: Global $_POST Overriding from CLI
-        //$this->__postInput = filter_var_array( $_POST, $filterArgs );
+//        $this->__postInput = filter_var_array( $_REQUEST, $filterArgs );
 
         $this->id_segment         = $this->__postInput[ 'id_segment' ];
+        $this->id_before          = $this->__postInput[ 'id_before' ];
+        $this->id_after           = $this->__postInput[ 'id_after' ];
+
         $this->id_job             = $this->__postInput[ 'id_job' ];
         $this->num_results        = $this->__postInput[ 'num_results' ];
         $this->text               = html_entity_decode(trim( $this->__postInput[ 'text' ] ));
@@ -62,6 +66,7 @@ class getContributionController extends ajaxController {
         $this->switch_languages   = $this->__postInput[ 'from_target' ];
         $this->password           = $this->__postInput[ 'password' ];
         $this->mt_system           = $this->__postInput[ 'mt_system' ];
+        $this->id_client          = $this->__postInput[ 'id_client' ];
 
         if ( $this->id_translator == 'unknown_translator' ) {
             $this->id_translator = "";
@@ -76,16 +81,20 @@ class getContributionController extends ajaxController {
             //in case of user concordance search skip these lines
             //because segment can be optional
             if ( empty( $this->id_segment ) ) {
-                $this->result[ 'errors' ][ ] = array( "code" => -1, "message" => "missing id_segment" );
+                $this->result[ 'errors' ][] = [ "code" => -1, "message" => "missing id_segment" ];
             }
         }
 
         if ( is_null( $this->text ) || $this->text === '' ) {
-            $this->result[ 'errors' ][ ] = array( "code" => -2, "message" => "missing text" );
+            $this->result[ 'errors' ][] = [ "code" => -2, "message" => "missing text" ];
         }
 
         if ( empty( $this->id_job ) ) {
-            $this->result[ 'errors' ][ ] = array( "code" => -3, "message" => "missing id_job" );
+            $this->result[ 'errors' ][] = [ "code" => -3, "message" => "missing id_job" ];
+        }
+
+        if( empty( $this->id_client ) ){
+            $this->result[ 'errors' ][] = [ "code" => -4, "message" => "missing id_client" ];
         }
 
         if ( empty( $this->num_results ) ) {
@@ -96,15 +105,16 @@ class getContributionController extends ajaxController {
             return -1;
         }
 
+//        throw new \Exceptions\NotFoundException( "Record Not Found" );
         //get Job Info, we need only a row of jobs ( split )
-        $this->jobData = Jobs_JobDao::getByIdAndPassword( $this->id_job, $this->password );
+        $jobStruct = Chunks_ChunkDao::getByIdAndPassword( $this->id_job, $this->password );
 
-        $pCheck = new AjaxPasswordCheck();
-        //check for Password correctness
-        if ( empty( $this->jobData ) || !$pCheck->grantJobAccessByJobData( $this->jobData, $this->password ) ) {
-            $this->result[ 'errors' ][ ] = array( "code" => -10, "message" => "wrong password" );
+        $projectStruct = $jobStruct->getProject();
+        $this->featureSet->loadForProject( $projectStruct );
 
-            return -1;
+        $this->readLoginInfo();
+        if( !$this->concordance_search ){
+            $this->_getContexts();
         }
 
         $this->featureSet->loadForProject( $this->jobData->getProject() );
@@ -238,90 +248,29 @@ class getContributionController extends ajaxController {
                 }
             }
         }
-        /* New Feature only if this is not a MT and if it is a ( 90 =< MATCH < 100 ) */
 
-        if ( !$this->concordance_search ) {
-            //execute these lines only in segment contribution search,
-            //in case of user concordance search skip these lines
-            $res = $this->setSuggestionReport( $matches );
-            if ( is_array( $res ) and array_key_exists( "error", $res ) ) {
-                ; // error occurred
-            }
-            //
-        }
+        Request::contribution( $contributionRequest );
 
-        foreach ( $matches as &$match ) {
+        $this->result = [ "errors" => [], "data" => [ "message" => "OK", "id_client" => $this->id_client ] ];
 
-            if ( strpos( $match[ 'created_by' ], 'MT' ) !== false ) {
-                $match[ 'match' ] = 'MT';
-
-                $QA = new PostProcess( $match[ 'raw_segment' ], $match[ 'raw_translation' ] );
-                $QA->realignMTSpaces();
-
-                //this should every time be ok because MT preserve tags, but we use the check on the errors
-                //for logic correctness
-                if ( !$QA->thereAreErrors() ) {
-                    $match[ 'raw_translation' ] = $QA->getTrgNormalized();
-                    $match[ 'translation' ]     = CatUtils::rawxliff2view( $match[ 'raw_translation' ] );
-                } else {
-                    Log::doLog( $QA->getErrors() );
-                }
-            }
-            
-            if ( $match[ 'created_by' ] == 'MT!' ) {
-                $match[ 'created_by' ] = 'MT'; //MyMemory returns MT!
-            } elseif ( $match[ 'created_by' ] == 'NeuralMT' ) {
-                $match[ 'created_by' ] = 'MT'; //For now do not show differences
-            } else {
-
-                $uid = null;
-                $this->readLoginInfo();
-                if($this->userIsLogged){
-                    $uid = $this->user->uid;
-                }
-                $match[ 'created_by' ] = Utils::changeMemorySuggestionSource(
-                        $match,
-                        $this->jobData['tm_keys'],
-                        $this->jobData['owner'],
-                        $uid
-                );
-            }
-
-            $match = $this->_matchRewrite( $match );
-
-            if ( !empty( $match[ 'sentence_confidence' ] ) ) {
-                $match[ 'sentence_confidence' ] = round( $match[ 'sentence_confidence' ], 0 ) . "%";
-            }
-
-            if ( $this->concordance_search ) {
-
-                $match[ 'segment' ] = strip_tags( html_entity_decode( $match[ 'segment' ] ) );
-                $match[ 'segment' ] = preg_replace( '#[\x{20}]{2,}#u', chr( 0x20 ), $match[ 'segment' ] );
-
-                //Do something with &$match, tokenize strings and send to client
-                $match[ 'segment' ]     = preg_replace( array_keys( $regularExpressions ), array_values( $regularExpressions ), $match[ 'segment' ] );
-                $match[ 'translation' ] = strip_tags( html_entity_decode( $match[ 'translation' ] ) );
-            }
-        }
-
-        $this->result[ 'data' ][ 'matches' ] = $matches;
     }
 
-    protected function _matchRewrite( $match ){
+    protected function _getContexts(){
 
-        //Rewrite ICE matches as 101%
-        if( $match[ 'match' ] == '100%' ){
-            list( $lang, ) = explode( '-', $this->jobData[ 'target' ] );
-            if( isset( $match[ 'ICE' ] ) && $match[ 'ICE' ] && array_search( $lang, ICES::$iceLockDisabledForTargetLangs ) === false ){
-                $match[ 'match' ] = '101%';
-            }
-            //else do not rewrite the match value
-        }
+        //Get contexts
+        $segmentsList = ( new Segments_SegmentDao )->setCacheTTL( 60 * 60 * 24 )->getContextAndSegmentByIDs(
+                [
+                        'id_before'  => $this->id_before,
+                        'id_segment' => $this->id_segment,
+                        'id_after'   => $this->id_after
+                ]
+        );
 
-        //Allow the plugins to customize matches
-        $match = $this->featureSet->filter( 'matchRewriteForContribution', $match );
+        $this->featureSet->filter( 'rewriteContributionContexts', $segmentsList, $this->__postInput );
 
-        return $match;
+        $this->context_before = $segmentsList->id_before->segment;
+        $this->text           = $segmentsList->id_segment->segment;
+        $this->context_after  = $segmentsList->id_after->segment;
 
     }
 

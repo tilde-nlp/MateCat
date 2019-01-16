@@ -175,4 +175,102 @@ SQL;
 
     }
 
+    /**
+     * @param $segments_id array
+     * @param $job_id integer
+     *
+     * @return array
+     */
+    public static function getIssuesBySegments( $segments_id, $job_id ) {
+
+        $prepare_str_segments_id = str_repeat( 'UNION SELECT ? ', count( $segments_id ) - 1);
+
+        $sql = "SELECT
+
+  issues.id_segment as segment_id,
+  issues.id as issue_id,
+  issues.create_date as issue_create_date,
+  issues.replies_count as issue_replies_count,
+  
+  -- start_offset and end_offset were introduced for DQF. We are taking for granted a string with 
+  -- both start_node and end_node equal to 0 ( no tags in target string ). 
+  issues.start_offset  as issue_start_offset,
+  issues.end_offset    as issue_end_offset,
+
+  qa_categories.label   as issue_category,
+  qa_categories.options as category_options,
+  
+  issues.severity     as issue_severity,
+  issues.comment      as issue_comment,
+  issues.target_text  as target_text,
+  issues.uid          as issue_uid,
+  
+  translation_warnings.scope as warning_scope, 
+  translation_warnings.data as warning_data, 
+  translation_warnings.severity as warning_severity
+
+FROM  qa_entries issues
+
+JOIN ( 
+		SELECT ? as id_segment
+		".$prepare_str_segments_id."
+) AS SLIST USING( id_segment )
+
+  LEFT JOIN qa_entry_comments comments
+    ON comments.id_qa_entry = issues.id
+
+  LEFT JOIN qa_categories
+    ON issues.id_category = qa_categories.id
+    
+  LEFT JOIN translation_warnings 
+    ON translation_warnings.id_segment = issues.id_segment 
+    
+    WHERE issues.id_job = ?
+      
+  ";
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare( $sql );
+        $stmt->setFetchMode( \PDO::FETCH_CLASS, '\DataAccess\ShapelessConcreteStruct' );
+
+        $stmt->execute( array_merge($segments_id, array($job_id)) );
+
+        return $stmt->fetchAll();
+    }
+
+    public function getReviseIssuesByChunk($job_id, $password){
+
+        $sql = "SELECT
+
+  issues.id as issue_id,
+  qa_categories.label   as issue_category_label,
+  issues.id_category as id_category,
+  issues.severity     as issue_severity
+  
+FROM  qa_entries issues
+
+JOIN jobs j ON issues.id_job = j.id 
+    AND issues.id_segment >= j.job_first_segment
+    AND issues.id_segment <= j.job_last_segment
+  
+  LEFT JOIN qa_categories
+    ON issues.id_category = qa_categories.id
+    
+    
+    WHERE j.id = ? AND j.password = ?
+      
+  ";
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare( $sql );
+        $stmt->setFetchMode( \PDO::FETCH_CLASS, '\DataAccess\ShapelessConcreteStruct' );
+
+        $stmt->execute( array($job_id, $password) );
+
+        return $stmt->fetchAll();
+
+    }
+
+
+
 }

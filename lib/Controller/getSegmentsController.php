@@ -3,6 +3,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
+use Segments\ContextGroupDao;
+
 class getSegmentsController extends ajaxController {
 
     private $data = array();
@@ -93,6 +96,7 @@ class getSegmentsController extends ajaxController {
 
         $this->prepareNotes( $data );
         $data = $this->prepareComments( $data );
+        $contexts = $this->getContextGroups( $data );
 
 		foreach ($data as $i => $seg) {
 
@@ -198,6 +202,7 @@ class getSegmentsController extends ajaxController {
             );
 
             $this->attachNotes( $seg );
+            $this->attachContexts( $seg, $contexts );
 
             $this->data["$id_file"]['segments'][] = $seg;
         }
@@ -349,7 +354,6 @@ class getSegmentsController extends ajaxController {
         $struct->last_segment  = $last['sid'];
 
         $commentDao = new Comments_CommentDao( Database::obtain() );
-
         $comments = $commentDao->getCommentsInJob( $struct );
         if (empty($comments)) {
             return array_values($mappedSegments);
@@ -363,5 +367,18 @@ class getSegmentsController extends ajaxController {
         }
 
         return array_values($mappedSegments);
+    }
+
+    private function getContextGroups( $segments ){
+        if ( ! empty( $segments[0] ) ) {
+            $start = $segments[0]['sid'];
+            $last = end($segments);
+            $stop = $last['sid'];
+            return ( new ContextGroupDao() )->getBySIDRange( $start, $stop );
+        }
+    }
+
+    private function attachContexts( &$segment, $contexts ){
+        $segment['context_groups'] = @$contexts[ (int) $segment['sid'] ] ;
     }
 }

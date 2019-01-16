@@ -76,13 +76,15 @@ if (true)
 
         /**
          * Mark the glossary matches in the source
-         * @param d
+         * @param segmentToMark
+         * @param matchesObj
          */
-        markGlossaryItemsInSource: function ( matchesObj ) {
+        markGlossaryItemsInSource: function (segmentToMark, matchesObj ) {
 
             if ( ! Object.size( matchesObj ) ) return ;
 
-            var container = $('.source', UI.currentSegment ) ;
+            var segment = (segmentToMark) ? segmentToMark : UI.currentSegment;
+            var container = $('.source', segment ) ;
 
             root.QaCheckGlossary.enabled() && root.QaCheckGlossary.removeUnusedGlossaryMarks( container );
 
@@ -99,7 +101,7 @@ if (true)
             } );
 
             var matchesToRemove = findInclusiveMatches( matches ) ;
-            var matches = matches.sort(function(a, b){
+            matches = matches.sort(function(a, b){
                 return b.length - a.length;
             });
             $.each( matches, function ( index, k ) {
@@ -112,7 +114,12 @@ if (true)
                         .replace( /\(/gi, '\\(' )
                         .replace( /\)/gi, '\\)' );
 
-                var re = new RegExp( '\\b'+ glossaryTerm_escaped.trim() + '\\b', "gi" );
+                var re = new RegExp( '\b'+ glossaryTerm_escaped.trim() + '\b', "gi" );
+
+                //If source languace is Cyrillic
+                if ( cleanString.match(/[\w\u0430-\u044f]+/ig) ) {
+                    re = new RegExp( glossaryTerm_escaped.trim(), "gi" );
+                }
                 var regexInTags = new RegExp( "<[^>]*?("+glossaryTerm_escaped.trim()+")[^>]*?>" , "gi" );
 
                 var glossaryTerm_marked = cleanString.replace( re, '<mark>' + glossaryTerm_noPlaceholders + '</mark>' );
@@ -144,7 +151,7 @@ if (true)
                 //find all glossary matches
                 var match = re.exec(cleanString);
                 //Check if glossary term break a marker EX: &lt;g id="3"&gt;
-                if ((glossaryTerm_escaped.toLocaleLowerCase() == 'lt' || glossaryTerm_escaped.toLocaleLowerCase() == 'gt') && UI.hasSourceOrTargetTags(UI.currentSegment)) {
+                if ((glossaryTerm_escaped.toLocaleLowerCase() == 'lt' || glossaryTerm_escaped.toLocaleLowerCase() == 'gt') && UI.hasSourceOrTargetTags(segment)) {
                     return;
                 }
                 while(match) {
@@ -176,7 +183,7 @@ if (true)
             UI.startGlossaryMark = '<mark class="inGlossary">';
             UI.endGlossaryMark = '</mark>';
             markLength = UI.startGlossaryMark.length + UI.endGlossaryMark.length;
-            var sourceString = $( '.editor .source' ).html();
+            var sourceString = container.html();
             if ( sourceString ) {
                 $.each( UI.intervalsUnion, function ( index ) {
                     if ( this === UI.lastIntervalUnionAnalysed ) return;
@@ -184,7 +191,7 @@ if (true)
                     added = markLength * index;
                     sourceString = sourceString.splice( this.startPos + added, 0, UI.startGlossaryMark );
                     sourceString = sourceString.splice( this.endPos + added + UI.startGlossaryMark.length, 0, UI.endGlossaryMark );
-                    SegmentActions.replaceSourceText(UI.getSegmentId(UI.currentSegment) , UI.getSegmentFileId(UI.currentSegment), sourceString)
+                    SegmentActions.replaceSourceText(UI.getSegmentId(segment) , UI.getSegmentFileId(segment), sourceString);
                 } );
             }
             UI.lastIntervalUnionAnalysed = null;
@@ -193,15 +200,18 @@ if (true)
                     $( this ).replaceWith( $( this ).html() );
                 } );
             }, 100);
-            $(document).trigger('glossarySourceMarked', { segment :  new UI.Segment( UI.currentSegment ) } );
+            $(document).trigger('glossarySourceMarked', { segment :  new UI.Segment( segment ) } );
 
         },
-        removeGlossaryMarksFormSource: function () {
-            $( '.editor mark.inGlossary' ).each( function () {
+        removeGlossaryMarksFormSource: function (segment) {
+            segment.find( '.source mark.inGlossary' ).each( function () {
                 $( this ).replaceWith( $( this ).html() );
             } );
+            SegmentActions.replaceSourceText(UI.getSegmentId(segment) , UI.getSegmentFileId(segment), segment.find('.source').html());
+
         },
         removeGlossaryMarksFormAllSources: function () {
+            //Todo: Find a way to communicate to all segments that they have to remove glossary tags
             $( 'section mark.inGlossary' ).each( function () {
                 $( this ).replaceWith( $( this ).html() );
             } );

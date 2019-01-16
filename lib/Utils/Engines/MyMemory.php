@@ -132,9 +132,11 @@ class Engines_MyMemory extends Engines_AbstractEngine {
      * @param $_config
      *
      * @return array
-     * @throws Exceptions_RecordNotFound
-     * @throws \Exceptions\ValidationError
+     * @throws \Exceptions\NotFoundException
      * @throws \API\V2\Exceptions\AuthenticationError
+     * @throws \Exceptions\ValidationError
+     * @throws \TaskRunner\Exceptions\EndQueueException
+     * @throws \TaskRunner\Exceptions\ReQueueException
      */
     public function get( $_config ) {
 
@@ -170,7 +172,7 @@ class Engines_MyMemory extends Engines_AbstractEngine {
         ( !$_config[ 'isGlossary' ] ? $function = "translate_relative_url" : $function = "gloss_get_relative_url" );
 
 
-        $parameters = $this->featureSet->filter( 'filterMyMemoryGetParameters', $parameters );
+        $parameters = $this->featureSet->filter( 'filterMyMemoryGetParameters', $parameters, $_config );
         $this->call( $function, $parameters, true );
 
         if ( isset( $segment_file_chr[ 1 ] ) ) {

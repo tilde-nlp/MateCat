@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 5.7.22, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.24, for Linux (x86_64)
 --
 -- Host: 127.0.0.1    Database: matecat
 -- ------------------------------------------------------
@@ -173,6 +173,26 @@ CREATE TABLE `connected_services` (
   `is_default` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uid_email_service` (`uid`,`email`,`service`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `context_groups`
+--
+
+DROP TABLE IF EXISTS `context_groups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `context_groups` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_project` int(11) NOT NULL,
+  `id_segment` bigint(20) unsigned DEFAULT NULL,
+  `id_file` int(10) unsigned DEFAULT NULL,
+  `context_json` varchar(16320) NOT NULL,
+  PRIMARY KEY (`id`,`id_project`),
+  KEY `id_segment_idx` (`id_segment`) USING BTREE,
+  KEY `id_file_idx` (`id_file`) USING BTREE,
+  KEY `id_project_idx` (`id_project`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -695,7 +715,7 @@ CREATE TABLE `qa_chunk_reviews` (
   `review_password` varchar(45) NOT NULL,
   `penalty_points` bigint(20) DEFAULT NULL,
   `num_errors` int(11) NOT NULL DEFAULT '0',
-  `is_pass` tinyint(4) NOT NULL DEFAULT '0',
+  `is_pass` tinyint(4) DEFAULT NULL,
   `force_pass_at` timestamp NULL DEFAULT NULL,
   `reviewed_words_count` int(11) NOT NULL DEFAULT '0',
   `undo_data` text,
@@ -875,6 +895,8 @@ CREATE TABLE `segment_translation_versions` (
   `time_to_edit` int(11) DEFAULT NULL,
   `is_review` tinyint(4) NOT NULL DEFAULT '0',
   `raw_diff` text,
+  `old_status` int(11) DEFAULT NULL,
+  `new_status` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_segment` (`id_segment`) USING BTREE,
   KEY `id_job` (`id_job`) USING BTREE,
@@ -1176,7 +1198,7 @@ USE `matecat`;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-07-12 15:17:43
+-- Dump completed on 2019-01-14 10:38:50
 
 
 INSERT INTO `engines` VALUES (10,'NONE','NONE','No MT','','',NULL,NULL,NULL,'{}','NONE','',NULL,100,0,NULL);
@@ -1244,7 +1266,7 @@ GRANT DROP ON `matecat`.`jobs_stats` TO 'PEEWorker'@'%' IDENTIFIED BY 'matecat02
 
 USE `matecat`;
 
--- MySQL dump 10.13  Distrib 5.7.22, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.24, for Linux (x86_64)
 --
 -- Host: 127.0.0.1    Database: matecat
 -- ------------------------------------------------------
@@ -1341,6 +1363,9 @@ INSERT INTO `phinxlog` VALUES (20171129152525,'2017-11-30 12:39:09','2017-11-30 
 INSERT INTO `phinxlog` VALUES (20171214110059,'2017-12-18 16:48:13','2017-12-18 16:48:14');
 INSERT INTO `phinxlog` VALUES (20180207155126,'2018-03-30 17:15:01','2018-03-30 17:15:03');
 INSERT INTO `phinxlog` VALUES (20180330145502,'2018-03-30 17:15:03','2018-03-30 17:15:16');
+INSERT INTO `phinxlog` VALUES (20180921144444,'2018-09-21 16:47:50','2018-09-21 16:47:52');
+INSERT INTO `phinxlog` VALUES (20180924143503,'2018-09-25 10:47:17','2018-09-25 10:47:20');
+INSERT INTO `phinxlog` VALUES (20181026145655,'2018-10-31 12:59:37','2018-10-31 12:59:38');
 /*!40000 ALTER TABLE `phinxlog` ENABLE KEYS */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -1352,4 +1377,4 @@ INSERT INTO `phinxlog` VALUES (20180330145502,'2018-03-30 17:15:03','2018-03-30 
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-07-12 15:17:43
+-- Dump completed on 2019-01-14 10:38:50

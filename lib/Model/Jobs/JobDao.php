@@ -8,8 +8,8 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
     const TABLE       = "jobs";
     const STRUCT_TYPE = "Jobs_JobStruct";
 
-    protected static $auto_increment_fields = [ 'id' ];
-    protected static $primary_keys          = [ 'id', 'password' ];
+    protected static $auto_increment_field = [ 'id' ];
+    protected static $primary_keys         = [ 'id', 'password' ];
 
     protected static $_sql_update_password = "UPDATE jobs SET password = :new_password WHERE id = :id AND password = :old_password ";
 
@@ -20,10 +20,10 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
      *
      * Use when counters of the job value are not important but only the metadata are needed
      *
-     * XXX: Be careful, used by the ContributionStruct
+     * XXX: Be careful, used by the ContributionSetStruct
      *
      * @see \AsyncTasks\Workers\SetContributionWorker
-     * @see \Contribution\ContributionStruct
+     * @see \Contribution\ContributionSetStruct
      *
      * @param Jobs_JobStruct $jobQuery
      *
@@ -114,6 +114,12 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         return $this->_destroyObjectCache( $stmt, [ $project_id ] );
     }
 
+    /**
+     * @param     $id_project
+     * @param int $ttl
+     *
+     * @return DataAccess_IDaoStruct[]|Jobs_JobStruct[]
+     */
     public static function getByProjectId( $id_project, $ttl = 0 ) {
 
         $thisDao = new self();

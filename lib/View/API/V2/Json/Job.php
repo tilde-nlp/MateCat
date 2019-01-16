@@ -86,15 +86,15 @@ class Job {
     }
 
     /**
-     * @param $jStruct Chunks_ChunkStruct
+     * @param                         $jStruct Chunks_ChunkStruct
+     *
+     * @param \Projects_ProjectStruct $project
+     * @param FeatureSet              $featureSet
      *
      * @return array
      * @throws \Exception
-     * @throws \Exceptions\NotFoundError
      */
-    public function renderItem( Chunks_ChunkStruct $jStruct ) {
-
-        $featureSet = new FeatureSet();
+    public function renderItem( Chunks_ChunkStruct $jStruct, \Projects_ProjectStruct $project, FeatureSet $featureSet ) {
 
         $outsourceInfo = $jStruct->getOutsource();
         $tStruct       = $jStruct->getTranslator();
@@ -123,10 +123,8 @@ class Job {
 
         $warningsCount = $jStruct->getWarningsCount();
 
-        $featureSet->loadForProject($jStruct->getJob()->getProject());
-
         if(in_array(ReviewImproved::FEATURE_CODE, $featureSet->getCodes()) || in_array(ReviewExtended::FEATURE_CODE, $featureSet->getCodes())){
-            $reviseIssues = [];
+            $reviseIssues = new \stdClass();
 
         } else{
 
@@ -175,8 +173,9 @@ class Job {
                 'created_at'            => Utils::api_timestamp( $jStruct->create_date ),
                 'create_date'           => $jStruct->create_date,
                 'formatted_create_date' => ManageUtils::formatJobDate( $jStruct->create_date ),
-                'quality_overall'       => CatUtils::getQualityOverallFromJobStruct( $jStruct ),
+                'quality_overall'       => CatUtils::getQualityOverallFromJobStruct( $jStruct, $project, $featureSet ),
                 'pee'                   => $jStruct->getPeeForTranslatedSegments(),
+                'tte'                   => (int)((int)$jStruct->total_time_to_edit/1000),
                 'private_tm_key'        => $this->getKeyList( $jStruct ),
                 'warnings_count'        => $warningsCount->warnings_count,
                 'warning_segments'      => ( isset( $warningsCount->warning_segments ) ? $warningsCount->warning_segments : [] ),
@@ -204,7 +203,7 @@ class Job {
         $formatted = new ProjectUrls( $projectData );
 
         /** @var $formatted ProjectUrls */
-        $formatted = $project->getFeatures()->filter( 'projectUrls', $formatted );
+        $formatted = $featureSet->filter( 'projectUrls', $formatted );
 
         $urlsObject = $formatted->render( true );
         $result[ 'urls' ] = $urlsObject[ 'jobs' ][ $jStruct->id ][ 'chunks' ][ $jStruct->password ];

@@ -192,8 +192,6 @@ class OutsourceVendor extends React.Component {
         $(this.outsourceForm).find('input[name=confirm_urls]').attr('value', this.confirm_urls);
         $(this.outsourceForm).find('input[name=data_key]').attr('value', this.data_key);
 
-        UI.populateOutsourceForm();
-
         //IMPORTANT post out the quotes
         $(this.outsourceForm).find('input[name=quoteData]').attr('value', JSON.stringify( this.quoteResponse ) );
         $(this.outsourceForm).submit();
@@ -310,7 +308,7 @@ class OutsourceVendor extends React.Component {
     getNewRates() {
         let date = $(this.calendar).calendar('get date');
         let time = $(this.dropdownTime).dropdown('get value');
-        date.setHours(time[0]);
+        date.setHours(time);
         date.setMinutes(date.getMinutes() + (2 - parseFloat(this.state.timezone)) * 60);
         let timestamp = (new Date(date)).getTime();
         let now = new Date().getTime();
@@ -337,7 +335,7 @@ class OutsourceVendor extends React.Component {
             msg = "Choosing the best available translator from the matching " + this.props.translatorsNumber.printable + "...";
         }
         return <div className="translated-loader">
-            <img src="../../public/img/loading-outsource-translated.gif" />
+            <img src="../../public/img/loader-matecat-translated-outsource.gif" />
             <div className="text-loader-outsource">{msg}</div>
         </div>
     }
@@ -361,7 +359,7 @@ class OutsourceVendor extends React.Component {
                 </div>
                 <div className="fiducial-logo">
                     <div className="translated-logo">Guaranteed by
-                        <img className="logo-t" src="/public/img/logo_translated.png" />
+                        <img className="logo-t" src="/public/img/matecat-logo-translated.svg" />
                     </div>
                 </div>
             </div>

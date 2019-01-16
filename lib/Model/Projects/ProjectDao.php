@@ -7,8 +7,8 @@ use Teams\TeamStruct;
 class Projects_ProjectDao extends DataAccess_AbstractDao {
     const TABLE = "projects";
 
-    protected static $auto_increment_fields = array('id');
-    protected static $primary_keys = array('id');
+    protected static $auto_increment_field = array('id');
+    protected static $primary_keys         = array('id');
 
     protected static $_sql_project_data = "
             SELECT p.name, j.id AS jid, j.password AS jpassword, j.source, j.target, j.payable_rates, f.id, f.id AS id_file,f.filename, p.status_analysis, j.subject,
@@ -234,7 +234,7 @@ class Projects_ProjectDao extends DataAccess_AbstractDao {
      * @param int $ttl
      *
      * @return Projects_ProjectStruct
-     * @throws \Exceptions\NotFoundError
+     * @throws \Exceptions\NotFoundException
      */
     static function findByIdAndPassword( $id, $password, $ttl = 0 ) {
 
@@ -244,7 +244,7 @@ class Projects_ProjectDao extends DataAccess_AbstractDao {
         $fetched = $thisDao->setCacheTTL( $ttl )->_fetchObject( $stmt, new Projects_ProjectStruct(), [ 'id' => $id, 'password' => $password ] )[ 0 ];
 
         if ( !$fetched ) {
-            throw new Exceptions\NotFoundError( "No project found." );
+            throw new Exceptions\NotFoundException( "No project found." );
         }
 
         return $fetched;

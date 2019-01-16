@@ -99,12 +99,9 @@ class setRevisionController extends ajaxController {
             return;
         }
 
-        $job_data = getJobData( (int)$this->id_job, $this->password_job );
-        if ( empty( $job_data ) ) {
-            $msg = "Error : empty job data \n\n " . var_export( $_POST, true ) . "\n";
-            Log::doLog( $msg );
-            Utils::sendErrMailReport( $msg );
-        }
+        $job_data = Chunks_ChunkDao::getByIdAndPassword( $this->id_job, $this->password_job );
+        $project = $job_data->getProject();
+        $this->featureSet->loadForProject( $project );
 
         //add check for job status archived.
         if ( strtolower( $job_data[ 'status' ] ) == Constants_JobStatus::STATUS_ARCHIVED ) {
@@ -112,11 +109,6 @@ class setRevisionController extends ajaxController {
         }
 
         $this->parseIDSegment();
-        $pCheck = new AjaxPasswordCheck();
-        //check for Password correctness
-        if ( empty( $job_data ) || !$pCheck->grantJobAccessByJobData( $job_data, $this->password_job, $this->id_segment ) ) {
-            $this->result[ 'errors' ][ ] = array( "code" => -7, "message" => "wrong password" );
-        }
 
         $wStruct = new WordCount_Struct();
 
@@ -161,51 +153,76 @@ class setRevisionController extends ajaxController {
          * Refresh error counters in the job table
          */
 
-        $errorCountStruct = new ErrorCount_DiffStruct( $oldRevision, $revisionStruct );
-        $errorCountStruct->setIdJob( $this->id_job );
-        $errorCountStruct->setJobPassword( $this->password_job );
+        $chunkReview = CatUtils::getQualityInfoFromJobStruct( $job_data, $project, $this->featureSet );
 
-        $errorCountDao = new ErrorCount_ErrorCountDAO( Database::obtain() );
-        try {
-
-            $this->reviseClass = new Constants_Revise;
-
-            $jobQA = new Revise_JobQA(
-                $this->id_job,
-                $this->password_job,
-                $wStruct->getTotal(),
-                $this->reviseClass
-            );
-
-            list($jobQA, $this->reviseClass) = $this->featureSet->filter("overrideReviseJobQA", [$jobQA, $this->reviseClass], $this->id_job,
-                    $this->password_job,
-                    $wStruct->getTotal());
-
-
-            if( $errorCountStruct->thereAreDifferences() ){
-                $errorCountDao->update( $errorCountStruct );
-                $jobQA->cleanErrorCache();
+        if ( in_array( Features\ReviewImproved::FEATURE_CODE, $this->featureSet->getCodes() ) || in_array( Features\ReviewExtended::FEATURE_CODE, $this->featureSet->getCodes() ) ) {
+            $reviseIssues     = [];
+            $qualityReportDao = new Features\ReviewImproved\Model\QualityReportDao();
+            $qa_data          = $qualityReportDao->getReviseIssuesByChunk( $chunk->id, $chunk->password );
+            foreach ( $qa_data as $issue ) {
+                if ( !isset( $reviseIssues[ $issue->id_category ] ) ) {
+                    $reviseIssues[ $issue->id_category ] = [
+                            'name'   => $issue->issue_category_label,
+                            'founds' => [
+                                    $issue->issue_severity => 1
+                            ]
+                    ];
+                } else {
+                    if ( !isset( $reviseIssues[ $issue->id_category ][ 'founds' ][ $issue->issue_severity ] ) ) {
+                        $reviseIssues[ $issue->id_category ][ 'founds' ][ $issue->issue_severity ] = 1;
+                    } else {
+                        $reviseIssues[ $issue->id_category ][ 'founds' ][ $issue->issue_severity ]++;
+                    }
+                }
             }
 
-        } catch ( Exception $e ) {
-            Log::doLog( __METHOD__ . " -> " . $e->getMessage() );
-            $this->result[ 'errors' ] [ ] = array( 'code' => -5, 'message' => "Did not update job error counters." );
+            $quality_overall = ( $chunkReview->is_pass == null ? null : (!empty( $chunkReview->is_pass ) ? 'excellent' : 'fail') );
 
-            return;
+        } else {
+
+            $errorCountStruct = new ErrorCount_DiffStruct( $oldRevision, $revisionStruct );
+            $errorCountStruct->setIdJob( $this->id_job );
+            $errorCountStruct->setJobPassword( $this->password_job );
+
+            $errorCountDao = new ErrorCount_ErrorCountDAO( Database::obtain() );
+            try {
+
+                $this->reviseClass = new Constants_Revise;
+
+                $jobQA = new Revise_JobQA(
+                        $this->id_job,
+                        $this->password_job,
+                        $wStruct->getTotal(),
+                        $this->reviseClass
+                );
+
+                list($jobQA, $this->reviseClass) = $this->featureSet->filter("overrideReviseJobQA", [$jobQA, $this->reviseClass], $this->id_job,
+                        $this->password_job,
+                        $wStruct->getTotal());
+
+
+                if( $errorCountStruct->thereAreDifferences() ){
+                    $errorCountDao->update( $errorCountStruct );
+                    $jobQA->cleanErrorCache();
+                }
+
+                $jobQA->retrieveJobErrorTotals();
+
+                $reviseIssues = $jobQA->getQaData();
+                $quality_overall = strtolower( $chunkReview[ 'minText' ] );
+
+            } catch ( Exception $e ) {
+                Log::doLog( __METHOD__ . " -> " . $e->getMessage() );
+                $this->result[ 'errors' ] [ ] = array( 'code' => -5, 'message' => "Did not update job error counters." );
+
+                return;
+            }
         }
 
-        /**
-         * Retrieve information about job errors
-         * ( Note: these information are fed by the revision process )
-         * @see setRevisionController
-         */
-        $jobQA->retrieveJobErrorTotals();
-        $jobVote = $jobQA->evalJobVote();
-
         $this->result[ 'data' ][ 'message' ]               = 'OK';
-        $this->result[ 'data' ][ 'stat_quality' ]          = $jobQA->getQaData();
-        $this->result[ 'data' ][ 'overall_quality' ]       = $jobVote[ 'minText' ];
-        $this->result[ 'data' ][ 'overall_quality_class' ] = strtolower( str_replace( ' ', '', $jobVote[ 'minText' ] ) );
+        $this->result[ 'data' ][ 'stat_quality' ]          = $reviseIssues;
+        $this->result[ 'data' ][ 'overall_quality' ]       = $quality_overall;
+        $this->result[ 'data' ][ 'overall_quality_class' ] = $quality_overall;
 
     }
 

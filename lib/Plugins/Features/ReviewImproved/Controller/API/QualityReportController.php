@@ -11,8 +11,10 @@ namespace Features\ReviewImproved\Controller\API;
 use API\V2\Validators\ChunkPasswordValidator;
 use API\V2\KleinController;
 use Chunks_ChunkStruct;
+use Projects_ProjectStruct;
 use Features\ReviewImproved\Model\ArchivedQualityReportDao;
 use Features\ReviewImproved\Model\QualityReportModel ;
+use QualityReport\QualityReportSegmentModel;
 
 class QualityReportController extends KleinController
 {
@@ -21,6 +23,11 @@ class QualityReportController extends KleinController
      * @var Chunks_ChunkStruct
      */
     protected $chunk;
+
+    /**
+     * @var Projects_ProjectStruct
+     */
+    protected $project;
 
     /**
      * @param Chunks_ChunkStruct $chunk
@@ -43,6 +50,53 @@ class QualityReportController extends KleinController
                 'quality-report' => $this->model->getStructure()
         ));
     }
+
+    public function segments() {
+
+        $this->project = $this->chunk->getProject();
+
+        $ref_segment = $this->request->param( 'ref_segment' );
+        $where       = $this->request->param( 'where' );
+        $step        = $this->request->param( 'step' );
+        $filter        = $this->request->param( 'filter' );
+
+        if ( empty( $ref_segment ) ) {
+            $ref_segment = 0;
+        }
+
+        if ( empty( $where ) ) {
+            $where = "after";
+        }
+
+        if ( empty( $step ) ) {
+            $step = 10;
+        }
+
+        $qrSegmentModel = new QualityReportSegmentModel();
+        $options        = [ 'filter' => $filter ];
+        $segments_id    = $qrSegmentModel->getSegmentsIdForQR( $this->chunk, $step, $ref_segment, $where, $options );
+        if ( count( $segments_id ) > 0 ) {
+            $segments = $qrSegmentModel->getSegmentsForQR( $segments_id, $this->chunk );
+
+
+            $this->response->json( [
+                    'files' =>$segments
+            ] );
+        } else {
+            $this->response->json( ['files' =>[] ]);
+        }
+
+    }
+
+    public function general(){
+        $project = $this->chunk->getProject();
+        $this->response->json( [
+                'project' => $project,
+                'job' => $this->chunk,
+        ]);
+    }
+
+
 
     public function versions() {
         $dao = new ArchivedQualityReportDao();

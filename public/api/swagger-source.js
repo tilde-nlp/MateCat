@@ -2268,6 +2268,27 @@ var spec = {
                     }
                 }
             }
+        },
+        "/api/v2/languages": {
+            "get": {
+                "tags": [
+                    "Languages"
+                ],
+                "summary": "Supported languages list.",
+                "description": "List of supported languages.",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Languages List",
+                        "schema": {
+                            "$ref": "#/definitions/Languages"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -2907,6 +2928,32 @@ var spec = {
             }
         },
 
+        "Languages": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/Language"
+            }
+        },
+
+        "Language": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "description": "Rfc code"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Language name"
+                },
+                "direction": {
+                    "type": "string",
+                    "enum": ["ltr",
+                        "rtl"],
+                "description": "Language direction, ltr (left-to-right text) or rtl (right-to-left text)"
+                }
+            }
+        },
         "PendingInvitation": {
             "type": "array",
             "items": {
@@ -3182,6 +3229,7 @@ var spec = {
                 "formatted_create_date": {"type": "string"},
                 "quality_overall": {"type": "string"},
                 "pee": {"type": "integer"},
+                "tte": {"type": "integer", "format": "seconds"},
                 "private_tm_key": {
                     "type": "array",
                     "items": {

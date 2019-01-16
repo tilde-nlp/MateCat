@@ -66,6 +66,34 @@ class SegmentTarget extends React.Component {
         }
     }
 
+    selectIssueText(event) {
+        var selection = document.getSelection();
+        var container = $(this.issuesHighlightArea).find('.errorTaggingArea') ;
+        if ( this.textSelectedInsideSelectionArea(selection, container ) )  {
+            event.preventDefault();
+            event.stopPropagation();
+            selection = getSelectionData( selection, container ) ;
+            SegmentActions.openIssuesPanel({ sid: this.props.segment.sid,  selection : selection }, true);
+            setTimeout(()=> {
+                SegmentActions.showIssuesMessage(this.props.segment.sid, 2);
+            });
+        } else {
+            this.props.removeSelection();
+            UI.editAreaClick(event.currentTarget);
+        }
+    }
+
+    textSelectedInsideSelectionArea( selection, container ) {
+        return container.contents().text().indexOf(selection.focusNode.textContent)>=0 &&
+            container.contents().text().indexOf(selection.anchorNode.textContent)>=0 &&
+            selection.toString().length > 0 ;
+    };
+
+    lockEditArea(event) {
+        event.preventDefault();
+        SegmentActions.lockEditArea(this.props.segment.sid, this.props.segment.fid);
+    }
+
     decodeTranslation(segment, translation) {
         return this.props.decodeTextFn(segment, translation);
     }
@@ -76,6 +104,7 @@ class SegmentTarget extends React.Component {
 
     componentDidMount() {
         SegmentStore.addListener(SegmentConstants.REPLACE_TRANSLATION, this.replaceTranslation);
+        // SegmentStore.addListener(SegmentConstants.TRANSLATION_EDITED, this.replaceTranslation);
         SegmentStore.addListener(SegmentConstants.DISABLE_TAG_LOCK, this.toggleTagLock);
         SegmentStore.addListener(SegmentConstants.ENABLE_TAG_LOCK, this.toggleTagLock);
         SegmentStore.addListener(SegmentConstants.SET_SEGMENT_ORIGINAL_TRANSLATION, this.setOriginalTranslation);
@@ -85,6 +114,7 @@ class SegmentTarget extends React.Component {
 
     componentWillUnmount() {
         SegmentStore.removeListener(SegmentConstants.REPLACE_TRANSLATION, this.replaceTranslation);
+        // SegmentStore.removeListener(SegmentConstants.TRANSLATION_EDITED, this.replaceTranslation);
         SegmentStore.removeListener(SegmentConstants.DISABLE_TAG_LOCK, this.toggleTagLock);
         SegmentStore.addListener(SegmentConstants.ENABLE_TAG_LOCK, this.toggleTagLock);
         SegmentStore.removeListener(SegmentConstants.SET_SEGMENT_ORIGINAL_TRANSLATION, this.setOriginalTranslation);
@@ -106,14 +136,26 @@ class SegmentTarget extends React.Component {
         var textAreaContainer = "";
         let translation = this.state.translation.replace(/(<\/span\>\s)$/gi, "</span><br class=\"end\">");
 
-        if (this.props.isReviewImproved) {
+        if ( this.props.isReviewImproved ) {
             textAreaContainer = <div data-mount="segment_text_area_container">
-                <div className="textarea-container" onClick={this.onClickEvent.bind(this)}>
+                <div className="textarea-container" onClick={this.onClickEvent.bind( this )}>
                     <div className="targetarea issuesHighlightArea errorTaggingArea"
-                         dangerouslySetInnerHTML={this.allowHTML(translation)}/>
+                         dangerouslySetInnerHTML={this.allowHTML( translation )}/>
                 </div>
             </div>
-
+        } else if ( this.props.segment.edit_area_locked ) {
+            textAreaContainer = <div className="segment-text-area-container" data-mount="segment_text_area_container">
+                <div className="textarea-container" onClick={this.onClickEvent.bind( this )} onMouseUp={this.selectIssueText.bind(this)}
+                ref={(div)=> this.issuesHighlightArea = div}>
+                    <div className="targetarea issuesHighlightArea errorTaggingArea"
+                         dangerouslySetInnerHTML={this.allowHTML( translation )}/>
+                </div>
+                <div className="toolbar">
+                    {config.isReview && ReviewExtended.enabled() ? (
+                        <a href="#" className="revise-lock-editArea active" onClick={this.lockEditArea.bind(this)} title="Highlight text and assign an issue to the selected text."/>
+                    ): null}
+                </div>
+            </div>
         } else {
             var s2tMicro = "";
             var tagModeButton = "";
@@ -179,6 +221,9 @@ class SegmentTarget extends React.Component {
                 <div className="original-translation" style={{display: 'none'}}
                      dangerouslySetInnerHTML={this.allowHTML(this.state.originalTranslation)}/>
                 <div className="toolbar">
+                    {config.isReview && ReviewExtended.enabled() ? (
+                        <a href="#" className="revise-lock-editArea" onClick={this.lockEditArea.bind(this)} title="Highlight text and assign an issue to the selected text."/>
+                    ): null}
                     {tagLockCustomizable}
                     {tagModeButton}
                     {tagCopyButton}

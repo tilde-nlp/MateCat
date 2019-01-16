@@ -31,6 +31,8 @@ abstract class Engines_AbstractEngine implements Engines_EngineInterface {
 
     protected $featureSet ;
 
+    const GET_REQUEST_TIMEOUT = 10;
+
     public function __construct( $engineRecord ) {
         $this->engineRecord = $engineRecord;
         $this->className    = get_class( $this );
@@ -45,6 +47,12 @@ abstract class Engines_AbstractEngine implements Engines_EngineInterface {
         );
 
         $this->featureSet = new FeatureSet() ;
+    }
+
+    public function setFeatureSet( FeatureSet $fSet = null ){
+        if( $fSet != null ){
+            $this->featureSet = $fSet;
+        }
     }
 
     /**
@@ -227,7 +235,7 @@ abstract class Engines_AbstractEngine implements Engines_EngineInterface {
             $url .= http_build_query( $parameters );
             $curl_opt = array(
                     CURLOPT_HTTPGET => true,
-                    CURLOPT_TIMEOUT => 10
+                    CURLOPT_TIMEOUT => static::GET_REQUEST_TIMEOUT
             );
         }
 

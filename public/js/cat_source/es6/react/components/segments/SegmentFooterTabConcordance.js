@@ -24,14 +24,8 @@ class SegmentFooterTabConcordance extends React.Component {
             target: '',
             extended: extended
         }
-    }
 
-    componentWillUnmount() {
-        SegmentStore.removeListener(SegmentConstants.FIND_CONCORDANCE, this.findConcordance);
-    }
-
-    componentDidMount() {
-        SegmentStore.addListener(SegmentConstants.FIND_CONCORDANCE, this.findConcordance.bind(this));
+        this.searchSubmit = this.searchSubmit.bind(this);
     }
 
     allowHTML(string) {
@@ -79,9 +73,7 @@ class SegmentFooterTabConcordance extends React.Component {
         //type 0 = source, 1 = target
         let self = this;
         API.SEGMENT.getConcordance(query, type)
-            .done(function (d) {
-                self.renderConcordances(d, type);
-            }).fail(function () {
+            .fail(function () {
             UI.failedConnection(this, 'getConcordance');
         });
         this.setState({
@@ -94,26 +86,26 @@ class SegmentFooterTabConcordance extends React.Component {
         return {__html: string};
     }
 
-    renderConcordances(d, in_target) {
+    renderConcordances(sid, data) {
         let self = this;
         let segment = UI.currentSegment;
         let segment_id = UI.currentSegmentId;
         let array = [];
 
-        if (d.data.matches.length) {
-            _.each(d.data.matches, function (item, index) {
+        if (data.matches.length) {
+            _.each(data.matches, function (item, index) {
                 if ((item.segment === '') || (item.translation === ''))
                     return;
                 let prime = (index < self.state.numDisplayContributionMatches) ? ' prime' : '';
 
                 let cb = item.created_by;
 
-                let leftTxt = (in_target) ? item.translation : item.segment;
+                let leftTxt = item.segment;
                 leftTxt = UI.decodePlaceholdersToText(leftTxt);
                 leftTxt = leftTxt.replace(/\#\{/gi, "<mark>");
                 leftTxt = leftTxt.replace(/\}\#/gi, "</mark>");
 
-                let rightTxt = (in_target) ? item.segment : item.translation;
+                let rightTxt = item.translation;
                 rightTxt = UI.decodePlaceholdersToText(rightTxt);
                 rightTxt = rightTxt.replace(/\#\{/gi, "<mark>");
                 rightTxt = rightTxt.replace(/\}\#/gi, "</mark>");
@@ -174,6 +166,16 @@ class SegmentFooterTabConcordance extends React.Component {
         });
     }
 
+    componentDidMount() {
+        SegmentStore.addListener(SegmentConstants.FIND_CONCORDANCE, this.findConcordance.bind(this));
+        SegmentStore.addListener(SegmentConstants.CONCORDANCE_RESULT, this.renderConcordances.bind(this));
+
+    }
+
+    componentWillUnmount() {
+        SegmentStore.removeListener(SegmentConstants.FIND_CONCORDANCE, this.findConcordance);
+        SegmentStore.removeListener(SegmentConstants.CONCORDANCE_RESULT, this.renderConcordances.bind(this));
+    }
 
     render() {
         let html = '',
@@ -193,7 +195,7 @@ class SegmentFooterTabConcordance extends React.Component {
         }
         if (config.tms_enabled) {
             html = <div className={"cc-search " + loadingClass}>
-                <form onSubmit={this.searchSubmit.bind(this)}>
+                <form onSubmit={this.searchSubmit}>
                     <div className="input-group">
                         <input type="text" className="input search-source" onChange={this.sourceChange.bind(this)}
                                value={this.state.source}/>
@@ -202,7 +204,7 @@ class SegmentFooterTabConcordance extends React.Component {
                         <input type="text" className="input search-target" onChange={this.targetChange.bind(this)}
                                value={this.state.target}/>
                     </div>
-                    <input type="submit" value="" style={{display: "none"}}/>
+                    <input type="submit" value="" style={{visibility: "hidden", width: "0", padding: "0", border: "none"}}/>
                 </form>
             </div>;
         } else {

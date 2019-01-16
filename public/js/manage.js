@@ -27,7 +27,7 @@ UI = {
         var headerMountPoint = $("header")[0];
         this.Search.currentPage = 1;
         this.pageLeft = false;
-        ReactDOM.render(React.createElement(Header), headerMountPoint);
+
 
 
 
@@ -62,6 +62,12 @@ UI = {
         });
 
         API.TEAM.getAllTeams().done(function (data) {
+
+            ReactDOM.render(React.createElement(Header ,{
+                user: APP.USER.STORE,
+                showFilterProjects: true
+            }), headerMountPoint);
+
             self.teams = data.teams;
             TeamsActions.renderTeams(self.teams);
             self.selectedTeam = APP.getLastTeamSelected(self.teams);
@@ -258,7 +264,7 @@ UI = {
             title: 'Ooops...',
             text: 'Something went wrong, the project has been assigned to another member or moved to another team.',
             type: 'warning',
-            position: 'tc',
+            position: 'bl',
             allowHtml: true,
             autoDismiss: false,
         };

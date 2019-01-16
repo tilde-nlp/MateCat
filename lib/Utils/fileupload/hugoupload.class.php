@@ -93,8 +93,7 @@ class UploadHandler {
     public function post() {
         if ( isset( $_REQUEST[ '_method' ] ) && $_REQUEST[ '_method' ] === 'DELETE' ) {
             return $this->delete();
-        }
-        
+        }        
         $upload = isset( $_FILES[ $this->options[ 'param_name' ] ] ) ? $_FILES[ $this->options[ 'param_name' ] ] : null;
 
         $info = [];

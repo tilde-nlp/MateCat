@@ -1,6 +1,6 @@
 <?php
 
-use \Contribution\ContributionStruct, \Contribution\Set;
+use \Contribution\ContributionSetStruct, \Contribution\Set;
 use Analysis\DqfQueueHandler;
 
 class setTranslationController extends ajaxController {
@@ -58,8 +58,9 @@ class setTranslationController extends ajaxController {
     protected $project ;
     protected $id_segment;
 
+    protected $id_before;
+    protected $id_after;
     protected $context_before;
-
     protected $context_after;
 
     /**
@@ -99,6 +100,8 @@ class setTranslationController extends ajaxController {
                 'context_after'           => [ 'filter' => FILTER_UNSAFE_RAW ],
                 'saveType'           => [ 'filter' => FILTER_SANITIZE_STRING ],
                 'saveMatch'           => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
+                'id_before'               => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
+                'id_after'                => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
         ];
 
         $this->__postInput = filter_input_array( INPUT_POST, $filterArgs );
@@ -115,7 +118,11 @@ class setTranslationController extends ajaxController {
         !is_null( $this->__postInput[ 'propagate' ] ) ? $this->propagate = $this->__postInput[ 'propagate' ] : null /* do nothing */ ;
 
         $this->propagate             = $this->__postInput[ 'propagate' ]; //set by the client, mandatory
+
         $this->id_segment            = $this->__postInput[ 'id_segment' ];
+        $this->id_before             = $this->__postInput[ 'id_before' ];
+        $this->id_after              = $this->__postInput[ 'id_after' ];
+
         $this->time_to_edit          = (int)$this->__postInput[ 'time_to_edit' ]; //cast to int, so the default is 0
         $this->id_translator         = $this->__postInput[ 'id_translator' ];
         $this->save_type         = $this->__postInput[ 'saveType' ];
@@ -124,9 +131,6 @@ class setTranslationController extends ajaxController {
 
         list( $this->translation, $this->split_chunk_lengths ) = CatUtils::parseSegmentSplit( CatUtils::view2rawxliff( html_entity_decode($this->__postInput[ 'translation' ]) ), ' ' );
         list( $this->_segment, /** not useful assignment */ ) = CatUtils::parseSegmentSplit( CatUtils::view2rawxliff( $this->__postInput[ 'segment' ] ), ' ' );
-
-        $this->context_before = CatUtils::view2rawxliff( $this->__postInput[ 'context_before' ] );
-        $this->context_after = CatUtils::view2rawxliff( $this->__postInput[ 'context_after' ] );
 
         $this->chosen_suggestion_index = $this->__postInput[ 'chosen_suggestion_index' ];
 
@@ -257,6 +261,24 @@ class setTranslationController extends ajaxController {
 
     }
 
+    protected function _getContexts(){
+
+        //Get contexts
+        $segmentsList = ( new Segments_SegmentDao )->setCacheTTL( 60 * 60 * 24 )->getContextAndSegmentByIDs(
+                [
+                        'id_before'  => $this->id_before,
+                        'id_segment' => $this->id_segment,
+                        'id_after'   => $this->id_after
+                ]
+        );
+
+        $this->featureSet->filter( 'rewriteContributionContexts', $segmentsList, $this->__postInput );
+
+        $this->context_before = $segmentsList->id_before->segment;
+        $this->context_after  = $segmentsList->id_after->segment;
+
+    }
+
     public function doAction() {
         try {
 
@@ -276,6 +298,7 @@ class setTranslationController extends ajaxController {
 
         $this->readLoginInfo();
         $this->initVersionHandler();
+        $this->_getContexts();
 
         //check tag mismatch
         //get original source segment, first
@@ -795,7 +818,7 @@ class setTranslationController extends ajaxController {
          * TODO: really, this is not good.
          */
 
-        $version_saved = $this->VersionsHandler->saveVersion( $_Translation, $old_translation );
+        $version_saved = $this->VersionsHandler->saveVersion( $_Translation, $old_translation);
 
         if ( $version_saved ) {
             $_Translation['version_number'] = $old_translation['version_number'] + 1;
@@ -883,7 +906,7 @@ class setTranslationController extends ajaxController {
         /**
          * Set the new contribution in queue
          */
-        $contributionStruct                       = new ContributionStruct();
+        $contributionStruct                       = new ContributionSetStruct();
         $contributionStruct->fromRevision         = self::isRevision();
         $contributionStruct->id_job               = $this->id_job;
         $contributionStruct->job_password         = $this->password;
@@ -955,12 +978,12 @@ class setTranslationController extends ajaxController {
 
     /**
      * @param array              $config
-     * @param ContributionStruct $contributionStruct
+     * @param ContributionSetStruct $contributionStruct
      *
      * @throws ReQueueException
      * @throws \Exceptions\ValidationError
      */
-    protected function writeTM( Array $config, ContributionStruct $contributionStruct ) {
+    protected function writeTM( Array $config, ContributionSetStruct $contributionStruct ) {
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, $contributionStruct->jwt_token);
         $memories = $TildeTM->getMemories();
         $canWrite= $this->settingsToArray(Jobs_JobDao::getMemorySetting($contributionStruct->uid));

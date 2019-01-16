@@ -920,7 +920,11 @@ ENABLE FOLLOWING RULE AND DELETE SUBSEQUENT WHEN DOWNLOAD OF THE SINGLE FILE WIL
     text-transform: uppercase;
 }
 
-.buttons .approved.disabled{
+.buttons .approved.disabled,
+.buttons .next-unapproved.disabled ,
+.buttons .next-untranslated.disabled ,
+.buttons .translated.disabled,
+.buttons .guesstags.disabled{
     pointer-events: none;
     color: #666 !important;
     border-color: #666;
@@ -964,17 +968,25 @@ ENABLE FOLLOWING RULE AND DELETE SUBSEQUENT WHEN DOWNLOAD OF THE SINGLE FILE WIL
 	color: #09beec;
 }*/
 
-.button-reject {
+.button-reject,
+.button-rebutted{
     border: 1px solid;
     background: #b02429;
     border: 1px solid #848689;
-    color: #333;
+    color: #fff;
     font-weight: bold;
     text-decoration: none;
     padding: 8px 18px;
     border-radius: 2px;
     border-radius: 2px;
     font-size: 18px;
+    text-transform: uppercase;
+}
+
+.button-reject:hover,
+.button-rebutted:hover
+{
+    color: #fff;
 }
 
 article .translated,
@@ -1180,11 +1192,6 @@ article .approved:active {
 
 .header-dropdown-menu {
     margin-right: 15px;
-}
-
-.justdone .header-menu .wrapper-dropdown-5 .dropdown {
-    left: -224px;
-    width: 256px;
 }
 
 .header-menu .wrapper-dropdown-5 .dropdown[data-download='false'] li.downloadTranslation,
@@ -1478,9 +1485,9 @@ section.editor .body > .text {
     width: 100%;
 }
 
-.submenu {
-    display: none;
-}
+/*.submenu {*/
+    /*display: none;*/
+/*}*/
 
 .popup .submenu {
     display: block;
@@ -1559,6 +1566,17 @@ body.noGlossary .tab-switcher-gl {
     text-shadow: none;
 }
 
+.tab-switcher.loading-tab a {
+    color: #929292;
+    padding-right: 36px;
+}
+
+.loading-tab .loader.loader_on {
+    left: unset;
+    right: 12px;
+    top: 6px;
+}
+
 .notification {
     background: #f5f5f5 url(../img/point.gif) 0 0 repeat-x;
     -moz-border-radius: 2px;
@@ -1605,8 +1623,12 @@ body .footer.showMatches .sub-editor.open {
 }
 
 .sub-editor.matches .overflow {
-    min-height: 27px;
+    min-height: 65px;
 }
+.sub-editor.matches .overflow span.loader {
+    bottom: 20px;
+}
+
 
 .addtmx-tr .open-popup-addtm-tr {
     height: 13px;
@@ -2462,7 +2484,7 @@ section.editor .sid {
 }
 
 .editarea, .search-editarea, .textarea-container .area {
-    display: inline-block;
+    /*display: inline-block;*/
     /*float:right;*/
     width: 100%;
     height: 96%;
@@ -2556,7 +2578,7 @@ body.archived section .status-container a.status:hover {
 .editor .editarea {
     width: 100%;
     font-size: 18px;
-    margin: 2px 0 5px -11px;
+    margin: 2px 0 10px -11px;
     word-break: normal;
     line-height: 25px;
     outline: none;
@@ -3110,29 +3132,50 @@ body.rtl-target .editor .editarea span {
 
 .error-img {
     background: #c5351c url(../img/warning.png) no-repeat center;
-    background-size: 12px;
-    width: 14px;
-    height: 14px;
+    background-size: 17px;
+    width: 22px;
+    height: 22px;
     margin: 0;
     border-radius: 5px;
-    margin-left: -20px;
-    top: 2px;
+    margin-left: -28px;
+    top: -4px;
     position: relative;
     float: left;
 }
 
 .warning-img {
-    background: #FF9900 url(../img/warning.png) no-repeat center;
-    background-size: 12px;
-    width: 14px;
-    height: 14px;
+    background: #FF9900 url(../../img/warning.png) no-repeat center;
+    background-size: 17px;
+    width: 22px;
+    height: 22px;
     margin: 0;
     border-radius: 5px;
-    margin-left: -20px;
-    top: 2px;
+    margin-left: -28px;
+    top: -4px;
     position: relative;
     float: left;
 }
+
+.engine-errors {
+    position: absolute;
+    top: 13px;
+    width: 100%;
+}
+
+.engine-error-item.graysmall:hover {
+    background-color: #fff;
+    border-top: unset;
+}
+
+.engine-error-item.graysmall:hover span {
+    color: unset !important;
+}
+
+.engine-error-item.graysmall {
+    border-top: unset;
+    cursor: default;
+}
+
 
 .ice-locked-label {
     font-size: 11px;
@@ -3492,21 +3535,6 @@ section.modified.editor .status {
     z-index: 100000;
 }
 
-.end-message-box {
-    height: 300px;
-    width: 800px;
-    margin: 0 auto;
-    position: fixed;
-    padding: 0 0 20px 0;
-    display: none;
-    top: 50%;
-    left: 50%;
-    margin: -200px 0 0 -400px;
-    z-index: 999999;
-    background: #fff;
-    box-shadow: 0px 0px 25px #000;
-    border-radius: 2px;
-}
 
 .sendbox {
     position: absolute;
@@ -3528,16 +3556,7 @@ section.modified.editor .status {
     font-size: 14px
 }
 
-.end-message-box .downloadtr-button {
-    width: 380px;
-    margin: 10px 0 0px 0;
-    font-size: 18px;
-    padding: 10px 0px !important;
-    float: left !important;
-    border: 1px solid #848689 !important;
-    color: #fff;
-    text-align: center
-}
+
 
 .end-message-col1 {
     float: left;
@@ -3644,6 +3663,16 @@ span.locked.tag-html-container-close {
     display: none !important;
 }
 
+.locked.inside-attribute {
+    background-color: unset !important;
+}
+
+
+
+.locked::selection, span.locked a::selection {
+    background-color: transparent;
+}
+
 .editarea .locked,
 .source .locked,
 .target .locked,
@@ -3676,15 +3705,18 @@ span.locked.tag-html-container-close {
 .editarea .locked:hover,
 .source .locked:hover {
     background-color: #dddff0;
+    transition: 0.3s ease;
 }
 
-.editarea .locked.mismatch,
-.source .locked.mismatch,
-.locked.mismatch-old,
-.editarea .locked.mismatch .locked,
-.source .locked.mismatch .locked,
-.locked.mismatch-old .locked {
-    color: red !important;
+
+
+.editor .editarea .locked.mismatch:hover,
+.editor .editarea .locked.mismatch:hover,
+.source .locked.mismatch:hover,
+.locked.mismatch-old
+{
+    background-color: #f9d7ca;
+    transition: 0.3s ease;
 }
 
 .source .locked a,
@@ -3695,12 +3727,44 @@ span.locked.tag-html-container-close {
     color: #767676
 }
 
-.editarea .locked.order-error,
-.editarea .locked.order-error .locked,
-.source .locked.order-error,
 .opened .targetarea .locked a,
 .opened .source .locked a {
     color: #e000ff !important;
+}
+
+.editor .editarea .locked.order-error,
+.editor .editarea .locked.order-error,
+.source .locked.order-error {
+    background-color: #fff4e3;
+    color: #ea862c;
+    border: 1px solid #ea862c;
+}
+
+.editor .editarea .locked.mismatch,
+.source .locked.mismatch,
+.locked.mismatch-old,
+.editor .editarea .locked.mismatch,
+.source .locked.mismatch,
+.locked.mismatch-old .locked {
+    background-color: #fdeae2;
+    color: #e1595d;
+    border: 1px solid #e1565a;
+}
+
+.editor .editarea .locked.order-error:hover,
+.editor .editarea .locked.order-error:hover,
+.source .locked.order-error:hover
+{
+    background-color: #fde6c8;
+    transition: 0.3s ease;
+}
+
+.locked.selected,
+.locked .selected,
+.locked.order-error.selected,
+.editarea .locked.mismatch.selected,
+.source .locked.mismatch.selected {
+    background-color: #c6dcfa !important;
 }
 
 .editor .cc-search .input .locked {
@@ -3939,7 +4003,7 @@ section.mismatch li.tag-mismatch {
 }
 
 body.rtl-source section .source,
-body.rtl-target section .editarea,
+body.rtl-target section .targetarea,
 body.rtl-source .footer .sugg-source,
 body.rtl-target .footer .sugg-target {
     direction: rtl !important;
@@ -4074,6 +4138,8 @@ body.searchActive #filterSwitch .numbererror:empty {
     border: 1px solid #999;
     min-width: 100px;
     padding: 1px;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 .tag-autocomplete.empty {
@@ -4357,7 +4423,7 @@ section .toolbar .autofillTag {
 .sugg-source span.softReturn, /*to be tested*/
 .track-changes span.softReturn
 {
-    display: inline;
+    display: inline !important;
     margin-left: 6px;
     padding: 1px 2px 3px 40px;
     background-image: url(../img/soft-return1.png);
@@ -4366,6 +4432,8 @@ section .toolbar .autofillTag {
     background-position: center left;
     width: 20px;
     position: relative;
+    direction: ltr;
+    text-align: unset;
 }
 
 .editarea br.soft {
@@ -5050,7 +5118,7 @@ section .footer .tab.open {
     display: none;
 }
 
-section.loaded .footer .tab.open {
+section .footer .tab.open {
     display: block;
     z-index: 0;
     position: relative;
@@ -5058,7 +5126,7 @@ section.loaded .footer .tab.open {
     top: -1px;
 }
 
-section:hover .segment-side-buttons {
+section .segment-side-buttons {
     color: #6d6e71
 }
 

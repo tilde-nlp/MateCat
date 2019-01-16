@@ -12,6 +12,11 @@ class reviseSummaryController extends viewController {
 	private $jid = "";
 	private $project_status = "";
 	private $thisUrl;
+	private $categories;
+	private $error_info;
+	private $error_max_thresholds;
+	private $project_type;
+	private $qa_model;
 
     private $data;
     private $job_stats;
@@ -84,7 +89,9 @@ class reviseSummaryController extends viewController {
                 $this->reviseClass
         );
 
-        $this->featureSet->loadFromUserEmail( $this->user->getEmail() );
+        $project = Projects_ProjectDao::findById($this->project_status['id']);
+
+        $this->featureSet->loadForProject( $project );
 
         list( $jobQA, $this->reviseClass ) = $this->featureSet->filter( "overrideReviseJobQA", [ $jobQA, $this->reviseClass ], $this->jid,
                 $this->password,
@@ -98,6 +105,32 @@ class reviseSummaryController extends viewController {
         $this->qa_overall_text     = $jobVote[ 'minText' ];
         $this->qa_overall_avg      = $jobVote[ 'avg' ];
         $this->qa_equivalent_class = $jobVote[ 'equivalent_class' ];
+
+
+        //set the labels
+        $this->error_info = array(
+                constant( get_class( $this->reviseClass ) . "::ERR_TYPING" )      => 'Tag issues (mismatches, whitespaces)',
+                constant( get_class( $this->reviseClass ) . "::ERR_TRANSLATION" ) => 'Translation errors (mistranslation, additions or omissions)',
+                constant( get_class( $this->reviseClass ) . "::ERR_TERMINOLOGY" ) => 'Terminology and translation consistency',
+                constant( get_class( $this->reviseClass ) . "::ERR_LANGUAGE" )    => 'Language quality (grammar, punctuation, spelling)',
+                constant( get_class( $this->reviseClass ) . "::ERR_STYLE" )       => 'Style (readability, consistent style and tone)',
+        );
+
+        $this->error_max_thresholds = array(
+                constant( get_class( $this->reviseClass ) . "::ERR_TYPING" )      => constant( get_class( $this->reviseClass ) . "::MAX_TYPING" ),
+                constant( get_class( $this->reviseClass ) . "::ERR_TRANSLATION" ) => constant( get_class( $this->reviseClass ) . "::MAX_TRANSLATION" ),
+                constant( get_class( $this->reviseClass ) . "::ERR_TERMINOLOGY" ) => constant( get_class( $this->reviseClass ) . "::MAX_TERMINOLOGY" ),
+                constant( get_class( $this->reviseClass ) . "::ERR_LANGUAGE" )    => constant( get_class( $this->reviseClass ) . "::MAX_QUALITY" ),
+                constant( get_class( $this->reviseClass ) . "::ERR_STYLE" )       => constant( get_class( $this->reviseClass ) . "::MAX_STYLE" )
+        );
+
+        $codes = $this->featureSet->getCodes();
+        if(in_array(Features\ReviewImproved::FEATURE_CODE, $codes) OR in_array(Features\ReviewExtended::FEATURE_CODE, $codes)){
+            $this->project_type = "new";
+        }
+        else {
+            $this->project_type = "old";
+        }
 
         $this->_saveActivity();
 
@@ -140,29 +173,12 @@ class reviseSummaryController extends viewController {
         $this->template->extended_user = ($this->isLoggedIn() !== false ) ? trim( $this->user->fullName() ) : "";
         $this->template->logged_user   = ($this->isLoggedIn() !== false ) ? $this->user->shortName() : "";
 
-        //set the labels
-        $error_info = array(
-                constant( get_class( $this->reviseClass ) . "::ERR_TYPING" )      => 'Tag issues (mismatches, whitespaces)',
-                constant( get_class( $this->reviseClass ) . "::ERR_TRANSLATION" ) => 'Translation errors (mistranslation, additions/omissions)',
-                constant( get_class( $this->reviseClass ) . "::ERR_TERMINOLOGY" ) => 'Terminology and translation consistency',
-                constant( get_class( $this->reviseClass ) . "::ERR_LANGUAGE" )    => 'Language quality (grammar, punctuation, spelling)',
-                constant( get_class( $this->reviseClass ) . "::ERR_STYLE" )       => 'Style (readability, consistent style and tone)',
-        );
-
-        $error_max_thresholds = array(
-                constant( get_class( $this->reviseClass ) . "::ERR_TYPING" )      => constant( get_class( $this->reviseClass ) . "::MAX_TYPING" ),
-                constant( get_class( $this->reviseClass ) . "::ERR_TRANSLATION" ) => constant( get_class( $this->reviseClass ) . "::MAX_TRANSLATION" ),
-                constant( get_class( $this->reviseClass ) . "::ERR_TERMINOLOGY" ) => constant( get_class( $this->reviseClass ) . "::MAX_TERMINOLOGY" ),
-                constant( get_class( $this->reviseClass ) . "::ERR_LANGUAGE" )    => constant( get_class( $this->reviseClass ) . "::MAX_QUALITY" ),
-                constant( get_class( $this->reviseClass ) . "::ERR_STYLE" )       => constant( get_class( $this->reviseClass ) . "::MAX_STYLE" )
-        );
-
         $this->template->reviseClass = $this->reviseClass;
 
 
 
         foreach( $this->qa_data as $k => $value ){
-            $this->qa_data[ $k ][ 'text_content' ] = $error_info[ $value[ 'type' ] ];
+            $this->qa_data[ $k ][ 'text_content' ] = $this->error_info[ $value[ 'type' ] ];
         }
 
 //        $nrFormatter = new NumberFormatter("en-US", NumberFormatter::DECIMAL);
@@ -174,9 +190,59 @@ class reviseSummaryController extends viewController {
         $this->template->qa_overall_avg        = $this->qa_overall_avg;
         $this->template->qa_equivalent_class   = $this->qa_equivalent_class;
         $this->template->overall_quality_class = ucfirst( strtolower( str_replace( ' ', '', $this->qa_overall_text ) ) );
-        $this->template->error_max_thresholds = $error_max_thresholds;
+        $this->template->error_max_thresholds = $this->error_max_thresholds;
 //        $this->template->word_interval = $nrFormatter->format( constant( get_class( $this->reviseClass ) . "::WORD_INTERVAL" ) );
-	}
+
+        /*
+         * Line Feed PlaceHolding System
+         */
+        $this->template->brPlaceholdEnabled = $placeHoldingEnabled = true;
+
+        if ( $placeHoldingEnabled ) {
+
+            $this->template->lfPlaceholder        = CatUtils::lfPlaceholder;
+            $this->template->crPlaceholder        = CatUtils::crPlaceholder;
+            $this->template->crlfPlaceholder      = CatUtils::crlfPlaceholder;
+            $this->template->lfPlaceholderClass   = CatUtils::lfPlaceholderClass;
+            $this->template->crPlaceholderClass   = CatUtils::crPlaceholderClass;
+            $this->template->crlfPlaceholderClass = CatUtils::crlfPlaceholderClass;
+            $this->template->lfPlaceholderRegex   = CatUtils::lfPlaceholderRegex;
+            $this->template->crPlaceholderRegex   = CatUtils::crPlaceholderRegex;
+            $this->template->crlfPlaceholderRegex = CatUtils::crlfPlaceholderRegex;
+
+            $this->template->tabPlaceholder      = CatUtils::tabPlaceholder;
+            $this->template->tabPlaceholderClass = CatUtils::tabPlaceholderClass;
+            $this->template->tabPlaceholderRegex = CatUtils::tabPlaceholderRegex;
+
+            $this->template->nbspPlaceholder      = CatUtils::nbspPlaceholder;
+            $this->template->nbspPlaceholderClass = CatUtils::nbspPlaceholderClass;
+            $this->template->nbspPlaceholderRegex = CatUtils::nbspPlaceholderRegex;
+        }
+
+        $lang_handler = Langs_Languages::getInstance();
+        $this->template->source_rtl = ( $lang_handler->isRTL( $this->data[ 'source' ] ) ) ? true : false ;
+        $this->template->target_rtl = ( $lang_handler->isRTL( $this->data[ 'target' ] ) ) ? true : false ;
+
+        $this->template->searchable_statuses = $this->searchableStatuses();
+        $this->template->first_job_segment   = $this->data->job_first_segment ;
+
+        $this->template->project_type = $this->project_type;
+    }
+
+    /**
+     * @return array
+     */
+    private function searchableStatuses() {
+        $statuses = array_merge(
+                Constants_TranslationStatus::$INITIAL_STATUSES,
+                Constants_TranslationStatus::$TRANSLATION_STATUSES,
+                Constants_TranslationStatus::$REVISION_STATUSES
+        );
+
+        return array_map( function ( $item ) {
+            return (object)array( 'value' => $item, 'label' => $item );
+        }, $statuses );
+    }
 }
 
 

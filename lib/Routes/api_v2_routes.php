@@ -38,6 +38,9 @@ $klein->with('/api/v2/jobs/[:id_job]/[:password]', function() {
     route( '/comments',     'GET', 'API\V2\CommentsController', 'index' );
 
     route( '/quality-report',          'GET', 'Features\ReviewImproved\Controller\API\QualityReportController', 'show' );
+
+    route( '/quality-report/general',          'GET', 'Features\ReviewImproved\Controller\API\QualityReportController', 'general' );
+
     route( '/quality-report/versions', 'GET', 'Features\ReviewImproved\Controller\API\QualityReportController', 'versions' );
 
     route( '/translator', 'GET',  '\API\V2\JobsTranslatorsController', 'get' ) ;
@@ -101,3 +104,8 @@ $klein->with('/api/v2/teams', function() {
 
 }) ;
 
+$klein->with('/api/v2/languages', function() {
+
+    route( '', 'GET', '\API\V2\SupportedLanguagesController', 'index' );
+
+});

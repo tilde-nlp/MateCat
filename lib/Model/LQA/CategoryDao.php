@@ -72,8 +72,7 @@ class CategoryDao extends \DataAccess_AbstractDao {
      */
 
     public static function getSerializedModel( $id_model ) {
-        $sql = "SELECT * FROM qa_categories WHERE id_model = :id_model " .
-            " ORDER BY COALESCE(id_parent, 0) ";
+        $sql = "SELECT * FROM qa_categories WHERE id_model = :id_model ORDER BY COALESCE(id_parent, 0) ";
 
         $conn = \Database::obtain()->getConnection();
         $stmt = $conn->prepare( $sql );
@@ -104,7 +103,7 @@ class CategoryDao extends \DataAccess_AbstractDao {
                 $current = array(
                     'label'      => $row['label'],
                     'id'         => $row['id'],
-                    'options'    => json_decode( $row['option'], true ),
+                    'options'    => json_decode( $row['options'], true ),
 
                     'severities' => json_decode( $row['severities'], true)
                 );
