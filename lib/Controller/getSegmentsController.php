@@ -215,17 +215,16 @@ class getSegmentsController extends ajaxController {
     private function searchSegments() {
         $foundSegments = [];
         $lastSegmentId = $this->ref_segment - 1;
-
+        $where = $this->where;
         while(count($foundSegments) < $this->step) {
-            $doubleCount = strcmp($this->where, "center") === 0;
             $data = getMoreSegments(
                 $this->jid, $this->password, $this->step,
-                $lastSegmentId + 1, $this->where,
+                $lastSegmentId + 1, $where,
                 $this->getOptionalQueryFields(),
                 $this->searchInSource, $this->searchInTarget,
                 $this->searchInComments
             );
-            $this->where = 'after';
+            $where = 'after';
             if (empty($data)) {
                 break;
             }
@@ -238,7 +237,7 @@ class getSegmentsController extends ajaxController {
 
             foreach($data as $row) {
                 $foundSegments[] = $row;
-                if (count($foundSegments) == ($doubleCount ? 2 * $this->step : $this->step)) {
+                if (count($foundSegments) == 2 * $this->step) {
                     break;
                 }
             }
