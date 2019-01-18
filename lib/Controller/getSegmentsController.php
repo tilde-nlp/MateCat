@@ -254,8 +254,8 @@ class getSegmentsController extends ajaxController {
 
         $filteredData = [];
         foreach($data as $row) {
-            $sourceIsTagged = $this->isSourceTagged($row['segment']);
-            $targetIsTagged = $this->isTargetTagged($row['translation']);
+            $sourceIsTagged = $this->isSegmentTagged($row['segment'], $this->searchInSource);
+            $targetIsTagged = $this->isSegmentTagged($row['translation'], $this->searchInTarget);
 
             if ($this->searchInSource != "" && !$sourceIsTagged) {
                 $filteredData[] = $row;
@@ -270,24 +270,17 @@ class getSegmentsController extends ajaxController {
         return $filteredData;
     }
 
-    private function isSourceTagged($segment) {
-        if ($this->searchInSource == "") {
-            return 0;
-        }
-
-        $taggedMatches = $this->findAllMatches('<' . $this->searchInSource, $segment);
-        $allMatches = $this->findAllMatches($this->searchInSource, $segment);
-
-        return (count($allMatches) == count($taggedMatches));
-    }
-
-    private function isTargetTagged($segment) {
-        if ($this->searchInTarget == "") {
+    private function isSegmentTagged($segment, $searchTerm) {
+        if ($searchTerm == "") {
             return false;
         }
 
-        $taggedMatches = $this->findAllMatches('<' . $this->searchInTarget, $segment);
-        $allMatches = $this->findAllMatches($this->searchInTarget, $segment);
+        $taggedMatches = array_merge(
+            $this->findAllMatches('<' . $searchTerm, $segment),
+            $this->findAllMatches('<e' . $searchTerm, $segment),
+            $this->findAllMatches('<b' . $searchTerm, $segment)
+        );
+        $allMatches = $this->findAllMatches($searchTerm, $segment);
 
         return (count($allMatches) == count($taggedMatches));
     }
