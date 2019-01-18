@@ -217,6 +217,7 @@ class getSegmentsController extends ajaxController {
         $lastSegmentId = $this->ref_segment - 1;
 
         while(count($foundSegments) < $this->step) {
+            $doubleCount = strcmp($this->where, "center") === 0;
             $data = getMoreSegments(
                 $this->jid, $this->password, $this->step,
                 $lastSegmentId + 1, $this->where,
@@ -237,7 +238,7 @@ class getSegmentsController extends ajaxController {
 
             foreach($data as $row) {
                 $foundSegments[] = $row;
-                if (count($foundSegments) == $this->step) {
+                if (count($foundSegments) == ($doubleCount ? 2 * $this->step : $this->step)) {
                     break;
                 }
             }
