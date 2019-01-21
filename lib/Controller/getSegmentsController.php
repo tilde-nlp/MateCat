@@ -47,9 +47,9 @@ class getSegmentsController extends ajaxController {
             'segment' => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
             'password'    => array( 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH ),
             'where'       => array( 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH ),
-            'searchInSource'       => array( 'filter' => FILTER_SANITIZE_STRING ),
-            'searchInTarget'       => array( 'filter' => FILTER_SANITIZE_STRING ),
-            'searchInComments'       => array( 'filter' => FILTER_SANITIZE_STRING ),
+            'searchInSource'       => array( 'filter' => FILTER_UNSAFE_RAW ),
+            'searchInTarget'       => array( 'filter' => FILTER_UNSAFE_RAW ),
+            'searchInComments'       => array( 'filter' => FILTER_UNSAFE_RAW ),
         );
 
         $__postInput = filter_input_array( INPUT_POST, $filterArgs );
@@ -63,9 +63,9 @@ class getSegmentsController extends ajaxController {
         $this->ref_segment = $__postInput[ 'segment' ];
         $this->password    = $__postInput[ 'password' ];
         $this->where       = $__postInput[ 'where' ];
-        $this->searchInSource       = $__postInput[ 'searchInSource' ];
-        $this->searchInTarget       = $__postInput[ 'searchInTarget' ];
-        $this->searchInComments       = $__postInput[ 'searchInComments' ];
+        $this->searchInSource       = htmlentities($__postInput[ 'searchInSource' ]);
+        $this->searchInTarget       = htmlentities($__postInput[ 'searchInTarget' ]);
+        $this->searchInComments       = htmlentities($__postInput[ 'searchInComments' ]);
 
     }
 

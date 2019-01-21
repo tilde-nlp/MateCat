@@ -355,6 +355,7 @@ function getFirstSegmentId( $jid, $password ) {
 function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'after', $options = [], $searchInSource = '', $searchInTarget = '', $searchInComments = '' ) {
 
     $optional_fields = null;
+    $sqlBinds = [];
     if ( isset( $options[ 'optional_fields' ] ) ) {
         $optional_fields = ', ';
         $optional_fields .= implode( ', ', $options[ 'optional_fields' ] );
@@ -362,13 +363,16 @@ function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'a
 
     $searchQuery = '';
     if (!empty($searchInSource)) {
-        $searchQuery .= " AND segments.segment LIKE '%" . $searchInSource ."%' ";
+        $searchQuery .= " AND segments.segment LIKE :searchInSource ";
+        $sqlBinds['searchInSource'] = '%' . $searchInSource . '%';
     }
     if (!empty($searchInTarget)) {
-        $searchQuery .= " AND IF(segment_translations.status='NEW',NULL,segment_translations.translation) LIKE '%" . $searchInTarget ."%' ";
+        $searchQuery .= " AND IF(segment_translations.status='NEW',NULL,segment_translations.translation) LIKE :searchInTarget ";
+        $sqlBinds['searchInTarget'] = '%' . $searchInTarget . '%';
     }
     if (!empty($searchInComments)) {
-        $searchQuery .= " AND segments.id IN (SELECT id_segment FROM comments WHERE comments.message LIKE '%". $searchInComments ."%') ";
+        $searchQuery .= " AND segments.id IN (SELECT id_segment FROM comments WHERE comments.message LIKE :searchInComments) ";
+        $sqlBinds['searchInComments'] = '%' . $searchInComments . '%';
     }
 
     $queryAfter = "
@@ -511,10 +515,14 @@ function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'a
     $db = Database::obtain();
 
     try {
-        $results = $db->fetch_array( $query );
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare($query);
+        $stmt->execute($sqlBinds);
+        $results = $stmt->fetchAll();
     } catch ( PDOException $e ) {
         throw new Exception( __METHOD__ . " -> " . $e->getCode() . ": " . $e->getMessage() );
     }
+
     return $results;
 }
 
