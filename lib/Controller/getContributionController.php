@@ -5,7 +5,6 @@ use Contribution\Request;
 class getContributionController extends ajaxController {
 
     protected $id_segment;
-    protected $id_client;
     private $concordance_search;
     private $switch_languages;
     private $id_job;
@@ -44,8 +43,7 @@ class getContributionController extends ajaxController {
                 'context_after'  => [ 'filter' => FILTER_UNSAFE_RAW ],
                 'mt_system'  => [ 'filter' => FILTER_SANITIZE_STRING],
                 'id_before'      => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
-                'id_after'       => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
-                'id_client'      => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ]
+                'id_after'       => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ]
         ];
 
         $this->__postInput = filter_input_array( INPUT_POST, $filterArgs );
@@ -66,7 +64,6 @@ class getContributionController extends ajaxController {
         $this->switch_languages   = $this->__postInput[ 'from_target' ];
         $this->password           = $this->__postInput[ 'password' ];
         $this->mt_system           = $this->__postInput[ 'mt_system' ];
-        $this->id_client          = $this->__postInput[ 'id_client' ];
 
         if ( $this->id_translator == 'unknown_translator' ) {
             $this->id_translator = "";
@@ -93,10 +90,6 @@ class getContributionController extends ajaxController {
             $this->result[ 'errors' ][] = [ "code" => -3, "message" => "missing id_job" ];
         }
 
-        if( empty( $this->id_client ) ){
-            $this->result[ 'errors' ][] = [ "code" => -4, "message" => "missing id_client" ];
-        }
-
         if ( empty( $this->num_results ) ) {
             $this->num_results = INIT::$DEFAULT_NUM_RESULTS_FROM_TM;
         }
@@ -105,18 +98,7 @@ class getContributionController extends ajaxController {
             return -1;
         }
 
-//        throw new \Exceptions\NotFoundException( "Record Not Found" );
-        //get Job Info, we need only a row of jobs ( split )
-        $jobStruct = Chunks_ChunkDao::getByIdAndPassword( $this->id_job, $this->password );
-
-        $projectStruct = $jobStruct->getProject();
-        $this->featureSet->loadForProject( $projectStruct );
-
-        $this->readLoginInfo();
-        if( !$this->concordance_search ){
-            $this->_getContexts();
-        }
-
+        $this->jobData = Jobs_JobDao::getByIdAndPassword( (int)$this->id_job, $this->password );
         $this->featureSet->loadForProject( $this->jobData->getProject() );
 
         /*
@@ -229,30 +211,92 @@ class getContributionController extends ajaxController {
 
                 $log_prepend = "CLIENT REALIGN IDS PROCEDURE | ";
                 if ( !$qaRealign->thereAreErrors() ) {
-                    /*
-                    Log::doLog( $log_prepend . " - Requested Segment: " . var_export( $this->__postInput, true) );
-                    Log::doLog( $log_prepend . "Fuzzy: " . $fuzzy .  " - Try to Execute Tag ID Realignment." );
-                    Log::doLog( $log_prepend . "TMS RAW RESULT:" );
-                    Log::doLog( $log_prepend . var_export($matches[0], true) );
-                    Log::doLog( $log_prepend . "Realignment Success:");
-                    */
                     $matches[ 0 ][ 'segment' ]     = CatUtils::rawxliff2view( $this->text );
                     $matches[ 0 ][ 'translation' ] = CatUtils::rawxliff2view( $qaRealign->getTrgNormalized() );
                     $matches[ 0 ][ 'match' ]       = ( $fuzzy == 0 ? '100%' : '99%' );
-                    /*
-                    Log::doLog( $log_prepend . "View Segment:     " . var_export($matches[0]['segment'], true) );
-                    Log::doLog( $log_prepend . "View Translation: " . var_export($matches[0]['translation'], true) );
-					*/
                 } else {
                     Log::doLog( $log_prepend . 'Realignment Failed. Skip. Segment: ' . $this->__postInput[ 'id_segment' ] );
                 }
             }
         }
 
-        Request::contribution( $contributionRequest );
+        if ( !$this->concordance_search ) {
+            //execute these lines only in segment contribution search,
+            //in case of user concordance search skip these lines
+            $res = $this->setSuggestionReport( $matches );
+            if ( is_array( $res ) and array_key_exists( "error", $res ) ) {
+                ; // error occurred
+            }
+            //
+        }
 
-        $this->result = [ "errors" => [], "data" => [ "message" => "OK", "id_client" => $this->id_client ] ];
+        foreach ( $matches as &$match ) {
+            if ( strpos( $match[ 'created_by' ], 'MT' ) !== false ) {
+                $match[ 'match' ] = 'MT';
+                $QA = new PostProcess( $match[ 'raw_segment' ], $match[ 'raw_translation' ] );
+                $QA->realignMTSpaces();
+                //this should every time be ok because MT preserve tags, but we use the check on the errors
+                //for logic correctness
+                if ( !$QA->thereAreErrors() ) {
+                    $match[ 'raw_translation' ] = $QA->getTrgNormalized();
+                    $match[ 'translation' ]     = CatUtils::rawxliff2view( $match[ 'raw_translation' ] );
+                } else {
+                    Log::doLog( $QA->getErrors() );
+                }
+            }
+            
+            if ( $match[ 'created_by' ] == 'MT!' ) {
+                $match[ 'created_by' ] = 'MT'; //MyMemory returns MT!
+            } elseif ( $match[ 'created_by' ] == 'NeuralMT' ) {
+                $match[ 'created_by' ] = 'MT'; //For now do not show differences
+            } else {
+                $uid = null;
+                $this->readLoginInfo();
+                if($this->userIsLogged){
+                    $uid = $this->user->uid;
+                }
+                $match[ 'created_by' ] = Utils::changeMemorySuggestionSource(
+                        $match,
+                        $this->jobData['tm_keys'],
+                        $this->jobData['owner'],
+                        $uid
+                );
+            }
+            $match = $this->_matchRewrite( $match );
+            if ( !empty( $match[ 'sentence_confidence' ] ) ) {
+                $match[ 'sentence_confidence' ] = round( $match[ 'sentence_confidence' ], 0 ) . "%";
+            }
+            if ( $this->concordance_search ) {
+                $match[ 'segment' ] = strip_tags( html_entity_decode( $match[ 'segment' ] ) );
+                $match[ 'segment' ] = preg_replace( '#[\x{20}]{2,}#u', chr( 0x20 ), $match[ 'segment' ] );
+                //Do something with &$match, tokenize strings and send to client
+                $match[ 'segment' ]     = preg_replace( array_keys( $regularExpressions ), array_values( $regularExpressions ), $match[ 'segment' ] );
+                $match[ 'translation' ] = strip_tags( html_entity_decode( $match[ 'translation' ] ) );
+            }
+        }
+        $this->result[ 'data' ][ 'matches' ] = $matches;
 
+    }
+
+    protected function _matchRewrite( $match ){
+        //Rewrite ICE matches as 101%
+        if( $match[ 'match' ] == '100%' ){
+            list( $lang, ) = explode( '-', $this->jobData[ 'target' ] );
+            if( isset( $match[ 'ICE' ] ) && $match[ 'ICE' ] && array_search( $lang, ICES::$iceLockDisabledForTargetLangs ) === false ){
+                $match[ 'match' ] = '101%';
+            }
+            //else do not rewrite the match value
+        }
+        //Allow the plugins to customize matches
+        $match = $this->featureSet->filter( 'matchRewriteForContribution', $match );
+        return $match;
+    }
+
+    private static function __compareScore( $a, $b ) {
+        if ( floatval( $a[ 'match' ] ) == floatval( $b[ 'match' ] ) ) {
+            return 0;
+        }
+        return ( floatval( $a[ 'match' ] ) < floatval( $b[ 'match' ] ) ? -1 : 1 );
     }
 
     protected function _getContexts(){
@@ -332,14 +376,6 @@ class getContributionController extends ajaxController {
         }
 
         return 0;
-    }
-
-    private static function __compareScore( $a, $b ) {
-        if ( floatval( $a[ 'match' ] ) == floatval( $b[ 'match' ] ) ) {
-            return 0;
-        }
-
-        return ( floatval( $a[ 'match' ] ) < floatval( $b[ 'match' ] ) ? -1 : 1 );
     }
 
     /**
