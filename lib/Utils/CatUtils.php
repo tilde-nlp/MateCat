@@ -219,12 +219,11 @@ class CatUtils {
     }
 
     public static function stripTags($text) {
-        $pattern_g_o = '|(<.*?>)|';
-        $pattern_g_c = '|(</.*?>)|';
-        $pattern_x = '|(<.*?/>)|';
+        $pattern_g_o = '(<[a-zA-Z0-9]{1,5} id="[_]?[0-9]+">)';
+        $pattern_g_c = '(<\/[a-zA-Z0-9]{1,5}>)';
+        $pattern_x = '(<[a-zA-Z0-9]{1,5} id="[_]?[0-9]+"\/>)';
 
         $text = preg_replace($pattern_x, "", $text);
-
         $text = preg_replace($pattern_g_o, "", $text);
         $text = preg_replace($pattern_g_c, "", $text);
         return $text;
