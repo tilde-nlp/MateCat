@@ -21,7 +21,6 @@ class PretranslateWorker extends AbstractWorker {
      */
     public function process( AbstractElement $queueElement ) {
         $this->uid = uniqid();
-        $this->log_text($this->uid . ' worker: Starting up');
         /**
          * @var $queueElement QueueElement
          */

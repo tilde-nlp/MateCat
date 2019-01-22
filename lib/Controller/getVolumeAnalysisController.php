@@ -71,7 +71,6 @@ class getVolumeAnalysisController extends ajaxController {
                  $this->result['data']['summary']['STATUS'] = 'PRETRANSLATING';
              } else if ($pretranslateData['tm_pretranslate'] || $pretranslateData['mt_pretranslate']) {
                  $this->result['data']['summary']['STATUS'] = 'PRETRANSLATING';
-                 $this->log_text('Still pretranslating.');
              }
         }
     }

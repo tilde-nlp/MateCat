@@ -183,8 +183,15 @@ class getContributionController extends ajaxController {
          */
         // Override for Tilde
         $config[ 'get_mt' ]  = false;
+        $parsedText = PlaceholderParser::toXliffFromSymbols($this->text);
+        $tmp_match = TildeTM::getContributions($parsedText, $this->source, $this->target);
+        $tms_match = [];
 
-        $tms_match = TildeTM::getContributions($this->text, $this->source, $this->target);
+        foreach($tmp_match as $match) {
+            $match['segment'] = PlaceholderParser::toPlaceholders($match['segment']);
+            $match['translation'] = PlaceholderParser::toPlaceholders($match['translation']);
+            $tms_match[] = $match;
+        }
         $mt_match = [];
 
         $matches = array_merge($tms_match, $mt_match);

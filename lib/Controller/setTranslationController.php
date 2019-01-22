@@ -925,6 +925,11 @@ class setTranslationController extends ajaxController {
         $contributionStruct->context_after        = $this->context_after;
         $contributionStruct->context_before       = $this->context_before;
 
+        $contributionStruct->segment = CatUtils::stripTags(CatUtils::view2rawxliff($contributionStruct->segment));
+        $contributionStruct->translation = CatUtils::stripTags(CatUtils::view2rawxliff($contributionStruct->translation));
+        $contributionStruct->segment = PlaceholderParser::toSpaces($contributionStruct->segment);
+        $contributionStruct->translation = PlaceholderParser::toSpaces($contributionStruct->translation);
+
         $direction = [
             'source' => $this->jobData->source,
             'target' => $this->jobData->target,
@@ -968,10 +973,7 @@ class setTranslationController extends ajaxController {
         }
 
         $LetsMTLite = new \LetsMTLite(INIT::$MT_BASE_URL, AuthCookie::getToken(), INIT::$MT_APP_ID);
-        $taglessSource = PlaceholderParser::toSpaces($contributionStruct->segment);
-        $taglessSource = CatUtils::stripTags($taglessSource);
-        $taglessTarget = CatUtils::stripTags($contributionStruct->translation);
-        $LetsMTLite->updateMT($this->mtId, $taglessSource, $taglessTarget);
+        $LetsMTLite->updateMT($this->mtId, $contributionStruct->segment, $contributionStruct->translation);
     }
 
     /**
@@ -996,12 +998,10 @@ class setTranslationController extends ajaxController {
             if (!$memory->write) {
                 continue;
             }
-            $taglessSource = CatUtils::stripTags($contributionStruct->segment);
-            $taglessTarget = CatUtils::stripTags($contributionStruct->translation);
             $TildeTM->writeMatch(
                 $memory->id,
-                $taglessSource,
-                $taglessTarget,
+                $contributionStruct->segment,
+                $contributionStruct->translation,
                 substr($config['source'], 0, 2),
                 substr($config['target'], 0, 2)
             );

@@ -42,8 +42,8 @@ class getMtMatchesController extends ajaxController
         $QA = new PostProcess( $match[ 'raw_segment' ], $match[ 'raw_translation' ] );
         $QA->realignMTSpaces();
         $match[ 'raw_translation' ] = $QA->getTrgNormalized();
-        $match[ 'translation' ] = CatUtils::rawxliff2view( $match[ 'raw_translation' ] );
-        $match[ 'translation' ] = PlaceholderParser::toPlaceholders($match[ 'translation' ]);
+        $match[ 'translation' ] = PlaceholderParser::toPlaceholders($match[ 'raw_translation' ]);
+        $match[ 'translation' ] = CatUtils::rawxliff2view( $match[ 'translation' ] );
         $match = $this->_matchRewrite( $match );
 
         $this->result[ 'data' ][ 'match' ] = $match;
