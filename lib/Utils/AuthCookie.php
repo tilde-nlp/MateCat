@@ -62,11 +62,17 @@ class AuthCookie {
             $data = new ValidationData();
 
             if (!$token->verify($signer, INIT::$JWT_KEY)) {
+                self::log('401 UNAUTHORIZED Invalid signer for token');
                 header("HTTP/1.1 401 Unauthorized");
                 exit;
             }
 
             if (!INIT::$DEV_MODE && (!$token->validate($data) || $token->isExpired())) {
+                if ($token->isExpired) {
+                    self::log('401 UNAUTHORIZED Token is expired');
+                } else {
+                    self::log('401 UNAUTHORIZED Invalid token data');
+                }
                 header("HTTP/1.1 401 Unauthorized");
                 exit;
             }
@@ -79,18 +85,27 @@ class AuthCookie {
             $dao  = new Users_UserDao();
             $user = $dao->getByEmail( $jwtId );
             if ($user == null) {
+                // self::log('Creating new user');
                 $signup = new JwtSignup( $jwtId, $firstName, $lastName );
                 $signup->process();
                 $user = $dao->getByEmail( $jwtId );
             } else {
+                // self::log('Saving existing user');
                 Users_UserDao::saveName($user->uid, $firstName, $lastName);
             }
 
             return array('username' => $user->email, 'uid' => $user->uid);
         } catch ( Exception $e ) {
+            self::log('401 UNAUTHORIZED Token exception');
+            // self::log($e);
             header("HTTP/1.1 401 Unauthorized");
             exit;
         }
+    }
+
+    protected function log($data) {
+        file_put_contents('/var/tmp/worker.log', var_export($data, true), FILE_APPEND);
+        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
     }
 
 }
