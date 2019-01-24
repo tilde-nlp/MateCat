@@ -1,0 +1,94 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "This is swagger documentation for matecat backend modified for Tilde.",
+    "version": "1.0.0",
+    "title": "Swagger Matecat"
+  },
+  "servers": [
+    {
+      "url": "http://local.matecat.com/",
+      "description": "Local development server"
+    },
+    {
+      "url": "https://hugodev.tilde.lv/mc",
+      "description": "Development server"
+    },
+    {
+      "url": "https://hugotest.tilde.lv/mc",
+      "description": "Test server"
+    },
+    {
+      "url": "https://hugo.lv/mc",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/profile": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Get authorized user profile data",
+        "operationId": "getProfile",
+        "responses": {
+          "200": {
+            "description": "Returns authorized user profile data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Profile": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "mt_pretranslate": {
+            "type": "integer"
+          },
+          "tm_pretranslate": {
+            "type": "integer"
+          },
+          "update_mt": {
+            "type": "integer"
+          },
+          "uid": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}

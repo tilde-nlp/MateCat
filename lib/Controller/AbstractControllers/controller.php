@@ -16,6 +16,15 @@ abstract class controller implements IController {
     protected $model;
     protected $userRole = TmKeyManagement_Filter::ROLE_TRANSLATOR;
 
+    private static $requestToClassMap = [
+        'GET' => [
+            'profile' => 'getProfileController'
+        ],
+        'POST' => [
+
+        ]
+    ];
+
     /**
      * @var Users_UserStruct
      */
@@ -58,6 +67,11 @@ abstract class controller implements IController {
         return $this->userIsLogged;
     }
 
+    private function log($data) {
+        file_put_contents('/var/tmp/worker.log', var_export($data, true), FILE_APPEND);
+        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
+    }
+
     /**
      * Controllers Factory
      *
@@ -67,35 +81,30 @@ abstract class controller implements IController {
      * @return mixed
      */
     public static function getInstance() {
+        $requestPath = ltrim(strtolower(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)), '/');
+        $method = strtoupper($_SERVER['REQUEST_METHOD']);
 
-        if( isset( $_REQUEST['api'] ) && filter_input( INPUT_GET, 'api', FILTER_VALIDATE_BOOLEAN ) ){
-
-            if( !isset( $_REQUEST['action'] ) || empty( $_REQUEST['action'] ) ){
-                header( "Location: " . INIT::$HTTPHOST . INIT::$BASEURL . "api/docs", true, 303 ); //Redirect 303 See Other
-                die();
-            }
-
-            $_REQUEST[ 'action' ][0] = strtoupper( $_REQUEST[ 'action' ][ 0 ] );
-            $_REQUEST[ 'action' ] = preg_replace_callback( '/_([a-z])/', function ( $c ) { return strtoupper( $c[ 1 ] ); }, $_REQUEST[ 'action' ] );
-
-            $_POST[ 'action' ]    = $_REQUEST[ 'action' ];
-
-            //set the log to the API Log
-            Log::$fileName = 'API.log';
-
-        }
-
-        //Default :  catController
-        $action = ( isset( $_POST[ 'action' ] ) ) ? $_POST[ 'action' ] : ( isset( $_GET[ 'action' ] ) ? $_GET[ 'action' ] : 'cat' );
-        $actionList = explode( '\\', $action ); // do not accept namespaces ( Security issue: directory traversal )
-        $action = end( $actionList ); // do not accept namespaces ( Security issue: directory traversal )
-        $className = $action . "Controller";
+        $handlerClassName = self::getHandlerClassName($requestPath, $method);
 
         //Put here all actions we want to be performed by ALL controllers
         require_once INIT::$MODEL_ROOT . '/queries.php';
 
-        return new $className();
+        return new $handlerClassName();
+    }
 
+    private static function getHandlerClassName($request, $method) {
+        try {
+            $className = self::$requestToClassMap[$method][$request];
+        } catch (Throwable $e) {
+            $className = null;
+        }
+
+        if ($className == null || empty($className)) {
+            header('HTTP/1.1 404 Not Found');
+            die();
+        }
+
+        return $className;
     }
 
     /**
