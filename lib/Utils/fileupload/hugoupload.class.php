@@ -233,16 +233,30 @@ class UploadHandler {
         $file->tmp_name = $uploaded_file;
         $file->type = mime_content_type( $file->tmp_name );
 
-        $this->uploadLog("Uploaded file type: " . $file->type);
-
         if ( $this->validate( $uploaded_file, $file, $error, $index ) ) {
             $destination = $this->options['upload_dir'];
             $file->full_path   = $destination . $file->name;
 
-            if (strcmp(strtolower($file->type), 'text/rtf') === 0) {
-                $FileFilter = new FileFilter();
-                $file->full_path = $FileFilter->convertFile($uploaded_file, $destination, $file->name);
-                $file->name = $this->file_name = pathinfo($file->name, PATHINFO_FILENAME) . '.odt';
+            $convertableMimes = ['application/msword', 'text/rtf', 'application/pdf'];
+            $fileMime = strtolower($file->type);
+            if (in_array($fileMime, $convertableMimes)) {
+                $FileFilter = new FileFilter(INIT::$FILE_CONVERTER_BASE_URL);
+                $from = '';
+                $to = '';
+                if (strcmp($fileMime, 'application/msword') === 0) {
+                    $from = 'doc';
+                    $to = 'odt';
+                }
+                if (strcmp($fileMime, 'text/rtf') === 0) {
+                    $from = 'rtf';
+                    $to = 'odt';
+                }
+                if (strcmp($fileMime, 'application/pdf') === 0) {
+                    $from = 'pdf';
+                    $to = 'txt';
+                }
+                $file->full_path = $FileFilter->convertFile($uploaded_file, $destination, $file->name, $from, $to);
+                $file->name = $this->file_name = pathinfo($file->name, PATHINFO_FILENAME) . '.' . $to;
             } else {
                 $res = move_uploaded_file( $uploaded_file, $file->full_path );
             }
@@ -329,14 +343,9 @@ class UploadHandler {
         $conversionHandler->setErrDir( $this->errDir );
         $conversionHandler->setFeatures( $this->featureSet );
         $conversionHandler->setUserIsLogged( true );
-        $this->uploadLog('Conversion handler');
-        $this->uploadLogData($conversionHandler);
-
         $conversionHandler->doAction();
 
         $this->result = $conversionHandler->getResult();
-        $this->uploadLog('conversion result');
-        $this->uploadLogData($this->result);
 
         ( isset( $this->result[ 'errors' ] ) ) ? null : $this->result[ 'errors' ] = array();
 

@@ -48,6 +48,7 @@ class INIT {
     public static $TM_BASE_URL;
     public static $TOKEN_REFRESH_URL;
     public static $TERM_BASE_URL;
+    public static $FILE_CONVERTER_BASE_URL;
     public static $SYNONYM_BASE_URL;
     public static $DEV_MODE;
     public static $DB_SERVER;

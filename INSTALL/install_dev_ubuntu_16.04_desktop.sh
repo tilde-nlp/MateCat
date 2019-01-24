@@ -31,6 +31,7 @@ TM_BASE_URL=""
 TOKEN_REFRESH_URL=""
 TERM_BASE_URL=""
 SYNONYM_BASE_URL=""
+FILE_CONVERTER_BASE_URL="http://hugodevcode.tilde.lv:5000/"
 DEV_MODE=true
 
 sudo apt-get update
@@ -190,6 +191,7 @@ sudo sed -i "s|@@@mt_app_id@@@|$MT_APP_ID|g" /home/$MATECAT_USER/cattool/inc/con
 sudo sed -i "s|@@@tm_base_url@@@|$TM_BASE_URL|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@token_refresh_url@@@|$TOKEN_REFRESH_URL|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@term_base_url@@@|$TERM_BASE_URL|g" /home/$MATECAT_USER/cattool/inc/config.ini
+sudo sed -i "s|@@@file_converter_base_url@@@|$FILE_CONVERTER_BASE_URL|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@synonym_base_url@@@|$SYNONYM_BASE_URL|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@dev_mode@@@|$DEV_MODE|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo -u $MATECAT_USER -H sh -c "cp /home/$MATECAT_USER/cattool/inc/task_manager_config.ini.sample /home/$MATECAT_USER/cattool/inc/task_manager_config.ini"

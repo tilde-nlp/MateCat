@@ -95,6 +95,7 @@ MT_APP_ID = "@@@mt_app_id@@@"
 TM_BASE_URL = "@@@tm_base_url@@@"
 TOKEN_REFRESH_URL = "@@@token_refresh_url@@@"
 TERM_BASE_URL = "@@@term_base_url@@@"
+FILE_CONVERTER_BASE_URL = "@@@file_converter_base_url@@@"
 SYNONYM_BASE_URL = "@@@synonym_base_url@@@"
 DEV_MODE = @@@dev_mode@@@
 

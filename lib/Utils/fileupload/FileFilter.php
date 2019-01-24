@@ -1,24 +1,24 @@
 <?php
 class FileFilter {
-    public function convertFile($uploadedFile, $destination, $name) {
-        $this->log('Filtering file: ' . $name);
+    private $baseUrl;
+
+    function __construct($baseUrl) {
+        $this->baseUrl = $baseUrl;
+    }
+    public function convertFile($uploadedFile, $destination, $name, $from, $to) {
         $tmpFileName = uniqid();
         $tmpDirectory = $destination . DIRECTORY_SEPARATOR . $tmpFileName . DIRECTORY_SEPARATOR;
         mkdir($tmpDirectory, 0775);
-        $fullTmpFileName = $tmpDirectory . 'fileToConvert.rtf';
-        $this->log('Tmp file path: ' . $fullTmpFileName);
+        $fullTmpFileName = $tmpDirectory . 'fileToConvert.' . $from;
         $moveResult = move_uploaded_file( $uploadedFile, $fullTmpFileName);
-        $this->log('Move result: ');
-        $this->log($moveResult);
-        $targetDestination = $destination .  pathinfo($name, PATHINFO_FILENAME) . '.odt';
-        $this->log('Converted file name: ' . $targetDestination);
-        $this->post($fullTmpFileName, $targetDestination);
+        $targetDestination = $destination .  pathinfo($name, PATHINFO_FILENAME) . '.' . $to;
+        $this->post($fullTmpFileName, $targetDestination, $from, $to);
         unlink($fullTmpFileName);
         return $targetDestination;
     }
 
-    private function post($tmpFilePath, $convertedFileName) {
-        $convertUrl = 'http://hugodevcode.tilde.lv:5000/converter/rtf/odt';
+    private function post($tmpFilePath, $convertedFileName, $from, $to) {
+        $convertUrl = $this->baseUrl . '/converter/'. $from .'/' . $to;
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json'));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
