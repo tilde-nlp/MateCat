@@ -26,6 +26,9 @@ class FileFilter {
         curl_setopt($curl,CURLOPT_POSTFIELDS, file_get_contents($tmpFilePath));
         curl_setopt($curl, CURLOPT_HEADER  , false);
         $resp = curl_exec($curl);
+        if ($resp == false) {
+            throw new FileConvertException("Can't convert file " . $convertedFileName);
+        }
         curl_close($curl);
 
         file_put_contents($convertedFileName, $resp);

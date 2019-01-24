@@ -255,7 +255,12 @@ class UploadHandler {
                     $from = 'pdf';
                     $to = 'txt';
                 }
-                $file->full_path = $FileFilter->convertFile($uploaded_file, $destination, $file->name, $from, $to);
+                try {
+                    $file->full_path = $FileFilter->convertFile($uploaded_file, $destination, $file->name, $from, $to);
+                } catch (Exception $e) {
+                    $file->error = "ErrorConvertingFile";
+                    return $file;
+                }
                 $file->name = $this->file_name = pathinfo($file->name, PATHINFO_FILENAME) . '.' . $to;
             } else {
                 $res = move_uploaded_file( $uploaded_file, $file->full_path );
