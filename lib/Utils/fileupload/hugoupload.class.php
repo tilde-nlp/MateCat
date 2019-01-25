@@ -233,6 +233,8 @@ class UploadHandler {
         $file->tmp_name = $uploaded_file;
         $file->type = mime_content_type( $file->tmp_name );
 
+        $this->uploadLog($file->type);
+
         if ( $this->validate( $uploaded_file, $file, $error, $index ) ) {
             $destination = $this->options['upload_dir'];
             $file->full_path   = $destination . $file->name;

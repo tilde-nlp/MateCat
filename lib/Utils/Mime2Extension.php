@@ -2959,6 +2959,9 @@ $reference = [
                         0         => 'html',
                         1         => 'htm',
                 ],
+        'text/x-fortran' => [
+                0 => 'txt'
+        ],
         'text/n3'                                                                   =>
                 [
                         0 => 'n3',
