@@ -52,6 +52,46 @@
           }
         ]
       }
+    },
+    "/files": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Get paged file list",
+        "operationId": "getFiles",
+        "requestBody": {
+          "description": "Specify page and page size",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Paging"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns paging info and file list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileList"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -85,6 +125,73 @@
             "type": "integer"
           },
           "uid": {
+            "type": "integer"
+          }
+        }
+      },
+      "Paging": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          },
+          "step": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 10
+          }
+        }
+      },
+      "FileData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "createTimestamp": {
+            "type": "integer"
+          },
+          "jobId": {
+            "type": "integer"
+          },
+          "jobPassword": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          }
+        }
+      },
+      "FileList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FileData"
+            }
+          },
+          "page": {
+            "type": "integer"
+          },
+          "pageStep": {
+            "type": "integer"
+          },
+          "totalFiles": {
             "type": "integer"
           }
         }

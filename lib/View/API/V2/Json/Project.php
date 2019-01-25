@@ -80,50 +80,22 @@ class Project {
         $featureSet = $project->getFeatures();
         $jobs = $project->getJobs(60 * 10 ); //cached
 
-        $jobJSONs    = [];
-        $jobStatuses = [];
-        if ( !empty( $jobs ) ) {
-
-            /**
-             * @var $jobJSON Job
-             */
-            $jobJSON = new $this->jRenderer();
-
-            if( !empty( $this->user ) ){
-                $jobJSON->setUser( $this->user );
-            }
-
-            if( $this->called_from_api ) {
-                $jobJSON->setCalledFromApi( true );
-            }
-
-            foreach ( $jobs as $job ) {
-                /**
-                 * @var $jobJSON Job
-                 */
-                $jobJSONs[]    = $jobJSON->renderItem( new Chunks_ChunkStruct( $job->getArrayCopy() ), $project, $featureSet );
-                $jobStatuses[] = $job->status_owner;
-            }
-
-        }
-
         $projectOutputFields = [
-                'id'                   => (int)$project->id,
-                'password'             => $project->password,
-                'name'                 => $project->name,
-                'id_team'              => (int)$project->id_team,
-                'id_assignee'          => (int)$project->id_assignee,
-                'create_date'          => $project->create_date,
-                'fast_analysis_wc'     => (int)$project->fast_analysis_wc,
-                'standard_analysis_wc' => (int)$project->standard_analysis_wc,
-                'project_slug'         => Utils::friendly_slug( $project->name ),
-                'jobs'                 => $jobJSONs,
-                'features'             => implode( ",", $featureSet->getCodes() ),
-                'is_cancelled'        => ( in_array( Constants_JobStatus::STATUS_CANCELLED, $jobStatuses ) ),
-                'is_archived'         => ( in_array( Constants_JobStatus::STATUS_ARCHIVED, $jobStatuses ) ),
-                'remote_file_service'  => $project->getRemoteFileServiceName(),
-                'due_date'             => Utils::api_timestamp( $project->due_date )
+            'id'                   => (int)$project->id,
+            'password'             => $project->password,
+            'name'                 => $project->name,
         ];
+
+        if ( !empty( $jobs ) ) {
+            $jobJSON = new $this->jRenderer();
+            $job = $jobJSON->renderItem( new Chunks_ChunkStruct( $jobs[0]->getArrayCopy() ), $project, $featureSet );
+            $projectOutputFields['createTimestamp'] = intval($job['create_timestamp']);
+            $projectOutputFields['jobId'] = intval($job['id']);
+            $projectOutputFields['jobPassword'] = $job['password'];
+            $projectOutputFields['source'] = $job['source'];
+            $projectOutputFields['target'] = $job['target'];
+            $projectOutputFields['owner'] = $job['owner'];
+        }
 
         return $projectOutputFields;
 

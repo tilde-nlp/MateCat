@@ -9,10 +9,33 @@ use Users_UserStruct;
 
 class AuthCookie {
 
-    //get user name in cookie, if present
     public static function getCredentials() {
+        self::checkAccess();
         $payload = self::getDataFromHeader();
         return $payload;
+    }
+
+    public static function checkAccess() {
+        try {
+            $jwt = self::getToken();
+
+            $parsedToken = (new Parser())->parse((string) $jwt);
+            $signer = new Sha256();
+            $data = new ValidationData();
+
+            if (!$parsedToken->verify($signer, INIT::$JWT_KEY)) {
+                header("HTTP/1.1 401 Unauthorized");
+                die();
+            }
+
+            if (!INIT::$DEV_MODE && (!$parsedToken->validate($data) || $parsedToken->isExpired())) {
+                header("HTTP/1.1 401 Unauthorized");
+                die();
+            }
+        } catch (Throwable $e) {
+            header("HTTP/1.1 401 Unauthorized");
+            die();
+        }
     }
 
     public static function getCredentialsFromCookie($jwt) {
@@ -55,51 +78,29 @@ class AuthCookie {
         return AuthCookie::getData($jwtToken);
     }
 
-    private static function getData($jwtToken) {
+    private static function getData($jwt) {
         try {
-            $token = (new Parser())->parse((string) $jwtToken);
-            $signer = new Sha256();
-            $data = new ValidationData();
+            $parsedToken = (new Parser())->parse((string) $jwt);
 
-            if (!$token->verify($signer, INIT::$JWT_KEY)) {
-                self::log('401 UNAUTHORIZED Invalid signer for token');
-                header("HTTP/1.1 401 Unauthorized");
-                exit;
-            }
-
-            if (!INIT::$DEV_MODE && (!$token->validate($data) || $token->isExpired())) {
-                if ($token->isExpired) {
-                    self::log('401 UNAUTHORIZED Token is expired');
-                } else {
-                    self::log('401 UNAUTHORIZED Invalid token data');
-                }
-                header("HTTP/1.1 401 Unauthorized");
-                exit;
-            }
-
-            $jwtId = $token->getClaim('sub') . ':-:' . $token->getClaim('grp');
-            $nameArray = explode(' ', $token->getClaim('given_name'), 2);
+            $jwtId = $parsedToken->getClaim('sub') . ':-:' . $parsedToken->getClaim('grp');
+            $nameArray = explode(' ', $parsedToken->getClaim('given_name'), 2);
             $firstName = isset($nameArray[0]) ? $nameArray[0] : 'jwt_user';
             $lastName = isset($nameArray[1]) ? $nameArray[1] : 'jwt_user';
 
             $dao  = new Users_UserDao();
             $user = $dao->getByEmail( $jwtId );
             if ($user == null) {
-                // self::log('Creating new user');
                 $signup = new JwtSignup( $jwtId, $firstName, $lastName );
                 $signup->process();
                 $user = $dao->getByEmail( $jwtId );
             } else {
-                // self::log('Saving existing user');
                 Users_UserDao::saveName($user->uid, $firstName, $lastName);
             }
 
             return array('username' => $user->email, 'uid' => $user->uid);
         } catch ( Exception $e ) {
-            self::log('401 UNAUTHORIZED Token exception');
-            // self::log($e);
             header("HTTP/1.1 401 Unauthorized");
-            exit;
+            die();
         }
     }
 

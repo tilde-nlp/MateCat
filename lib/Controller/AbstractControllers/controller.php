@@ -18,10 +18,10 @@ abstract class controller implements IController {
 
     private static $requestToClassMap = [
         'GET' => [
-            'profile' => 'getProfileController'
+            'profile' => 'getProfileController',
         ],
         'POST' => [
-
+            'files' => 'getProjectsController'
         ]
     ];
 
@@ -81,6 +81,8 @@ abstract class controller implements IController {
      * @return mixed
      */
     public static function getInstance() {
+        AuthCookie::checkAccess();
+                
         $requestPath = ltrim(strtolower(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)), '/');
         $method = strtoupper($_SERVER['REQUEST_METHOD']);
 

@@ -121,11 +121,6 @@ class getProjectsController extends ajaxController {
 
     public function doAction() {
 
-        if ( !$this->userIsLogged ) {
-            $this->result = ( new Error( [ new Exception( 'User not Logged', 401 ) ] ) )->render();
-            return;
-        }
-
         $this->featureSet->loadFromUserEmail( $this->user->email ) ;
 
         try {
@@ -161,10 +156,11 @@ class getProjectsController extends ajaxController {
         $projects = $this->filterProjectsWithUserFeatures( $projects ) ;
 
         $projects = $this->filterProjectsWithProjectFeatures( $projects ) ;
-
+        
+        unset($this->result['errors']);
         $this->result[ 'data' ]     = $projects;
         $this->result[ 'page' ]     = $this->page;
-        $this->result[ 'pnumber' ]  = $projnum[ 0 ][ 'c' ];
+        $this->result[ 'totalFiles' ]  = intval($projnum[ 0 ][ 'c' ]);
         $this->result[ 'pageStep' ] = $this->step;
     }
 
