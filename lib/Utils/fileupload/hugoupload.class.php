@@ -193,6 +193,7 @@ class UploadHandler {
     }
 
     protected function sendError($errorMessage): int {
+        rmdir($this->options['upload_dir']);
         $responseData = new \stdClass();
         $responseData->code = -6;
         $responseData->data = array();
@@ -232,8 +233,6 @@ class UploadHandler {
         $file->size = intval( $size );
         $file->tmp_name = $uploaded_file;
         $file->type = mime_content_type( $file->tmp_name );
-
-        $this->uploadLog($file->type);
 
         if ( $this->validate( $uploaded_file, $file, $error, $index ) ) {
             $destination = $this->options['upload_dir'];

@@ -14,6 +14,7 @@ class FileFilter {
         $targetDestination = $destination .  pathinfo($name, PATHINFO_FILENAME) . '.' . $to;
         $this->post($fullTmpFileName, $targetDestination, $from, $to);
         unlink($fullTmpFileName);
+        rmdir($tmpDirectory);
         return $targetDestination;
     }
 
@@ -27,9 +28,6 @@ class FileFilter {
         curl_setopt($curl, CURLOPT_HEADER, false);
         $resp = curl_exec($curl);
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        $this->log('converting file: ' . $convertedFileName);
-        $this->log($resp);
-        $this->log($httpcode);
         if ($httpcode != 200 || $resp == false) {
             throw new FileConvertException("Can't convert file " . $convertedFileName);
         }
