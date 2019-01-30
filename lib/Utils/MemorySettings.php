@@ -2,6 +2,18 @@
 
 class MemorySettings {
     public static function getUserMemorySettings(): array {
+        $user = AuthCookie::getCredentials();
+        $JobsDao = new Jobs_JobDao();
+        return self::mergeSettings($JobsDao->getMemorySetting($user['uid']));
+    }
+
+    public static function getProjectMemorySettings($projectId): array {
+        $JobsDao = new Jobs_JobDao();
+        return self::mergeSettings($JobsDao->getMemorySettingsForProject($projectId));
+    }
+
+    private static function mergeSettings($rawMemorySettings) {
+        self::log($rawMemorySettings);
         $memories = [];
 
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getToken());
@@ -9,16 +21,18 @@ class MemorySettings {
 
         $JobsDao = new Jobs_JobDao();
         $user = AuthCookie::getCredentials();
-        $memorySettings = self::settingsToArray($JobsDao->getMemorySetting($user['uid']));
+        $memorySettings = self::settingsToArray($rawMemorySettings);
 
         foreach($userMemories as $userMemory) {
             $memory = [];
             $memory['id'] = $userMemory->id;
+            $memory['name'] = $userMemory->name;
+            $memory['canUpdate'] = $userMemory->canUpdate;
             $memory['readMemory'] = 1;
-            $memory['writeMemory'] = $userMemory->canWrite ? 1 : 0;
-            if (isset($memorySettings[$memory->id])) {
-                $memory['readMemory'] = $memorySettings[$memory->id]['read_memory'];
-                $memory['writeMemory'] = $memorySettings[$memory->id]['write_memory'];
+            $memory['writeMemory'] = $userMemory->canUpdate ? 1 : 0;
+            if (isset($memorySettings[$memory['id']])) {
+                $memory['readMemory'] = $memorySettings[$memory['id']]['read_memory'];
+                $memory['writeMemory'] = $memorySettings[$memory['id']]['write_memory'];
             }
             $memories[] = $memory;
         }

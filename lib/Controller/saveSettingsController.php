@@ -12,14 +12,14 @@ class saveSettingsController extends ajaxController {
     {
         $filterArgs = [
             'id'          => [ 'filter' => FILTER_SANITIZE_STRING ],
-            'read'   => ['filter' => FILTER_VALIDATE_BOOLEAN],
-            'write'   => ['filter' => FILTER_VALIDATE_BOOLEAN],
+            'readMemory'   => ['filter' => FILTER_VALIDATE_BOOLEAN],
+            'writeMemory'   => ['filter' => FILTER_VALIDATE_BOOLEAN],
             'concordance'   => ['filter' => FILTER_VALIDATE_BOOLEAN],
         ];
         $__postInput = filter_input_array( INPUT_POST, $filterArgs );
         $this->memory_id = $__postInput['id'];
-        $this->read = $__postInput['read'];
-        $this->write = $__postInput['write'];
+        $this->read = $__postInput['readMemory'];
+        $this->write = $__postInput['writeMemory'];
         $this->concordance = $__postInput['concordance'];
     }
 

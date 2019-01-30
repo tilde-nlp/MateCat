@@ -4,7 +4,6 @@ CREATE TABLE `project_settings` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`project_id` INT NOT NULL,
 	`update_mt` INT NOT NULL DEFAULT '1',
-	`mt_system` VARCHAR(120) NOT NULL,
 	PRIMARY KEY (`id`)
 )
 COLLATE='utf8_general_ci'

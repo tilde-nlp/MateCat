@@ -271,7 +271,16 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         $thisDao = new self();
         $conn = Database::obtain()->getConnection();
         $stmt = $conn->prepare("SELECT mt_system_id FROM projects WHERE id = ? ");
-        return $thisDao->setCacheTTL( 0 )->_fetchObject( $stmt, new LoudArray(), [ $project_id ] );
+        return $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $project_id ] );
+
+    }
+
+    public static function getUpdateMtForProject($project_id) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT update_mt FROM project_settings WHERE project_id = ? ");
+        return $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $project_id ] );
 
     }
 
@@ -353,6 +362,17 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         $conn = Database::obtain()->getConnection();
         $stmt = $conn->prepare("SELECT * FROM memory_settings WHERE user_id = ? ");
         return $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $userId ] );
+    }
+
+    public static function getMemorySettingsForProject( $projectId) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT pms.*
+        FROM project_memory_settings pms
+        INNER JOIN project_settings ps ON ps.id = pms.project_settings_id
+        WHERE ps.project_id = ? ");
+        return $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $projectId ] );
 
     }
 

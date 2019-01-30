@@ -26,7 +26,6 @@ class UploadHandler {
     private $due_date;
     private $tm_pretranslate;
     private $mt_pretranslate;
-    private $mtSystem;
 
     private $metadata;
     private $lang_handler;
@@ -191,7 +190,7 @@ class UploadHandler {
         }
 
         $projectId = $this->result['data']['id_project'];
-        $SettingsSaver = new SettingsSaver($projectId, $this->mtSystem);
+        $SettingsSaver = new SettingsSaver($projectId);
         $SettingsSaver->save();
         $this->respond($this->result);
     }
@@ -564,7 +563,6 @@ class UploadHandler {
         $filterArgs = $this->addFilterForMetadataInput( $filterArgs );
 
         $__postInput = filter_input_array( INPUT_POST, $filterArgs );
-        $this->mtSystem = $__postInput[ 'mt_system' ];
         $this->setProjectFeaturesFromPostValues( $__postInput );
 
         //first we check the presence of a list from tm management panel

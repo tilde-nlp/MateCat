@@ -1,11 +1,9 @@
 <?php
 class SettingsSaver {
     private $projectId;
-    private $mtSystem;
 
-    function __construct($projectId, $mtSystem) {
+    function __construct($projectId) {
         $this->projectId = $projectId;
-        $this->mtSystem = $mtSystem;
     }
     public function save() {
         $projectSettings = [];
@@ -13,7 +11,6 @@ class SettingsSaver {
         $UserDao = new Users_UserDao();
         $userStruct = $UserDao->getByUid($userData['uid']);
         $projectSettings['update_mt'] = intval($userStruct->update_mt);
-        $projectSettings['mt_system'] = $this->mtSystem;
         $projectSettings['project_id'] = intval($this->projectId);
 
         try {
@@ -27,7 +24,7 @@ class SettingsSaver {
 
     private function saveProjectSettings($projectSettings) {
         $db = \Database::obtain();
-        $query = 'INSERT INTO project_settings (update_mt, mt_system, project_id) VALUES (:update_mt, :mt_system, :project_id);';
+        $query = 'INSERT INTO project_settings (update_mt, project_id) VALUES (:update_mt, :project_id);';
         $connection = $db->getConnection();
         $statement = $connection->prepare($query);
         $statement->execute($projectSettings);
@@ -36,6 +33,8 @@ class SettingsSaver {
 
     private function saveProjectMemorySettings($projectSettingsId, $memorySettings) {
         foreach($memorySettings as $setting) {
+            unset($setting['name']);
+            unset($setting['canUpdate']);
             $query = 'INSERT INTO project_memory_settings (read_memory, write_memory, memory_id, project_settings_id) VALUES 
                 (:readMemory, :writeMemory, :id, :settingsId)
             ';
