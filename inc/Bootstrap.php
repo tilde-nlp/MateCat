@@ -145,28 +145,6 @@ class Bootstrap {
             mkdir( INIT::$QUEUE_PROJECT_REPOSITORY, 0755, true );
         }
 
-        //auth sections
-        INIT::$AUTHSECRET_PATH = INIT::$ROOT . '/inc/login_secret.dat';
-        //if secret is set in file
-        if ( file_exists( INIT::$AUTHSECRET_PATH ) ) {
-            //fetch it
-            INIT::$AUTHSECRET = file_get_contents( INIT::$AUTHSECRET_PATH );
-        } else {
-            //try creating the file and the fetch it
-            //generate pass
-            $secret = self::generate_password( 512 );
-            //put file
-            file_put_contents( INIT::$AUTHSECRET_PATH, $secret );
-            //if put succeed
-            if ( file_exists( INIT::$AUTHSECRET_PATH ) ) {
-                //restrict permissions
-                chmod( INIT::$AUTHSECRET_PATH, 0400 );
-            } else {
-                //if couldn't create due to permissions, use default secret
-                INIT::$AUTHSECRET = 'ScavengerOfHumanSorrow';
-            }
-        }
-
         $this->initMandatoryPlugins();
         $this->notifyBootCompleted();
 

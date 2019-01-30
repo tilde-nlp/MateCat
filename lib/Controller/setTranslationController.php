@@ -986,7 +986,7 @@ class setTranslationController extends ajaxController {
     protected function writeTM( Array $config, ContributionSetStruct $contributionStruct ) {
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, $contributionStruct->jwt_token);
         $memories = $TildeTM->getMemories();
-        $canWrite= $this->settingsToArray(Jobs_JobDao::getMemorySetting($contributionStruct->uid));
+        $canWrite = $this->settingsToArray(Jobs_JobDao::getMemorySetting($contributionStruct->uid));
         if (empty($memories)) {
             return;
         }

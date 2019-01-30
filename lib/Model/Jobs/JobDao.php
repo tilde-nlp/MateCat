@@ -347,12 +347,12 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         return $stmt->rowCount();
     }
 
-    public static function getMemorySetting( $userId, $ttl = 0 ) {
+    public static function getMemorySetting( $userId) {
 
         $thisDao = new self();
         $conn = Database::obtain()->getConnection();
         $stmt = $conn->prepare("SELECT * FROM memory_settings WHERE user_id = ? ");
-        return $thisDao->setCacheTTL( $ttl )->_fetchObject( $stmt, new LoudArray(), [ $userId ] );
+        return $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $userId ] );
 
     }
 
