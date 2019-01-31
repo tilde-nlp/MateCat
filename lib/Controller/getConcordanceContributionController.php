@@ -7,6 +7,7 @@ class getConcordanceContributionController extends ajaxController {
     private $text;
     private $source;
     private $target;
+    private $projectId;
 
     private $__postInput = array();
 
@@ -18,6 +19,7 @@ class getConcordanceContributionController extends ajaxController {
                 'source'         => [ 'filter' => FILTER_SANITIZE_STRING ],
                 'text'           => [ 'filter' => FILTER_UNSAFE_RAW ],
                 'target'       => [ 'filter' => FILTER_SANITIZE_STRING],
+                'project_id' => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
         ];
 
         $this->__postInput = filter_input_array( INPUT_POST, $filterArgs );
@@ -25,10 +27,11 @@ class getConcordanceContributionController extends ajaxController {
         $this->text               = html_entity_decode(trim( $this->__postInput[ 'text' ] ));
         $this->source           = $this->__postInput[ 'source' ];
         $this->target           = $this->__postInput[ 'target' ];
+        $this->projectId           = $this->__postInput[ 'project_id' ];
     }
 
     public function doAction() {
-        $matches = TildeTM::getConcordanceContributions($this->text, $this->source, $this->target);
+        $matches = TildeTM::getConcordanceContributions($this->projectId, $this->text, $this->source, $this->target);
 
         usort( $matches, array( "getContributionController", "__compareScore" ) );
         $matches = array_reverse( $matches );

@@ -52,7 +52,7 @@ class PretranslateWorker extends AbstractWorker {
             if ($pretranslateStruct->useTm) {
                 try {
                     $tms_match = \TildeTM::getContributionsAsync(
-                        $pretranslateStruct->uid,
+                        $pretranslateStruct->projectId,
                         $pretranslateStruct->jwtToken,
                         $segment->segment,
                         $pretranslateStruct->source,
@@ -73,7 +73,7 @@ class PretranslateWorker extends AbstractWorker {
 
                     try {
                         $tms_match = \TildeTM::getContributionsAsync(
-                            $pretranslateStruct->uid,
+                            $pretranslateStruct->projectId,
                             $pretranslateStruct->jwtToken,
                             $segment->segment,
                             $pretranslateStruct->source,

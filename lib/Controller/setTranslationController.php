@@ -920,6 +920,7 @@ class setTranslationController extends ajaxController {
         $contributionStruct->oldTranslation       = $old_translation[ 'translation' ];
         $contributionStruct->propagationRequest   = $this->propagate;
         $contributionStruct->id_mt                = $this->jobData->id_mt_engine;
+        $contributionStruct->id_project = $this->jobData->id_project;
         $contributionStruct->jwt_token            = AuthCookie::getToken();
 
         $contributionStruct->context_after        = $this->context_after;
@@ -963,12 +964,10 @@ class setTranslationController extends ajaxController {
         if (!in_array( $this->status, array(Constants_TranslationStatus::STATUS_TRANSLATED))) {
             return;
         }
+        $JobDao = new Jobs_JobDao();
+        $updateMt = array_pop($JobDao->getUpdateMtForProject($contributionStruct->id_project))['update_mt'];
 
-        $userData = AuthCookie::getCredentials();
-        $UserDao = new Users_UserDao();
-        $userStruct = $UserDao->getByUid($userData['uid']);
-
-        if ($userStruct->update_mt < 1) {
+        if ($updateMt < 1) {
             return;
         }
 
@@ -984,35 +983,19 @@ class setTranslationController extends ajaxController {
      * @throws \Exceptions\ValidationError
      */
     protected function writeTM( Array $config, ContributionSetStruct $contributionStruct ) {
-        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, $contributionStruct->jwt_token);
-        $memories = $TildeTM->getMemories();
-        $canWrite = $this->settingsToArray(Jobs_JobDao::getMemorySetting($contributionStruct->uid));
-        if (empty($memories)) {
-            return;
-        }
-        foreach($memories as &$mem) {
-            $writeValue = empty($canWrite[$mem->id]) ? false : $canWrite[$mem->id];
-            $mem->write = $mem->canUpdate && $writeValue;
-        }
+        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getToken());
+        $memories = MemorySettings::getProjectMemorySettings($contributionStruct->id_project);
         foreach($memories as $memory) {
-            if (!$memory->write) {
+            if ($memory['writeMemory'] < 1) {
                 continue;
             }
             $TildeTM->writeMatch(
-                $memory->id,
+                $memory['id'],
                 $contributionStruct->segment,
                 $contributionStruct->translation,
                 substr($config['source'], 0, 2),
                 substr($config['target'], 0, 2)
             );
         }
-    }
-
-    private function settingsToArray($settings) {
-        $settingsArray = [];
-        foreach($settings as $setting) {
-            $settingsArray[$setting['memory_id']] = intval($setting['write_memory']) > 0;
-        }
-        return $settingsArray;
     }
 }
