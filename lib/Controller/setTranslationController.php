@@ -264,7 +264,7 @@ class setTranslationController extends ajaxController {
     protected function _getContexts(){
 
         //Get contexts
-        $segmentsList = ( new Segments_SegmentDao )->setCacheTTL( 60 * 60 * 24 )->getContextAndSegmentByIDs(
+        $segmentsList = ( new Segments_SegmentDao )->setCacheTTL( 0 )->getContextAndSegmentByIDs(
                 [
                         'id_before'  => $this->id_before,
                         'id_segment' => $this->id_segment,
@@ -274,8 +274,12 @@ class setTranslationController extends ajaxController {
 
         $this->featureSet->filter( 'rewriteContributionContexts', $segmentsList, $this->__postInput );
 
-        $this->context_before = $segmentsList->id_before->segment;
-        $this->context_after  = $segmentsList->id_after->segment;
+        if (isset($segmentsList->id_before)) {
+            $this->context_before = $segmentsList->id_before->segment;
+        }
+        if (isset($segmentsList->id_after)) {
+            $this->context_after  = $segmentsList->id_after->segment;
+        }
 
     }
 
@@ -316,7 +320,7 @@ class setTranslationController extends ajaxController {
             $translation = $this->translation;
         } else {
             $err_json    = '';
-            $translation = $check->getTrgNormalized();
+            $translation = $this->translation;
         }
 
         /*

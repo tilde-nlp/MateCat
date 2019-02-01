@@ -47,7 +47,8 @@ class getVolumeAnalysisController extends ajaxController {
 
         if (isset($this->result['data']['summary']['STATUS']) && $this->result['data']['summary']['STATUS'] === 'DONE') {
             $data = $this->result['data'];
-            $pretranslateData = array_pop(\Jobs_JobDao::getPretranslateData($data['job_id']));
+            $pretranslateData = \Jobs_JobDao::getPretranslateData($data['job_id']);
+            $pretranslateData = array_pop($pretranslateData);
              if ($pretranslateData['start_tm_pretranslate'] || $pretranslateData['start_mt_pretranslate']) {
                  $jobData = array_pop(Jobs_JobDao::getById($data['job_id']));
                  $mtSystem = array_pop(Jobs_JobDao::getMtSystem($data['project_id']));

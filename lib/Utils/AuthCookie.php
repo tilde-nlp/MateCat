@@ -22,7 +22,7 @@ class AuthCookie {
     public static function getToken() {
         $jwtToken = '';
 
-        $headers = apache_request_headers();
+        $headers = getallheaders();
         if ( isset( $headers['Authorization'] ) and !empty( $headers['Authorization'] ) ) {
             $jwtToken = str_replace('Bearer ', '', $headers['Authorization']);
         }
@@ -37,7 +37,7 @@ class AuthCookie {
     public static function getRefreshToken() {
         $refreshToken = '';
 
-        $headers = apache_request_headers();
+        $headers = getallheaders();
         if ( isset( $headers['Refresh'] ) and !empty( $headers['Refresh'] ) ) {
             $refreshToken = $headers['Refresh'];
         }
@@ -103,9 +103,9 @@ class AuthCookie {
         }
     }
 
-    protected function log($data) {
-        file_put_contents('/var/tmp/worker.log', var_export($data, true), FILE_APPEND);
-        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
+    protected static function log($data) {
+        file_put_contents('/var/tmp/cookie.log', var_export($data, true), FILE_APPEND);
+        file_put_contents('/var/tmp/cookie.log', "\n", FILE_APPEND);
     }
 
 }

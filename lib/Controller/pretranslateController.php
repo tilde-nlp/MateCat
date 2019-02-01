@@ -28,7 +28,8 @@ class pretranslateController extends ajaxController {
     }
 
     public function doAction() {
-        $jobData = array_pop(Jobs_JobDao::getById($this->id));
+        $jobData = Jobs_JobDao::getById($this->id);
+        $jobData = array_pop($jobData);
 
         if ($this->useTm || $this->useMt) {
 

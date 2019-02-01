@@ -309,7 +309,7 @@ class getContributionController extends ajaxController {
     protected function _getContexts(){
 
         //Get contexts
-        $segmentsList = ( new Segments_SegmentDao )->setCacheTTL( 60 * 60 * 24 )->getContextAndSegmentByIDs(
+        $segmentsList = ( new Segments_SegmentDao )->setCacheTTL( 0 )->getContextAndSegmentByIDs(
                 [
                         'id_before'  => $this->id_before,
                         'id_segment' => $this->id_segment,

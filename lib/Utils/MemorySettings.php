@@ -4,23 +4,26 @@ class MemorySettings {
     public static function getUserMemorySettings(): array {
         $user = AuthCookie::getCredentials();
         $JobsDao = new Jobs_JobDao();
-        return self::mergeSettings($JobsDao->getMemorySetting($user['uid']));
+        return self::mergeSettings($JobsDao->getMemorySetting($user['uid']), AuthCookie::getToken());
     }
 
     public static function getProjectMemorySettings($projectId): array {
         $JobsDao = new Jobs_JobDao();
-        return self::mergeSettings($JobsDao->getMemorySettingsForProject($projectId));
+        return self::mergeSettings($JobsDao->getMemorySettingsForProject($projectId), AuthCookie::getToken());
     }
 
-    private static function mergeSettings($rawMemorySettings) {
-        self::log($rawMemorySettings);
+    public static function getProjectMemorySettingsAsync($projectId, $token): array {
+        $JobsDao = new Jobs_JobDao();
+        return self::mergeSettings($JobsDao->getMemorySettingsForProject($projectId), $token);
+    }
+
+    private static function mergeSettings($rawMemorySettings, $token) {
         $memories = [];
 
-        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getToken());
+        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, $token);
         $userMemories = $TildeTM->getMemories();
 
         $JobsDao = new Jobs_JobDao();
-        $user = AuthCookie::getCredentials();
         $memorySettings = self::settingsToArray($rawMemorySettings);
 
         foreach($userMemories as $userMemory) {

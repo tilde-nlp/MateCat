@@ -11,8 +11,8 @@ class TildeTM {
     private static $debug = false;
 
     public static function getContributionsAsync($projectId, $token, $text, $sourceLang, $targetLang) {
-        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getToken());
-        $memories = MemorySettings::getProjectMemorySettings($projectId);
+        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, $token);
+        $memories = MemorySettings::getProjectMemorySettingsAsync($projectId, $token);
         $tms_match = [];
         foreach($memories as $memory) {
             if ($memory['readMemory'] < 1) {
