@@ -32,7 +32,7 @@ class MemorySettings {
             $memory['name'] = $userMemory->name;
             $memory['canUpdate'] = $userMemory->canUpdate;
             $memory['readMemory'] = 1;
-            $memory['writeMemory'] = $userMemory->canUpdate ? 1 : 0;
+            $memory['writeMemory'] = substr($userMemory->id, -strlen(':Private')) === ':Private' ? 1 : 0;
             if (isset($memorySettings[$memory['id']])) {
                 $memory['readMemory'] = $memorySettings[$memory['id']]['read_memory'];
                 $memory['writeMemory'] = $memorySettings[$memory['id']]['write_memory'];
