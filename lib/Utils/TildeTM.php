@@ -28,7 +28,7 @@ class TildeTM {
 
             foreach($tildeMatches as $match) {
                 $tms_match[ ] = array(
-                    'created_by' => $memory->name,
+                    'created_by' => $memory['name'],
                     'match' => $match->match,
                     'segment' => $match->source,
                     'translation' => $match->target,
@@ -59,7 +59,7 @@ class TildeTM {
 
             foreach($tildeMatches as $match) {
                 $tms_match[ ] = array(
-                    'created_by' => $memory->name,
+                    'created_by' => $memory['name'],
                     'match' => $match->match,
                     'segment' => $match->source,
                     'translation' => $match->target,
@@ -90,7 +90,7 @@ class TildeTM {
 
             foreach($tildeMatches as $match) {
                 $tms_match[ ] = array(
-                    'created_by' => $memory->name,
+                    'created_by' => $memory['name'],
                     'match' => $match->match,
                     'segment' => $match->source,
                     'translation' => $match->target,
