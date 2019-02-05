@@ -64,7 +64,7 @@
           "description": "Specify page and page size",
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "$ref": "#/components/schemas/Paging"
               }
@@ -78,6 +78,46 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/FileList"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/files/analysis": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Get info about file segments and words",
+        "operationId": "getFileAnalysis",
+        "requestBody": {
+          "description": "Specify project id and password",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectGetter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retuns info about file",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileInfo"
                 }
               }
             }
@@ -141,6 +181,43 @@
             "type": "integer",
             "minimum": 1,
             "default": 10
+          }
+        }
+      },
+      "ProjectGetter": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "projectPassword": {
+            "type": "string"
+          }
+        }
+      },
+      "FileInfo": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "wordCount": {
+            "type": "integer"
+          },
+          "segmentCount": {
+            "type": "integer"
+          },
+          "segmentsAnalyzed": {
+            "type": "integer"
+          },
+          "jobId": {
+            "type": "integer"
+          },
+          "jobPassword": {
+            "type": "string"
           }
         }
       },
