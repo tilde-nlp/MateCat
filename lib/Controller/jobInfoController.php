@@ -21,10 +21,14 @@ class jobInfoController extends ajaxController {
     public function doAction() {
         $user = AuthCookie::getCredentials();
         $JobsDao = new Jobs_JobDao();
-        $lastSegmentData = array_pop($JobsDao->getActiveSegment($user['uid'], $this->id));
-        $fileNameData = array_pop($JobsDao->getFileName($this->id));
-        $jobData = array_pop(Jobs_JobDao::getById($this->id));
-        $mtSystemId = array_pop($JobsDao->getMtSystem($jobData->id_project))['mt_system_id'];
+        $lastSegmentData = $JobsDao->getActiveSegment($user['uid'], $this->id);
+        $lastSegmentData = array_pop($lastSegmentData);
+        $fileNameData = $JobsDao->getFileName($this->id);
+        $fileNameData = array_pop($fileNameData);
+        $jobData = Jobs_JobDao::getById($this->id);
+        $jobData = array_pop($jobData);
+        $mtSystemId = $JobsDao->getMtSystem($jobData->id_project);
+        $mtSystemId = array_pop($mtSystemId)['mt_system_id'];
         $result = new \stdClass();
         $result->active_segment_id = $lastSegmentData['segment_id'];
         if ($result->active_segment_id == null) {

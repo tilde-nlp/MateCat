@@ -28,7 +28,8 @@ class pretranslateController extends ajaxController {
     }
 
     public function doAction() {
-        $jobData = array_pop(Jobs_JobDao::getById($this->id));
+        $jobData = Jobs_JobDao::getById($this->id);
+        $jobData = array_pop($jobData);
 
         if ($this->useTm || $this->useMt) {
 
@@ -46,6 +47,7 @@ class pretranslateController extends ajaxController {
             $pretranslateStruct->jwtToken = AuthCookie::getToken();
             $pretranslateStruct->jwtRefreshToken = AuthCookie::getRefreshToken();
             $pretranslateStruct->uid = AuthCookie::getCredentials()['uid'];
+            $pretranslateStruct->projectId = $jobData->id_project;
             $pretranslateStruct->start();
             $rowCount = \Jobs_JobDao::setPretranslating($pretranslateStruct->id, $this->useTm ? 1 : 0, $this->useMt ? 1 : 0);
         }

@@ -8,32 +8,27 @@
 class TildeTM {
     public $token;
     private $baseUrl;
+    private static $debug = false;
 
-    public static function getContributionsAsync($uid, $token, $text, $sourceLang, $targetLang) {
+    public static function getContributionsAsync($projectId, $token, $text, $sourceLang, $targetLang) {
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, $token);
-        $memorySettings = self::settingsToArray(Jobs_JobDao::getMemorySetting($uid));
-        $memories = $TildeTM->getMemories();
-        foreach($memories as &$mem) {
-            $readValue = empty($memorySettings[$mem->id]['read']) ? true : $memorySettings[$mem->id]['read'];
-            $mem->read = true && $readValue;
-            $mem->concordance = false;
-        }
+        $memories = MemorySettings::getProjectMemorySettingsAsync($projectId, $token);
         $tms_match = [];
         foreach($memories as $memory) {
-            if (!$memory->read) {
+            if ($memory['readMemory'] < 1) {
                 continue;
             }
             $tildeMatches = $TildeTM->getMatches(
-                $memory->id,
+                $memory['id'],
                 $text,
                 substr($sourceLang, 0, 2),
                 substr($targetLang, 0, 2),
-                $memory->concordance
+                false
             );
 
             foreach($tildeMatches as $match) {
                 $tms_match[ ] = array(
-                    'created_by' => $memory->name,
+                    'created_by' => $memory['name'],
                     'match' => $match->match,
                     'segment' => $match->source,
                     'translation' => $match->target,
@@ -46,32 +41,25 @@ class TildeTM {
         return $tms_match;
     }
 
-    public static function getContributions($text, $sourceLang, $targetLang) {
+    public static function getContributions($projectId, $text, $sourceLang, $targetLang) {
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getToken());
-        $user = AuthCookie::getCredentials();
-        $memorySettings = self::settingsToArray(Jobs_JobDao::getMemorySetting($user['uid']));
-        $memories = $TildeTM->getMemories();
-        foreach($memories as &$mem) {
-            $readValue = empty($memorySettings[$mem->id]['read']) ? true : $memorySettings[$mem->id]['read'];
-            $mem->read = true && $readValue;
-            $mem->concordance = false;
-        }
+        $memories = MemorySettings::getProjectMemorySettings($projectId);
         $tms_match = [];
         foreach($memories as $memory) {
-            if (!$memory->read) {
+            if ($memory['readMemory'] < 1) {
                 continue;
             }
             $tildeMatches = $TildeTM->getMatches(
-                $memory->id,
+                $memory['id'],
                 $text,
                 substr($sourceLang, 0, 2),
                 substr($targetLang, 0, 2),
-                $memory->concordance
+                false
             );
 
             foreach($tildeMatches as $match) {
                 $tms_match[ ] = array(
-                    'created_by' => $memory->name,
+                    'created_by' => $memory['name'],
                     'match' => $match->match,
                     'segment' => $match->source,
                     'translation' => $match->target,
@@ -84,32 +72,25 @@ class TildeTM {
         return $tms_match;
     }
 
-    public static function getConcordanceContributions($text, $sourceLang, $targetLang) {
+    public static function getConcordanceContributions($projectId, $text, $sourceLang, $targetLang) {
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getToken());
-        $user = AuthCookie::getCredentials();
-        $memorySettings = self::settingsToArray(Jobs_JobDao::getMemorySetting($user['uid']));
-        $memories = $TildeTM->getMemories();
-        foreach($memories as &$mem) {
-            $readValue = empty($memorySettings[$mem->id]['read']) ? true : $memorySettings[$mem->id]['read'];
-            $mem->read = true && $readValue;
-            $mem->concordance = true;
-        }
+        $memories = MemorySettings::getProjectMemorySettings($projectId);
         $tms_match = [];
         foreach($memories as $memory) {
-            if (!$memory->read) {
+            if ($memory['read'] < 1) {
                 continue;
             }
             $tildeMatches = $TildeTM->getMatches(
-                $memory->id,
+                $memory['id'],
                 $text,
                 substr($sourceLang, 0, 2),
                 substr($targetLang, 0, 2),
-                $memory->concordance
+                true
             );
 
             foreach($tildeMatches as $match) {
                 $tms_match[ ] = array(
-                    'created_by' => $memory->name,
+                    'created_by' => $memory['name'],
                     'match' => $match->match,
                     'segment' => $match->source,
                     'translation' => $match->target,
@@ -120,17 +101,6 @@ class TildeTM {
         }
 
         return $tms_match;
-    }
-
-    private static function settingsToArray($settings) {
-        $settingsArray = [];
-        foreach($settings as $setting) {
-            $settingsArray[$setting['memory_id']] = [
-                'read' => intval($setting['read_memory']) > 0,
-                'concordance' => intval($setting['concordance_search']) > 0,
-                ];
-        }
-        return $settingsArray;
     }
 
     public function __construct($baseUrl, $token)
@@ -170,7 +140,9 @@ class TildeTM {
     }
 
     protected function get($request) {
-        // Get cURL resource
+        if (self::$debug) {
+            self::log('TILDE TM GET: ' . $this->baseUrl . $request);
+        }
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'Authorization: Bearer ' . $this->token));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -182,6 +154,12 @@ class TildeTM {
         $header = substr($response, 0, $header_size);
         $body = substr($response, $header_size);
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        if (self::$debug) {
+            self::log('TILDE TM GET RESPONSE: ' . $httpcode);
+            if ($httpcode != 200) {
+                self::log($response);
+            }
+        }
         curl_close($curl);
         if ($httpcode == 401) {
             throw new Unauthorized();
@@ -191,6 +169,9 @@ class TildeTM {
 
 
     protected function post($request, $data) {
+        if (self::$debug) {
+            self::log('TILDE TM POST: ' . $this->baseUrl . $request);
+        }
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'Authorization: Bearer ' . $this->token));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -199,17 +180,23 @@ class TildeTM {
         curl_setopt($curl, CURLOPT_HEADER  , true);
         $resp = curl_exec($curl);
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        if (self::$debug) {
+            self::log('TILDE TM POST RESPONSE: ' . $httpcode);
+            if ($httpcode != 200 && $httpcode != 204) {
+                self::log($resp);
+            }
+        }
         curl_close($curl);
         return json_decode($resp);
     }
 
     protected function log_text($data) {
-        file_put_contents('/var/tmp/worker.log', $data, FILE_APPEND);
-        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
+        file_put_contents('/var/tmp/TildeTM.log', $data, FILE_APPEND);
+        file_put_contents('/var/tmp/TildeTM.log', "\n", FILE_APPEND);
     }
 
     protected function log($data) {
-        file_put_contents('/var/tmp/worker.log', var_export($data, true), FILE_APPEND);
-        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
+        file_put_contents('/var/tmp/TildeTM.log', var_export($data, true), FILE_APPEND);
+        file_put_contents('/var/tmp/TildeTM.log', "\n", FILE_APPEND);
     }
 }

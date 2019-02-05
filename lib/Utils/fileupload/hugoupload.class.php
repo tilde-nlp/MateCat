@@ -189,10 +189,14 @@ class UploadHandler {
             return $this->sendError('ErrorCreatingProject');
         }
 
+        $projectId = $this->result['data']['id_project'];
+        $SettingsSaver = new SettingsSaver($projectId);
+        $SettingsSaver->save();
         $this->respond($this->result);
     }
 
     protected function sendError($errorMessage): int {
+        rmdir($this->options['upload_dir']);
         $responseData = new \stdClass();
         $responseData->code = -6;
         $responseData->data = array();
@@ -559,7 +563,6 @@ class UploadHandler {
         $filterArgs = $this->addFilterForMetadataInput( $filterArgs );
 
         $__postInput = filter_input_array( INPUT_POST, $filterArgs );
-
         $this->setProjectFeaturesFromPostValues( $__postInput );
 
         //first we check the presence of a list from tm management panel

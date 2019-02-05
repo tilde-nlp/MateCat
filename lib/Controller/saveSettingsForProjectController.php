@@ -1,12 +1,12 @@
 <?php
 
 use AuthCookie;
-class saveSettingsController extends ajaxController {
+class saveSettingsForProjectController extends ajaxController {
 
     private $memory_id;
     private $read;
     private $write;
-    private $concordance;
+    private $projectId;
 
     public function __construct()
     {
@@ -14,19 +14,18 @@ class saveSettingsController extends ajaxController {
             'id'          => [ 'filter' => FILTER_SANITIZE_STRING ],
             'readMemory'   => ['filter' => FILTER_VALIDATE_BOOLEAN],
             'writeMemory'   => ['filter' => FILTER_VALIDATE_BOOLEAN],
-            'concordance'   => ['filter' => FILTER_VALIDATE_BOOLEAN],
+            'project_id' => [ 'filter' => FILTER_VALIDATE_INT, 'flags' => FILTER_REQUIRE_SCALAR ],
         ];
         $__postInput = filter_input_array( INPUT_POST, $filterArgs );
         $this->memory_id = $__postInput['id'];
         $this->read = $__postInput['readMemory'];
         $this->write = $__postInput['writeMemory'];
-        $this->concordance = $__postInput['concordance'];
+        $this->projectId = $__postInput['project_id'];
     }
 
     public function doAction() {
-        $user = AuthCookie::getCredentials();
         $JobsDao = new Jobs_JobDao();
-        $JobsDao->saveMemorySetting($user['uid'], $this->memory_id, $this->read, $this->write, $this->concordance);
+        $JobsDao->saveMemorySettingsForProject($this->projectId, $this->memory_id, $this->read, $this->write);
 
         echo json_encode("OK");
     }

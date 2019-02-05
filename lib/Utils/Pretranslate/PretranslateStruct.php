@@ -26,6 +26,7 @@ class PretranslateStruct extends DataAccess_AbstractDaoObjectStruct implements D
    public $jwtToken;
    public $jwtRefreshToken;
    public $uid;
+   public $projectId;
 
     /**
      * @return string

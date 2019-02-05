@@ -184,7 +184,7 @@ class getContributionController extends ajaxController {
         // Override for Tilde
         $config[ 'get_mt' ]  = false;
         $parsedText = PlaceholderParser::toXliffFromSymbols($this->text);
-        $tmp_match = TildeTM::getContributions($parsedText, $this->source, $this->target);
+        $tmp_match = TildeTM::getContributions($this->jobData->id_project, $parsedText, $this->source, $this->target);
         $tms_match = [];
 
         foreach($tmp_match as $match) {
@@ -309,7 +309,7 @@ class getContributionController extends ajaxController {
     protected function _getContexts(){
 
         //Get contexts
-        $segmentsList = ( new Segments_SegmentDao )->setCacheTTL( 60 * 60 * 24 )->getContextAndSegmentByIDs(
+        $segmentsList = ( new Segments_SegmentDao )->setCacheTTL( 0 )->getContextAndSegmentByIDs(
                 [
                         'id_before'  => $this->id_before,
                         'id_segment' => $this->id_segment,

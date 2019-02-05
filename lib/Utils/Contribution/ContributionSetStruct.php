@@ -111,6 +111,8 @@ class ContributionSetStruct extends DataAccess_AbstractDaoObjectStruct implement
      */
     public $id_mt;
 
+    public $id_project;
+
     /**
      * @var string
      */

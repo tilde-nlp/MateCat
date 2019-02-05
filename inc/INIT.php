@@ -106,7 +106,6 @@ class INIT {
     public static $CONVERSION_FILE_TYPES;
     public static $CONVERSION_FILE_TYPES_PARTIALLY_SUPPORTED;
     public static $AUTHSECRET;
-    public static $AUTHSECRET_PATH;
     public static $REFERENCE_REPOSITORY;
 
     public static $FORCE_XLIFF_CONVERSION    = false;

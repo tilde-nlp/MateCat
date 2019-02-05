@@ -271,7 +271,16 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         $thisDao = new self();
         $conn = Database::obtain()->getConnection();
         $stmt = $conn->prepare("SELECT mt_system_id FROM projects WHERE id = ? ");
-        return $thisDao->setCacheTTL( 0 )->_fetchObject( $stmt, new LoudArray(), [ $project_id ] );
+        return $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $project_id ] );
+
+    }
+
+    public static function getUpdateMtForProject($project_id) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT update_mt FROM project_settings WHERE project_id = ? ");
+        return $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $project_id ] );
 
     }
 
@@ -316,6 +325,14 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         return $stmt->rowCount();
     }
 
+    public static function saveUpdateMtForProject($projectId, $update_mt) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE project_settings SET update_mt = :update_mt WHERE project_id = :projectId ");
+        $stmt->execute(array('projectId' => $projectId, 'update_mt' => $update_mt));
+        return $stmt->rowCount();
+    }
+
     public static function saveEditingTime( $job_id, $editingTime, $ttl = 0 ) {
 
         $conn = Database::obtain()->getConnection();
@@ -347,12 +364,23 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         return $stmt->rowCount();
     }
 
-    public static function getMemorySetting( $userId, $ttl = 0 ) {
+    public static function getMemorySetting( $userId) {
 
         $thisDao = new self();
         $conn = Database::obtain()->getConnection();
         $stmt = $conn->prepare("SELECT * FROM memory_settings WHERE user_id = ? ");
-        return $thisDao->setCacheTTL( $ttl )->_fetchObject( $stmt, new LoudArray(), [ $userId ] );
+        return $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $userId ] );
+    }
+
+    public static function getMemorySettingsForProject( $projectId) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT pms.*
+        FROM project_memory_settings pms
+        INNER JOIN project_settings ps ON ps.id = pms.project_settings_id
+        WHERE ps.project_id = ? ");
+        return $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $projectId ] );
 
     }
 
@@ -411,6 +439,22 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
             'write' => $write ? 1 : 0,
             'concordance' => $concordance ? 1 : 0,
             'user_id' => $user_id));
+        return $stmt->rowCount();
+    }
+
+    public static function saveMemorySettingsForProject( $projectId, $memory_id, $read, $write) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("INSERT INTO project_memory_settings (read_memory, write_memory, memory_id, project_settings_id)
+        VALUES (:read_memory, :write_memory, :memory_id, (SELECT id FROM project_settings WHERE project_id = :project_id))
+        ON DUPLICATE KEY UPDATE
+        read_memory = :read_memory,
+        write_memory = :write_memory");
+        $stmt->execute(array(
+            'memory_id' => $memory_id,
+            'read_memory' => $read ? 1 : 0,
+            'write_memory' => $write ? 1 : 0,
+            'project_id' => $projectId));
         return $stmt->rowCount();
     }
 
