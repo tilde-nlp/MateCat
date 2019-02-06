@@ -172,6 +172,46 @@
           }
         ]
       }
+    },
+    "/files/stats": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Get info about whether file is analyzed and translated percents",
+        "operationId": "getFileStats",
+        "requestBody": {
+          "description": "Specify project id and password",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectGetter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns analysis status and translated percents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileStats"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -269,6 +309,20 @@
           },
           "original": {
             "type": "string"
+          }
+        }
+      },
+      "FileStats": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "analysisComplete": {
+            "type": "boolean"
+          },
+          "translatedPercent": {
+            "type": "number"
           }
         }
       },
