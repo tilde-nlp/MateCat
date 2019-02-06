@@ -252,6 +252,46 @@
           }
         ]
       }
+    },
+    "/files/delete": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Delete file",
+        "operationId": "deleteFile",
+        "requestBody": {
+          "description": "Specify project id and password",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectGetter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -414,6 +454,14 @@
             "type": "string"
           },
           "owner": {
+            "type": "string"
+          }
+        }
+      },
+      "OkStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
             "type": "string"
           }
         }

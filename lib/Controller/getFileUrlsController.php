@@ -5,7 +5,6 @@ use API\V2\Json\ProjectUrls;
 class getFileUrlsController extends ajaxController {
 
     private $project;
-
     private $id_project;
     private $password;
 
