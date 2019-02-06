@@ -24,7 +24,8 @@ abstract class controller implements IController {
             'files' => 'getProjectsController',
             'files/analysis' => 'getVolumeAnalysisController',
             'files/urls' => 'getFileUrlsController',
-            'files/stats' => 'getFileStatsController'
+            'files/stats' => 'getFileStatsController',
+            'files/creation-status' => 'getFileCreationStatusController'
         ]
     ];
 

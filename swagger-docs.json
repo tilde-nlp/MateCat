@@ -212,6 +212,46 @@
           }
         ]
       }
+    },
+    "/files/creation-status": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Get info about file creation status",
+        "operationId": "getFileCreationStatus",
+        "requestBody": {
+          "description": "Specify project id and password",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectGetter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns info whether file is created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileCreationStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -323,6 +363,26 @@
           },
           "translatedPercent": {
             "type": "number"
+          }
+        }
+      },
+      "FileCreationStatus": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "jobId": {
+            "type": "integer"
+          },
+          "jobPassword": {
+            "type": "string"
+          },
+          "projectName": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
           }
         }
       },
