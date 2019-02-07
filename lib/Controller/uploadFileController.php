@@ -5,8 +5,10 @@ use ProjectQueue\Queue;
 use API\V2\Exceptions\AuthorizationError;
 use API\V2\Json\CreationStatus;
 use Exceptions\NotFoundError;
+use SettingsSaver;
+use FileFilter;
 
-class UploadHandler {
+class uploadFileController extends ajaxController {
 
     protected $options;
     private $project_name;
@@ -90,10 +92,7 @@ class UploadHandler {
         $this->uploadLog(var_export($data, true));
     }
 
-    public function post() {
-        if ( isset( $_REQUEST[ '_method' ] ) && $_REQUEST[ '_method' ] === 'DELETE' ) {
-            return $this->delete();
-        }        
+    public function doAction() {      
         $upload = isset( $_FILES[ $this->options[ 'param_name' ] ] ) ? $_FILES[ $this->options[ 'param_name' ] ] : null;
 
         $info = [];
@@ -190,7 +189,7 @@ class UploadHandler {
         }
 
         $projectId = $this->result['data']['id_project'];
-        $SettingsSaver = new SettingsSaver($projectId);
+        $SettingsSaver = new \SettingsSaver($projectId);
         $SettingsSaver->save();
         $this->respond($this->result);
     }
@@ -208,25 +207,8 @@ class UploadHandler {
         return $this->respond($responseData);
     }
 
-    protected function respond($responseData): int {
-        header( 'Vary: Accept' );
-        $json     = json_encode( $responseData );
-        $redirect = isset( $_REQUEST[ 'redirect' ] ) ?
-            stripslashes( $_REQUEST[ 'redirect' ] ) : null;
-
-        if ( $redirect ) {
-            header( 'Location: ' . sprintf( $redirect, rawurlencode( $json ) ) );
-            return 0;
-        }
-
-        if ( isset( $_SERVER[ 'HTTP_ACCEPT' ] ) && ( strpos( $_SERVER[ 'HTTP_ACCEPT' ], 'application/json' ) !== false ) ) {
-            header( 'Content-type: application/json' );
-        } else {
-            header( 'Content-type: text/plain' );
-        }
-
-        echo $json;
-        return 0;
+    protected function respond($responseData) {
+        $this->result = $responseData;
     }
 
     protected function handle_file_upload( $uploaded_file, $name, $size, $type, $error, $index = null ) {

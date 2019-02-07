@@ -93,6 +93,46 @@
         ]
       }
     },
+    "/files/upload": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Upload file",
+        "operationId": "uploadFile",
+        "requestBody": {
+          "description": "Specify direction, mt system and pretranslate options",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/FileUpload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileUploadResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/files/analysis": {
       "post": {
         "tags": [
@@ -455,6 +495,64 @@
           },
           "owner": {
             "type": "string"
+          }
+        }
+      },
+      "FileUpload": {
+        "type": "object",
+        "properties": {
+          "source_language": {
+            "type": "string",
+            "default": "en-US"
+          },
+          "target_language": {
+            "type": "string",
+            "default": "lv-LV"
+          },
+          "mt_system": {
+            "type": "string",
+            "default": ""
+          },
+          "tm_pretranslate": {
+            "type": "integer",
+            "default": 0
+          },
+          "mt_pretranslate": {
+            "type": "integer",
+            "default": 0
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        }
+      },
+      "FileUploadResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "default": 1
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id_project": {
+                "type": "integer"
+              },
+              "password": {
+                "type": "string"
+              }
+            }
           }
         }
       },

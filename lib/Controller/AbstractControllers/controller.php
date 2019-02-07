@@ -26,7 +26,8 @@ abstract class controller implements IController {
             'files/urls' => 'getFileUrlsController',
             'files/stats' => 'getFileStatsController',
             'files/creation-status' => 'getFileCreationStatusController',
-            'files/delete' => 'deleteFileController'
+            'files/delete' => 'deleteFileController',
+            'files/upload' => 'uploadFileController'
         ]
     ];
 
