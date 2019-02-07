@@ -372,6 +372,46 @@
           }
         ]
       }
+    },
+    "/segments": {
+      "post": {
+        "tags": [
+          "segments"
+        ],
+        "summary": "Get all file segments",
+        "operationId": "getSegments",
+        "requestBody": {
+          "description": "Specify segment search parameters",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/SegmentSearch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns list by specified search params",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SegmentList"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -665,6 +705,88 @@
           },
           "totalFiles": {
             "type": "integer"
+          }
+        }
+      },
+      "SegmentSearch": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "projectPassword": {
+            "type": "string"
+          },
+          "segment": {
+            "type": "integer",
+            "description": "Around which segment to search"
+          },
+          "where": {
+            "type": "string",
+            "description": "before, after or center"
+          },
+          "step": {
+            "type": "integer"
+          },
+          "searchInSource": {
+            "type": "string"
+          },
+          "searchInTarget": {
+            "type": "string"
+          },
+          "searchInComments": {
+            "type": "string"
+          }
+        }
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          }
+        }
+      },
+      "Segment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "original": {
+            "type": "string"
+          },
+          "translation": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "saveType": {
+            "type": "string"
+          },
+          "saveMatch": {
+            "type": "number"
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Comment"
+            }
+          }
+        }
+      },
+      "SegmentList": {
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "type": "integer"
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Segment"
+            }
           }
         }
       }
