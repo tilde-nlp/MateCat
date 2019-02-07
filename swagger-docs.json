@@ -133,6 +133,46 @@
         ]
       }
     },
+    "/files/info": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Get file info",
+        "operationId": "getFileInfo",
+        "requestBody": {
+          "description": "Specify project id and password",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectGetter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileInfo"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/files/analysis": {
       "post": {
         "tags": [
@@ -157,7 +197,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FileInfo"
+                  "$ref": "#/components/schemas/FileAnalysis"
                 }
               }
             }
@@ -395,7 +435,7 @@
           }
         }
       },
-      "FileInfo": {
+      "FileAnalysis": {
         "type": "object",
         "properties": {
           "projectId": {
@@ -560,6 +600,50 @@
         "type": "object",
         "properties": {
           "status": {
+            "type": "string"
+          }
+        }
+      },
+      "FileInfo": {
+        "type": "object",
+        "properties": {
+          "activeSegmentId": {
+            "type": "integer"
+          },
+          "editingTime": {
+            "type": "integer",
+            "description": "Editing time in seconds"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "firstSegmentId": {
+            "type": "integer"
+          },
+          "lastSegmentId": {
+            "type": "integer"
+          },
+          "mtSystemid": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "default": "en-US"
+          },
+          "target": {
+            "type": "string",
+            "default": "lv-LV"
+          },
+          "tmPretranslate": {
+            "type": "integer"
+          },
+          "mtPretranslate": {
+            "type": "integer"
+          },
+          "synonymBaseUrl": {
+            "type": "string"
+          },
+          "termBaseUrl": {
             "type": "string"
           }
         }
