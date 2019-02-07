@@ -42,10 +42,10 @@ class getSegmentsController extends ajaxController {
         parent::__construct();
 
         $filterArgs = array(
-            'jid'         => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
+            'projectId'         => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
             'step'        => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
             'segment' => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
-            'password'    => array( 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH ),
+            'projectPassword'    => array( 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH ),
             'where'       => array( 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH ),
             'searchInSource'       => array( 'filter' => FILTER_UNSAFE_RAW ),
             'searchInTarget'       => array( 'filter' => FILTER_UNSAFE_RAW ),
@@ -54,14 +54,22 @@ class getSegmentsController extends ajaxController {
 
         $__postInput = filter_input_array( INPUT_POST, $filterArgs );
 
-        //NOTE: This is for debug purpose only,
-        //NOTE: Global $_POST Overriding from CLI Test scripts
-        //$__postInput = filter_var_array( $_POST, $filterArgs );
+        $project = Projects_ProjectDao::findByIdAndPassword(
+            $__postInput['projectId'],
+            $__postInput['projectPassword']
+        );
 
-        $this->jid         = (int)$__postInput[ 'jid' ];
+        if ( !$project ) {
+            throw new NotFoundException();
+        }
+
+        $projectData = getProjectJobData( $__postInput['projectId'] );
+        $projectData = array_pop($projectData);
+
+        $this->jid = $projectData['jid'];
+        $this->password   = $projectData['jpassword'];
         $this->step        = $__postInput[ 'step' ];
         $this->ref_segment = $__postInput[ 'segment' ];
-        $this->password    = $__postInput[ 'password' ];
         $this->where       = $__postInput[ 'where' ];
         $this->searchInSource       = htmlentities($__postInput[ 'searchInSource' ]);
         $this->searchInTarget       = htmlentities($__postInput[ 'searchInTarget' ]);
@@ -207,9 +215,23 @@ class getSegmentsController extends ajaxController {
             $this->data["$id_file"]['segments'][] = $seg;
         }
 
-        $this->result['data']['files'] = $this->data;
+        $this->result = [];
+        $this->result['fileId'] = array_keys($this->data)[0];
 
-        $this->result['data']['where'] = $this->where;
+        $rawSegments = $this->data[$this->result['fileId']]['segments'];
+        $cleanSegments = [];
+        foreach ($rawSegments as $rawSegment) {
+            $cleanSegments[] = [
+                'id' => $rawSegment['sid'],
+                'original' => $rawSegment['segment'],
+                'translation' => $rawSegment['translation'],
+                'status' => $rawSegment['status'],
+                'saveType' => $rawSegment['save_type'],
+                'saveMatch' => $rawSegment['save_match'],
+                'comments' => $rawSegment['comments']
+            ];
+        }
+        $this->result['segments'] = $cleanSegments;
     }
 
     private function searchSegments() {
