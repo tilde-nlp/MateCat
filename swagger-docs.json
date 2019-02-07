@@ -412,6 +412,46 @@
           }
         ]
       }
+    },
+    "/mt/matches": {
+      "post": {
+        "tags": [
+          "MT"
+        ],
+        "summary": "Get MT match",
+        "operationId": "getMtMatches",
+        "requestBody": {
+          "description": "Specify mt id and text to translate",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MtMatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return mt match",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MtMatch"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -789,6 +829,20 @@
             }
           }
         }
+      },
+      "MtMatchRequest": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "mtId": {
+            "type": "string"
+          }
+        }
+      },
+      "MtMatch": {
+        "type": "string"
       }
     }
   }
