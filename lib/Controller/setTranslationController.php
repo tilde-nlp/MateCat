@@ -639,6 +639,7 @@ class setTranslationController extends ajaxController {
         $newStatus = strtolower($_Translation['status']);
 
         // Add translated words
+        $this->log('Old status: ' . $oldStatus . ' new Status: ' . $newStatus);
         if (strcmp($oldStatus, 'translated') !== 0 && strcmp($newStatus, 'translated') === 0) {
             $queryUpdateJob = "update jobs
                                 set translated_words = translated_words + :word_count
@@ -646,11 +647,12 @@ class setTranslationController extends ajaxController {
 
             $conn = Database::obtain()->getConnection();
             $stmt = $conn->prepare($queryUpdateJob);
-            $stmt->execute([
+            $result = $stmt->execute([
                 'word_count' => $segmentRawWordCount,
                 'job_id' => $this->id_job,
                 'job_password' => $this->password
             ]);
+            $this->log('Add result: ' . $result);
         } else if (strcmp($oldStatus, 'translated') === 0 && strcmp($newStatus, 'translated') !== 0) {
             $queryUpdateJob = "update jobs
                                 set translated_words = translated_words - :word_count
@@ -658,11 +660,12 @@ class setTranslationController extends ajaxController {
 
             $conn = Database::obtain()->getConnection();
             $stmt = $conn->prepare($queryUpdateJob);
-            $stmt->execute([
+            $result = $stmt->execute([
                 'word_count' => $segmentRawWordCount,
                 'job_id' => $this->id_job,
                 'job_password' => $this->password
             ]);
+            $this->log('subtract result: ' . $result);
         }
 
         //EVERY time an user changes a row in his job when the job is completed,

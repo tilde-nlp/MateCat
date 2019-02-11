@@ -18,6 +18,13 @@ class StatsController extends KleinController {
         $this->chunk = $chunk;
     }
 
+    protected function log($data, $name = 'debug') {
+        $oldFile = \Log::$fileName;
+        \Log::$fileName = $name . '.log';
+        \Log::doLog($data);
+        \Log::$fileName = $oldFile;
+    }
+
     /**
      * @throws \API\V2\Exceptions\AuthenticationError
      * @throws \Exceptions\NotFoundException
@@ -44,6 +51,7 @@ class StatsController extends KleinController {
         $wStruct->setRejectedWords( $this->chunk->rejected_words );
 
         $job_stats = \CatUtils::getFastStatsForJob( $wStruct );
+        $this->log($this->chunk);
         $translatedWords = $this->chunk->translated_words < 0 ? 0 : $this->chunk->translated_words;
         $totalWords = $this->chunk->total_raw_wc;
         $job_stats['TRANSLATED_PERC'] = $translatedWords / $totalWords * 100;
