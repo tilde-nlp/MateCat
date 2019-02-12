@@ -229,11 +229,34 @@ class getSegmentsController extends ajaxController {
                     'status' => $rawSegment['status'],
                     'saveType' => $rawSegment['save_type'],
                     'saveMatch' => $rawSegment['save_match'],
-                    'comments' => $rawSegment['comments']
+                    'comments' => $this->getCleanComments($rawSegment['comments'])
                 ];
             }
             $this->result['segments'] = $cleanSegments;
         }
+    }
+
+    private function getCleanComments($rawComments) {
+        if (empty($rawComments)) {
+            return [];
+        }
+
+        $cleanComments = [];
+        foreach($rawComments as $rawComment) {
+            $cleanComments[] = $this->filterCommentData($rawComment);
+        }
+
+        return $cleanComments;
+    }
+
+    protected function filterCommentData($comment) {
+        return [
+            'messageType' => $comment['message_type'],
+            'fullName' => $comment['full_name'],
+            'timestamp' => $comment['timestamp'],
+            'message' => $comment['message'],
+            'threadId' => $comment['thread_id']
+        ];
     }
 
     private function searchSegments() {

@@ -6,14 +6,14 @@ class commentController extends ajaxController {
 
     protected $id_segment;
 
-    private $__postInput = null;
+    protected $__postInput = null;
 
-    private $job ;
+    protected $job ;
 
-    private $struct ;
-    private $new_record ;
-    private $current_user ;
-    private $project_data ;
+    protected $struct ;
+    protected $new_record ;
+    protected $current_user ;
+    protected $project_data ;
 
     public function __destruct() {
     }
@@ -22,8 +22,8 @@ class commentController extends ajaxController {
         parent::__construct();
 
         $filterArgs = array(
-            '_sub'        => array( 'filter' => FILTER_SANITIZE_STRING ),
             'id_client'   => array( 'filter' => FILTER_SANITIZE_STRING ),
+            'segmentId'      => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
             'id_job'      => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
             'id_segment'  => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
             'username'    => array( 'filter' => FILTER_SANITIZE_STRING ),
@@ -39,6 +39,11 @@ class commentController extends ajaxController {
 
         $this->__postInput = filter_input_array( INPUT_POST, $filterArgs );
         $this->__postInput['message'] = htmlspecialchars( $this->__postInput['message'] );
+        $this->__postInput['id_segment'] = $this->__postInput['segmentId'];
+        $this->__postInput['source_page'] = 1;
+
+        $this->__postInput['id_job'] = Jobs_JobDao::getSegmentJobId($this->__postInput['id_segment']);
+        $this->__postInput['password'] = Jobs_JobDao::getSegmentJobPassword($this->__postInput['id_segment']);
 
     }
 
@@ -59,7 +64,7 @@ class commentController extends ajaxController {
         $this->route();
     }
 
-    private function route() {
+    protected function route() {
         switch( $this->__postInput['_sub'] ) {
         case 'getRange':
             $this->getRange();
@@ -76,7 +81,7 @@ class commentController extends ajaxController {
         }
     }
 
-    private function getRange() {
+    protected function getRange() {
         $this->struct = new Comments_CommentStruct() ;
         $this->struct->id_job        = $this->__postInput[ 'id_job' ] ;
         $this->struct->first_segment = $this->__postInput[ 'first_seg' ] ;
@@ -90,7 +95,7 @@ class commentController extends ajaxController {
         $this->appendUser();
     }
 
-    private function resolve() {
+    protected function resolve() {
         $this->prepareCommentData();
 
         $commentDao = new Comments_CommentDao( Database::obtain() );
@@ -98,11 +103,20 @@ class commentController extends ajaxController {
 
         $this->enqueueComment();
         $this->users = $this->resolveUsers();
-        $this->sendEmail();
-        $this->result[ 'data' ][ 'entries' ] = array( $this->payload );
+        $this->result = $this->filterCommentData($this->payload);
     }
 
-    private function appendUser() {
+    protected function filterCommentData($comment) {
+        return [
+            'messageType' => $comment['message_type'],
+            'fullName' => $comment['full_name'],
+            'timestamp' => $comment['timestamp'],
+            'message' => $comment['message'],
+            'threadId' => $comment['thread_id']
+        ];
+    }
+
+    protected function appendUser() {
         if ( $this->userIsLogged ) {
             $this->result[ 'data' ][ 'user' ] = array(
                 'full_name' => $this->current_user->fullName()
@@ -110,7 +124,7 @@ class commentController extends ajaxController {
         }
     }
 
-    private function create() {
+    protected function create() {
         $this->prepareCommentData();
 
         $commentDao = new Comments_CommentDao( Database::obtain() );
@@ -123,12 +137,11 @@ class commentController extends ajaxController {
 
         $this->enqueueComment();
         $this->users = $this->resolveUsers();
-        $this->sendEmail();
-        $this->result[ 'data' ][ 'entries' ] = array( $this->payload ) ;
         $this->appendUser();
+        $this->result = $this->filterCommentData($this->payload);
     }
 
-    private function prepareCommentData() {
+    protected function prepareCommentData() {
         $this->struct = new Comments_CommentStruct() ;
 
         $this->struct->id_segment = $this->__postInput[ 'id_segment' ];
@@ -148,7 +161,7 @@ class commentController extends ajaxController {
         $this->users_mentioned = $this->filterUsers($userDao->getByUids( $this->users_mentioned_id ));
     }
 
-    private function prepareMentionCommentData(Users_UserStruct $user){
+    protected function prepareMentionCommentData(Users_UserStruct $user){
         $struct = new Comments_CommentStruct();
 
         $struct->id_segment   = $this->__postInput[ 'id_segment' ];
@@ -162,7 +175,7 @@ class commentController extends ajaxController {
         return $struct;
     }
 
-    private function sendEmail() {
+    protected function sendEmail() {
         // TODO: fix this, replace the need for referer with a server side
         // function to build translate or revise paths based on job and
         // segmnt ids.
@@ -193,7 +206,7 @@ class commentController extends ajaxController {
         }
     }
 
-    private function projectData() {
+    protected function projectData() {
         if ( $this->project_data == null ) {
 
             // FIXME: this is not optimal, should return just one record, not an array of records.
@@ -207,7 +220,7 @@ class commentController extends ajaxController {
         return $this->project_data ;
     }
 
-    private function resolveUsers() {
+    protected function resolveUsers() {
         $commentDao = new Comments_CommentDao( Database::obtain() );
         $result = $commentDao->getThreadContributorUids( $this->struct );
 
@@ -231,11 +244,11 @@ class commentController extends ajaxController {
     }
 
 
-    private function resolveUserMentions() {
+    protected function resolveUserMentions() {
         return Comments_CommentDao::getUsersIdFromContent($this->struct->message);
     }
 
-    private function resolveTeamMentions() {
+    protected function resolveTeamMentions() {
         $users = [];
 
         if ( strstr( $this->struct->message, "{@team@}" ) ) {
@@ -249,7 +262,7 @@ class commentController extends ajaxController {
         return $users;
     }
 
-    private function filterUsers($users, $uidSentList = array()){
+    protected function filterUsers($users, $uidSentList = array()){
         $userIsLogged = $this->userIsLogged ;
         $current_uid = $this->current_user->uid ;
 
@@ -270,7 +283,7 @@ class commentController extends ajaxController {
         return $users;
     }
 
-    private function getEmail() {
+    protected function getEmail() {
         if ( $this->userIsLogged ) {
             return $this->current_user->email ;
         } else {
@@ -278,7 +291,7 @@ class commentController extends ajaxController {
         }
     }
 
-    private function getUid() {
+    protected function getUid() {
         if ( $this->userIsLogged ) {
             return $this->current_user->uid;
         } else {
@@ -286,12 +299,12 @@ class commentController extends ajaxController {
         }
     }
 
-    private function isOwner() {
+    protected function isOwner() {
         return $this->userIsLogged &&
             $this->current_user->email == $this->job['owner'] ;
     }
 
-    private function loadUser() {
+    protected function loadUser() {
         $userStruct = new Users_UserStruct();
         $userStruct->uid = $this->user->uid;
 
@@ -305,7 +318,7 @@ class commentController extends ajaxController {
         $this->current_user = $result[0] ;
     }
 
-    private function enqueueComment() {
+    protected function enqueueComment() {
         $this->payload = array(
             'message_type'   => $this->new_record->message_type,
             'message'        => $this->new_record->message,
@@ -336,7 +349,7 @@ class commentController extends ajaxController {
         );
     }
 
-    private function getProjectPasswords() {
+    protected function getProjectPasswords() {
         $pws = array();
         foreach($this->projectData() as $chunk) {
             array_push( $pws, $chunk['jpassword'] );

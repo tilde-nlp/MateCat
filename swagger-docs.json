@@ -612,6 +612,86 @@
           }
         ]
       }
+    },
+    "/comments/add": {
+      "post": {
+        "tags": [
+          "comments"
+        ],
+        "summary": "Add comment",
+        "operationId": "addComments",
+        "requestBody": {
+          "description": "Specify segment id and message",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return comment data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentData"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/comments/resolve": {
+      "post": {
+        "tags": [
+          "comments"
+        ],
+        "summary": "Resolve comment",
+        "operationId": "resolveComments",
+        "requestBody": {
+          "description": "Specify segment id and message",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return comment data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentData"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -939,10 +1019,34 @@
           }
         }
       },
-      "Comment": {
+      "CommentRequest": {
         "type": "object",
         "properties": {
-          "id": {
+          "segmentId": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "CommentData": {
+        "type": "object",
+        "properties": {
+          "messageType": {
+            "type": "integer",
+            "description": "1 - comment, 2 - resolving record"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "threadId": {
             "type": "integer"
           }
         }
@@ -971,7 +1075,7 @@
           "comments": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Comment"
+              "$ref": "#/components/schemas/CommentData"
             }
           }
         }

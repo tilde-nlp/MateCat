@@ -37,7 +37,10 @@ abstract class controller implements IController {
 
             'mt/matches' => 'getMtMatchesController',
 
-            'tm/matches' => 'getContributionController'
+            'tm/matches' => 'getContributionController',
+
+            'comments/add' => 'commentsAddController',
+            'comments/resolve' => 'commentsResolveController'
         ]
     ];
 
