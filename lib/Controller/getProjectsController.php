@@ -130,12 +130,8 @@ class getProjectsController extends ajaxController {
             return;
         }
 
-        if( $team->type == Constants_Teams::PERSONAL ){
-            $assignee = $this->user;
-            $team = null;
-        } else {
-            $assignee = $this->filterAssignee( $team );
-        }
+        $assignee = $this->user;
+        $team = null;
 
         $projects = ManageUtils::queryProjects( $this->user, $this->start, $this->step,
             $this->search_in_pname,
@@ -153,60 +149,10 @@ class getProjectsController extends ajaxController {
             $this->no_assignee
             );
 
-        $projects = $this->filterProjectsWithUserFeatures( $projects ) ;
-
-        $projects = $this->filterProjectsWithProjectFeatures( $projects ) ;
-        
-        unset($this->result['errors']);
         $this->result[ 'data' ]     = $projects;
         $this->result[ 'page' ]     = $this->page;
         $this->result[ 'totalFiles' ]  = intval($projnum[ 0 ][ 'c' ]);
         $this->result[ 'pageStep' ] = $this->step;
-    }
-
-    private function filterProjectsWithUserFeatures( $projects ) {
-        $projects = $this->featureSet->filter('filter_manage_projects_loaded', $projects);
-        return $projects ;
-    }
-
-    private function filterProjectsWithProjectFeatures( $projects ) {
-        foreach( $projects as $key => $project ) {
-            $features = new FeatureSet() ;
-            $features->loadFromString( $project['features'] );
-
-            $projects[ $key ] = $features->filter('filter_manage_single_project', $project );
-        }
-        return $projects ;
-    }
-
-    /**
-     * @param $team
-     *
-     * @return Users_UserStruct
-     * @throws Exception
-     */
-
-    private function filterAssignee( $team ) {
-
-        if ( is_null( $this->id_assignee ) ) {
-            return null;
-        }
-
-        $dao         = new MembershipDao();
-        $memberships = $dao->setCacheTTL( 60 * 60 * 24 )->getMemberListByTeamId( $team->id );
-        $id_assignee = $this->id_assignee;
-        /**
-         * @var $users \Teams\MembershipStruct[]
-         */
-        $users = array_values( array_filter( $memberships, function ( MembershipStruct $membership ) use ( $id_assignee ) {
-            return $membership->getUser()->uid == $id_assignee;
-        } ) );
-
-        if ( empty( $users ) ) {
-            throw new Exception( 'Assignee not found in team' );
-        }
-
-        return $users[ 0 ]->getUser();
     }
 
     private function filterTeam() {

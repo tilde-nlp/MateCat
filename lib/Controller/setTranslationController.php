@@ -641,32 +641,28 @@ class setTranslationController extends ajaxController {
         // Add translated words
         if (strcmp($oldStatus, 'translated') !== 0 && strcmp($newStatus, 'translated') === 0) {
             $queryUpdateJob = "update jobs
-                                set translated_words = translated_words + %f
-                                where id = %d and password = '%s'";
+                                set translated_words = translated_words + :word_count
+                                where id = :job_id and password = :job_password";
 
-            $db = Database::obtain();
-            $db->query(
-                    sprintf(
-                            $queryUpdateJob,
-                            $segmentRawWordCount,
-                            $this->id_job,
-                            $this->password
-                    )
-            );
+            $conn = Database::obtain()->getConnection();
+            $stmt = $conn->prepare($queryUpdateJob);
+            $result = $stmt->execute([
+                'word_count' => $segmentRawWordCount,
+                'job_id' => $this->id_job,
+                'job_password' => $this->password
+            ]);
         } else if (strcmp($oldStatus, 'translated') === 0 && strcmp($newStatus, 'translated') !== 0) {
             $queryUpdateJob = "update jobs
-                                set translated_words = translated_words - %f
-                                where id = %d and password = '%s'";
+                                set translated_words = GREATEST(translated_words - :word_count, 0)
+                                where id = :job_id and password = :job_password";
 
-            $db = Database::obtain();
-            $db->query(
-                    sprintf(
-                            $queryUpdateJob,
-                            $segmentRawWordCount,
-                            $this->id_job,
-                            $this->password
-                    )
-            );
+            $conn = Database::obtain()->getConnection();
+            $stmt = $conn->prepare($queryUpdateJob);
+            $result = $stmt->execute([
+                'word_count' => $segmentRawWordCount,
+                'job_id' => $this->id_job,
+                'job_password' => $this->password
+            ]);
         }
 
         //EVERY time an user changes a row in his job when the job is completed,
@@ -969,7 +965,8 @@ class setTranslationController extends ajaxController {
             return;
         }
         $JobDao = new Jobs_JobDao();
-        $updateMt = array_pop($JobDao->getUpdateMtForProject($contributionStruct->id_project))['update_mt'];
+        $updateMt = $JobDao->getUpdateMtForProject($contributionStruct->id_project);
+        $updateMt = array_pop($updateMt)['update_mt'];
 
         if ($updateMt < 1) {
             return;

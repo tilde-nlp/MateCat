@@ -18,6 +18,13 @@ class StatsController extends KleinController {
         $this->chunk = $chunk;
     }
 
+    protected function log($data, $name = 'debug') {
+        $oldFile = \Log::$fileName;
+        \Log::$fileName = $name . '.log';
+        \Log::doLog($data);
+        \Log::$fileName = $oldFile;
+    }
+
     /**
      * @throws \API\V2\Exceptions\AuthenticationError
      * @throws \Exceptions\NotFoundException
