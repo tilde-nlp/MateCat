@@ -655,7 +655,7 @@ class setTranslationController extends ajaxController {
             $this->log('Add result: ' . $result);
         } else if (strcmp($oldStatus, 'translated') === 0 && strcmp($newStatus, 'translated') !== 0) {
             $queryUpdateJob = "update jobs
-                                set translated_words = translated_words - :word_count
+                                set translated_words = GREATEST(translated_words - :word_count, 0)
                                 where id = :job_id and password = :job_password";
 
             $conn = Database::obtain()->getConnection();
