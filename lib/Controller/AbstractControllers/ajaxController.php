@@ -47,6 +47,20 @@ abstract class ajaxController extends controller {
 
     }
 
+    protected function getProject($projectId, $projectPassword) {
+        return Projects_ProjectDao::findByIdAndPassword(
+            $projectId,
+            $projectPassword
+        );
+    }
+
+    protected function getJobIdFromProjectId($projectId) {
+        $projectData = getProjectJobData($projectId);
+        $projectData = array_pop($projectData);
+
+        return $projectData['jid'];
+    }
+
     /**
      * Call the output in JSON format
      *

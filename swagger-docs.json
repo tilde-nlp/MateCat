@@ -453,6 +453,46 @@
         ]
       }
     },
+    "/segments/set-edit-time": {
+      "post": {
+        "tags": [
+          "segments"
+        ],
+        "summary": "Set segment editing time",
+        "operationId": "setSegmentEditTime",
+        "requestBody": {
+          "description": "Specify segment id and time",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/SegmentEditTime"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/mt/matches": {
       "post": {
         "tags": [
@@ -975,6 +1015,18 @@
         "properties": {
           "segmentId": {
             "type": "integer"
+          }
+        }
+      },
+      "SegmentEditTime": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "editingTime": {
+            "type": "integer",
+            "description": "editing time in seconds"
           }
         }
       }
