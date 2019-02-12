@@ -73,6 +73,8 @@ class setTranslationController extends ajaxController {
         parent::__construct();
 
         $filterArgs = [
+            'segmentId'              => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
+
                 'id_job'                  => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
                 'password'                => [
                         'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
@@ -80,7 +82,6 @@ class setTranslationController extends ajaxController {
                 'propagate'               => [
                         'filter' => FILTER_VALIDATE_BOOLEAN, 'flags' => FILTER_NULL_ON_FAILURE
                 ],
-                'id_segment'              => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
                 'time_to_edit'            => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
                 'id_translator'           => [
                         'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
@@ -106,8 +107,10 @@ class setTranslationController extends ajaxController {
 
         $this->__postInput = filter_input_array( INPUT_POST, $filterArgs );
 
-        $this->id_job                = $this->__postInput[ 'id_job' ];
-        $this->password              = $this->__postInput[ 'password' ];
+
+        $this->id_segment            = $this->__postInput[ 'segmentId' ];
+        $this->id_job                = Jobs_JobDao::getSegmentJobId($this->id_segment);
+        $this->password              = Jobs_JobDao::getSegmentJobPassword($this->id_segment);
         $this->mtId              = $this->__postInput[ 'mtId' ];
 
 
@@ -117,13 +120,12 @@ class setTranslationController extends ajaxController {
          */
         !is_null( $this->__postInput[ 'propagate' ] ) ? $this->propagate = $this->__postInput[ 'propagate' ] : null /* do nothing */ ;
 
-        $this->propagate             = $this->__postInput[ 'propagate' ]; //set by the client, mandatory
+        $this->propagate             = true; //set by the client, mandatory
 
-        $this->id_segment            = $this->__postInput[ 'id_segment' ];
         $this->id_before             = $this->__postInput[ 'id_before' ];
         $this->id_after              = $this->__postInput[ 'id_after' ];
 
-        $this->time_to_edit          = (int)$this->__postInput[ 'time_to_edit' ]; //cast to int, so the default is 0
+        $this->time_to_edit          = 0; //cast to int, so the default is 0
         $this->id_translator         = $this->__postInput[ 'id_translator' ];
         $this->save_type         = $this->__postInput[ 'saveType' ];
         $this->save_match         = $this->__postInput[ 'saveMatch' ];
@@ -685,6 +687,7 @@ class setTranslationController extends ajaxController {
 
         $this->logForTagProjection(CatUtils::rawxliff2view($this->translation));
 
+        $this->result = ['status' => 'ok'];
     }
 
     /**

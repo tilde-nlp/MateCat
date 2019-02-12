@@ -276,6 +276,23 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         return intval($jobIdRecord['jobId']);
     }
 
+    public static function getSegmentJobPassword($segmentId) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT j.password AS jobPassword
+        FROM segments s
+        INNER JOIN files f ON f.id = s.id_file
+        INNER JOIN projects p ON p.id = f.id_project
+        INNER JOIN jobs j ON j.id_project = p.id
+        WHERE s.id = ?
+        LIMIT 1");
+        
+        $jobIdRecord = $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $segmentId ] );
+        $jobIdRecord = array_pop($jobIdRecord);
+        return $jobIdRecord['jobPassword'];
+    }
+
     public static function getActiveSegment( $user_id, $job_id, $ttl = 0 ) {
 
         $thisDao = new self();

@@ -493,6 +493,46 @@
         ]
       }
     },
+    "/segments/translate": {
+      "post": {
+        "tags": [
+          "segments"
+        ],
+        "summary": "Set segment translation",
+        "operationId": "setSegmentTranslation",
+        "requestBody": {
+          "description": "Specify segment translation data",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/SegmentTranslation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/mt/matches": {
       "post": {
         "tags": [
@@ -1027,6 +1067,33 @@
           "editingTime": {
             "type": "integer",
             "description": "editing time in seconds"
+          }
+        }
+      },
+      "SegmentTranslation": {
+        "type": "object",
+        "properties": {
+          "segmentId": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string",
+            "description": "draft or translated"
+          },
+          "translation": {
+            "type": "string"
+          },
+          "segment": {
+            "type": "string"
+          },
+          "saveType": {
+            "type": "string"
+          },
+          "saveMatch": {
+            "type": "string"
+          },
+          "mtId": {
+            "type": "string"
           }
         }
       }

@@ -33,6 +33,7 @@ abstract class controller implements IController {
             'segments' => 'getSegmentsController',
             'segments/set-active' => 'setCurrentSegmentController',
             'segments/set-edit-time' => 'setEditingTimeController',
+            'segments/translate' => 'setTranslationController',
 
             'mt/matches' => 'getMtMatchesController',
 
