@@ -413,6 +413,46 @@
         ]
       }
     },
+    "/segments/set-active": {
+      "post": {
+        "tags": [
+          "segments"
+        ],
+        "summary": "Set active segment",
+        "operationId": "setActiveSegment",
+        "requestBody": {
+          "description": "Specify segment id",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ActiveSegment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/mt/matches": {
       "post": {
         "tags": [
@@ -928,6 +968,14 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/TmMatch"
+        }
+      },
+      "ActiveSegment": {
+        "type": "object",
+        "properties": {
+          "segmentId": {
+            "type": "integer"
+          }
         }
       }
     }

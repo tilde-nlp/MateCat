@@ -31,6 +31,7 @@ abstract class controller implements IController {
             'files/info' => 'jobInfoController',
 
             'segments' => 'getSegmentsController',
+            'segments/set-active' => 'setCurrentSegmentController',
 
             'mt/matches' => 'getMtMatchesController',
 
