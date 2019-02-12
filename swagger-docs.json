@@ -452,6 +452,46 @@
           }
         ]
       }
+    },
+    "/tm/matches": {
+      "post": {
+        "tags": [
+          "TM"
+        ],
+        "summary": "Get TM match",
+        "operationId": "getTmMatches",
+        "requestBody": {
+          "description": "Specify text, direction and result count",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TmMatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return tm match",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TmMatchList"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -843,6 +883,52 @@
       },
       "MtMatch": {
         "type": "string"
+      },
+      "TmMatchRequest": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "projectPassword": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "sourceLang": {
+            "type": "string"
+          },
+          "targetLang": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          }
+        }
+      },
+      "TmMatch": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "type": "string"
+          },
+          "match": {
+            "type": "number"
+          },
+          "segment": {
+            "type": "string"
+          },
+          "translation": {
+            "type": "string"
+          }
+        }
+      },
+      "TmMatchList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/TmMatch"
+        }
       }
     }
   }

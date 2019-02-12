@@ -1,5 +1,7 @@
 <?php
 
+use Exceptions\NotFoundException;
+
 class jobInfoController extends ajaxController {
 
     private $id;

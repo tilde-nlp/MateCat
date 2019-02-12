@@ -32,7 +32,9 @@ abstract class controller implements IController {
 
             'segments' => 'getSegmentsController',
 
-            'mt/matches' => 'getMtMatchesController'
+            'mt/matches' => 'getMtMatchesController',
+
+            'tm/matches' => 'getContributionController'
         ]
     ];
 
@@ -107,7 +109,7 @@ abstract class controller implements IController {
 
     private static function getHandlerClassName($request, $method) {
         try {
-            $className = self::$requestToClassMap[$method][$request];
+            @$className = self::$requestToClassMap[$method][$request];
         } catch (Throwable $e) {
             $className = null;
         }

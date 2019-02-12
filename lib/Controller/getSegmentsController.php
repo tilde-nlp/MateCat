@@ -216,22 +216,24 @@ class getSegmentsController extends ajaxController {
         }
 
         $this->result = [];
-        $this->result['fileId'] = array_keys($this->data)[0];
-
-        $rawSegments = $this->data[$this->result['fileId']]['segments'];
-        $cleanSegments = [];
-        foreach ($rawSegments as $rawSegment) {
-            $cleanSegments[] = [
-                'id' => $rawSegment['sid'],
-                'original' => $rawSegment['segment'],
-                'translation' => $rawSegment['translation'],
-                'status' => $rawSegment['status'],
-                'saveType' => $rawSegment['save_type'],
-                'saveMatch' => $rawSegment['save_match'],
-                'comments' => $rawSegment['comments']
-            ];
+        if (!empty($this->data)) {
+            $this->result['fileId'] = array_keys($this->data)[0];
+            $rawSegments = [];
+            $rawSegments = $this->data[$this->result['fileId']]['segments'];
+            $cleanSegments = [];
+            foreach ($rawSegments as $rawSegment) {
+                $cleanSegments[] = [
+                    'id' => $rawSegment['sid'],
+                    'original' => $rawSegment['segment'],
+                    'translation' => $rawSegment['translation'],
+                    'status' => $rawSegment['status'],
+                    'saveType' => $rawSegment['save_type'],
+                    'saveMatch' => $rawSegment['save_match'],
+                    'comments' => $rawSegment['comments']
+                ];
+            }
+            $this->result['segments'] = $cleanSegments;
         }
-        $this->result['segments'] = $cleanSegments;
     }
 
     private function searchSegments() {
