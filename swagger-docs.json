@@ -761,6 +761,86 @@
         ]
       }
     },
+    "/tm/save-settings": {
+      "post": {
+        "tags": [
+          "TM"
+        ],
+        "summary": "Save tm settings",
+        "operationId": "saveTmSettings",
+        "requestBody": {
+          "description": "Memory id and settings",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TmSettings"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/tm/save-settings-for-file": {
+      "post": {
+        "tags": [
+          "TM"
+        ],
+        "summary": "Save tm settings for file",
+        "operationId": "saveTmSettingsForFile",
+        "requestBody": {
+          "description": "Memory id, project id and settings",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TmSettingsForFile"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/comments/add": {
       "post": {
         "tags": [
@@ -1582,6 +1662,37 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/Tm"
+        }
+      },
+      "TmSettings": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "readMemory": {
+            "type": "integer"
+          },
+          "writeMemory": {
+            "type": "integer"
+          }
+        }
+      },
+      "TmSettingsForFile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "integer"
+          },
+          "readMemory": {
+            "type": "integer"
+          },
+          "writeMemory": {
+            "type": "integer"
+          }
         }
       },
       "ActiveSegment": {

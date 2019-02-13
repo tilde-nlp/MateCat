@@ -45,6 +45,8 @@ abstract class controller implements IController {
 
             'tm/matches' => 'getContributionController',
             'tm/concordance-search' => 'getConcordanceContributionController',
+            'tm/save-settings' => 'saveSettingsController',
+            'tm/save-settings-for-file' => 'saveSettingsForProjectController',
 
             'comments/add' => 'commentsAddController',
             'comments/resolve' => 'commentsResolveController',
