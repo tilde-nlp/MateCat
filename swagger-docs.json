@@ -653,6 +653,46 @@
         ]
       }
     },
+    "/tm/concordance-search": {
+      "post": {
+        "tags": [
+          "TM"
+        ],
+        "summary": "Get concordance search",
+        "operationId": "getConcordanceSearch",
+        "requestBody": {
+          "description": "Specify text, direction and project id",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TmConcordanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return tm match",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TmMatchList"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/comments/add": {
       "post": {
         "tags": [
@@ -1368,6 +1408,23 @@
           },
           "count": {
             "type": "integer"
+          }
+        }
+      },
+      "TmConcordanceRequest": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "text": {
+            "type": "string"
+          },
+          "sourceLang": {
+            "type": "string"
+          },
+          "targetLang": {
+            "type": "string"
           }
         }
       },

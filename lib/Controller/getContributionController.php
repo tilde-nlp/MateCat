@@ -49,7 +49,6 @@ class getContributionController extends ajaxController {
             $this->result[ 'errors' ][] = [ "code" => -2, "message" => "missing text" ];
         }
 
-        
         if ( empty( $this->count ) ) {
             $this->count = 5;
         }

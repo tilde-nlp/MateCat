@@ -77,7 +77,7 @@ class TildeTM {
         $memories = MemorySettings::getProjectMemorySettings($projectId);
         $tms_match = [];
         foreach($memories as $memory) {
-            if ($memory['read'] < 1) {
+            if ($memory['readMemory'] < 1) {
                 continue;
             }
             $tildeMatches = $TildeTM->getMatches(
