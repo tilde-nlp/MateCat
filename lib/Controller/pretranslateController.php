@@ -4,27 +4,27 @@ class pretranslateController extends ajaxController {
 
     private $useTm;
     private $useMt;
-    private $id;
+    private $projectId;
     private $password;
     private $mtSystem;
 
     public function __construct()
     {
         $filterArgs = [
-            'use_tm'          => [ 'filter' => FILTER_VALIDATE_INT ],
-            'use_mt'          => [ 'filter' => FILTER_VALIDATE_INT ],
-            'id'          => [ 'filter' => FILTER_VALIDATE_INT, 'flags' => FILTER_REQUIRE_SCALAR ],
-            'mt_system'  => [ 'filter' => FILTER_SANITIZE_STRING],
-            'password'   => array (
+            'useTm'          => [ 'filter' => FILTER_VALIDATE_INT ],
+            'useMt'          => [ 'filter' => FILTER_VALIDATE_INT ],
+            'projectId'          => [ 'filter' => FILTER_VALIDATE_INT, 'flags' => FILTER_REQUIRE_SCALAR ],
+            'mtSystem'  => [ 'filter' => FILTER_SANITIZE_STRING],
+            'projectPassword'   => array (
                 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
             )
         ];
         $__postInput = filter_input_array( INPUT_POST, $filterArgs );
-        $this->id = $__postInput['id'];
-        $this->password = $__postInput['password'];
-        $this->useTm = intval($__postInput['use_tm']) > 0;
-        $this->useMt = intval($__postInput['use_mt']) > 0;
-        $this->mtSystem = $__postInput[ 'mt_system' ];
+        $this->id = $this->getJobIdFromProjectId($__postInput['projectId']);
+        $this->password = $this->getJobPasswordFromProjectId($__postInput['projectId']);
+        $this->useTm = intval($__postInput['useTm']) > 0;
+        $this->useMt = intval($__postInput['useMt']) > 0;
+        $this->mtSystem = $__postInput[ 'mtSystem' ];
     }
 
     public function doAction() {
@@ -52,8 +52,6 @@ class pretranslateController extends ajaxController {
             $rowCount = \Jobs_JobDao::setPretranslating($pretranslateStruct->id, $this->useTm ? 1 : 0, $this->useMt ? 1 : 0);
         }
 
-        echo json_encode([]);
+        $this->result = ['status' => 'ok'];
     }
-
-    public function finalize() {}
 }

@@ -29,6 +29,7 @@ abstract class controller implements IController {
             'files/delete' => 'deleteFileController',
             'files/upload' => 'uploadFileController',
             'files/info' => 'jobInfoController',
+            'files/pretranslate' => 'pretranslateController',
 
             'segments' => 'getSegmentsController',
             'segments/set-active' => 'setCurrentSegmentController',

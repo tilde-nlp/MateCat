@@ -373,6 +373,46 @@
         ]
       }
     },
+    "/files/pretranslate": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Pretranslate file",
+        "operationId": "pretranslateFile",
+        "requestBody": {
+          "description": "Specify project id and password, and pretranslate options",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PretranslateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/segments": {
       "post": {
         "tags": [
@@ -1197,6 +1237,26 @@
             "type": "string"
           },
           "mtId": {
+            "type": "string"
+          }
+        }
+      },
+      "PretranslateRequest": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "projectPassword": {
+            "type": "string"
+          },
+          "useTm": {
+            "type": "integer"
+          },
+          "useMt": {
+            "type": "integer"
+          },
+          "mtSystem": {
             "type": "string"
           }
         }
