@@ -8,19 +8,17 @@ class saveMtSystemController extends ajaxController {
     public function __construct()
     {
         $filterArgs = [
-            'id'          => [ 'filter' => FILTER_VALIDATE_INT, 'flags' => FILTER_REQUIRE_SCALAR ],
-            'mt_system_id'   => array('filter' => FILTER_SANITIZE_STRING)
+            'projectId'          => [ 'filter' => FILTER_VALIDATE_INT, 'flags' => FILTER_REQUIRE_SCALAR ],
+            'mtSystemId'   => array('filter' => FILTER_SANITIZE_STRING)
         ];
         $__postInput = filter_input_array( INPUT_POST, $filterArgs );
-        $this->id = $__postInput['id'];
-        $this->systemId = $__postInput['mt_system_id'];
+        $this->id = $__postInput['projectId'];
+        $this->systemId = $__postInput['mtSystemId'];
     }
 
     public function doAction() {
         Jobs_JobDao::saveMtSystem($this->id, $this->systemId);
 
-        echo json_encode("OK");
+        $this->result = ['status' => 'ok'];
     }
-
-    public function finalize() {}
 }

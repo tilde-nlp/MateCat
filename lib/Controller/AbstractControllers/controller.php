@@ -41,7 +41,14 @@ abstract class controller implements IController {
             'tm/matches' => 'getContributionController',
 
             'comments/add' => 'commentsAddController',
-            'comments/resolve' => 'commentsResolveController'
+            'comments/resolve' => 'commentsResolveController',
+
+            'settings/save-mt-system' => 'saveMtSystemController',
+            'settings/save-tm-pretranslate' => 'saveTmPretranslateController',
+            'settings/save-mt-pretranslate' => 'saveTmPretranslateController',
+            'settings/save-update-mt' => 'saveUpdateMtController',
+            'settings/save-update-mt-for-project' => 'saveUpdateMtForProjectController'
+
         ]
     ];
 

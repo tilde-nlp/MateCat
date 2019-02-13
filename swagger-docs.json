@@ -732,6 +732,206 @@
           }
         ]
       }
+    },
+    "/settings/save-mt-system": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Save file mt system",
+        "operationId": "saveMtSystem",
+        "requestBody": {
+          "description": "Specify project id and system id",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSystemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/settings/save-tm-pretranslate": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Save tm pretranslate",
+        "operationId": "saveTmPretranslate",
+        "requestBody": {
+          "description": "Specify pretranslate value",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Pretranslate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/settings/save-mt-pretranslate": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Save mt pretranslate",
+        "operationId": "saveMtPretranslate",
+        "requestBody": {
+          "description": "Specify pretranslate value",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Pretranslate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/settings/save-update-mt": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Save update mt",
+        "operationId": "saveUpdateMt",
+        "requestBody": {
+          "description": "Specify update mt value",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMt"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/settings/save-update-mt-for-project": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Save update mt for project",
+        "operationId": "saveUpdateMtForProject",
+        "requestBody": {
+          "description": "Specify update mt value and project id",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMtForProject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -1258,6 +1458,44 @@
           },
           "mtSystem": {
             "type": "string"
+          }
+        }
+      },
+      "SaveSystemRequest": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "mtSystemId": {
+            "type": "string"
+          }
+        }
+      },
+      "Pretranslate": {
+        "type": "object",
+        "properties": {
+          "pretranslate": {
+            "type": "integer"
+          }
+        }
+      },
+      "UpdateMt": {
+        "type": "object",
+        "properties": {
+          "updateMt": {
+            "type": "integer"
+          }
+        }
+      },
+      "UpdateMtForProject": {
+        "type": "object",
+        "properties": {
+          "updateMt": {
+            "type": "integer"
+          },
+          "projectId": {
+            "type": "integer"
           }
         }
       }

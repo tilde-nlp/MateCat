@@ -17,8 +17,6 @@ class saveTmPretranslateController extends ajaxController {
         $user = AuthCookie::getCredentials();
         Jobs_JobDao::saveTmPretranslate($user['uid'], $this->pretranslate ? 1 : 0);
 
-        echo json_encode("OK");
+        $this->result = ['status' => 'ok'];
     }
-
-    public function finalize() {}
 }
