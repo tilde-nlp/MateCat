@@ -693,6 +693,74 @@
         ]
       }
     },
+    "/tm": {
+      "get": {
+        "tags": [
+          "TM"
+        ],
+        "summary": "Get translation memories",
+        "operationId": "getTranslationMemories",
+        "responses": {
+          "200": {
+            "description": "Return tm list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TmList"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/tm/for-file": {
+      "get": {
+        "tags": [
+          "TM"
+        ],
+        "summary": "Get translation memories for file",
+        "operationId": "getTranslationMemoriesForFile",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "projectId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return tm list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TmList"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/comments/add": {
       "post": {
         "tags": [
@@ -933,7 +1001,7 @@
         ]
       }
     },
-    "/settings/save-update-mt-for-project": {
+    "/settings/save-update-mt-for-file": {
       "post": {
         "tags": [
           "settings"
@@ -958,6 +1026,45 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/settings/update-mt-for-file": {
+      "get": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Get update mt setting for file",
+        "operationId": "getUpdateMtForFile",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "projectId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return value",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateMtResponse"
                 }
               }
             }
@@ -1451,6 +1558,32 @@
           "$ref": "#/components/schemas/TmMatch"
         }
       },
+      "Tm": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "readMemory": {
+            "type": "integer"
+          },
+          "writeMemory": {
+            "type": "integer"
+          },
+          "canUpdate": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TmList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Tm"
+        }
+      },
       "ActiveSegment": {
         "type": "object",
         "properties": {
@@ -1555,6 +1688,9 @@
             "type": "integer"
           }
         }
+      },
+      "UpdateMtResponse": {
+        "type": "integer"
       }
     }
   }

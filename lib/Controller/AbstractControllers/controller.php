@@ -19,6 +19,11 @@ abstract class controller implements IController {
     private static $requestToClassMap = [
         'GET' => [
             'profile' => 'getProfileController',
+
+            'tm' => 'getTranslationMemoriesController',
+            'tm/for-file' => 'getSettingsForProjectController',
+
+            'settings/update-mt-for-file' => 'getUpdateMtForFileController'
         ],
         'POST' => [
             'files' => 'getProjectsController',
@@ -48,7 +53,7 @@ abstract class controller implements IController {
             'settings/save-tm-pretranslate' => 'saveTmPretranslateController',
             'settings/save-mt-pretranslate' => 'saveTmPretranslateController',
             'settings/save-update-mt' => 'saveUpdateMtController',
-            'settings/save-update-mt-for-project' => 'saveUpdateMtForProjectController'
+            'settings/save-update-mt-for-file' => 'saveUpdateMtForProjectController'
 
         ]
     ];
@@ -123,6 +128,12 @@ abstract class controller implements IController {
     }
 
     private static function getHandlerClassName($request, $method) {
+        if (strpos($request, '&') !== false) {
+            $request = substr($request, 0, strpos($request, '&'));
+        }
+        if (strpos($request, '?') !== false) {
+            $request = substr($request, 0, strpos($request, '?'));
+        }
         try {
             @$className = self::$requestToClassMap[$method][$request];
         } catch (Throwable $e) {

@@ -34,8 +34,8 @@ class MemorySettings {
             $memory['readMemory'] = 1;
             $memory['writeMemory'] = substr($userMemory->id, -strlen(':Private')) === ':Private' ? 1 : 0;
             if (isset($memorySettings[$memory['id']])) {
-                $memory['readMemory'] = $memorySettings[$memory['id']]['read_memory'];
-                $memory['writeMemory'] = $memorySettings[$memory['id']]['write_memory'];
+                $memory['readMemory'] = intval($memorySettings[$memory['id']]['read_memory']);
+                $memory['writeMemory'] = intval($memorySettings[$memory['id']]['write_memory']);
             }
             $memories[] = $memory;
         }
