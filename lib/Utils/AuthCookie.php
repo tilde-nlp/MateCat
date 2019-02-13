@@ -18,6 +18,9 @@ class AuthCookie {
     public static function checkAccess() {
         try {
             $jwt = self::getToken();
+            if (empty($jwt)) {
+                $jwt = $_POST['jwt'];
+            }
 
             $parsedToken = (new Parser())->parse((string) $jwt);
             $signer = new Sha256();

@@ -413,6 +413,78 @@
         ]
       }
     },
+    "/files/download-original": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Download original file",
+        "operationId": "downloadOriginal",
+        "requestBody": {
+          "description": "Specify project id and password, and jwt auth token",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/DownloadGetter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns file",
+            "content": {
+              "application/download": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/files/download-translated": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Download translated file",
+        "operationId": "downloadTranslated",
+        "requestBody": {
+          "description": "Specify project id and password, and jwt auth token",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/DownloadGetter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns file",
+            "content": {
+              "application/download": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
     "/segments": {
       "post": {
         "tags": [
@@ -1802,6 +1874,20 @@
       },
       "UpdateMtResponse": {
         "type": "integer"
+      },
+      "DownloadGetter": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "projectPassword": {
+            "type": "string"
+          },
+          "jwt": {
+            "type": "string"
+          }
+        }
       }
     }
   }

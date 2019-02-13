@@ -8,11 +8,9 @@ set_time_limit( 180 );
 
 class downloadFileController extends downloadController {
 
-    protected $download_type;
     protected $jobInfo;
     protected $forceXliff;
     protected $downloadToken;
-    protected $jwt;
 
     /**
      * @var GDrive\RemoteFileService
@@ -20,7 +18,6 @@ class downloadFileController extends downloadController {
     protected $remoteFileService;
 
     protected $openOriginalFiles;
-    protected $id_file;
 
     protected $trereIsARemoteFile = null;
 
@@ -32,43 +29,10 @@ class downloadFileController extends downloadController {
     const FILES_CHUNK_SIZE = 3;
 
     public function __construct() {
+        parent::__construct();
 
-        $filterArgs = [
-                'filename'      => [
-                        'filter' => FILTER_SANITIZE_STRING,
-                        'flags'  => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
-                ],
-                'id_file'       => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
-                'id_job'        => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
-                'jwt'        => [ 'filter' => FILTER_UNSAFE_RAW ],
-                'download_type' => [
-                        'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
-                ],
-                'password'      => [
-                        'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
-                ],
-                'downloadToken' => [
-                        'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
-                ],
-                'forceXliff'    => [],
-                'original'      => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ]
-        ];
-
-        $__postInput = filter_var_array( $_REQUEST, $filterArgs );
-
-        $this->_user_provided_filename = $__postInput[ 'filename' ];
-
-        $this->id_file       = $__postInput[ 'id_file' ];
-        $this->id_job        = $__postInput[ 'id_job' ];
-        $this->download_type = $__postInput[ 'download_type' ];
-        $this->password      = $__postInput[ 'password' ];
-        $this->downloadToken = $__postInput[ 'downloadToken' ];
-        $this->jwt = $__postInput['jwt'];
-
-        AuthCookie::getCredentialsFromCookie($this->jwt);
-
-        $this->forceXliff        = ( isset( $__postInput[ 'forceXliff' ] ) && !empty( $__postInput[ 'forceXliff' ] ) && $__postInput[ 'forceXliff' ] == 1 );
-        $this->openOriginalFiles = ( isset( $__postInput[ 'original' ] ) && !empty( $__postInput[ 'original' ] ) && $__postInput[ 'original' ] == 1 );
+        $this->forceXliff        = ( isset( $this->__postInput[ 'forceXliff' ] ) && !empty( $this->__postInput[ 'forceXliff' ] ) && $this->__postInput[ 'forceXliff' ] == 1 );
+        $this->openOriginalFiles = ( isset( $this->__postInput[ 'original' ] ) && !empty( $this->__postInput[ 'original' ] ) && $this->__postInput[ 'original' ] == 1 );
 
         if ( empty( $this->id_job ) ) {
             $this->id_job = "Unknown";

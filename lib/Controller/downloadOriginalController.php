@@ -6,48 +6,6 @@ use ActivityLog\ActivityLogStruct;
 set_time_limit( 180 );
 
 class downloadOriginalController extends downloadController {
-
-    private $download_type;
-    private $id_file;
-    private $id_project;
-    private $jwt;
-
-    public function __construct() {
-
-        $filterArgs = array(
-                'filename'      => array(
-                        'filter' => FILTER_SANITIZE_STRING,
-                        'flags'  => FILTER_FLAG_STRIP_LOW
-                ),
-                'id_file'       => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
-                'id_job'        => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
-                'jwt'        => [ 'filter' => FILTER_UNSAFE_RAW ],
-
-                'download_type' => array(
-                        'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
-                ),
-                'password'      => array(
-                        'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
-                )
-        );
-
-        $__postInput = filter_var_array( $_REQUEST, $filterArgs );
-
-        //NOTE: This is for debug purpose only,
-        //NOTE: Global $_POST Overriding from CLI Test scripts
-        //$__postInput = filter_var_array( $_POST, $filterArgs );
-
-        $this->_user_provided_filename         = $__postInput[ 'filename' ];
-        $this->id_file       = $__postInput[ 'id_file' ];
-        $this->id_job        = $__postInput[ 'id_job' ];
-        $this->download_type = $__postInput[ 'download_type' ];
-        $this->password      = $__postInput[ 'password' ];
-        $this->jwt = $__postInput['jwt'];
-
-        AuthCookie::getCredentialsFromCookie($this->jwt);
-
-    }
-
     public function doAction() {
 
         //get storage object
