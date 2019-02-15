@@ -276,7 +276,7 @@ class getSegmentsController extends ajaxController {
                 break;
             }
             $lastSegmentId = $data[count($data) -1]['sid'];
-
+            
             $data = $this->stripTagMatches($data);
             if (empty($data)) {
                 continue;
@@ -320,6 +320,8 @@ class getSegmentsController extends ajaxController {
         if ($searchTerm == "") {
             return false;
         }
+        $segment = strtolower($segment);
+        $searchTerm = strtolower($searchTerm);
 
         $taggedMatches = array_merge(
             $this->findAllMatches('<' . $searchTerm, $segment),

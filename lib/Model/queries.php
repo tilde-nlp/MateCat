@@ -363,15 +363,15 @@ function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'a
 
     $searchQuery = '';
     if (!empty($searchInSource)) {
-        $searchQuery .= " AND segments.segment LIKE :searchInSource ";
+        $searchQuery .= " AND LOWER(segments.segment) LIKE LOWER(:searchInSource) ";
         $sqlBinds['searchInSource'] = '%' . $searchInSource . '%';
     }
     if (!empty($searchInTarget)) {
-        $searchQuery .= " AND IF(segment_translations.status='NEW',NULL,segment_translations.translation) LIKE :searchInTarget ";
+        $searchQuery .= " AND LOWER(IF(segment_translations.status='NEW',NULL,segment_translations.translation)) LIKE LOWER(:searchInTarget) ";
         $sqlBinds['searchInTarget'] = '%' . $searchInTarget . '%';
     }
     if (!empty($searchInComments)) {
-        $searchQuery .= " AND segments.id IN (SELECT id_segment FROM comments WHERE comments.message LIKE :searchInComments) ";
+        $searchQuery .= " AND segments.id IN (SELECT id_segment FROM comments WHERE LOWER(comments.message) LIKE LOWER(:searchInComments)) ";
         $sqlBinds['searchInComments'] = '%' . $searchInComments . '%';
     }
 
