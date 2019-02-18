@@ -138,6 +138,7 @@ abstract class controller implements IController {
         if (strpos($request, '?') !== false) {
             $request = substr($request, 0, strpos($request, '?'));
         }
+        $request = rtrim($request, '/');
         try {
             @$className = self::$requestToClassMap[$method][$request];
         } catch (Throwable $e) {
