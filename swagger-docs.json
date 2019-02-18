@@ -213,46 +213,6 @@
         ]
       }
     },
-    "/files/urls": {
-      "post": {
-        "tags": [
-          "files"
-        ],
-        "summary": "Get file download links",
-        "operationId": "getFileUrls",
-        "requestBody": {
-          "description": "Specify project id and password",
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/ProjectGetter"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Retuns file translation and original download links",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FileUrls"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
     "/files/stats": {
       "post": {
         "tags": [
@@ -1316,17 +1276,6 @@
             "type": "integer"
           },
           "jobPassword": {
-            "type": "string"
-          }
-        }
-      },
-      "FileUrls": {
-        "type": "object",
-        "properties": {
-          "translation": {
-            "type": "string"
-          },
-          "original": {
             "type": "string"
           }
         }

@@ -28,7 +28,6 @@ abstract class controller implements IController {
         'POST' => [
             'files' => 'getProjectsController',
             'files/analysis' => 'getVolumeAnalysisController',
-            'files/urls' => 'getFileUrlsController',
             'files/stats' => 'getFileStatsController',
             'files/creation-status' => 'getFileCreationStatusController',
             'files/delete' => 'deleteFileController',
