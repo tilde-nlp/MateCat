@@ -78,7 +78,7 @@ class Project {
     public function renderItem( Projects_ProjectStruct $project ) {
 
         $featureSet = $project->getFeatures();
-        $jobs = $project->getJobs(60 * 10 ); //cached
+        $jobs = $project->getJobs((int)$project->id);
 
         $projectOutputFields = [
             'id'                   => (int)$project->id,

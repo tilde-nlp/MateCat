@@ -126,7 +126,7 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         $conn = Database::obtain()->getConnection();
         $stmt = $conn->prepare( self::$_sql_get_jobs_by_project );
 
-        return $thisDao->setCacheTTL( $ttl )->_fetchObject( $stmt, new Jobs_JobStruct(), [ $id_project ] );
+        return $thisDao->_fetchObjectNoCache( $stmt, new Jobs_JobStruct(), [ $id_project ] );
 
     }
 
