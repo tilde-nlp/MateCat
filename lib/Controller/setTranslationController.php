@@ -635,38 +635,6 @@ class setTranslationController extends ajaxController {
             Log::doLog( "Exception in filterSetTranslationResult callback . " . $e->getMessage() . "\n" . $e->getTraceAsString() );
         }
 
-        // Update translated words
-        $segmentRawWordCount = $this->segment->raw_word_count;
-        $oldStatus = strtolower($old_translation['status']);
-        $newStatus = strtolower($_Translation['status']);
-
-        // Add translated words
-        if (strcmp($oldStatus, 'translated') !== 0 && strcmp($newStatus, 'translated') === 0) {
-            $queryUpdateJob = "update jobs
-                                set translated_words = translated_words + :word_count
-                                where id = :job_id and password = :job_password";
-
-            $conn = Database::obtain()->getConnection();
-            $stmt = $conn->prepare($queryUpdateJob);
-            $result = $stmt->execute([
-                'word_count' => $segmentRawWordCount,
-                'job_id' => $this->id_job,
-                'job_password' => $this->password
-            ]);
-        } else if (strcmp($oldStatus, 'translated') === 0 && strcmp($newStatus, 'translated') !== 0) {
-            $queryUpdateJob = "update jobs
-                                set translated_words = GREATEST(translated_words - :word_count, 0)
-                                where id = :job_id and password = :job_password";
-
-            $conn = Database::obtain()->getConnection();
-            $stmt = $conn->prepare($queryUpdateJob);
-            $result = $stmt->execute([
-                'word_count' => $segmentRawWordCount,
-                'job_id' => $this->id_job,
-                'job_password' => $this->password
-            ]);
-        }
-
         //EVERY time an user changes a row in his job when the job is completed,
         // a query to do the update is executed...
         // Avoid this by setting a key on redis with an reasonable TTL

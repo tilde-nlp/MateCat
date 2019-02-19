@@ -56,7 +56,8 @@ class getFileStatsController extends ajaxController {
         $wStruct->setRejectedWords( $this->chunk->rejected_words );
 
         $job_stats = \CatUtils::getFastStatsForJob( $wStruct );
-        $translatedWords = $this->chunk->translated_words < 0 ? 0 : $this->chunk->translated_words;
+        $ChunkDao = new Chunks_ChunkDao();
+        $translatedWords = $ChunkDao->getTranslatedWordCount($this->project_id);
         $totalWords = $this->chunk->total_raw_wc;
         $job_stats['TRANSLATED_PERC'] = $translatedWords / $totalWords * 100;
 
