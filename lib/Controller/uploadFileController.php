@@ -194,7 +194,7 @@ class uploadFileController extends ajaxController {
         $this->respond($this->result);
     }
 
-    protected function sendError($errorMessage): int {
+    protected function sendError($errorMessage) {
         rmdir($this->options['upload_dir']);
         $responseData = new \stdClass();
         $responseData->code = -6;
@@ -222,10 +222,11 @@ class uploadFileController extends ajaxController {
         if ( $this->validate( $uploaded_file, $file, $error, $index ) ) {
             $destination = $this->options['upload_dir'];
             $file->full_path   = $destination . $file->name;
-
             $convertableMimes = ['application/msword', 'text/rtf', 'application/pdf'];
             $fileMime = strtolower($file->type);
+            $this->uploadLog('Handling file: ' . $file->name . ' with mime type: ' . $fileMime);
             if (in_array($fileMime, $convertableMimes)) {
+                $this->uploadLog('Converting special case file conversion.');
                 $FileFilter = new FileFilter(INIT::$FILE_CONVERTER_BASE_URL);
                 $from = '';
                 $to = '';
@@ -244,6 +245,8 @@ class uploadFileController extends ajaxController {
                 try {
                     $file->full_path = $FileFilter->convertFile($uploaded_file, $destination, $file->name, $from, $to);
                 } catch (Exception $e) {
+                    $this->uploadLog('Special case file conversion exception.');
+                    $this->uploadLog($e->getMessage());
                     $file->error = "ErrorConvertingFile";
                     return $file;
                 }

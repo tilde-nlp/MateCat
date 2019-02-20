@@ -28,6 +28,7 @@ class FileFilter {
         curl_setopt($curl, CURLOPT_HEADER, false);
         $resp = curl_exec($curl);
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $this->log('File conversion return code: ' . $httpcode);
         if ($httpcode != 200 || $resp == false) {
             throw new FileConvertException("Can't convert file " . $convertedFileName);
         }
@@ -39,7 +40,7 @@ class FileFilter {
     private function log($data)
     {
         $oldFileName = Log::$fileName;
-        Log::$fileName = "file-filter.log";
+        Log::$fileName = "upload-stability.log";
         Log::doLog(var_export($data, true));
         Log::$fileName = $oldFileName;
     }
