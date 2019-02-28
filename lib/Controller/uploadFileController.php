@@ -92,26 +92,30 @@ class uploadFileController extends ajaxController {
         $this->uploadLog(var_export($data, true));
     }
 
-    public function doAction() {      
+    public function doAction() {
         $upload = isset( $_FILES[ $this->options[ 'param_name' ] ] ) ? $_FILES[ $this->options[ 'param_name' ] ] : null;
-
         $info = [];
-        // param_name is an array identifier like "files[]",
-        // $_FILES is a multi-dimensional array:
-        foreach ( $upload[ 'tmp_name' ] as $index => $value ) {
-            $convertedName = $this->checkBase64($upload[ 'name' ][ $index ]);
-            $this->file_name = $convertedName;
-            $info[] = $this->handle_file_upload(
-                $upload[ 'tmp_name' ][ $index ],
-                $convertedName,
-                $upload[ 'size' ][ $index ],
-                $upload[ 'type' ][ $index ],
-                $upload[ 'error' ][ $index ],
-                $index
-            );
+        $uploadedFile = [];
+        if (is_array($upload['tmp_name'])) {
+            $uploadedFile['name'] = $upload['name'][0];
+            $uploadedFile['tmp_name'] = $upload['tmp_name'][0];
+            $uploadedFile['size'] = $upload['size'][0];
+            $uploadedFile['type'] = $upload['type'][0];
+            $uploadedFile['error'] = $upload['error'][0];
+        } else {
+            $uploadedFile = $upload;
         }
-        // $this->uploadLog('Info after all file uploads');
-        // $this->uploadLogData($info);
+        $convertedName = $this->checkBase64($uploadedFile[ 'name' ]);
+        $this->file_name = $convertedName;
+
+        $info[] = $this->handle_file_upload(
+            $uploadedFile[ 'tmp_name' ],
+            $convertedName,
+            $uploadedFile[ 'size' ],
+            $uploadedFile[ 'type' ],
+            $uploadedFile[ 'error' ]
+        );
+
         if (!empty($info[0]->error)) {
             return $this->sendError($info[0]->error);
         }
@@ -211,7 +215,7 @@ class uploadFileController extends ajaxController {
         $this->result = $responseData;
     }
 
-    protected function handle_file_upload( $uploaded_file, $name, $size, $type, $error, $index = null ) {
+    protected function handle_file_upload( $uploaded_file, $name, $size, $type, $error) {
 
         $file       = new stdClass();
         $file->name = $this->trim_file_name( $name );
@@ -219,7 +223,7 @@ class uploadFileController extends ajaxController {
         $file->tmp_name = $uploaded_file;
         $file->type = mime_content_type( $file->tmp_name );
 
-        if ( $this->validate( $uploaded_file, $file, $error, $index ) ) {
+        if ( $this->validate( $uploaded_file, $file, $error ) ) {
             $destination = $this->options['upload_dir'];
             $file->full_path   = $destination . $file->name;
             $convertableMimes = ['application/msword', 'text/rtf', 'application/pdf'];
@@ -392,7 +396,7 @@ class uploadFileController extends ajaxController {
         ) ) );
     }
 
-    protected function validate( $uploaded_file, $file, $error, $index ) {
+    protected function validate( $uploaded_file, $file, $error ) {
         //TODO: these errors are shown in the UI but are not user friendly.
 
         if ( $error ) {
