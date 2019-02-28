@@ -43,8 +43,20 @@ export const createProject = (params, mtSystemId) => {
   const result = post('files/upload', requestData, params)
   const bodyObject = JSON.parse(result.body)
   return {
-    projectId: bodyObject.data.id_project,
+    id: bodyObject.data.id_project,
     password: bodyObject.data.password
+  }
+}
+
+export const getProjectInfo = (params, id, password) => {
+  const requestData = {
+    projectId: id,
+    projectPassword: password
+  }
+  const result = post('files/info', requestData, params)
+  const bodyObject = JSON.parse(result.body)
+  return {
+    firstSegmentId: bodyObject.firstSegmentId
   }
 }
 
@@ -58,9 +70,9 @@ export const deleteProject = (id, password) => {
 }
 
 export const checkOk = result => {
-    check(result, {
-        'status was 200': (r) => r.status == 200
-      })
+  check(result, {
+    'status was 200': r => r.status == 200,
+  })
 }
 
 export const get = (endpoint, params) => {
