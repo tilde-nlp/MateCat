@@ -4,10 +4,11 @@ import MtTests from './tests/mt.js'
 import UserTests from './tests/user.js'
 import TmTests from './tests/tm.js'
 import SegmentTests from './tests/segment.js'
+import CommentTests from './tests/comment.js'
 
 export const options = {
-    vus: 1,
-    duration: '30s'
+    vus: 15,
+    duration: '45s'
 }
 
 export function setup() {
@@ -23,7 +24,8 @@ export function setup() {
   }
 
   data['projectData'] = createProject(data.params, data.mtSystemId)
-  data.projectData['firstSegmentId'] = getProjectInfo(data.params, data.projectData.id, data.projectData.password)['firstSegmentId']
+  const projectInfo = getProjectInfo(data.params, data.projectData.id, data.projectData.password)
+  data.projectData['firstSegmentId'] = projectInfo.firstSegmentId
   data['memoryId'] = getMemoryId(data.params)
   
   return data
@@ -34,6 +36,7 @@ export default function(data) {
   group('MT', () => MtTests(data))
   group('TM', () => TmTests(data))
   group('Segment', () => SegmentTests(data))
+  group('Comment', () => CommentTests(data))
 }
 
 export function teardown(data) {

@@ -56,7 +56,7 @@ export const getProjectInfo = (params, id, password) => {
   const result = post('files/info', requestData, params)
   const bodyObject = JSON.parse(result.body)
   return {
-    firstSegmentId: bodyObject.firstSegmentId
+    firstSegmentId: bodyObject.firstSegment
   }
 }
 
