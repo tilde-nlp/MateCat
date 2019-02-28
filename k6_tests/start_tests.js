@@ -6,10 +6,11 @@ import TmTests from './tests/tm.js'
 import SegmentTests from './tests/segment.js'
 import CommentTests from './tests/comment.js'
 import SettingsTests from './tests/settings.js'
+import FileTests from './tests/file.js'
 
 export const options = {
-    vus: 1,
-    duration: '2s'
+    vus: 20,
+    duration: '2m'
 }
 
 export function setup() {
@@ -39,6 +40,7 @@ export default function(data) {
   group('Segment', () => SegmentTests(data))
   group('Comment', () => CommentTests(data))
   group('Settings', () => SettingsTests(data))
+  group('Files', () => FileTests(data))
 }
 
 export function teardown(data) {
