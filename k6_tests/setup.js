@@ -3,7 +3,16 @@ import CONFIG from './CONFIG.js'
 import encoding from 'k6/encoding'
 import http from 'k6/http'
 
-export default () => {
+export default userCount => {
+    const setupData = []
+    for (let i = 0; i < userCount; i++) {
+        setupData.push(fillOneUserData())
+    }
+
+    return setupData
+}
+
+const fillOneUserData = () => {
     const setupData = {}
     setupData['userData'] = createUser()
     setupData['params'] = {

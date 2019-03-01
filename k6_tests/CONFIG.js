@@ -1,4 +1,6 @@
 export default {
+    virtualUserCount: 5,
+    testDuration: '90s',
     apiUrl: 'http://local.matecat.com/',
     serviceUrl: 'http://hugodevlogic.tilde.lv:4000/Usermanager.asmx/',
     adminUsername: 'oskars.petriks@tilde.lv',
