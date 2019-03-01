@@ -36,4 +36,14 @@ export const checkOk = result => {
   check(result, {
     'status was 200': r => r.status == 200,
   })
+  try {
+    const bodyObject = JSON.parse(result.body)
+    check(bodyObject, {
+      'got valid response': b => !b.hasOwnProperty('code')
+    })
+  } catch (e) {
+    check({}, {
+      'got valid response': () => false
+    })
+  }
 }

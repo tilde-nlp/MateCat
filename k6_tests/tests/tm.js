@@ -2,7 +2,7 @@ import { get, post, checkOk, msleep} from '../utils.js'
 import { group } from 'k6'
 
 export default data => {
-    group('Get list', testTm)
+    group('Get list', () => testTm(data.params))
     group('Get matches', () => testMatches(data.params, data.projectData))
     group('Concordance', () => testConcordance(data.params, data.projectData))
     group('Get list for file', () => testForFile(data.params, data.projectData))
