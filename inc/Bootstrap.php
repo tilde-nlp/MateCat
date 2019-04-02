@@ -19,7 +19,7 @@ class Bootstrap {
     private $autoLoadedFeatureSet ;
 
     public static function start() {
-        self::cors();
+        // self::cors();
         new self();
     }
 
