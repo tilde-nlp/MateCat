@@ -93,7 +93,6 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl enable activemq.service || echo "Continue no matter what. ExitCode [$?]"
 
-
 yes | sudo /etc/init.d/activemq create /etc/default/activemq || echo "Continue no matter what. ExitCode [$?]"
 sudo chown root:nogroup /etc/default/activemq
 sudo chmod 600 /etc/default/activemq
@@ -110,36 +109,9 @@ sudo apt-get install -y curl
 curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
-# TODO: check this, node should start server.js which is not downloaded yet!
-# https://nodesource.com/blog/running-your-node-js-app-with-systemd-part-1/
-# Node.js app as systemd service
-sudo bash <<EOF
-echo "[Unit]" > /etc/systemd/system/nodejs-server.service
-echo "Description=NodeJS server.js" >> /etc/systemd/system/nodejs-server.service
-echo "After=network-online.target" >> /etc/systemd/system/nodejs-server.service
-echo "[Service]" >> /etc/systemd/system/nodejs-server.service
-echo "Type=simple" >> /etc/systemd/system/nodejs-server.service
-echo "PIDFile=/opt/activemq/data/activemq.pid" >> /etc/systemd/system/nodejs-server.service
-echo "ExecStart=/usr/bin/node /home/$MATECAT_USER/cattool/nodejs/server.js" >> /etc/systemd/system/nodejs-server.service
-echo "Restart=on-failure" >> /etc/systemd/system/nodejs-server.service
-echo "[Install]" >> /etc/systemd/system/nodejs-server.service
-echo "WantedBy=multi-user.target" >> /etc/systemd/system/nodejs-server.service
-EOF
-sudo systemctl daemon-reload
-sudo systemctl enable nodejs-server.service || echo "Continue no matter what. ExitCode [$?]"
-	# start Node.js at boot
-	#sudo crontab -l > mycron || echo "^ Safe to ignore \"no crontab for root\""
-	# remove activemq cron task(s) on repeated installs
-	#sed -i '/screen/d' mycron
-	# add entry
-	#echo "@reboot screen -d -m -S 'node' node /home/$MATECAT_USER/cattool/nodejs/server.js" >> mycron
-	#sudo crontab mycron
-	#rm mycron
-
 sudo sed -i 's/short_open_tag = .*/short_open_tag = On/g' /etc/php/7.0/cli/php.ini
 sudo sed -i 's/memory_limit = .*/memory_limit = 1024M/g' /etc/php/7.0/cli/php.ini
 sudo apache2ctl restart
-
 
 # ----- MateCat
 id -u "$MATECAT_USER" || sudo adduser --disabled-password --gecos "" $MATECAT_USER
@@ -163,6 +135,7 @@ mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/11-09-2018
 mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/15-10-2018.sql
 mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/28-10-2018.sql
 mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/04-11-2018.sql
+mysql -u root -p$MYSQL_ROOT_PWD < /home/$MATECAT_USER/cattool/INSTALL/28-01-2019_project_settings.sql
 
 # Apache matecat vhost
 sudo cp /home/$MATECAT_USER/cattool/INSTALL/matecat-vhost.conf.sample /etc/apache2/sites-available/matecat-vhost.conf
@@ -199,22 +172,17 @@ sudo -u $MATECAT_USER -H sh -c "cp /home/$MATECAT_USER/cattool/inc/task_manager_
 # DEV_ONLY (this is only necessary for development build)
 sudo -u $MATECAT_USER -H sh -c "cd /home/$MATECAT_USER/cattool/vue_src;npm install"
 
-# Configure Node.js server app
-sudo -u $MATECAT_USER -H sh -c "cp /home/$MATECAT_USER/cattool/nodejs/config.ini.sample /home/$MATECAT_USER/cattool/nodejs/config.ini"
-sudo -u $MATECAT_USER -H sh -c "cd /home/$MATECAT_USER/cattool/nodejs;npm install"
-sudo systemctl start nodejs-server.service
-
 # ----- Configure database address (optional)
 # ----- Turning on the analysis daemon
 sudo -u $MATECAT_USER -H sh -c "echo '25' > /home/$MATECAT_USER/cattool/daemons/.num_processes"
-sudo /bin/bash /home/$MATECAT_USER/cattool/daemons/restartAnalysis.sh
+sudo -u $MATECAT_USER /bin/bash /home/$MATECAT_USER/cattool/daemons/restartAnalysis.sh
 sudo crontab -l > mycron || echo "^ Safe to ignore \"no crontab for root\""
 # remove restartAnalysis cron task(s) on repeated installs
 sed -i '/restartAnalysis/d' mycron
 # echo new cron into cron file
 echo "@reboot /bin/bash /home/$MATECAT_USER/cattool/daemons/restartAnalysis.sh" >> mycron
 # install new cron file
-sudo crontab mycron
+sudo -u $MATECAT_USER crontab mycron
 sudo rm mycron
 sudo chown -R www-data $STORAGE_DIR
 # ----- Matecat done
