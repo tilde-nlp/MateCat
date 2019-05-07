@@ -256,6 +256,7 @@ class uploadFileController extends ajaxController {
                 }
                 $file->name = $this->file_name = pathinfo($file->name, PATHINFO_FILENAME) . '.' . $to;
             } else {
+                $this->uploadLog("Moved file: " .$file->full_path);
                 $res = move_uploaded_file( $uploaded_file, $file->full_path );
             }
             $file_size = filesize( $file->full_path );
@@ -342,7 +343,7 @@ class uploadFileController extends ajaxController {
         $conversionHandler->setFeatures( $this->featureSet );
         $conversionHandler->setUserIsLogged( true );
         $conversionHandler->doAction();
-
+        
         $this->result = $conversionHandler->getResult();
 
         ( isset( $this->result[ 'errors' ] ) ) ? null : $this->result[ 'errors' ] = array();

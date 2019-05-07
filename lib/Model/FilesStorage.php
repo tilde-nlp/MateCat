@@ -179,9 +179,9 @@ class FilesStorage {
         }
 
         //create cache dir structure
-        @mkdir( $this->cacheDir . DIRECTORY_SEPARATOR . $cacheTree . "|" . $lang, 0775, true );
+        @mkdir( $this->cacheDir . DIRECTORY_SEPARATOR . $cacheTree . "|" . $lang, 0755, true );
         $cacheDir = $this->cacheDir . DIRECTORY_SEPARATOR . $cacheTree . "|" . $lang . DIRECTORY_SEPARATOR . "package";
-        @mkdir( $cacheDir, 0775, true );
+        @mkdir( $cacheDir, 0755, true );
         @mkdir( $cacheDir . DIRECTORY_SEPARATOR . "orig" );
         @mkdir( $cacheDir . DIRECTORY_SEPARATOR . "work" );
         
@@ -450,7 +450,7 @@ class FilesStorage {
         //check if doesn't exist
         if ( !is_dir( $fileDir ) ) {
             //make files' directory structure
-            $res &= mkdir( $fileDir, 0775, true );
+            $res &= mkdir( $fileDir, 0755, true );
             $res &= mkdir( $fileDir . DIRECTORY_SEPARATOR . "package" );
             $res &= mkdir( $fileDir . DIRECTORY_SEPARATOR . "package" . DIRECTORY_SEPARATOR . "orig" );
             $res &= mkdir( $fileDir . DIRECTORY_SEPARATOR . "package" . DIRECTORY_SEPARATOR . "work" );
