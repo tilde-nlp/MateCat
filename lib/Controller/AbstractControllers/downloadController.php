@@ -26,7 +26,6 @@ abstract class downloadController extends controller {
     protected $job;
 
     public function __construct() {
-
         $filterArgs = array(
                 'jwt'        => array( 'filter' => FILTER_UNSAFE_RAW ),
                 'projectId'        => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
@@ -36,10 +35,20 @@ abstract class downloadController extends controller {
         );
 
         $this->__postInput = filter_input_array( INPUT_POST, $filterArgs );
+        $crendentials = AuthCookie::getCredentials();
+        try {
+            $project = Projects_ProjectDao::findByIdAndPassword(
+                $this->__postInput[ 'projectId' ],
+                $this->__postInput[ 'projectPassword' ]
+            );
+        } catch(Exceptions\NotFoundException $e) {
+            header("HTTP/1.1 404 Not Found");
+            die();
+        }        
 
         $this->jwt = $this->__postInput[ 'jwt' ];
         $this->id_job        = $this->getJobIdFromProjectId($this->__postInput[ 'projectId' ]);
-        $this->download_type = 'all';
+        $this->download_type = 'all'; 
         $this->password      = $this->getJobPasswordFromProjectId($this->__postInput[ 'projectId' ]);
     }
 
