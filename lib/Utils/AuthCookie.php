@@ -15,25 +15,12 @@ class AuthCookie {
         return $payload;
     }
 
-    private static function log($data, $name = 'debug') {
-        $oldFile = \Log::$fileName;
-        \Log::$fileName = $name . '.log';
-        \Log::doLog($data);
-        \Log::$fileName = $oldFile;
-    }
-
     public static function checkAccess() {
         try {
-            self::log("post", "cookie");
-            self::log($_POST, "cookie");
             $jwt = self::getToken();
-            self::log("first jwt", "cookie");
-            self::log($jwt, "cookie");
             if (empty($jwt)) {
                 $jwt = $_POST['jwt'];
             }
-            self::log("second jwt", "cookie");
-            self::log($jwt, "cookie");
 
             $parsedToken = (new Parser())->parse((string) $jwt);
             $signer = new Sha256();
@@ -119,5 +106,11 @@ class AuthCookie {
             die();
         }
     }
+
+    protected static function log($data) {
+        file_put_contents('/var/tmp/cookie.log', var_export($data, true), FILE_APPEND);
+        file_put_contents('/var/tmp/cookie.log', "\n", FILE_APPEND);
+    }
+
 }
 
