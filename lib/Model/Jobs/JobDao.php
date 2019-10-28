@@ -353,23 +353,6 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         return $stmt->rowCount();
     }
 
-    public static function checkProjectAccess($email, $projectId) {
-        $conn = Database::obtain()->getConnection();
-        $stmt = $conn->prepare("
-            SELECT u.uid AS userId, t.id AS teamId, p.*
-            FROM projects p
-            INNER JOIN teams t ON t.id = p.id_team
-            INNER JOIN users u ON u.uid = t.created_by
-            WHERE u.email = :email
-            AND p.id = :projectId
-        ");
-        $stmt->execute(array(
-            'email' => $email,
-            'projectId' => $projectId
-        ));
-        return $stmt->rowCount();
-    }
-
     public static function saveUpdateMt($userId, $update_mt) {
 
         $conn = Database::obtain()->getConnection();
