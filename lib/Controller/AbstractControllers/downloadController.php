@@ -52,14 +52,6 @@ abstract class downloadController extends controller {
         $this->password      = $this->getJobPasswordFromProjectId($this->__postInput[ 'projectId' ]);
     }
 
-    private function uploadLog($text)
-    {
-        $oldFileName = Log::$fileName;
-        Log::$fileName = "hole2.log";
-        Log::doLog($text);
-        Log::$fileName = $oldFileName;
-    }
-
     /**
      * @param int $ttl
      *
