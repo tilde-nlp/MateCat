@@ -35,7 +35,6 @@ abstract class downloadController extends controller {
         );
 
         $this->__postInput = filter_input_array( INPUT_POST, $filterArgs );
-        $crendentials = AuthCookie::getCredentials();
         try {
             $project = Projects_ProjectDao::findByIdAndPassword(
                 $this->__postInput[ 'projectId' ],
