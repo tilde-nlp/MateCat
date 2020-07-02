@@ -416,7 +416,10 @@ class uploadFileController extends ajaxController {
             return false;
         }
 
-        if ( !$this->_isWhitelistedFormat( $file->type ) && ( !isset( $file->error ) || empty( $file->error ) ) ) {
+        $fileNameChunks = explode( ".", $fileUp->name );
+
+        $extension = $fileNameChunks[count($fileNameChunks) - 1];
+        if ( !$this->_isWhitelistedFormat( $file->type, $extension ) && ( !isset( $file->error ) || empty( $file->error ) ) ) {
             $file->error = "FileFormatNotAllowed";
             return false;
         }
@@ -1003,9 +1006,12 @@ class uploadFileController extends ajaxController {
 
     }
 
-    protected function _isWhitelistedFormat( $fileMimeType ) {
+    protected function _isWhitelistedFormat( $fileMimeType, $fileExtension ) {
         if (count($this->documentWhitelist) < 1) {
             return true;
+        }
+        if (!in_array($fileExtension, $this->documentWhitelist)) {
+            return false;
         }
         $fileMimeType = strtolower($fileMimeType);
         foreach ( INIT::$MIME_TYPES as $mime => $extensions ) {
