@@ -52,6 +52,7 @@ class uploadFileController extends ajaxController {
      * @var BasicFeatureStruct[]
      */
     private $projectFeatures = [];
+    private $documentWhitelist = [];
 
     function __construct() {
         $this->setGuid();
@@ -77,6 +78,7 @@ class uploadFileController extends ajaxController {
         if (!is_dir($this->options['upload_dir'])) {
             mkdir($this->options['upload_dir'], 0775, true);
         }
+        $this->documentWhitelist = explode("," , INIT::$DOCUMENT_WHITELIST);
     }
 
     private function uploadLog($text)
@@ -207,6 +209,9 @@ class uploadFileController extends ajaxController {
         $error = new \stdClass();
         $error->code = -1000;
         $error->message = $errorMessage;
+        if (strcmp($errorMessage, "FileFormatNotAllowed") === 0) {
+            $error->allowedExtensions = str_replace(",", ", ", INIT::$DOCUMENT_WHITELIST);
+        }
         $responseData->errors[] = $error;
         return $this->respond($responseData);
     }
@@ -408,6 +413,11 @@ class uploadFileController extends ajaxController {
 
         if ( !$this->_isValidFileName( $file ) ) {
             $file->error = "InvalidFileName";
+            return false;
+        }
+
+        if ( !$this->_isWhitelistedFormat( $file->type ) && ( !isset( $file->error ) || empty( $file->error ) ) ) {
+            $file->error = "FileFormatNotAllowed";
             return false;
         }
 
@@ -989,6 +999,24 @@ class uploadFileController extends ajaxController {
             }
         }
 
+        return false;
+
+    }
+
+    protected function _isWhitelistedFormat( $fileMimeType ) {
+        if (count($this->documentWhitelist) < 1) {
+            return true;
+        }
+        $fileMimeType = strtolower($fileMimeType);
+        foreach ( INIT::$MIME_TYPES as $mime => $extensions ) {
+            if (strcmp($mime, $fileMimeType) === 0) {
+                foreach($extensions as $extension) {
+                  if (in_array($extension, $this->documentWhitelist)) {
+                      return true;
+                  }  
+                }
+            }
+        }
         return false;
 
     }
