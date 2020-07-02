@@ -98,7 +98,7 @@ TERM_BASE_URL = "@@@term_base_url@@@"
 FILE_CONVERTER_BASE_URL = "@@@file_converter_base_url@@@"
 SYNONYM_BASE_URL = "@@@synonym_base_url@@@"
 DEV_MODE = @@@dev_mode@@@
-DOCUMENT_WHITELIST = ""
+DOCUMENT_WHITELIST = "@@@document_whitelist@@@"
 
 CLI_HTTP_HOST = "http://localhost" ; Set the hostname for batch processes ( they do not know the global variable $_SERVER )
 DB_SERVER = "localhost"
