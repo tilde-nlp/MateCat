@@ -416,8 +416,7 @@ class uploadFileController extends ajaxController {
             return false;
         }
 
-        $fileNameChunks = explode( ".", $fileUp->name );
-
+        $fileNameChunks = explode( ".", $file->name );
         $extension = $fileNameChunks[count($fileNameChunks) - 1];
         if ( !$this->_isWhitelistedFormat( $file->type, $extension ) && ( !isset( $file->error ) || empty( $file->error ) ) ) {
             $file->error = "FileFormatNotAllowed";
