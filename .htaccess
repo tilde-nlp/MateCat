@@ -57,7 +57,7 @@ Header always append X-Frame-Options SAMEORIGIN
 Header always append X-Content-Type-Options nosniff
 Header always append X-XSS-Protection "1; mode=block"
 </IfModule>
-Header set Access-Control-Allow-Origin "*"
+#Header set Access-Control-Allow-Origin "*"
 php_value display_errors 0
 php_value log_errors 1
 php_value error_log storage/log_archive/php_errors.txt

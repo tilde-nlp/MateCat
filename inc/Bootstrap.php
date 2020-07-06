@@ -19,38 +19,33 @@ class Bootstrap {
     private $autoLoadedFeatureSet ;
 
     public static function start() {
-        // self::cors();
         new self();
     }
 
     private static function cors() {
-
-        // Allow from any origin
-        if (isset($_SERVER['HTTP_ORIGIN'])) {
-            // Decide if the origin in $_SERVER['HTTP_ORIGIN'] is one
-            // you want to allow, and if so:
-            header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-            header('Access-Control-Allow-Credentials: true');
+        $rawWhitelist = trim(self::getEnvConfigKey('CORS_WHITELIST'));
+        $whitelist = array();
+        if ($rawWhitelist != '') {
+            $whitelist = explode(',', $rawWhitelist);
         }
-    
-        // Access-Control headers are received during OPTIONS requests
-        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    
-            if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
-                // may also be using PUT, PATCH, HEAD etc
-                header("Access-Control-Allow-Methods: GET, POST, OPTIONS");         
-    
-            if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
-                header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
-    
-            exit(0);
+        if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] != '') {
+            if (in_array($_SERVER['HTTP_ORIGIN'], $whitelist)) {
+                header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+                header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+                header('Access-Control-Max-Age: 5000');
+                if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
+                    header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
+                }
+            }
         }
     }
 
     private function __construct() {
-        
         self::$_ROOT        = realpath( dirname( __FILE__ ) . '/../' );
         self::$CONFIG       = parse_ini_file( self::$_ROOT . DIRECTORY_SEPARATOR . 'inc/config.ini', true );
+        if (self::getEnvConfigKey("ALLOW_CORS")) {
+            self::cors();
+        }
         $OAUTH_CONFIG       = @parse_ini_file( self::$_ROOT . DIRECTORY_SEPARATOR . 'inc/oauth_config.ini', true );
 
         register_shutdown_function( [ 'Bootstrap', 'fatalErrorHandler' ] );
