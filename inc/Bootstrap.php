@@ -28,15 +28,22 @@ class Bootstrap {
         if ($rawWhitelist != '') {
             $whitelist = explode(',', $rawWhitelist);
         }
+        if (count($whitelist) < 1) {
+            self::setCorsHeaders();
+        }
         if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] != '') {
             if (in_array($_SERVER['HTTP_ORIGIN'], $whitelist)) {
-                header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
-                header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
-                header('Access-Control-Max-Age: 5000');
-                if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
-                    header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
-                }
+                self::setCorsHeaders();
             }
+        }
+    }
+
+    private static function setCorsHeaders() {
+        header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+        header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+        header('Access-Control-Max-Age: 5000');
+        if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
+            header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
         }
     }
 
