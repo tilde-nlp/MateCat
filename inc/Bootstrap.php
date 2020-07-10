@@ -42,21 +42,26 @@ class Bootstrap {
         header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
         header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
         header('Access-Control-Max-Age: 5000');
+        header('Access-Control-Allow-Credentials: true');
         if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
             header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+            exit(0);
         }
     }
 
     private function __construct() {
         self::$_ROOT        = realpath( dirname( __FILE__ ) . '/../' );
         self::$CONFIG       = parse_ini_file( self::$_ROOT . DIRECTORY_SEPARATOR . 'inc/config.ini', true );
-        if (self::getEnvConfigKey("ALLOW_CORS")) {
-            self::cors();
-        }
         $OAUTH_CONFIG       = @parse_ini_file( self::$_ROOT . DIRECTORY_SEPARATOR . 'inc/oauth_config.ini', true );
 
         register_shutdown_function( [ 'Bootstrap', 'fatalErrorHandler' ] );
 
+        if (self::getEnvConfigKey("ALLOW_CORS")) {
+            self::cors();
+        }
         $mv = parse_ini_file( 'version.ini' );
         self::$_INI_VERSION = $mv['version'];
 
