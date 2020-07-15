@@ -26,7 +26,11 @@ class MemorySettings {
         $JobsDao = new Jobs_JobDao();
         $memorySettings = self::settingsToArray($rawMemorySettings);
 
+        $tmBlacklist = explode(',', INIT::$TM_BLACKLIST);
         foreach($userMemories as $userMemory) {
+            if (in_array(strtolower($userMemory->id), $tmBlacklist)) {
+                continue;
+            }
             $memory = [];
             $memory['id'] = $userMemory->id;
             $memory['name'] = $userMemory->name;

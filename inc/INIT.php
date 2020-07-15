@@ -51,6 +51,7 @@ class INIT {
     public static $FILE_CONVERTER_BASE_URL;
     public static $SYNONYM_BASE_URL;
     public static $DEV_MODE;
+    public static $TM_BLACKLIST;
     public static $DOCUMENT_WHITELIST;
     public static $DB_SERVER;
     public static $DB_DATABASE;
