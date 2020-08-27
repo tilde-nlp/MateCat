@@ -1,4 +1,0 @@
-.idea/
-node_modules/
-test/unit/coverage/*
-!test/unit/coverage/.gitkeep
