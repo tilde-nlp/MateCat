@@ -1,0 +1,58 @@
+version: '3'
+
+networks:
+  matecat-network:
+    driver: bridge
+
+services:
+  filters:
+    build: ./MateCatFilters/
+    ports:
+      - 8732:8732
+    networks:
+      - matecat-network
+
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    networks:
+      - matecat-network
+
+  amq:
+    build: ./AMQ/
+    ports:
+      - 61613:61613
+      - 8161:8161
+    networks:
+      - matecat-network
+       
+  mysql:
+    build: ./MySQL/
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 3306:3306
+    networks:
+      - matecat-network
+
+  matecat:
+    build: ./MatecatTilde/
+    ports:
+      - 80:80
+    environment: 
+      - MATECAT_HOST=http://localhost
+      - MATECAT_COOKIE_DOMAIN=localhost
+      - SMTP_USERNAME=info@example.com
+      - SMTP_SENDER=info@example.com
+      - SMTP_PORT=587
+      - SMTP_PASSWORD=example
+      - SMTP_HOST=some.smtp.host.com
+    networks:
+      - matecat-network
+    depends_on:
+      - mysql
+      - redis
+      - amq
+      - filters
+
