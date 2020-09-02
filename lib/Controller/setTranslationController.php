@@ -37,6 +37,7 @@ class setTranslationController extends ajaxController {
     protected $status;
     protected $split_statuses;
     protected $mtId;
+    protected $appId;
 
     /**
      * @var Jobs_JobStruct
@@ -100,6 +101,7 @@ class setTranslationController extends ajaxController {
                 'context_before'          => [ 'filter' => FILTER_UNSAFE_RAW ],
                 'context_after'           => [ 'filter' => FILTER_UNSAFE_RAW ],
                 'saveType'           => [ 'filter' => FILTER_SANITIZE_STRING ],
+                'appId'           => [ 'filter' => FILTER_SANITIZE_STRING ],
                 'saveMatch'           => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
                 'id_before'               => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
                 'id_after'                => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
@@ -112,7 +114,7 @@ class setTranslationController extends ajaxController {
         $this->id_job                = Jobs_JobDao::getSegmentJobId($this->id_segment);
         $this->password              = Jobs_JobDao::getSegmentJobPassword($this->id_segment);
         $this->mtId              = $this->__postInput[ 'mtId' ];
-
+        $this->appId              = $this->__postInput[ 'appId' ];
 
         /*
          * set by the client, mandatory
@@ -893,6 +895,7 @@ class setTranslationController extends ajaxController {
         $contributionStruct->id_mt                = $this->jobData->id_mt_engine;
         $contributionStruct->id_project = $this->jobData->id_project;
         $contributionStruct->jwt_token            = AuthCookie::getToken();
+        $contributionStruct->appId = $this->appId;
 
         $contributionStruct->context_after        = $this->context_after;
         $contributionStruct->context_before       = $this->context_before;
@@ -943,8 +946,8 @@ class setTranslationController extends ajaxController {
             return;
         }
 
-        $LetsMTLite = new \LetsMTLite(INIT::$MT_BASE_URL, AuthCookie::getToken(), INIT::$MT_APP_ID);
-        $LetsMTLite->updateMT($this->mtId, $contributionStruct->segment, $contributionStruct->translation);
+        $LetsMTLite = new \LetsMTLite(INIT::$MT_BASE_URL, AuthCookie::getToken());
+        $LetsMTLite->updateMT($this->mtId, $contributionStruct->segment, $contributionStruct->translation, $this->appId);
     }
 
     /**
@@ -966,7 +969,8 @@ class setTranslationController extends ajaxController {
                 $contributionStruct->segment,
                 $contributionStruct->translation,
                 substr($config['source'], 0, 2),
-                substr($config['target'], 0, 2)
+                substr($config['target'], 0, 2),
+                $contributionStruct->appId
             );
         }
     }

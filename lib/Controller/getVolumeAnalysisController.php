@@ -2,6 +2,7 @@
 
 class getVolumeAnalysisController extends ajaxController {
     protected $id_project;
+    protected $appId;
 
     public function __construct() {
 
@@ -10,15 +11,16 @@ class getVolumeAnalysisController extends ajaxController {
         $filterArgs = array(
                 'projectId'       => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
                 'projectPassword' => array(
-                        'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
+                        'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH,
                 ),
+                'appId'  => [ 'filter' => FILTER_SANITIZE_STRING]
         );
 
         $__postInput = filter_input_array( INPUT_POST, $filterArgs );
 
         $this->id_project = $__postInput[ 'projectId' ];
         $this->ppassword  = $__postInput[ 'projectPassword' ];
-
+        $this->appId  = $__postInput[ 'appId' ];
     }
 
     public function doAction() {
@@ -72,6 +74,7 @@ class getVolumeAnalysisController extends ajaxController {
                  $pretranslateStruct->jwtRefreshToken = AuthCookie::getRefreshToken();
                  $pretranslateStruct->uid = AuthCookie::getCredentials()['uid'];
                  $pretranslateStruct->projectId = $jobData->id_project;
+                 $pretranslateStruct->appId = $jobData->appId;
                  $pretranslateStruct->start();
                  $rowCount = \Jobs_JobDao::removeStartPretranslate($pretranslateStruct->id);
                  $this->result['status'] = 'PRETRANSLATING';

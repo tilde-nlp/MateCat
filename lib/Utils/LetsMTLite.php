@@ -10,9 +10,9 @@ class LetsMTLite {
     private $baseUrl;
     private $appId;
 
-    public static function getMatch($mtSystem, $text, $jwt) {
-        $LetsMTLite = new \LetsMTLite(INIT::$MT_BASE_URL, $jwt, INIT::$MT_APP_ID);
-        $letsmtTranslation = $LetsMTLite->translate($mtSystem, $text);
+    public static function getMatch($mtSystem, $text, $jwt, $appId) {
+        $LetsMTLite = new \LetsMTLite(INIT::$MT_BASE_URL, $jwt);
+        $letsmtTranslation = $LetsMTLite->translate($mtSystem, $text, $appId);
         $matches = [];
         if ( !empty( $letsmtTranslation ) && $letsmtTranslation->translation != null ) {
             $matches[] = array(
@@ -28,10 +28,9 @@ class LetsMTLite {
         return $matches;
     }
 
-    public function __construct($baseUrl, $jwt, $appId)
+    public function __construct($baseUrl, $jwt)
     {
         $this->baseUrl = $baseUrl;
-        $this->appId = $appId;
         $this->jwt = $jwt;
     }
 
@@ -39,9 +38,9 @@ class LetsMTLite {
         return $this->get('GetSystemList?appID=' . $this->appId . '&options=public&uiLanguage=' . $lang);
     }
 
-    public function translate($systemId, $text) {
+    public function translate($systemId, $text, $appId) {
         $data = array(
-            'appID' => $this->appId,
+            'appID' => $appId,
             'options' => 'widget=text,alignment,markSentences',
             'systemID' => $systemId,
             'text' => html_entity_decode($text)
@@ -49,10 +48,10 @@ class LetsMTLite {
         return $this->post('TranslateEx', $data);
     }
 
-    public function updateMT($systemId, $text, $translation)
+    public function updateMT($systemId, $text, $translation, $appId)
     {
         $data = array(
-            'appID' => $this->appId,
+            'appID' => $appId,
             'options' => '',
             'systemID' => $systemId,
             'text' => $text,

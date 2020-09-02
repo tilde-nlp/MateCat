@@ -14,8 +14,7 @@ class INIT {
             'JWT_KEY',
             'AUTH_REDIRECT',
             'MT_BASE_URL',
-            'MT_CLIENT_ID',
-            'MT_APP_ID'
+            'MT_CLIENT_ID'
     );
 
     /**
@@ -44,7 +43,6 @@ class INIT {
     public static $AUTH_REDIRECT;
     public static $MT_BASE_URL;
     public static $MT_CLIENT_ID;
-    public static $MT_APP_ID;
     public static $TM_BASE_URL;
     public static $TOKEN_REFRESH_URL;
     public static $TERM_BASE_URL;

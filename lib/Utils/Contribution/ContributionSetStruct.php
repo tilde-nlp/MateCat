@@ -118,6 +118,8 @@ class ContributionSetStruct extends DataAccess_AbstractDaoObjectStruct implement
      */
     public $jwt_token;
 
+    public $appId;
+
     /**
      * Global Cached record for jobs metadata
      *

@@ -3,6 +3,7 @@
 class getMtMatchesController extends ajaxController
 {
     private $mt_id;
+    private $app_id;
     private $text;
 
     private $User;
@@ -18,6 +19,7 @@ class getMtMatchesController extends ajaxController
     private function filterInput() {
         $filterArgs = [
             'mtId' => [ 'filter' => FILTER_SANITIZE_STRING ],
+            'appId' => [ 'filter' => FILTER_SANITIZE_STRING ],
             'text' => [ 'filter' => FILTER_UNSAFE_RAW ],
         ];
 
@@ -25,13 +27,13 @@ class getMtMatchesController extends ajaxController
 
         $this->text = html_entity_decode(trim( $this->postInput[ 'text' ] ));
         $this->mt_id = $this->postInput[ 'mtId' ];
-
+        $this->app_id = $this->postInput[ 'appId' ];
     }
 
     function doAction()
     {
         $parsedText = PlaceholderParser::toXliff($this->text);
-        $matches = \LetsMTLite::getMatch($this->mt_id, $parsedText, AuthCookie::getToken());
+        $matches = \LetsMTLite::getMatch($this->mt_id, $parsedText, AuthCookie::getToken(), $this->app_id);
         if (empty($matches[0])) {
             $this->result = "";
             return;

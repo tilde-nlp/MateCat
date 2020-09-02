@@ -2,7 +2,7 @@
 
 class getMachineTranslatorsController extends ajaxController {
     public function doAction() {
-        $LetsMTLite = new \LetsMTLite(INIT::$MT_BASE_URL, AuthCookie::getToken(), INIT::$MT_APP_ID);
+        $LetsMTLite = new \LetsMTLite(INIT::$MT_BASE_URL, AuthCookie::getToken(), 'CAT-DEPRECATED');
         $lang = 'en';
         if (!empty($_GET['lang'])) {
             $lang = $_GET['lang'];

@@ -26,7 +26,6 @@ STORAGE_DIR="/home/dark/cattool/storage/"
 BRANCH="code-merge"
 MT_BASE_URL=""
 MT_CLIENT_ID=""
-MT_APP_ID=""
 TM_BASE_URL=""
 TOKEN_REFRESH_URL=""
 TERM_BASE_URL=""
@@ -160,7 +159,6 @@ sudo sed -i "s|@@@auth_redirect@@@|$AUTH_REDIRECT|g" /home/$MATECAT_USER/cattool
 sudo sed -i "s|@@@storage_dir@@@|$STORAGE_DIR|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@mt_base_url@@@|$MT_BASE_URL|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@mt_client_id@@@|$MT_CLIENT_ID|g" /home/$MATECAT_USER/cattool/inc/config.ini
-sudo sed -i "s|@@@mt_app_id@@@|$MT_APP_ID|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@tm_base_url@@@|$TM_BASE_URL|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@token_refresh_url@@@|$TOKEN_REFRESH_URL|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@term_base_url@@@|$TERM_BASE_URL|g" /home/$MATECAT_USER/cattool/inc/config.ini

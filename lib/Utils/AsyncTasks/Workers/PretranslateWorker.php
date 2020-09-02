@@ -56,7 +56,8 @@ class PretranslateWorker extends AbstractWorker {
                         $pretranslateStruct->jwtToken,
                         $segment->segment,
                         $pretranslateStruct->source,
-                        $pretranslateStruct->target);
+                        $pretranslateStruct->target,
+                        $pretranslateStruct->appId);
 
                     if (!empty($tms_match)) {
                         usort($tms_match, array( "getContributionController", "__compareScore" ));
@@ -77,7 +78,8 @@ class PretranslateWorker extends AbstractWorker {
                             $pretranslateStruct->jwtToken,
                             $segment->segment,
                             $pretranslateStruct->source,
-                            $pretranslateStruct->target);
+                            $pretranslateStruct->target,
+                            $pretranslateStruct->appId);
                         if (!empty($tms_match[0])) {
                             usort($tms_match, array( "getContributionController", "__compareScore" ));
                             if (intval($tms_match[0]['match']) >= 100) {

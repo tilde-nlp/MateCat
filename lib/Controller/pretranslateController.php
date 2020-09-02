@@ -7,6 +7,7 @@ class pretranslateController extends ajaxController {
     private $projectId;
     private $password;
     private $mtSystem;
+    private $appId;
 
     public function __construct()
     {
@@ -15,6 +16,7 @@ class pretranslateController extends ajaxController {
             'useMt'          => [ 'filter' => FILTER_VALIDATE_INT ],
             'projectId'          => [ 'filter' => FILTER_VALIDATE_INT, 'flags' => FILTER_REQUIRE_SCALAR ],
             'mtSystem'  => [ 'filter' => FILTER_SANITIZE_STRING],
+            'appId'  => [ 'filter' => FILTER_SANITIZE_STRING],
             'projectPassword'   => array (
                 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
             )
@@ -25,6 +27,7 @@ class pretranslateController extends ajaxController {
         $this->useTm = intval($__postInput['useTm']) > 0;
         $this->useMt = intval($__postInput['useMt']) > 0;
         $this->mtSystem = $__postInput[ 'mtSystem' ];
+        $this->appId = $__postInput['appId'];
     }
 
     public function doAction() {
@@ -48,6 +51,7 @@ class pretranslateController extends ajaxController {
             $pretranslateStruct->jwtRefreshToken = AuthCookie::getRefreshToken();
             $pretranslateStruct->uid = AuthCookie::getCredentials()['uid'];
             $pretranslateStruct->projectId = $jobData->id_project;
+            $pretranslateStruct->appId = $this->appId;
             $pretranslateStruct->start();
             $rowCount = \Jobs_JobDao::setPretranslating($pretranslateStruct->id, $this->useTm ? 1 : 0, $this->useMt ? 1 : 0);
         }
