@@ -10,7 +10,7 @@ class TildeTM {
     private $baseUrl;
     private static $debug = false;
 
-    public static function getContributionsAsync($projectId, $token, $text, $sourceLang, $targetLang, $appId) {
+    public static function getContributionsAsync($projectId, $token, $text, $sourceLang, $targetLang) {
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, $token);
         $memories = MemorySettings::getProjectMemorySettingsAsync($projectId, $token);
         $tms_match = [];
@@ -23,8 +23,7 @@ class TildeTM {
                 $text,
                 substr($sourceLang, 0, 2),
                 substr($targetLang, 0, 2),
-                false,
-                $appId
+                false
             );
 
             foreach($tildeMatches as $match) {
@@ -42,7 +41,7 @@ class TildeTM {
         return $tms_match;
     }
 
-    public static function getContributions($projectId, $text, $sourceLang, $targetLang, $appId) {
+    public static function getContributions($projectId, $text, $sourceLang, $targetLang) {
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getToken());
         $memories = MemorySettings::getProjectMemorySettings($projectId);
         $tms_match = [];
@@ -55,8 +54,7 @@ class TildeTM {
                 $text,
                 substr($sourceLang, 0, 2),
                 substr($targetLang, 0, 2),
-                false,
-                $appId
+                false
             );
 
             foreach($tildeMatches as $match) {
@@ -74,7 +72,7 @@ class TildeTM {
         return $tms_match;
     }
 
-    public static function getConcordanceContributions($projectId, $text, $sourceLang, $targetLang, $appId) {
+    public static function getConcordanceContributions($projectId, $text, $sourceLang, $targetLang) {
         $TildeTM = new TildeTM(INIT::$TM_BASE_URL, AuthCookie::getToken());
         $memories = MemorySettings::getProjectMemorySettings($projectId);
         $tms_match = [];
@@ -87,8 +85,7 @@ class TildeTM {
                 $text,
                 substr($sourceLang, 0, 2),
                 substr($targetLang, 0, 2),
-                true,
-                $appId
+                true
             );
 
             foreach($tildeMatches as $match) {
@@ -116,10 +113,9 @@ class TildeTM {
         return $this->get('tm');
     }
 
-    public function getMatches($collection, $text, $source, $target, $concordance, $appId) {
+    public function getMatches($collection, $text, $source, $target, $concordance) {
         $queryString = http_build_query(
             array(
-                'appId' => $appId,
                 'q' => $text,
                 'sourceLang' => $source,
                 'targetLang' => $target)
@@ -132,14 +128,13 @@ class TildeTM {
         return $this->get('tm/' . urlencode($collection) . '/segments?' . $queryString);
     }
 
-    public function writeMatch($collection, $source, $target, $sourceLang, $targetLang, $appId) {
+    public function writeMatch($collection, $source, $target, $sourceLang, $targetLang) {
         $data = array(
             'source' => $source,
             'target' => $target,
             'sourceLang' => $sourceLang,
             'targetLang' => $targetLang,
-            'match' => 100,
-            'appId' => $appId
+            'match' => 100
         );
         return $this->post('tm/' . urlencode($collection) . '/segments', $data);
     }

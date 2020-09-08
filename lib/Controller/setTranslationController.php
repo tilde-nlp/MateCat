@@ -969,8 +969,7 @@ class setTranslationController extends ajaxController {
                 $contributionStruct->segment,
                 $contributionStruct->translation,
                 substr($config['source'], 0, 2),
-                substr($config['target'], 0, 2),
-                $contributionStruct->appId
+                substr($config['target'], 0, 2)
             );
         }
     }

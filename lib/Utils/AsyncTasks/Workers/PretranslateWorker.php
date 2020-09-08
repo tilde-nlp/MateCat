@@ -56,8 +56,7 @@ class PretranslateWorker extends AbstractWorker {
                         $pretranslateStruct->jwtToken,
                         $segment->segment,
                         $pretranslateStruct->source,
-                        $pretranslateStruct->target,
-                        $pretranslateStruct->appId);
+                        $pretranslateStruct->target);
 
                     if (!empty($tms_match)) {
                         usort($tms_match, array( "getContributionController", "__compareScore" ));
@@ -78,8 +77,7 @@ class PretranslateWorker extends AbstractWorker {
                             $pretranslateStruct->jwtToken,
                             $segment->segment,
                             $pretranslateStruct->source,
-                            $pretranslateStruct->target,
-                            $pretranslateStruct->appId);
+                            $pretranslateStruct->target);
                         if (!empty($tms_match[0])) {
                             usort($tms_match, array( "getContributionController", "__compareScore" ));
                             if (intval($tms_match[0]['match']) >= 100) {
@@ -95,7 +93,7 @@ class PretranslateWorker extends AbstractWorker {
             }
             if (empty($translation) && $pretranslateStruct->useMt) {
                 try {
-                    $mt_match = \LetsMTLite::getMatch($pretranslateStruct->mtSystem, $segment->segment, $pretranslateStruct->jwtToken);
+                    $mt_match = \LetsMTLite::getMatch($pretranslateStruct->mtSystem, $segment->segment, $pretranslateStruct->jwtToken, $pretranslateStruct->appId);
                     if (!empty($mt_match[0])) {
                         $translation = $mt_match[0]['translation'];
                         $match = 70;
@@ -107,7 +105,7 @@ class PretranslateWorker extends AbstractWorker {
                     $pretranslateStruct->jwtRefreshToken = $refreshData->refresh;
 
                     try {
-                        $mt_match = \LetsMTLite::getMatch($pretranslateStruct->mtSystem, $segment->segment, $pretranslateStruct->jwtToken);
+                        $mt_match = \LetsMTLite::getMatch($pretranslateStruct->mtSystem, $segment->segment, $pretranslateStruct->jwtToken, $pretranslateStruct->appId);
                         if (!empty($mt_match[0])) {
                             $translation = $mt_match[0]['translation'];
                             $match = 70;

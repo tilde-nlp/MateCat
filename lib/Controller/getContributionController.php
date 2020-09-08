@@ -11,7 +11,6 @@ class getContributionController extends ajaxController {
     private $targetLang;
     private $count;
     private $project;
-    private $appId;
 
     private $__postInput = array();
 
@@ -26,7 +25,6 @@ class getContributionController extends ajaxController {
                 'projectPassword'       => [ 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW ],
                 'sourceLang'       => [ 'filter' => FILTER_SANITIZE_STRING ],
                 'targetLang'       => [ 'filter' => FILTER_SANITIZE_STRING ],
-                'appId'       => [ 'filter' => FILTER_SANITIZE_STRING ],
 
         ];
 
@@ -37,7 +35,6 @@ class getContributionController extends ajaxController {
         $this->count         = $this->__postInput[ 'count' ];
         $this->sourceLang         = $this->__postInput[ 'sourceLang' ];
         $this->targetLang         = $this->__postInput[ 'targetLang' ];
-        $this->appId         = $this->__postInput[ 'appId' ];
         $this->text               = html_entity_decode(trim( $this->__postInput[ 'text' ] ));
 
         $this->project = Projects_ProjectDao::findByIdAndPassword(
@@ -64,7 +61,7 @@ class getContributionController extends ajaxController {
 
         $this->text = CatUtils::view2rawxliff( $this->text );
         $parsedText = PlaceholderParser::toXliffFromSymbols($this->text);
-        $tmp_match = TildeTM::getContributions($this->projectId, $parsedText, $this->sourceLang, $this->targetLang, $this->appId);
+        $tmp_match = TildeTM::getContributions($this->projectId, $parsedText, $this->sourceLang, $this->targetLang);
         $tms_match = [];
 
         foreach($tmp_match as $match) {
