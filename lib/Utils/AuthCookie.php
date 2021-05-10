@@ -87,8 +87,8 @@ class AuthCookie {
 
             $jwtId = $parsedToken->getClaim('sub') . ':-:' . $parsedToken->getClaim('grp');
             $nameArray = explode(' ', $parsedToken->getClaim('given_name'), 2);
-            $firstName = isset($nameArray[0]) ? $nameArray[0] : 'jwt_user';
-            $lastName = isset($nameArray[1]) ? $nameArray[1] : 'jwt_user';
+            $firstName = isset($nameArray[0]) ? $nameArray[0];
+            $lastName = isset($nameArray[1]) ? $nameArray[1];
 
             $dao  = new Users_UserDao();
             $user = $dao->getByEmail( $jwtId );

@@ -78,7 +78,7 @@ class uploadFileController extends ajaxController {
         if (!is_dir($this->options['upload_dir'])) {
             mkdir($this->options['upload_dir'], 0775, true);
         }
-        $this->documentWhitelist = explode("," , INIT::$DOCUMENT_WHITELIST);
+        $this->documentWhitelist = explode("," , strtolower(INIT::$DOCUMENT_WHITELIST));
     }
 
     private function uploadLog($text)
@@ -1009,7 +1009,7 @@ class uploadFileController extends ajaxController {
         if (count($this->documentWhitelist) < 1) {
             return true;
         }
-        return in_array($fileExtension, $this->documentWhitelist);
+        return in_array(strtolower($fileExtension), $this->documentWhitelist);
     }
 
     protected function _isRightExtension( $fileUp ) {
