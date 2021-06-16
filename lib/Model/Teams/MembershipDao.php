@@ -21,12 +21,12 @@ class MembershipDao extends \DataAccess_AbstractDao {
     const TABLE       = "teams_users";
     const STRUCT_TYPE = "\\Teams\\MembershipStruct";
 
-    protected static $auto_increment_fields = array( 'id' );
-    protected static $primary_keys          = array( 'id' );
+    protected static $auto_increment_field = array( 'id' );
+    protected static $primary_keys         = array( 'id' );
 
     protected static $_query_team_from_uid_and_id = " SELECT teams.* FROM teams
               JOIN teams_users ON teams_users.id_team = teams.id
-            WHERE teams_users.uid = ? AND teams.id = ?
+            WHERE teams_users.uid = ?
             ";
 
     protected static $_query_user_teams = " 
@@ -103,7 +103,7 @@ class MembershipDao extends \DataAccess_AbstractDao {
      */
     public function findTeamByIdAndUser( $id, \Users_UserStruct $user ) {
         $stmt = $this->_getStatementForCache( self::$_query_team_from_uid_and_id );
-        return static::resultOrNull( $this->_fetchObject( $stmt, ( new TeamStruct() ), [ $user->uid, $id ] )[ 0 ] );
+        return static::resultOrNull( $this->_fetchObject( $stmt, ( new TeamStruct() ), [ $user->uid ] )[ 0 ] );
     }
 
     /**
@@ -116,15 +116,16 @@ class MembershipDao extends \DataAccess_AbstractDao {
      */
     public function destroyCacheTeamByIdAndUser( $id, \Users_UserStruct $user ) {
         $stmt = $this->_getStatementForCache( self::$_query_team_from_uid_and_id );
-        return $this->_destroyObjectCache( $stmt, [ $user->uid, $id ] );
+        return $this->_destroyObjectCache( $stmt, [ $user->uid] );
     }
 
     /**
      * @param $id_team
+     * @param $traverse
      *
      * @return \DataAccess_IDaoStruct[]|MembershipStruct[]
      */
-    public function getMemberListByTeamId( $id_team ) {
+    public function getMemberListByTeamId( $id_team, $traverse = true ) {
         $stmt             = $this->_getStatementForCache( self::$_query_member_list );
         $membershipStruct = new MembershipStruct();
 
@@ -138,9 +139,21 @@ class MembershipDao extends \DataAccess_AbstractDao {
                 )
         );
 
-        foreach ( $members as $member ) {
-            $member->setUser( ( new Users_UserDao() )->setCacheTTL( 60 * 60 * 24 )->getByUid( $member->uid ) );
-            $member->setUserMetadata( ( new MetadataDao() )->setCacheTTL( 60 * 60 * 24 )->getAllByUid( $member->uid ) );
+        if ( $traverse ) {
+
+            $membersUIDs = [];
+            foreach ( $members as $member ) {
+                $membersUIDs[] = $member->uid;
+            }
+
+            $users = ( new Users_UserDao() )->setCacheTTL( 60 * 60 * 24 )->getByUids( $membersUIDs );
+            $metadata = ( new MetadataDao() )->setCacheTTL( 60 * 60 * 24 )->getAllByUidList( $membersUIDs );
+
+            foreach( $members as $member ){
+                $member->setUser( $users[ $member->uid ] );
+                $member->setUserMetadata( $metadata[ $member->uid ] );
+            }
+
         }
 
         return $members;

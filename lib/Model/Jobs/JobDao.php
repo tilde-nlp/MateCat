@@ -8,8 +8,8 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
     const TABLE       = "jobs";
     const STRUCT_TYPE = "Jobs_JobStruct";
 
-    protected static $auto_increment_fields = [ 'id' ];
-    protected static $primary_keys          = [ 'id', 'password' ];
+    protected static $auto_increment_field = [ 'id' ];
+    protected static $primary_keys         = [ 'id', 'password' ];
 
     protected static $_sql_update_password = "UPDATE jobs SET password = :new_password WHERE id = :id AND password = :old_password ";
 
@@ -20,10 +20,10 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
      *
      * Use when counters of the job value are not important but only the metadata are needed
      *
-     * XXX: Be careful, used by the ContributionStruct
+     * XXX: Be careful, used by the ContributionSetStruct
      *
      * @see \AsyncTasks\Workers\SetContributionWorker
-     * @see \Contribution\ContributionStruct
+     * @see \Contribution\ContributionSetStruct
      *
      * @param Jobs_JobStruct $jobQuery
      *
@@ -114,13 +114,19 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         return $this->_destroyObjectCache( $stmt, [ $project_id ] );
     }
 
+    /**
+     * @param     $id_project
+     * @param int $ttl
+     *
+     * @return DataAccess_IDaoStruct[]|Jobs_JobStruct[]
+     */
     public static function getByProjectId( $id_project, $ttl = 0 ) {
 
         $thisDao = new self();
         $conn = Database::obtain()->getConnection();
         $stmt = $conn->prepare( self::$_sql_get_jobs_by_project );
 
-        return $thisDao->setCacheTTL( $ttl )->_fetchObject( $stmt, new Jobs_JobStruct(), [ $id_project ] );
+        return $thisDao->_fetchObjectNoCache( $stmt, new Jobs_JobStruct(), [ $id_project ] );
 
     }
 
@@ -225,7 +231,8 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
 
         \Database::obtain()->begin();
 
-        $stmt = $conn->prepare( 'INSERT INTO `jobs` ( ' . implode( ',', $columns ) . ' ) VALUES ( ' . implode( ',' , array_fill( 0, count( $values ), '?' ) ) . ' )' );
+        $sql = 'INSERT INTO `jobs` ( ' . implode( ',', $columns ) . ' ) VALUES ( ' . implode( ',' , array_fill( 0, count( $values ), '?' ) ) . ' )';
+        $stmt = $conn->prepare($sql);
 
         foreach( $values as $k => $v ){
             $stmt->bindValue( $k +1, $v ); //Columns/Parameters are 1-based
@@ -238,6 +245,265 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
         $conn->commit();
 
         return $job;
+
+    }
+
+    public function setActiveSegment( $user_id, $segment_id ) {
+        $job_id = self::getSegmentJobId($segment_id);
+        $sql = " INSERT INTO  user_job_segment (user_id, job_id, segment_id) VALUES(:user_id, :job_id, :segment_id) ON DUPLICATE KEY UPDATE segment_id = :segment_id  ";
+
+        $stmt = $this->con->getConnection()->prepare( $sql ) ;
+        $stmt->execute(array('user_id' => $user_id, 'job_id' => $job_id, 'segment_id' => $segment_id ) ) ;
+
+        return $stmt->rowCount();
+    }
+
+
+    public static function getSegmentJobId($segmentId) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT j.id AS jobId
+        FROM segments s
+        INNER JOIN files f ON f.id = s.id_file
+        INNER JOIN projects p ON p.id = f.id_project
+        INNER JOIN jobs j ON j.id_project = p.id
+        WHERE s.id = ?
+        LIMIT 1");
+        
+        $jobIdRecord = $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $segmentId ] );
+        $jobIdRecord = array_pop($jobIdRecord);
+        return intval($jobIdRecord['jobId']);
+    }
+
+    public static function getSegmentJobPassword($segmentId) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT j.password AS jobPassword
+        FROM segments s
+        INNER JOIN files f ON f.id = s.id_file
+        INNER JOIN projects p ON p.id = f.id_project
+        INNER JOIN jobs j ON j.id_project = p.id
+        WHERE s.id = ?
+        LIMIT 1");
+        
+        $jobIdRecord = $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $segmentId ] );
+        $jobIdRecord = array_pop($jobIdRecord);
+        return $jobIdRecord['jobPassword'];
+    }
+
+    public static function getActiveSegment( $user_id, $job_id, $ttl = 0 ) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT segment_id FROM user_job_segment WHERE user_id = ? AND job_id = ?");
+        return $thisDao->setCacheTTL( $ttl )->_fetchObject( $stmt, new LoudArray(), [ $user_id, $job_id ] );
+
+    }
+
+    public static function getMtSystem($project_id) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT mt_system_id FROM projects WHERE id = ? ");
+        return $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $project_id ] );
+
+    }
+
+    public static function getUpdateMtForProject($project_id) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT update_mt FROM project_settings WHERE project_id = ? ");
+        return $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $project_id ] );
+
+    }
+
+    public static function getPretranslateData($job_id) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT tm_pretranslate, mt_pretranslate, start_tm_pretranslate, start_mt_pretranslate FROM jobs WHERE id = ? ");
+        return $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $job_id ] );
+
+    }
+
+    public static function saveMtSystem( $project_id, $system_id, $ttl = 0 ) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE projects SET mt_system_id = :system_id WHERE id = :project_id ");
+        $stmt->execute(array('system_id' => $system_id, 'project_id' => $project_id));
+        return $stmt->rowCount();
+    }
+
+    public static function saveTmPretranslate($userId, $pretranslate) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE users SET tm_pretranslate = :pretranslate WHERE uid = :user_id ");
+        $stmt->execute(array('user_id' => $userId, 'pretranslate' => $pretranslate));
+        return $stmt->rowCount();
+    }
+
+    public static function saveMtPretranslate($userId, $pretranslate) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE users SET mt_pretranslate = :pretranslate WHERE uid = :user_id ");
+        $stmt->execute(array('user_id' => $userId, 'pretranslate' => $pretranslate));
+        return $stmt->rowCount();
+    }
+
+    public static function saveUpdateMt($userId, $update_mt) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE users SET update_mt = :update_mt WHERE uid = :user_id ");
+        $stmt->execute(array('user_id' => $userId, 'update_mt' => $update_mt));
+        return $stmt->rowCount();
+    }
+
+    public static function saveUpdateMtForProject($projectId, $update_mt) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE project_settings SET update_mt = :update_mt WHERE project_id = :projectId ");
+        $stmt->execute(array('projectId' => $projectId, 'update_mt' => $update_mt));
+        return $stmt->rowCount();
+    }
+
+    public static function saveEditingTime( $job_id, $editingTime, $ttl = 0 ) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE jobs SET editing_time = :editing_time WHERE id = :job_id ");
+        $stmt->execute(array('editing_time' => $editingTime, 'job_id' => $job_id));
+        return $stmt->rowCount();
+    }
+
+    public static function removePretranslate($job_id) {
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE jobs SET tm_pretranslate = 0, mt_pretranslate = 0 WHERE id = :job_id ");
+        $stmt->execute(array('job_id' => $job_id));
+        return $stmt->rowCount();
+    }
+
+    public static function setPretranslating($job_id, $tm_pretranslate, $mt_pretranslate) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE jobs SET tm_pretranslate = :tm_pretranslate, mt_pretranslate = :mt_pretranslate, start_tm_pretranslate = 0, start_mt_pretranslate = 0 WHERE id = :job_id ");
+        $stmt->execute(array('tm_pretranslate' => $tm_pretranslate, 'mt_pretranslate' => $mt_pretranslate, 'job_id' => $job_id));
+        return $stmt->rowCount();
+    }
+
+    public static function removeStartPretranslate($job_id) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE jobs SET tm_pretranslate = start_tm_pretranslate, mt_pretranslate = start_mt_pretranslate, start_tm_pretranslate = 0, start_mt_pretranslate = 0 WHERE id = :job_id ");
+        $stmt->execute(array('job_id' => $job_id));
+        return $stmt->rowCount();
+    }
+
+    public static function getMemorySetting( $userId) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT * FROM memory_settings WHERE user_id = ? ");
+        return $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $userId ] );
+    }
+
+    public static function getMemorySettingsForProject( $projectId) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT pms.*
+        FROM project_memory_settings pms
+        INNER JOIN project_settings ps ON ps.id = pms.project_settings_id
+        WHERE ps.project_id = ? ");
+        return $thisDao->_fetchObjectNoCache( $stmt, new LoudArray(), [ $projectId ] );
+
+    }
+
+    public static function setTranslation($segmentId, $translation, $match, $source) {
+
+        $conn = Database::obtain()->getConnection();
+        $sql = "
+        UPDATE segment_translations
+        SET `translation` = :translation,
+        `status` = 'DRAFT',
+        translation_date = NOW(),
+        suggestion_match = :match,
+        suggestion_source = :source,
+        save_match = :match,
+        save_type = :source
+        WHERE id_segment = :segment_id
+        ";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(array(
+            'translation' => $translation,
+            'segment_id' => $segmentId,
+            'match' => $match,
+            'source' => $source));
+        return $stmt->rowCount();
+
+    }
+
+    public static function getEmptySegments( $jobId, $jobPassword, $startSegmentId, $endSegmentId ) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $sql = "SELECT s.id AS id, s.segment AS segment
+            FROM segment_translations st
+            JOIN segments s ON st.id_segment = s.id
+            JOIN jobs j ON st.id_job = j.id
+            WHERE j.id = ?
+            AND j.password = ?
+            AND st.id_segment BETWEEN ? AND ?
+            AND (st.translation = '' OR st.translation IS NULL OR st.status = 'NEW')";
+        $stmt = $conn->prepare($sql);
+        return $thisDao->_fetchObject( $stmt, new LoudArray(), [ $jobId, $jobPassword, $startSegmentId, $endSegmentId ] );
+
+    }
+
+    public static function saveMemorySetting( $user_id, $memory_id, $read, $write) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("INSERT INTO memory_settings (memory_id, read_memory, write_memory, concordance_search, user_id) VALUES (:memory_id, :read, :write, :concordance, :user_id)
+                        ON DUPLICATE KEY UPDATE
+                        read_memory = :read,
+                        write_memory = :write,
+                        concordance_search = :concordance");
+        $stmt->execute(array(
+            'memory_id' => $memory_id,
+            'read' => $read ? 1 : 0,
+            'write' => $write ? 1 : 0,
+            'concordance' => 0,
+            'user_id' => $user_id));
+        return $stmt->rowCount();
+    }
+
+    public static function saveMemorySettingsForProject( $projectId, $memory_id, $read, $write) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("INSERT INTO project_memory_settings (read_memory, write_memory, memory_id, project_settings_id)
+        VALUES (:read_memory, :write_memory, :memory_id, (SELECT id FROM project_settings WHERE project_id = :project_id))
+        ON DUPLICATE KEY UPDATE
+        read_memory = :read_memory,
+        write_memory = :write_memory");
+        $stmt->execute(array(
+            'memory_id' => $memory_id,
+            'read_memory' => $read ? 1 : 0,
+            'write_memory' => $write ? 1 : 0,
+            'project_id' => $projectId));
+        return $stmt->rowCount();
+    }
+
+    public static function getFileName( $job_id, $ttl = 0 ) {
+
+        $thisDao = new self();
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("SELECT f.filename as name
+FROM jobs j
+INNER JOIN segments s ON s.id = j.job_first_segment
+INNER JOIN files f ON f.id = s.id_file
+WHERE j.id = ?");
+        return $thisDao->setCacheTTL( $ttl )->_fetchObject( $stmt, new LoudArray(), [ $job_id ] );
 
     }
 

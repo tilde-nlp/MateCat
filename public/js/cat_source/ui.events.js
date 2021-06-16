@@ -20,7 +20,7 @@ $.extend(UI, {
         }).on('keydown.shortcuts',null, UI.shortcuts.cattol.events.openSettings.keystrokes[this.shortCutskey], function(e) {
             UI.openLanguageResourcesPanel();
         }).on('keydown.shortcuts', null, UI.shortcuts.cattol.events.openSearch.keystrokes[this.shortCutskey], function(e) {
-            if((UI.searchEnabled)&&($('#filterSwitch').length)) UI.toggleSearch(e);
+            if((SearchUtils.searchEnabled)&&($('#filterSwitch').length)) SearchUtils.toggleSearch(e);
         }).on('keydown.shortcuts', null, UI.shortcuts.cattol.events.redoInSegment.keystrokes[this.shortCutskey], function(e) {
             e.preventDefault();
             UI.redoInSegment(UI.currentSegment);
@@ -41,14 +41,14 @@ $.extend(UI, {
             UI.gotoNextSegment();
         }).on('keydown.shortcuts', null, UI.shortcuts.cattol.events.translate_nextUntranslated.keystrokes[this.shortCutskey], function(e) {
             e.preventDefault();
-            $('.editor .next-untranslated').click();
-            $('.editor .next-unapproved').click();
+            $('.editor .next-untranslated:not(.disabled)').click();
+            $('.editor .next-unapproved:not(.disabled)').click();
         }).on('keydown.shortcuts', null, UI.shortcuts.cattol.events.translate.keystrokes[this.shortCutskey], function(e) {
             e.preventDefault();
             if ( config.isReview ) {
-                $('body.review .editor .approved').click();
+                $('body.review .editor .approved:not(.disabled)').click();
             } else {
-                if ( $('.editor .translated').length > 0 ) {
+                if ( $('.editor .translated:not(.disabled)').length > 0 ) {
                     $('.editor .translated').click();
                 } else if ( $('.editor .guesstags').length > 0 ) {
                     $('.editor .guesstags').click();
@@ -66,6 +66,17 @@ $.extend(UI, {
         }).on('keydown.shortcuts', null, UI.shortcuts.cattol.events.copyContribution3.keystrokes[this.shortCutskey], function(e) {
             e.preventDefault();
             SegmentActions.chooseContribution(UI.getSegmentId(UI.currentSegment), 3);
+        })
+        //     .on('keydown.shortcuts', null, UI.shortcuts.cattol.events.addNextTag.keystrokes[this.shortCutskey], function(e) {
+        //     e.preventDefault();
+        //     UI.autoFillNextTagInTarget()
+        // })
+            .on('keydown.shortcuts', null, "ctrl+u", function(e) {
+            // to prevent the underline shortcut
+            e.preventDefault();
+        }).on('keydown.shortcuts', null, "ctrl+b", function(e) {
+            // to prevent the underline shortcut
+            e.preventDefault();
         });
 	},
 	unbindShortcuts: function() {
@@ -159,7 +170,7 @@ $.extend(UI, {
 
 		$(window).on('mousedown', function(e) {
 			if ($(e.target).hasClass("editarea")) {
-				return;
+				return true;
 			}
             //when the catoool is not loaded because of the job is archived,
             // saveSelection leads to a javascript error
@@ -172,11 +183,11 @@ $.extend(UI, {
 			 on a glossary item to paste the text in the correct position
 			 */
 
-            if(!$('.editor .rangySelectionBoundary.focusOut').length) {
+            if(!$('.editor .targetarea .rangySelectionBoundary.focusOut').length) {
                 saveSelection();
             }
 
-            $('.editor .rangySelectionBoundary').addClass('focusOut');
+            $('.editor .targetarea .rangySelectionBoundary').addClass('focusOut');
 
             $('.editor .search-source .rangySelectionBoundary.focusOut,' +
                 '.editor .search-target .rangySelectionBoundary.focusOut'
@@ -199,7 +210,7 @@ $.extend(UI, {
 		};
 
 		$("#filterSwitch").bind('click', function(e) {
-			UI.toggleSearch(e);
+            SearchUtils.toggleSearch(e);
 		});
 		$("#advancedOptions").bind('click', function(e) {
 			e.preventDefault();
@@ -258,6 +269,7 @@ $.extend(UI, {
                 UI.closeSegment(UI.currentSegment, 1);
             };
 
+            UI.removeSelectedClassToTags();
             if ( $(e.target).parents('body') ) return ; // detatched from DOM
             if ( eventFromReact(e) ) return;
 
@@ -269,9 +281,6 @@ $.extend(UI, {
 
 		$('html').on('click', 'section .actions', function(e){
             e.stopPropagation();
-        }).on('click', '#quality-report', function(e){
-            var win = window.open( $('#quality-report' ).data('url') , '_self');
-            win.focus();
         }).on('keydown', function(e) {
             var esc = 27 ;
 
@@ -281,9 +290,11 @@ $.extend(UI, {
             var handleEscPressed = function() {
                 if ( UI.body.hasClass('editing') &&
                     !UI.body.hasClass('side-tools-opened') &&
-					!$("body").hasClass("side-popup" ) ) {
+					!UI.body.hasClass("side-popup" ) &&
+                    !UI.body.hasClass('search-open')) {
                         UI.setEditingSegment( null );
                         UI.closeSegment(UI.currentSegment, 1);
+                        UI.closeTagAutocompletePanel();
                     }
             }
 
@@ -320,10 +331,17 @@ $.extend(UI, {
 		}).on('click', '#checkConnection', function(e) {
 			e.preventDefault();
 			UI.checkConnection( 'Click from Human Authorized' );
-		}).on('click', '#statistics .meter a', function(e) {
+		}).on('click', '#statistics .meter a, #statistics #stat-todo', function(e) {
 			e.preventDefault();
-			UI.gotoNextUntranslatedSegment();
-		});
+			if ( config.isReview ) {
+                UI.openNextTranslated();
+            } else {
+                UI.gotoNextUntranslatedSegment();
+            }
+		}).on('click', 'mark.inGlossary', function ( e ) {
+            var $segment = $( e.currentTarget ).closest("section");
+		    UI.openSegmentGlossaryTab($segment);
+        });
 
 		$("#outer").on('click', 'a.percentuage', function(e) {
 			e.preventDefault();
@@ -336,18 +354,22 @@ $.extend(UI, {
 			UI.formatSelection('capitalize');
 		}).on('mouseup', '.editToolbar li', function() {
 			restoreSelection();
-        }).on('click', '.editor .source .locked,.editor .editarea .locked', function(e) {
+        }).on('click', '.editor .source .locked,.editor .editarea .locked, ' +
+            '.editor .source .locked a,.editor .editarea .locked a', function(e) {
 			e.preventDefault();
 			e.stopPropagation();
-            if($(this).hasClass('selected')) {
-                $(this).removeClass('selected');
-                setCursorPosition(this, 'end');
+			var elem = $(this).hasClass('locked') ? this : this.parentNode;
+            if($(elem).hasClass('selected')) {
+                $(elem).removeClass('selected');
+                setCursorPosition(elem, 'end');
             } else {
-                setCursorPosition(this);
-                selectText(this);
+                setCursorPosition(elem);
+                selectText(elem);
                 UI.removeSelectedClassToTags();
-                $(this).toggleClass('selected');
-				if(!UI.body.hasClass('tagmode-default-extended')) $('.editor .tagModeToggle').click();
+                $(elem).addClass('selected');
+				if(!UI.body.hasClass('tagmode-default-extended')) {
+				    $('.editor .tagModeToggle').click();
+                }
             }
 
 		}).on('click', 'a.translated, a.next-untranslated', function(e) {
@@ -383,13 +405,6 @@ $.extend(UI, {
 			e.stopPropagation();
 			UI.scrollSegment($('#segment-' + $(this).attr('data-goto')), $(this).attr('data-goto'), true);
 			SegmentActions.highlightEditarea($('#segment-' + $(this).attr('data-goto')));
-		});
-
-
-
-		$(".end-message-box a.close").on('click', function(e) {
-			e.preventDefault();
-			UI.body.removeClass('justdone');
 		});
 
 		$("#point2seg").bind('mousedown', function(e) {
@@ -439,7 +454,6 @@ $.extend(UI, {
 
         if (!this.segmentToScrollAtRender)
             UI.gotoSegment(this.startSegmentId);
-        this.checkIfFinishedFirst();
 
 		this.initEnd = new Date();
 		this.initTime = this.initEnd - this.initStart;

@@ -8,7 +8,6 @@ set_time_limit( 180 );
 
 class downloadFileController extends downloadController {
 
-    protected $download_type;
     protected $jobInfo;
     protected $forceXliff;
     protected $downloadToken;
@@ -19,7 +18,6 @@ class downloadFileController extends downloadController {
     protected $remoteFileService;
 
     protected $openOriginalFiles;
-    protected $id_file;
 
     protected $trereIsARemoteFile = null;
 
@@ -31,39 +29,10 @@ class downloadFileController extends downloadController {
     const FILES_CHUNK_SIZE = 3;
 
     public function __construct() {
+        parent::__construct();
 
-        $filterArgs = [
-                'filename'      => [
-                        'filter' => FILTER_SANITIZE_STRING,
-                        'flags'  => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
-                ],
-                'id_file'       => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
-                'id_job'        => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ],
-                'download_type' => [
-                        'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
-                ],
-                'password'      => [
-                        'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
-                ],
-                'downloadToken' => [
-                        'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
-                ],
-                'forceXliff'    => [],
-                'original'      => [ 'filter' => FILTER_SANITIZE_NUMBER_INT ]
-        ];
-
-        $__postInput = filter_var_array( $_REQUEST, $filterArgs );
-
-        $this->_user_provided_filename = $__postInput[ 'filename' ];
-
-        $this->id_file       = $__postInput[ 'id_file' ];
-        $this->id_job        = $__postInput[ 'id_job' ];
-        $this->download_type = $__postInput[ 'download_type' ];
-        $this->password      = $__postInput[ 'password' ];
-        $this->downloadToken = $__postInput[ 'downloadToken' ];
-
-        $this->forceXliff        = ( isset( $__postInput[ 'forceXliff' ] ) && !empty( $__postInput[ 'forceXliff' ] ) && $__postInput[ 'forceXliff' ] == 1 );
-        $this->openOriginalFiles = ( isset( $__postInput[ 'original' ] ) && !empty( $__postInput[ 'original' ] ) && $__postInput[ 'original' ] == 1 );
+        $this->forceXliff        = ( isset( $this->__postInput[ 'forceXliff' ] ) && !empty( $this->__postInput[ 'forceXliff' ] ) && $this->__postInput[ 'forceXliff' ] == 1 );
+        $this->openOriginalFiles = ( isset( $this->__postInput[ 'original' ] ) && !empty( $this->__postInput[ 'original' ] ) && $this->__postInput[ 'original' ] == 1 );
 
         if ( empty( $this->id_job ) ) {
             $this->id_job = "Unknown";
@@ -149,10 +118,6 @@ class downloadFileController extends downloadController {
 
                     $data[ 'matecat|' . $internalId ] [] = $i;
 
-                    //FIXME: temporary patch
-                    $data[ $i ][ 'translation' ] = str_replace( '<x id="nbsp"/>', '&#xA0;', $data[ $i ][ 'translation' ] );
-                    $data[ $i ][ 'segment' ]     = str_replace( '<x id="nbsp"/>', '&#xA0;', $data[ $i ][ 'segment' ] );
-
                     //remove binary chars in some xliff files
                     $sanitized_src = preg_replace( $regexpAscii, '', $data[ $i ][ 'segment' ] );
                     $sanitized_trg = preg_replace( $regexpAscii, '', $data[ $i ][ 'translation' ] );
@@ -175,7 +140,11 @@ class downloadFileController extends downloadController {
                  * we add an hook to allow some plugins to force the conversion parameters ( languages for example )
                  * TODO: ( 25/05/2018 ) Remove when the issue will be fixed
                  */
-                $_target_lang = $this->featureSet->filter( 'overrideConversionRequest', Langs_Languages::getInstance()->getLangRegionCode( $jobData[ 'target' ] ) );
+                $_target_lang = $this->featureSet->filter(
+                        'changeXliffTargetLangCode',
+                        Langs_Languages::getInstance()->getLangRegionCode( $jobData[ 'target' ] )
+                        , $file[ 'xliffFilePath' ]
+                );
 
 
                 //instatiate parser
@@ -395,6 +364,35 @@ class downloadFileController extends downloadController {
 
     }
 
+    public function setUserCredentials() {
+        $username_from_cookie = AuthCookie::getCredentialsFromCookie($this->jwt);
+        $this->user        = new Users_UserStruct();
+        if ( $username_from_cookie ) {
+            $_SESSION[ 'cid' ] = $username_from_cookie['username'];
+            $_SESSION[ 'uid' ] = $username_from_cookie['uid'];
+        }
+
+        $this->user->uid   = $username_from_cookie['uid'];
+        $this->user->email = $username_from_cookie['username'];
+
+        try {
+
+            $userDao    = new Users_UserDao( Database::obtain() );
+            $loggedUser = $userDao->setCacheTTL( 0 )->read( $this->user )[ 0 ]; // one hour cache
+            $this->userIsLogged = (
+                !empty( $loggedUser->uid ) &&
+                !empty( $loggedUser->email ) &&
+                !empty( $loggedUser->first_name ) &&
+                !empty( $loggedUser->last_name )
+            );
+
+        } catch ( Exception $e ) {
+            Log::doLog( 'User not logged.' );
+        }
+        $this->user = ( $this->userIsLogged ? $loggedUser : $this->user );
+
+    }
+
     protected function _saveActivity() {
 
         $redisHandler = new RedisHandler();
@@ -413,7 +411,7 @@ class downloadFileController extends downloadController {
         /**
          * Retrieve user information
          */
-        $this->readLoginInfo();
+        $this->setUserCredentials();
 
         $activity             = new ActivityLogStruct();
         $activity->id_job     = $this->id_job;

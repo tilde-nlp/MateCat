@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="12px" viewBox="0 0 18 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.2 (57519) - http://www.bohemiancoding.com/sketch -->
+    <title>icon/tag copy</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="icon/tag-copy" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" fill="#557C8F" fill-rule="nonzero">
+            <rect id="Rectangle-4" transform="translate(9.000000, 6.000000) rotate(20.000000) translate(-9.000000, -6.000000) " x="8" y="0" width="2" height="12"></rect>
+            <g id="Group-Copy" transform="translate(2.500000, 6.000000) scale(-1, 1) translate(-2.500000, -6.000000) translate(0.000000, 2.000000)">
+                <path d="M1.4893617,8 L0,6.48648649 L2.44680851,4 L1.88974132e-15,1.51351351 L1.4893617,0 L4.68085106,3.24324324 C5.10638298,3.67567568 5.10638298,4.32432432 4.68085106,4.75675676 L1.4893617,8 Z" id="Shape"></path>
+            </g>
+            <g id="Group-Copy-2" transform="translate(13.000000, 2.000000)">
+                <path d="M1.4893617,8 L0,6.48648649 L2.44680851,4 L1.88974132e-15,1.51351351 L1.4893617,0 L4.68085106,3.24324324 C5.10638298,3.67567568 5.10638298,4.32432432 4.68085106,4.75675676 L1.4893617,8 Z" id="Shape"></path>
+            </g>
+        </g>
+    </g>
+</svg>

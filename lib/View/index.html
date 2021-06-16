@@ -3,6 +3,7 @@
     <!-- MateCAT Server : Release 0.21a - 2012-10-22 -->
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <title tal:condition="not:isReview">Translate - <span tal:replace="pname">Project_Name</span> - <span tal:replace="jid">Job_ID</span> </title>
         <title tal:condition="true:isReview">Revise - <span tal:replace="pname">Project_Name</span> - <span tal:replace="jid">Job_ID</span> </title>
         <link rel="icon" href="${basepath}public/img/favicon.ico" />
@@ -51,6 +52,7 @@
                 target_rfc: '${target_code}',
                 targetIsCJK: ${targetIsCJK|string:false},
                 ownerIsMe: ${jobOwnerIsMe},
+                id_team: ${id_team | string:null},
                 time_to_edit_enabled: ${time_to_edit_enabled},
                 build_number: '${build_number}',
                 warningPollingInterval: '${warningPollingInterval}',
@@ -188,6 +190,7 @@
             <script src="${basepath}public/js/build/app.js?build=${build_number}"></script>
         </tal:block>
 
+
     </head>
     <body tal:condition="php:supportedBrowser EQ 0">
         <div  metal:use-macro="unsupported_browser.html/unsupported"/>
@@ -252,7 +255,7 @@
                             </tal:block>
                             <tal:block tal:condition="php: empty(analysis_enabled)">Words</tal:block>: <strong id="total-payable" tal:content="job_stats/TOTAL_FORMATTED|default"> - -.- - -</strong>
                         </li>
-                        <li id="stat-todo">To-do: <strong tal:content="job_stats/TODO_FORMATTED|default">--</strong></li>
+                        <li id="stat-todo"><span>To-do</span> : <strong>--</strong></li>
                    </ul>
                     <ul class="statistics-details">
                         <li id="stat-wph" title="Based on last 10 segments performance">Speed:
@@ -304,7 +307,7 @@
                         <td><input type="radio" name="t2" value="0" /></td>
                         <td><input type="radio" name="t2" value="1" /></td>
                         <td><input type="radio" name="t2" value="2" /></td>
-                        <td class="align-left">Translation errors (mistranslation, additions/omissions)</td>
+                        <td class="align-left">Translation errors (mistranslation, additions or omissions)</td>
                     </tr>
                     <tr>
                         <td><input type="radio" name="t3" value="0" /></td>

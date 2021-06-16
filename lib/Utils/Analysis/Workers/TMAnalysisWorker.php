@@ -115,6 +115,18 @@ class TMAnalysisWorker extends AbstractWorker {
     }
 
     /**
+     * @param $queueElement
+     *
+     * @throws EndQueueException
+     * @throws ReQueueException
+     * @throws \Predis\Connection\ConnectionException
+     */
+    protected function _endQueueCallback( QueueElement $queueElement ){
+        $this->_forceSetSegmentAnalyzed( $queueElement );
+        parent::_endQueueCallback( $queueElement );
+    }
+
+    /**
      * Update the record on the database
      *
      * @param QueueElement $queueElement
@@ -398,8 +410,9 @@ class TMAnalysisWorker extends AbstractWorker {
         $_config[ 'target' ]      = $queueElement->params->target;
         $_config[ 'email' ]       = \INIT::$MYMEMORY_TM_API_KEY;
 
-        $_config[ 'context_before' ] = $queueElement->params->context_before;
-        $_config[ 'context_after' ]  = $queueElement->params->context_after;
+        $_config[ 'context_before' ]      = $queueElement->params->context_before;
+        $_config[ 'context_after' ]       = $queueElement->params->context_after;
+        $_config[ 'additional_params' ]   = @$queueElement->params->additional_params;
 
         $tm_keys = \TmKeyManagement_TmKeyManagement::getJobTmKeys( $queueElement->params->tm_keys, 'r', 'tm' );
         if ( is_array( $tm_keys ) && !empty( $tm_keys ) ) {
@@ -466,6 +479,7 @@ class TMAnalysisWorker extends AbstractWorker {
              * @var $tms \Engines_MyMemory
              */
             $tms        = Engine::getInstance( $_TMS );
+            $tms->setFeatureSet( $this->featureSet );
             $tms->doLog = true;
 
             $config = $tms->getConfigStruct();
@@ -495,13 +509,18 @@ class TMAnalysisWorker extends AbstractWorker {
         if ( $id_mt_engine > 1 /* Request MT Directly */ ) {
 
             try {
-                $mt     = \Engine::getInstance( $id_mt_engine );
+                $mt = \Engine::getInstance( $id_mt_engine );
+
+                $mt->setFeatureSet( $this->featureSet );
 
                 //tell to the engine that this is the analysis phase ( some engines want to skip the analysis )
                 $mt->setAnalysis();
 
                 $config = $mt->getConfigStruct();
                 $config = array_merge( $config, $_config );
+
+                //if a callback is not set only the first argument is returned, get the config params from the callback
+                $config = $this->featureSet->filter( 'analysisBeforeMTGetContribution', $config, $mt, $queueElement );
 
                 $mt_result = $mt->get( $config );
 
@@ -528,6 +547,18 @@ class TMAnalysisWorker extends AbstractWorker {
          * If No results found. Re-Queue
          */
         if ( empty( $matches ) || !is_array( $matches ) ) {
+
+            // strict check for MT engine == 1, this means we requested MyMemory explicitly to get MT ( the returned record can NOT be empty ). Try again
+            if( $id_mt_engine == 1 ){
+                $this->_doLog( "--- (Worker " . $this->_workerPid . ") : Error from MyMemory. Empty field received even if MT was requested." );
+                throw new ReQueueException( "--- (Worker " . $this->_workerPid . ") : Error from MyMemory. Empty field received even if MT was requested.", self::ERR_REQUEUE );
+            } else {
+                $this->_doLog( "--- (Worker " . $this->_workerPid . ") : Error from Custom MT Engine. Empty field received even if MT was called." );
+                if( isset( $mt ) ){
+                    $queueElement = $this->featureSet->filter( 'handleMTAnalysisRetry', $queueElement, $mt );
+                }
+            }
+
             $this->_doLog( "--- (Worker " . $this->_workerPid . ") : No contribution found for this segment." );
             $this->_forceSetSegmentAnalyzed( $queueElement );
             throw new EmptyElementException( "--- (Worker " . $this->_workerPid . ") : No contribution found for this segment.", self::ERR_EMPTY_ELEMENT );
@@ -631,7 +662,9 @@ class TMAnalysisWorker extends AbstractWorker {
      *  - Set project total segments to analyze, and count the analyzed as segments done
      *
      * @param $queueElement QueueElement
-     * @param $process_pid int
+     * @param $process_pid  int
+     *
+     * @throws \Predis\Connection\ConnectionException
      */
     protected function _initializeTMAnalysis( QueueElement $queueElement, $process_pid ){
 
@@ -674,6 +707,8 @@ class TMAnalysisWorker extends AbstractWorker {
      * @param $pid
      * @param $eq_words
      * @param $standard_words
+     *
+     * @throws \Predis\Connection\ConnectionException
      */
     protected function _incrementAnalyzedCount( $pid, $eq_words, $standard_words ) {
         $this->_queueHandler->getRedisClient()->incrby( RedisKeys::PROJ_EQ_WORD_COUNT . $pid, (int)( $eq_words * 1000 ) );
@@ -782,15 +817,15 @@ class TMAnalysisWorker extends AbstractWorker {
                 $database->commit();
             }
 
-            ( new Jobs_JobDao() )->destroyCacheByProjectId( $_project_id );
-            Projects_ProjectDao::destroyCacheById( $_project_id );
-
             try {
                 $this->featureSet->run( 'afterTMAnalysisCloseProject', $_project_id, $_analyzed_report );
             } catch(\Exception $e) {
                 //ignore Exception the analysis is finished anyway
                 $this->_doLog("Ending project_id $_project_id with error {$e->getMessage()} . COMPLETED.");
             }
+
+            ( new Jobs_JobDao() )->destroyCacheByProjectId( $_project_id );
+            Projects_ProjectDao::destroyCacheById( $_project_id );
 
         }
 

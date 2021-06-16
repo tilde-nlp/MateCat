@@ -1,0 +1,74 @@
+<template>
+  <div id="cat-app">
+    <div class="alerts">
+      <transition-group
+        name="ffade"
+        mode="out-in">
+        <alert
+          v-for="alert in alerts"
+          :key="alert.id"
+          @ok="removeAlert(alert.id)"
+        >{{ alert.text }}</alert>
+      </transition-group>
+    </div>
+    <transition
+      name="ffade"
+      mode="out-in">
+      <div
+        v-if="$loading.isLoading('app')"
+        :key="1"
+        class="splash-screen"
+      >
+        <img
+          :src="$assetPath + 'splash-logo.svg'"
+          class="splash-image mt-48 mb-16"
+          height="200"
+        >
+        <img
+          :src="$assetPath + 'loading.svg'"
+          class="splash-image"
+          height="48"
+        >
+      </div>
+      <router-view
+        v-else
+        :key="2"
+      />
+    </transition>
+  </div>
+</template>
+
+<script>
+import {Alert} from '@shibetec/vue-toolbox'
+import 'assets/inline-svg'
+import {TextHighlighter} from 'utils/text-highlighter'
+export default {
+  name: 'App',
+  components: {
+    'alert': Alert
+  },
+  data: function () {
+    return {
+      alerts: []
+    }
+  },
+  mounted: function () {
+    TextHighlighter.init()
+    this.$Alerts.registerListener(this)
+    this.$store.commit('fontSize', this.$cookie.get('fontSize') === null ? 15 : parseInt(this.$cookie.get('fontSize')))
+  },
+  methods: {
+    newAlert: function (alert) {
+      this.alerts.push(alert)
+    },
+    removeAlert: function (id) {
+      this.alerts = this.alerts.filter(el => { return el.id !== id })
+    }
+  }
+}
+</script>
+
+<style lang="less">
+  @import "~less-entry";
+  @import "../node_modules/animate.css/animate.min.css";
+</style>

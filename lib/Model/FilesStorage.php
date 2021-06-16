@@ -69,6 +69,9 @@ class FilesStorage {
             if ( $item->isDir() ) {
                 mkdir( $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName() );
             } else {
+                if (strcmp($iterator->getSubPathName(), '.htaccess') !== 0
+                    && strcmp($iterator->getSubPathName(), '.keep') !== 0
+                    && strcmp($iterator->getSubPathName(), '.gitignore') !== 0)
                 copy( $item, $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName() );
             }
         }
@@ -181,7 +184,7 @@ class FilesStorage {
         @mkdir( $cacheDir, 0755, true );
         @mkdir( $cacheDir . DIRECTORY_SEPARATOR . "orig" );
         @mkdir( $cacheDir . DIRECTORY_SEPARATOR . "work" );
-
+        
         //if it's not an xliff as original
         if ( !$originalPath ) {
 
@@ -500,9 +503,10 @@ class FilesStorage {
         \Log::doLog( $dest ); 
 
         $res &= $this->link( $convertedFilePath, $dest );
-
+        // TODO Is this something that creates empty files?
         if( !$res ){
-            throw new UnexpectedValueException( 'Internal Error: Failed to create/copy the file on disk from cache.', -13 );
+            throw new UnexpectedValueException( 'Internal Error: Failed to create/copy the file on disk from cache.
+             Converted file path: ' . $convertedFilePath . ' fileDir: ' . $fileDir . ' dest: ' . $dest, -13 );
         }
 
     }
@@ -585,10 +589,12 @@ class FilesStorage {
             $where_id_file = " and id_file=$id_file";
         }
 
-        $query = "select fj.id_file, f.filename, f.id_project, j.source, mime_type, sha1_original_file from files_job fj
-			inner join files f on f.id=fj.id_file
-			join jobs as j on j.id=fj.id_job
-			where fj.id_job = $id_job $where_id_file group by id_file";
+        $query = "SELECT fj.id_file, f.filename, f.id_project, j.source, mime_type, sha1_original_file 
+            FROM files_job fj
+            INNER JOIN files f ON f.id=fj.id_file
+            JOIN jobs AS j ON j.id=fj.id_job
+            WHERE fj.id_job = $id_job $where_id_file 
+            GROUP BY id_file";
 
         $db      = Database::obtain();
         $results = $db->fetch_array( $query );

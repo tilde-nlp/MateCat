@@ -15,9 +15,14 @@ class ConnectedServiceDao extends \DataAccess_AbstractDao {
     const TABLE = 'connected_services' ;
     const GDRIVE_SERVICE = 'gdrive' ;
 
-    protected static $primary_keys = array('id');
-    protected static $auto_increment_fields = array('id');
+    protected static $primary_keys         = array('id');
+    protected static $auto_increment_field = array('id');
 
+    /**
+     * @param $id
+     *
+     * @return ConnectedServiceStruct
+     */
     public function findById( $id ) {
         $conn = $this->con->getConnection() ;
         $stmt = $conn->prepare(

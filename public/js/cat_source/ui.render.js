@@ -27,13 +27,11 @@ $.extend(UI, {
 		this.undoStack = [];
 		this.undoStackPosition = 0;
 		this.nextUntranslatedSegmentIdByServer = 0;
-		this.openTagPlaceholder = 'MATECAT-openTagPlaceholder-MATECAT';
-		this.closeTagPlaceholder = 'MATECAT-closeTagPlaceholder-MATECAT';
 		this.checkUpdatesEvery = 180000;
 		this.goingToNext = false;
 		this.preCloseTagAutocomplete = false;
         this.hiddenTextEnabled = true;
-		this.setGlobalTagProjection();
+        this.setGlobalTagProjection();
 		this.tagModesEnabled = (typeof options.tagModesEnabled != 'undefined')? options.tagModesEnabled : true;
 		if(this.tagModesEnabled && !this.enableTagProjection) {
 			UI.body.addClass('tagModes');

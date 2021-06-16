@@ -107,12 +107,10 @@ class SegmentBody extends React.Component {
     }
 
     componentDidMount() {
-        console.log("Mount SegmentBody" + this.props.segment.sid);
         document.addEventListener('mousedown', this.handleClickOutside);
     }
 
     componentWillUnmount() {
-        console.log("Unmount SegmentBody" + this.props.segment.sid);
         document.removeEventListener('mousedown', this.handleClickOutside);
     }
 
@@ -127,7 +125,6 @@ class SegmentBody extends React.Component {
         return (
             <div className="text segment-body-content" ref={(body)=>this.segmentBody=body}>
                 <div className="wrap">
-                    <span className="loader"/>
                     <div className="outersource">
                         <SegmentSource
                             segment={this.props.segment}
@@ -150,6 +147,7 @@ class SegmentBody extends React.Component {
                             beforeRenderOrUpdate={this.beforeRenderOrUpdate}
                             locked={this.props.locked}
                             readonly={this.props.readonly}
+                            removeSelection={this.props.removeSelection}
                         />
 
                     </div>

@@ -21,7 +21,7 @@
     <title tal:condition="not:conversion_enabled">Translate an XLIFF file with Matecat</title>
 
     <meta name="description" content="Matecat allows you to get more matches than any other CAT tool."/>
-    <meta name="viewport" content="width=device-width"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta property="og:title" content="Translate a file with MateCat" />
     <meta property="og:description" content="Matecat is a free, online and open source software that gives you more matches than any other CAT tool. Use it now!" />
     <meta property="og:url" content="https://www.matecat.com" />
@@ -32,7 +32,12 @@
         <link rel="stylesheet" tal:attributes="href css_url"/>
     </tal:block>
 
-
+    <!-- Tilde MT -->
+    <!-- add web component support for older browsers -->
+    <SCRIPT src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/2.0.2/webcomponents-bundle.js"></SCRIPT>
+    <!-- Tilde MT system selection web component manages system selection and configuration by source-target language pair. The system configuration is returned in JSON. The web components documentation can be found at http://www.tilde.com/mt/tools/api -->
+    <link id="tildemt_link" rel="import" href="https://www.letsmt.eu/ws/tildemt-selector.html"/>
+    <!-- Tilde MT -->
 
     <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
     <!--[if lt IE 9]>
@@ -78,29 +83,9 @@
     <div metal:use-macro="${php: INIT::$ROOT}/public/holidays/holidays.html/upload_holidays"/>
 
 </head>
-<body tal:condition="not:supportedBrowser">
-<div metal:use-macro="unsupported_browser.html/unsupported"/>
-</body>
 
-<body tal:condition="php:supportedBrowser EQ -2">
-<div metal:use-macro="unsupported_browser.html/indexie"/>
-</body>
-
-<body tal:condition="php:supportedBrowser EQ 1" class="started">
-<div class="reloading-upload-page" style="position: absolute;height: 85%;width: 100%;background-color: rgba(76, 69, 69, 0.3);top: 170px;left: 0;z-index: 3;display: none;">
-    <div class="ui active inverted dimmer">
-        <div class="ui massive text loader">Reloading</div>
-    </div>
-</div>
+<body class="started">
 <header class="upload-page-header" style="height: 45px; background-color: #4d4d4d;"></header>
-
-
-<div class="wrapper-claim">
-    <h1>Join the Evolution</h1>
-
-    <h2 class="payoff">The CAT tool that works for you</h2>
-</div>
-
 
 <div class="wrapper-upload">
 
@@ -880,7 +865,7 @@
             <ul class="listlang">
 
                 <tal:block tal:repeat="language target_languages">
-                    <li tal:attributes="class language/top">
+                    <li>
                         <input type="checkbox" tal:attributes="value language/code; id language/code"/>
                         <label tal:attributes="for language/name" tal:content="language/name" onClick="return false">---</label>
                     </li>

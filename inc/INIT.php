@@ -9,7 +9,13 @@ class INIT {
             'DB_SERVER',
             'DB_DATABASE',
             'DB_USER',
-            'DB_PASS'
+            'DB_PASS',
+            'RELATIVE_HOST_NAME',
+            'JWT_KEY',
+            'AUTH_REDIRECT',
+            'MT_BASE_URL',
+            'MT_CLIENT_ID',
+            'MT_APP_ID'
     );
 
     /**
@@ -33,6 +39,18 @@ class INIT {
     public static $PROTOCOL;
     public static $DEBUG               = true;
     public static $PRINT_ERRORS        = false;
+    public static $RELATIVE_HOST_NAME;
+    public static $JWT_KEY;
+    public static $AUTH_REDIRECT;
+    public static $MT_BASE_URL;
+    public static $MT_CLIENT_ID;
+    public static $MT_APP_ID;
+    public static $TM_BASE_URL;
+    public static $TOKEN_REFRESH_URL;
+    public static $TERM_BASE_URL;
+    public static $FILE_CONVERTER_BASE_URL;
+    public static $SYNONYM_BASE_URL;
+    public static $DEV_MODE;
     public static $DB_SERVER;
     public static $DB_DATABASE;
     public static $DB_USER;
@@ -52,9 +70,9 @@ class INIT {
      */
     public static $TRACKING_CODES_VIEW_PATH = "";
 
-    public static $QUEUE_NAME = "matecat_analysis_queue";
-    public static $COMMENTS_ENABLED = true ;
-    public static $SSE_COMMENTS_QUEUE_NAME = "matecat_sse_comments";
+    public static $QUEUE_NAME                   = "matecat_analysis_queue";
+    public static $COMMENTS_ENABLED             = true ;
+    public static $SSE_NOTIFICATIONS_QUEUE_NAME = "matecat_sse_notifications";
     public static $SSE_BASE_URL;
 
     public static $SMTP_HOST;
@@ -88,7 +106,6 @@ class INIT {
     public static $CONVERSION_FILE_TYPES;
     public static $CONVERSION_FILE_TYPES_PARTIALLY_SUPPORTED;
     public static $AUTHSECRET;
-    public static $AUTHSECRET_PATH;
     public static $REFERENCE_REPOSITORY;
 
     public static $FORCE_XLIFF_CONVERSION    = false;
@@ -344,7 +361,8 @@ class INIT {
                     'bmp'   => array( '', '', 'extimg' ),
                     'png'   => array( '', '', 'extimg' ),
                     'gif'   => array( '', '', 'extimg' ),
-                    'jpeg'   => array( '', '', 'extimg' ),
+                    'jpeg'  => array( '', '', 'extimg' ),
+                    'jpg'   => array( '', '', 'extimg' ),
                     'tiff'  => array( '', '', 'extimg' )
             ),
             "Interchange Formats" => array(

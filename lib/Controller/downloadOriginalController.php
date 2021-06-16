@@ -6,42 +6,6 @@ use ActivityLog\ActivityLogStruct;
 set_time_limit( 180 );
 
 class downloadOriginalController extends downloadController {
-
-    private $download_type;
-    private $id_file;
-    private $id_project;
-
-    public function __construct() {
-
-        $filterArgs = array(
-                'filename'      => array(
-                        'filter' => FILTER_SANITIZE_STRING,
-                        'flags'  => FILTER_FLAG_STRIP_LOW
-                ),
-                'id_file'       => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
-                'id_job'        => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
-                'download_type' => array(
-                        'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
-                ),
-                'password'      => array(
-                        'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
-                )
-        );
-
-        $__postInput = filter_var_array( $_REQUEST, $filterArgs );
-
-        //NOTE: This is for debug purpose only,
-        //NOTE: Global $_POST Overriding from CLI Test scripts
-        //$__postInput = filter_var_array( $_POST, $filterArgs );
-
-        $this->_user_provided_filename         = $__postInput[ 'filename' ];
-        $this->id_file       = $__postInput[ 'id_file' ];
-        $this->id_job        = $__postInput[ 'id_job' ];
-        $this->download_type = $__postInput[ 'download_type' ];
-        $this->password      = $__postInput[ 'password' ];
-
-    }
-
     public function doAction() {
 
         //get storage object
@@ -111,7 +75,7 @@ class downloadOriginalController extends downloadController {
         /**
          * Retrieve user information
          */
-        $this->readLoginInfo();
+        $this->setUserCredentials();
 
         $activity             = new ActivityLogStruct();
         $activity->id_job     = $this->id_job;
@@ -121,6 +85,34 @@ class downloadOriginalController extends downloadController {
         $activity->uid        = $this->user->uid;
         $activity->event_date = date( 'Y-m-d H:i:s' );
         Activity::save( $activity );
+    }
+
+    public function setUserCredentials() {
+        $username_from_cookie = AuthCookie::getCredentialsFromCookie($this->jwt);
+        $this->user        = new Users_UserStruct();
+        if ( $username_from_cookie ) {
+            $_SESSION[ 'cid' ] = $username_from_cookie['username'];
+            $_SESSION[ 'uid' ] = $username_from_cookie['uid'];
+        }
+
+        $this->user->uid   = $username_from_cookie['uid'];
+        $this->user->email = $username_from_cookie['username'];
+
+        try {
+
+            $userDao    = new Users_UserDao( Database::obtain() );
+            $loggedUser = $userDao->setCacheTTL( 0 )->read( $this->user )[ 0 ]; // one hour cache
+            $this->userIsLogged = (
+                !empty( $loggedUser->uid ) &&
+                !empty( $loggedUser->email ) &&
+                !empty( $loggedUser->first_name ) &&
+                !empty( $loggedUser->last_name )
+            );
+
+        } catch ( Exception $e ) {
+            Log::doLog( 'User not logged.' );
+        }
+        $this->user = ( $this->userIsLogged ? $loggedUser : $this->user );
 
     }
 

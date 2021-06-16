@@ -58,6 +58,10 @@ var SegmentActions = {
 
     /********** Segment **********/
 
+    closeSegment: function ( sid, fid ) {
+        this.closeIssuesPanel();
+    },
+
     addClassToSegment: function (sid, newClass) {
         setTimeout( function () {
             AppDispatcher.dispatch({
@@ -170,6 +174,28 @@ var SegmentActions = {
             actionType: SegmentConstants.ENABLE_TAG_LOCK
         });
     },
+
+    setSegmentWarnings: function(sid, warnings){
+        AppDispatcher.dispatch({
+            actionType: SegmentConstants.SET_SEGMENT_WARNINGS,
+            sid: sid,
+            warnings: warnings
+        });
+    },
+
+    updateGlobalWarnings: function(warnings){
+        AppDispatcher.dispatch({
+            actionType: SegmentConstants.UPDATE_GLOBAL_WARNINGS,
+            warnings: warnings
+        });
+    },
+
+    qaComponentsetLxqIssues: function ( issues ) {
+        AppDispatcher.dispatch({
+            actionType: SegmentConstants.QA_LEXIQA_ISSUES,
+            warnings: issues
+        });
+    },
     /******************* EditArea ************/
     highlightEditarea: function(sid) {
         AppDispatcher.dispatch({
@@ -203,6 +229,13 @@ var SegmentActions = {
             translation: editAreaText
         });
     },
+    lockEditArea : function ( sid, fid ) {
+        AppDispatcher.dispatch({
+            actionType: SegmentConstants.LOCK_EDIT_AREA,
+            fid: fid,
+            id: sid,
+        });
+    },
     /************ FOOTER ***************/
     registerTab: function (tab, visible, open) {
         AppDispatcher.dispatch({
@@ -218,12 +251,13 @@ var SegmentActions = {
             sid: sid
         });
     },
-    setSegmentContributions: function (sid, contributions, fieldTest) {
+    setSegmentContributions: function (sid, fid, contributions, errors) {
         AppDispatcher.dispatch({
             actionType: SegmentConstants.SET_CONTRIBUTIONS,
             sid: sid,
+            fid: fid,
             matches: contributions,
-            fieldTest: fieldTest
+            errors: errors
         });
     },
     chooseContribution: function (sid, index) {
@@ -256,7 +290,13 @@ var SegmentActions = {
         });
     },
 
-
+    setTabOpen: function (sid, tabName ) {
+        AppDispatcher.dispatch({
+            actionType: SegmentConstants.SET_DEFAULT_TAB,
+            sid: sid,
+            data: tabName
+        });
+    },
     renderPreview: function ( sid, data ) {
         AppDispatcher.dispatch({
             actionType: SegmentConstants.RENDER_PREVIEW,
@@ -317,6 +357,14 @@ var SegmentActions = {
         });
     },
 
+    setConcordanceResult: function (sid, data) {
+        AppDispatcher.dispatch({
+            actionType: SegmentConstants.CONCORDANCE_RESULT,
+            sid: sid,
+            data: data
+        });
+    },
+
     /************ Revise ***************/
     showSelection: function (sid, data) {
         AppDispatcher.dispatch({
@@ -326,38 +374,62 @@ var SegmentActions = {
         });
     },
 
-    openIssuesPanel: function (data) {
+    openIssuesPanel: function (data, openSegment) {
         AppDispatcher.dispatch({
             actionType: SegmentConstants.OPEN_ISSUES_PANEL,
             data: data,
         });
 
-        UI.openIssuesPanel(data);
+        UI.openIssuesPanel(data, openSegment);
     },
 
     closeIssuesPanel: function () {
         AppDispatcher.dispatch({
-            actionType: SegmentConstants.CLOSE_ISSUES_PANEL
+            actionType: SegmentConstants.CLOSE_ISSUES_PANEL,
         });
     },
 
-    showIssuesMessage: function ( sid ) {
+    closeSegmentIssuePanel: function ( sid ) {
+        AppDispatcher.dispatch({
+            actionType: SegmentConstants.CLOSE_ISSUES_PANEL,
+            sid: sid
+        });
+    },
+
+    showIssuesMessage: function ( sid, type ) {
         AppDispatcher.dispatch({
             actionType: SegmentConstants.SHOW_ISSUE_MESSAGE,
             sid: sid,
-        });
-    },
-
-    renderReviseErrors: function (sid, data) {
-        AppDispatcher.dispatch({
-            actionType: SegmentConstants.RENDER_REVISE_ISSUES,
-            sid: sid,
-            data: data
+            data: type
         });
     },
 
     submitIssue: function (sid, data, diff) {
         return UI.submitIssues(sid, data, diff);
+    },
+
+    issueAdded: function ( sid, issueId ) {
+        AppDispatcher.dispatch({
+            actionType: SegmentConstants.ISSUE_ADDED,
+            sid: sid,
+            data: issueId
+        });
+    },
+
+    openIssueComments: function ( sid, issueId ) {
+        AppDispatcher.dispatch({
+            actionType: SegmentConstants.OPEN_ISSUE_COMMENT,
+            sid: sid,
+            data: issueId
+        });
+    },
+
+    addPreloadedIssuesToSegment: function ( sid, issues ) {
+        AppDispatcher.dispatch({
+            actionType: SegmentConstants.ADD_SEGMENT_PRELOADED_ISSUES,
+            sid: sid,
+            data: issues
+        });
     },
 
     addTranslationIssuesToSegment: function (fid, sid, versions) {
@@ -369,18 +441,8 @@ var SegmentActions = {
         });
     },
 
-    addSegmentVersionIssue: function (fid, sid, issue, versionNumber) {
-        AppDispatcher.dispatch({
-            actionType: SegmentConstants.ADD_SEGMENT_VERSION_ISSUE,
-            fid: fid,
-            sid: sid,
-            issue: issue,
-            versionNumber: versionNumber
-        });
-    },
-
-    deleteIssue: function (issue) {
-        UI.deleteIssue(issue);
+    deleteIssue: function (issue, sid, dontShowMessage) {
+        UI.deleteIssue(issue, sid, dontShowMessage);
     },
 
     confirmDeletedIssue: function (sid,issue_id) {

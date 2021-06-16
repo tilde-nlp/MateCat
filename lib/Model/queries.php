@@ -346,16 +346,33 @@ function getFirstSegmentId( $jid, $password ) {
  * @param int    $step
  * @param        $ref_segment
  * @param string $where
+ * @param string $searchInSource
+ * @param string $searchInTarget
  *
  * @return array
  * @throws Exception
  */
-function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'after', $options = [] ) {
+function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'after', $options = [], $searchInSource = '', $searchInTarget = '', $searchInComments = '' ) {
 
     $optional_fields = null;
+    $sqlBinds = [];
     if ( isset( $options[ 'optional_fields' ] ) ) {
         $optional_fields = ', ';
         $optional_fields .= implode( ', ', $options[ 'optional_fields' ] );
+    }
+
+    $searchQuery = '';
+    if (!empty($searchInSource)) {
+        $searchQuery .= " AND LOWER(segments.segment) LIKE LOWER(:searchInSource) ";
+        $sqlBinds['searchInSource'] = '%' . $searchInSource . '%';
+    }
+    if (!empty($searchInTarget)) {
+        $searchQuery .= " AND LOWER(IF(segment_translations.status='NEW',NULL,segment_translations.translation)) LIKE LOWER(:searchInTarget) ";
+        $sqlBinds['searchInTarget'] = '%' . $searchInTarget . '%';
+    }
+    if (!empty($searchInComments)) {
+        $searchQuery .= " AND segments.id IN (SELECT id_segment FROM comments WHERE LOWER(comments.message) LIKE LOWER(:searchInComments)) ";
+        $sqlBinds['searchInComments'] = '%' . $searchInComments . '%';
     }
 
     $queryAfter = "
@@ -368,7 +385,8 @@ function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'a
                         AND password = '$password'
                         AND show_in_cattool = 1
                         AND segments.id > $ref_segment
-                    LIMIT %u
+                        $searchQuery
+                    LIMIT ". $step * 2 ."
                 ) AS TT1
                 ";
 
@@ -382,8 +400,9 @@ function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'a
                         AND password = '$password'
                         AND show_in_cattool = 1
                         AND segments.id < $ref_segment
+                        $searchQuery
                     ORDER BY __sid DESC
-                    LIMIT %u
+                    LIMIT ". $step * 2 ."
                 ) as TT2
                 ";
 
@@ -403,7 +422,8 @@ function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'a
                             AND password = '$password'
                             AND show_in_cattool = 1
                             AND segments.id >= $ref_segment
-                        LIMIT %u 
+                            $searchQuery
+                        LIMIT ". $step ."
                   ) AS TT1
                   UNION
                   SELECT * from(
@@ -415,20 +435,21 @@ function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'a
                             AND password = '$password'
                             AND show_in_cattool = 1
                             AND segments.id < $ref_segment
+                            $searchQuery
                         ORDER BY __sid DESC
-                        LIMIT %u
+                        LIMIT ". $step ."
                   ) AS TT2
     ";
 
     switch ( $where ) {
         case 'after':
-            $subQuery = sprintf( $queryAfter, $step * 2 );
+            $subQuery = $queryAfter;
             break;
         case 'before':
-            $subQuery = sprintf( $queryBefore, $step * 2 );
+            $subQuery = $queryBefore;
             break;
         case 'center':
-            $subQuery = sprintf( $queryCenter, $step, $step );
+            $subQuery = $queryCenter;
             break;
     }
 
@@ -467,7 +488,9 @@ function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'a
                           FROM segment_translations
                           WHERE segment_hash = s.segment_hash
                           AND id_job =  j.id
-                ) repetitions_in_chunk
+                ) repetitions_in_chunk,
+                st.save_type AS save_type,
+                st.save_match AS save_match
 
                 $optional_fields
 
@@ -492,10 +515,14 @@ function getMoreSegments( $jid, $password, $step = 50, $ref_segment, $where = 'a
     $db = Database::obtain();
 
     try {
-        $results = $db->fetch_array( $query );
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare($query);
+        $stmt->execute($sqlBinds);
+        $results = $stmt->fetchAll();
     } catch ( PDOException $e ) {
         throw new Exception( __METHOD__ . " -> " . $e->getCode() . ": " . $e->getMessage() );
     }
+
     return $results;
 }
 
@@ -637,6 +664,8 @@ function addTranslation( array $_Translation ) {
                 time_to_edit = time_to_edit + VALUES( time_to_edit ),
                 translation = {$_Translation['translation']},
                 translation_date = {$_Translation['translation_date']},
+                save_type = {$_Translation['save_type']},
+                save_match = {$_Translation['save_match']},
                 warning = {$_Translation[ 'warning' ]}";
 
     if ( array_key_exists( 'version_number', $_Translation ) ) {
@@ -1144,6 +1173,7 @@ function insertProject( ArrayObject $projectStructure ) {
     $data[ 'id_assignee' ]       = $projectStructure[ 'id_assignee' ];
     $data[ 'instance_id' ]       = !is_null( $projectStructure[ 'instance_id' ] ) ? $projectStructure[ 'instance_id' ] : null;
     $data[ 'due_date' ]          = !is_null( $projectStructure[ 'due_date' ] ) ? $projectStructure[ 'due_date' ] : null;
+    $data[ 'mt_system_id' ]      = !is_null( $projectStructure[ 'mt_system_id' ] ) ? $projectStructure[ 'mt_system_id' ] : null;
 
     $db = Database::obtain();
     $db->begin();
@@ -1258,39 +1288,6 @@ function getProjectJobData( $pid ) {
     $res   = $db->fetch_array( $query );
 
     return $res;
-}
-
-/**
- * @param      $pid
- * @param      $job_password
- * @param null $jid
- *
- * @return array
- */
-function getJobAnalysisData( $pid, $job_password, $jid = null ) {
-
-    $query = "select p.name, j.id as jid, j.password as jpassword, j.source, j.target, f.id,f.filename, p.status_analysis,
-		sum(s.raw_word_count) as file_raw_word_count, sum(st.eq_word_count) as file_eq_word_count, count(s.id) as total_segments,
-		p.fast_analysis_wc,p.tm_analysis_wc, p.standard_analysis_wc
-
-			from projects p 
-			inner join jobs j on p.id=j.id_project
-			inner join files f on p.id=f.id_project
-			inner join segments s on s.id_file=f.id
-			left join segment_translations st on st.id_segment=s.id and st.id_job=j.id
-
-			where p.id= '$pid' and j.password='$job_password' ";
-
-    if ( !empty( $jid ) ) {
-        $query = $query . " and j.id = " . intval( $jid );
-    }
-
-    $query = $query . " group by 6,2 ";
-
-    $db      = Database::obtain();
-    $results = $db->fetch_array( $query );
-
-    return $results;
 }
 
 /**

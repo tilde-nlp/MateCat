@@ -11,8 +11,8 @@ class Users_UserDao extends DataAccess_AbstractDao {
     const TABLE = "users";
     const STRUCT_TYPE = "Users_UserStruct";
 
-    protected static $auto_increment_fields = array('uid');
-    protected static $primary_keys = array('uid');
+    protected static $auto_increment_field = array('uid');
+    protected static $primary_keys         = array('uid');
 
     protected static $_query_user_by_uid = " SELECT * FROM users WHERE uid = :uid ";
     protected static $_query_user_by_email = " SELECT * FROM users WHERE email = :email ";
@@ -26,30 +26,45 @@ class Users_UserDao extends DataAccess_AbstractDao {
         WHERE jobs.id = :job_id
         LIMIT 1 ";
 
+    /**
+     * @param $uids_array
+     *
+     * @return Users_UserStruct[]
+     */
     public function getByUids( $uids_array ) {
-        $sanitized_array = array();
+
+        $sanitized_array = [];
+
         foreach ( $uids_array as $k => $v ) {
             if ( !is_numeric( $v ) ) {
-                array_push( $sanitized_array, ( (int)$v[ 'uid' ] ) );
+                $sanitized_array[] = (int)$v[ 'uid' ];
             } else {
-                array_push( $sanitized_array, ( (int)$v ) );
+                $sanitized_array[] = (int)$v;
             }
         }
 
         if ( empty( $sanitized_array ) ) {
-            return array();
+            return [];
         }
 
         $query = "SELECT * FROM " . self::TABLE .
-                " WHERE uid IN ( " . str_repeat( '?,', count( $sanitized_array ) - 1) . '?' . " ) ";
+                " WHERE uid IN ( " . str_repeat( '?,', count( $sanitized_array ) - 1 ) . '?' . " ) ";
 
-        $stmt = $this->setCacheTTL( 60 * 10 )->_getStatementForCache( $query );
+        $stmt = $this->_getStatementForCache( $query );
 
-        return $this->_fetchObject(
+        $__resultSet = $this->_fetchObject(
                 $stmt,
                 new Users_UserStruct(),
                 $sanitized_array
         );
+
+        $resultSet = [];
+        foreach( $__resultSet as $user ){
+            $resultSet[ $user->uid ] = $user;
+        }
+
+        return $resultSet;
+
     }
 
     /**
@@ -102,7 +117,7 @@ class Users_UserDao extends DataAccess_AbstractDao {
         $stmt = $this->_getStatementForCache( self::$_query_user_by_uid );
         $userQuery = new Users_UserStruct();
         $userQuery->uid = $id;
-        return @$this->_fetchObject( $stmt,
+        return @$this->_fetchObjectNoCache( $stmt,
                 $userQuery,
                 array(
                         'uid' => $userQuery->uid,
@@ -146,6 +161,14 @@ class Users_UserDao extends DataAccess_AbstractDao {
         $userQuery = new Users_UserStruct();
         $userQuery->email = $email;
         return $this->_destroyObjectCache( $stmt, [ 'email' => $userQuery->email ] );
+    }
+
+    public static function saveName($uid, $firstName, $lastName) {
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare("UPDATE users SET first_name = :first_name, last_name = :last_name WHERE uid = :uid ");
+        $stmt->execute(array('first_name' => $firstName, 'last_name' => $lastName, 'uid' => $uid));
+        return $stmt->rowCount();
     }
 
 

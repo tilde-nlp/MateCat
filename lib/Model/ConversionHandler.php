@@ -25,7 +25,7 @@ class ConversionHandler {
     protected $stopOnFileException = true;
 
     protected $uploadedFiles;
-    public $uploadError = false;
+    public    $uploadError = false;
 
     protected $_userIsLogged;
 
@@ -35,29 +35,58 @@ class ConversionHandler {
     public $features;
 
     public function __construct() {
-        $this->result = array(
+        $this->result = [
                 'code' => 1 //set OK default
-        );
+        ];
+    }
+
+    /**
+     * Remove path information and dots around the filename, to prevent uploading
+     * into different directories or replacing hidden system files.
+     * Also remove control characters and spaces (\x00..\x20) around the filename:
+     */
+    protected function trim_file_name( $name ) {
+        $name = stripslashes( $name );
+
+        $file_name = trim( $this->my_basename( $name ), ".\x00..\x20" );
+
+        //remove spaces
+        $file_name = str_replace( [ " ", " " ], "_", $file_name );
+
+        return $file_name;
+    }
+
+    private function my_basename( $param, $suffix = null ) {
+        if ( $suffix ) {
+            $tmpstr = ltrim( substr( $param, strrpos( $param, DIRSEP ) ), DIRSEP );
+            if ( ( strpos( $param, $suffix ) + strlen( $suffix ) ) == strlen( $param ) ) {
+                return str_ireplace( $suffix, '', $tmpstr );
+            } else {
+                return ltrim( substr( $param, strrpos( $param, DIRSEP ) ), DIRSEP );
+            }
+        } else {
+            return ltrim( substr( $param, strrpos( $param, DIRSEP ) ), DIRSEP );
+        }
     }
 
     public function doAction() {
 
 
         $this->file_name = html_entity_decode( $this->file_name, ENT_QUOTES );
-        $file_path       = $this->intDir . DIRECTORY_SEPARATOR . $this->file_name;
+        $file_path       = $this->intDir . DIRECTORY_SEPARATOR . $this->trim_file_name( $this->file_name );
 
         if ( !file_exists( $file_path ) ) {
             $this->result[ 'code' ]     = -6; // No Good, Default
-            $this->result[ 'errors' ][] = array(
+            $this->result[ 'errors' ][] = [
                     "code"    => -6,
                     "message" => "Error during upload. Please retry.",
                     'debug'   => FilesStorage::basename_fix( $this->file_name )
-            );
+            ];
 
             return -1;
         }
 
-        $forceXliff = $this->features->filter( 'forceXLIFFConversion', INIT::$FORCE_XLIFF_CONVERSION, $this->_userIsLogged );
+        $forceXliff = $this->features->filter( 'forceXLIFFConversion', INIT::$FORCE_XLIFF_CONVERSION, $this->_userIsLogged, $file_path );
 
         //XLIFF Conversion management
         $fileMustBeConverted = DetectProprietaryXliff::fileMustBeConverted( $file_path, $forceXliff );
@@ -70,6 +99,7 @@ class ConversionHandler {
             case false:
                 $this->result[ 'code' ]     = 1; // OK for client, do not convert
                 $this->result[ 'errors' ][] = [ "code" => 0, "message" => "OK" ];
+
                 return 0;
                 break;
             case -1:
@@ -86,6 +116,7 @@ class ConversionHandler {
                         "message" => 'Matecat Open-Source does not support ' . ucwords( DetectProprietaryXliff::getInfo( $file_path )[ 'proprietary_name' ] ) . '. Use MatecatPro.',
                         'debug'   => FilesStorage::basename_fix( $this->file_name )
                 ];
+
                 return -1;
                 break;
 
@@ -121,18 +152,21 @@ class ConversionHandler {
             //we have to convert it
 
             $ocrCheck = new \Filters\OCRCheck( $this->source_lang );
-            if( $ocrCheck->thereIsError( $file_path ) ){
+            if ( $ocrCheck->thereIsError( $file_path ) ) {
                 $this->result[ 'code' ]     = -21; // No Good, Default
-                $this->result[ 'errors' ][] = array( "code" => -21, "message" =>
-                        "File is not valid. OCR for RTL languages is not supported."
-                );
+                $this->result[ 'errors' ][] = [
+                        "code" => -21,
+                        "message" => "File is not valid. OCR for RTL languages is not supported."
+                ];
+
                 return false; //break project creation
             }
             if ( $ocrCheck->thereIsWarning( $file_path ) ) {
                 $this->result[ 'code' ]     = -20; // No Good, Default
-                $this->result[ 'errors' ][] = array( "code" => -20, "message" =>
-                        "File uploaded successfully. Before translating, download the Preview to check the conversion. OCR support for non-latin scripts is experimental."
-                );
+                $this->result[ 'errors' ][] = [
+                        "code" => -20,
+                        "message" => "File uploaded successfully. Before translating, download the Preview to check the conversion. OCR support for non-latin scripts is experimental."
+                ];
             }
 
             if ( strpos( $this->target_lang, ',' ) !== false ) {
@@ -142,8 +176,8 @@ class ConversionHandler {
                 $single_language = $this->target_lang;
             }
 
-            $convertResult = Filters::sourceToXliff( $file_path, $this->source_lang, $single_language, $this->segmentation_rule);
-            Filters::logConversionToXliff($convertResult, $file_path, $this->source_lang, $this->target_lang, $this->segmentation_rule);
+            $convertResult = Filters::sourceToXliff( $file_path, $this->source_lang, $single_language, $this->segmentation_rule );
+            Filters::logConversionToXliff( $convertResult, $file_path, $this->source_lang, $this->target_lang, $this->segmentation_rule );
 
             if ( $convertResult[ 'isSuccess' ] == 1 ) {
 
@@ -164,10 +198,11 @@ class ConversionHandler {
                     //custom error message passed directly to javascript client and displayed as is
                     $convertResult[ 'errorMessage' ] = "Error: File upload failed because you have MateCat running in multiple tabs. Please close all other MateCat tabs in your browser.";
                     $this->result[ 'code' ]          = -103;
-                    $this->result[ 'errors' ][]      = array(
-                            "code"  => -103, "message" => $convertResult[ 'errorMessage' ],
+                    $this->result[ 'errors' ][]      = [
+                            "code"  => -103,
+                            "message" => $convertResult[ 'errorMessage' ],
                             'debug' => FilesStorage::basename_fix( $this->file_name )
-                    );
+                    ];
 
                     unset( $cachedXliffPath );
 
@@ -178,9 +213,11 @@ class ConversionHandler {
 
                 //custom error message passed directly to javascript client and displayed as is
                 $this->result[ 'code' ]     = -100;
-                $this->result[ 'errors' ][] = array(
-                        "code" => -100, "message" => $convertResult[ 'errorMessage' ], "debug" => FilesStorage::basename_fix( $this->file_name )
-                );
+                $this->result[ 'errors' ][] = [
+                        "code" => -100,
+                        "message" => $convertResult[ 'errorMessage' ],
+                        "debug" => FilesStorage::basename_fix( $this->file_name )
+                ];
             }
 
         }
@@ -189,11 +226,10 @@ class ConversionHandler {
         if ( isset( $cachedXliffPath ) and !empty( $cachedXliffPath ) ) {
 
             //FILE Found in cache, destroy the already present shasum for other languages ( if user swapped languages )
-            $uploadDir = INIT::$UPLOAD_REPOSITORY . DIRECTORY_SEPARATOR . $this->cookieDir;
-            $fs->deleteHashFromUploadDir( $uploadDir, $sha1 . "|" . $this->source_lang );
+            $fs->deleteHashFromUploadDir( $this->intDir, $sha1 . "|" . $this->source_lang );
 
             //put reference to cache in upload dir to link cache to session
-            $fs->linkSessionToCacheForOriginalFiles(
+            $fs->linkSessionToCacheForAlreadyConvertedFiles(
                     $sha1,
                     $this->source_lang,
                     $this->cookieDir,
@@ -217,6 +253,7 @@ class ConversionHandler {
         $za->open( $file_path );
 
         try {
+
             $za->createTree();
 
             //get system temporary folder
@@ -226,27 +263,9 @@ class ConversionHandler {
 
             mkdir( $tmpFolder, 0777, true );
 
-            $fileErrors = $za->extractFilesInTmp( $tmpFolder );
+            $filesArray = $za->extractFilesInTmp( $tmpFolder );
 
             $za->close();
-
-            //compose an array that has the same structure of $_FILES
-            $filesArray = array();
-            foreach ( $za->treeList as $fileName ) {
-
-                $filesArray[ $fileName ] = array(
-                        'name'     => $fileName,
-                        'tmp_name' => $tmpFolder . $fileName,
-                        'error'    => null,
-                        'size'     => filesize( $tmpFolder . $fileName )
-                );
-            }
-
-            /***
-             *
-             * ERRORE di un file extratto dallo zip ( isset( $fileErrors[ $fileName ] ) ) ? $fileErrors[ $fileName ] :
-             *
-             **/
 
             // The $this->cookieDir parameter makes Upload get the upload directory from the cookie.
             // In this way it'll find the unzipped files
@@ -263,27 +282,30 @@ class ConversionHandler {
                 }
 
             } catch ( Exception $e ) {
-                $stdResult                     = array();
-                $this->result                  = array(
-                        'errors' => array(
-                                array( "code" => -1, "message" => $e->getMessage() )
-                        )
-                );
+
+                $this->result = [
+                        'errors' => [
+                                [ "code" => -1, "message" => $e->getMessage() ]
+                        ]
+                ];
+
                 $this->api_output[ 'message' ] = $e->getMessage();
 
                 return null;
             }
 
-            return array_map( "Upload::fixFileName", $za->treeList );
+            return array_map( function( $fileName ) use( $uploadFile ) {
+                return $uploadFile->fixFileName( $fileName, false );
+            }, $za->treeList );
 
         } catch ( Exception $e ) {
 
             Log::doLog( "ExtendedZipArchive Exception: {$e->getCode()} : {$e->getMessage()}" );
-            $this->result[ 'errors' ] [] = array(
+            $this->result[ 'errors' ] [] = [
                     'code'    => $e->getCode(),
                     'message' => "Zip error: " . $e->getMessage(),
                     'debug'   => $this->file_name
-            );
+            ];
 
             return null;
         }

@@ -169,15 +169,15 @@ class Xliff_Parser {
 						// Getting Trans-unit attributes
 						// ID
                         unset( $temp );
-                        preg_match( '|id\s?=\s?["\'](.*?)["\']|si', $trans_unit, $temp );
+                        preg_match( '|id\s?=\s?(["\'])(.*?)\1|si', $trans_unit, $temp );
 
-                        if ( trim( $temp[ 1 ] ) == "" ) {
+                        if ( trim( $temp[ 2 ] ) == "" ) {
                             throw new DomainException( "Invalid trans-unit id found. EMPTY value", 400 );
                         } else {
-                            $trans_unit_id_array_for_uniqueness_check[] = trim( $temp[ 1 ] );
+                            $trans_unit_id_array_for_uniqueness_check[] = trim( $temp[ 2 ] );
                         }
 
-                        $xliff[ 'files' ][ $i ][ 'trans-units' ][ $j ][ 'attr' ][ 'id' ] = $temp[ 1 ];
+                        $xliff[ 'files' ][ $i ][ 'trans-units' ][ $j ][ 'attr' ][ 'id' ] = $temp[ 2 ];
 
 						// Translate
 						unset($temp);
@@ -204,6 +204,7 @@ class Xliff_Parser {
                         // Getting Source and Target raw content
                         $this->getSource( $xliff, $i, $j, $trans_unit );
 						$this->getTarget( $xliff, $i, $j, $trans_unit );
+						$this->getContextGroups( $xliff, $i, $j, $trans_unit );
 						$this->getAltTrans( $xliff, $i, $j, $trans_unit );
 						$this->getSDLStatus( $xliff, $i, $j, $trans_unit );
 
@@ -429,7 +430,7 @@ class Xliff_Parser {
             $xliff[ 'files' ][ $i ][ 'trans-units' ][ $j ][ 'source' ][ 'raw-content' ] = self::fix_non_well_formed_xml( $tagArray[ 'content' ] );
         } catch( UnexpectedValueException $e ){
             //Found Empty Source Tag
-            Log::doLog( $e->getMessage() );
+//            Log::doLog( $e->getMessage() );
         }
     }
 
@@ -443,34 +444,73 @@ class Xliff_Parser {
         try {
             $tagArray = $this->_getTagContent( 'target', $trans_unit );
             $xliff[ 'files' ][ $i ][ 'trans-units' ][ $j ][ 'target' ][ 'raw-content' ] = self::fix_non_well_formed_xml( $tagArray[ 'content' ] );
-            $xliff[ 'files' ][ $i ][ 'trans-units' ][ $j ][ 'target' ][ 'attr' ] = $tagArray[ 'attributes' ];
+            $xliff[ 'files' ][ $i ][ 'trans-units' ][ $j ][ 'target' ][ 'attr' ] = $tagArray[ 'attr' ];
         } catch( UnexpectedValueException $e ){
             //Found Empty Target Tag
-            Log::doLog( $e->getMessage() );
+//            Log::doLog( $e->getMessage() );
         }
     }
 
-    private function getAltTrans(  &$xliff, $i, $j, $trans_unit  ){
+    private function getAltTrans( &$xliff, $i, $j, $trans_unit ){
         try {
 
-            $tagArray = $this->_getTagContent( 'alt-trans', $trans_unit );
-            $xliff[ 'files' ][ $i ][ 'trans-units' ][ $j ][ 'alt-trans' ][ 'attr' ] = $tagArray[ 'attributes' ];
+            $tagList = $this->_getTagContent( 'alt-trans', $trans_unit, 'trans-unit', true );
 
-            try{
-                $sourceArray = $this->_getTagContent( 'source', $tagArray[ 'content' ], 'root' );
-                $xliff[ 'files' ][ $i ][ 'trans-units' ][ $j ][ 'alt-trans' ][ 'source' ] = self::fix_non_well_formed_xml( $sourceArray[ 'content' ] );
-            } catch( UnexpectedValueException $e ){
-                //Found Empty Target Tag
-                Log::doLog( $e->getMessage() );
+            foreach( $tagList as $tag ){
+
+                $alt_trans = [];
+                $alt_trans[ 'attr' ] = @$tag[ 'attr' ];
+
+                try{
+
+                    $sourceArray = $this->_getTagContent( 'source', $tag[ 'content' ], 'root' );
+                    $alt_trans[ 'source' ] = self::fix_non_well_formed_xml( $sourceArray[ 'content' ] );
+
+                } catch( UnexpectedValueException $e ){
+                    //Found Empty Target Tag
+//                    Log::doLog( $e->getMessage() );
+                }
+
+                $targetArray = $this->_getTagContent( 'target', $tag[ 'content' ], 'root' );
+                $alt_trans[ 'target' ] = self::fix_non_well_formed_xml( $targetArray[ 'content' ] );
+
+                $xliff[ 'files' ][ $i ][ 'trans-units' ][ $j ][ 'alt-trans' ][] = $alt_trans;
+
             }
-
-            $targetArray = $this->_getTagContent( 'target', $tagArray[ 'content' ], 'root' );
-            $xliff[ 'files' ][ $i ][ 'trans-units' ][ $j ][ 'alt-trans' ][ 'target' ] = self::fix_non_well_formed_xml( $targetArray[ 'content' ] );
-
 
         } catch( UnexpectedValueException $e ){
             //Found Empty Target Tag
-            Log::doLog( $e->getMessage() );
+//            Log::doLog( $e->getMessage() );
+        }
+    }
+
+    private function getContextGroups( &$xliff, $i, $j, $trans_unit ){
+        try {
+
+            $tagList = $this->_getTagContent( 'context-group', $trans_unit, 'trans-unit', true );
+
+            foreach( $tagList as $tag ){
+
+                $context_group = [];
+                $context_group[ 'attr' ] = @$tag[ 'attr' ];
+
+                try{
+
+                    $contexts = $this->_getTagContent( 'context', $tag[ 'content' ], 'root', true );
+                    $context_group[ 'contexts' ] = $contexts;
+
+                } catch( UnexpectedValueException $e ){
+                    //Found Empty Target Tag
+//                    Log::doLog( $e->getMessage() );
+                }
+
+                $xliff[ 'files' ][ $i ][ 'trans-units' ][ $j ][ 'context-group' ][] = $context_group;
+
+            }
+
+        } catch( UnexpectedValueException $e ){
+            //Found Empty Target Tag
+//            Log::doLog( $e->getMessage() );
         }
     }
 
@@ -481,9 +521,11 @@ class Xliff_Parser {
      * @param string $domString
      * @param string $parentNodeName
      *
+     * @param bool   $asList
+     *
      * @return array
      */
-    private function _getTagContent( $tagName, $domString, $parentNodeName = 'trans-unit' ) {
+    private function _getTagContent( $tagName, $domString, $parentNodeName = 'trans-unit', $asList = false ) {
 
         libxml_use_internal_errors( true );
         $dDoc          = new DOMDocument();
@@ -494,8 +536,7 @@ class Xliff_Parser {
          */
         $tagList = $dDoc->getElementsByTagName( $tagName );
 
-        $tmpTag = null;
-        $tagAttributes = [];
+        $TagList = [];
 
         if ( $trg_xml_valid === false ) {
 
@@ -508,11 +549,16 @@ class Xliff_Parser {
             $regexp = "|<{$tagName}[^>]*?>(.*?)</{$tagName}>|si";
 
             preg_match( $regexp, $domString, $temp );
-            $tmpTag = $temp[ 1 ];
+            $TagList[] = $temp[ 1 ];
+
+            libxml_clear_errors();
 
         } elseif ( $tagList->length ) {
 
             foreach ( $tagList as $_tag ) {
+
+                $_tmpTag = "";
+                $_tagAttributes = [];
 
                 /**
                  * Extract Attributes if they are present
@@ -527,7 +573,7 @@ class Xliff_Parser {
                  */
                 if ( $_tag->hasAttributes() ) {
                     foreach ( $_tag->attributes as $attr ) {
-                        $tagAttributes[ $attr->nodeName ] = $attr->nodeValue;
+                        $_tagAttributes[ $attr->nodeName ] = $attr->nodeValue;
                     }
                 }
 
@@ -540,22 +586,29 @@ class Xliff_Parser {
 
                     //Loop on the child nodes, saveXML concatenation
                     foreach ( $_tag->childNodes as $node ) {
-                        $tmpTag .= $dDoc->saveXML( $node );
+                        $_tmpTag .= $dDoc->saveXML( $node );
                     }
 
                 }
+
+                $TagList[] = [
+                        'content' => $_tmpTag,
+                        'attr'    => $_tagAttributes
+                ];
+
             }
 
         }
 
-        if ( empty( $tmpTag ) ) {
+        if ( empty( $TagList ) ) {
             throw new UnexpectedValueException( "The content of the tag $tagName is empty." );
         }
 
-        return [
-                'content' => $tmpTag,
-                'attributes' => $tagAttributes
-        ];
+        if( $asList ){
+            return $TagList;
+        } else {
+            return $TagList[0];
+        }
 
     }
 

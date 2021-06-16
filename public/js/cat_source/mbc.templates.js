@@ -85,6 +85,7 @@ if ( MBC.enabled() )
 
         inputForm : '' +
             ' <div class="mbc-thread-wrap mbc-post-comment-wrap mbc-clearfix">' +
+            /*'<div class="mbc-triangle mbc-open-view mbc-re-messages"></div>' +*/
             ' <div class="mbc-new-message-notification">' +
             '    <span class="mbc-new-message-icon mbc-new-message-arrowdown">&#8595;</span>' +
             '    <a href="javascript:" class="mbc-new-message-link"></a> ' +
@@ -92,7 +93,13 @@ if ( MBC.enabled() )
             ' <div class="mbc-post-comment">' +
             ' <span class="mbc-comment-label mbc-comment-username mbc-comment-username-label mbc-truncate mbc-comment-anonymous-label"></span>' +
             ' <a href="javascript:" class="mbc-comment-link-btn mbc-login-link">Login to receive comments</a>' +
-            ' <textarea class="mbc-comment-input mbc-comment-textarea" placeholder="Write a comment..."></textarea>' +
+            ' <div class="mbc-comment-input mbc-comment-textarea" contenteditable="true" data-placeholder="Write a comment..."></div>' +
+            // ' <div>' +
+            // ' <a href="javascript:;" class="mbc-tag-link">Tag someone</a>' +
+            // ' </div>' +
+            // ' <div>' +
+            // ' <textarea class="mbc-comment-input mbc-comment-textarea-tagging hide" id="tagging-area" placeholder="Tag someone"></textarea>' +
+            // ' </div>' +
             ' <div>' +
             ' <a href="javascript:;" class="ui primary tiny button mbc-comment-btn mbc-comment-send-btn hide">Comment</a>' +
             ' </div>' +
@@ -112,7 +119,8 @@ if ( MBC.enabled() )
         segmentThread : '' +
             ' <div class="mbc-comment-balloon-outer">' +
             ' <div class="mbc-comment-balloon-inner">' +
-            ' <div class="mbc-triangle mbc-triangle-topleft"></div>' +
+            ' <div class="mbc-triangle mbc-open-view mbc-re-messages"></div>' +
+            ' <a class="re-close-balloon shadow-1"><i class="icon-cancel3 icon" /></a>' +
             ' <div class="mbc-comments-wrap">' +
             ' ' +
             ' </div>' +
@@ -120,7 +128,7 @@ if ( MBC.enabled() )
             ' </div>',
 
         commentLink : '' +
-            '<div class="mbc-comment-icon-button txt">' +
+            '<div class="mbc-comment-icon-button txt" title="Add comment">' +
             '   <span class="mbc-comment-icon icon-bubble2"></span>' +
             '</div>',
 

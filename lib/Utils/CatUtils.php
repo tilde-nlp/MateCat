@@ -1,7 +1,7 @@
 <?php
 
 include_once INIT::$MODEL_ROOT . "/queries.php";
-include_once INIT::$UTILS_ROOT . "/MyMemory.copyrighted.php";
+//include_once INIT::$UTILS_ROOT . "/MyMemory.copyrighted.php";
 
 define("LTPLACEHOLDER", "##LESSTHAN##");
 define("GTPLACEHOLDER", "##GREATERTHAN##");
@@ -219,12 +219,11 @@ class CatUtils {
     }
 
     public static function stripTags($text) {
-        $pattern_g_o = '|(<.*?>)|';
-        $pattern_g_c = '|(</.*?>)|';
-        $pattern_x = '|(<.*?/>)|';
+        $pattern_g_o = '(<[a-zA-Z0-9]{1,5} id="[_]?[0-9]+">)';
+        $pattern_g_c = '(<\/[a-zA-Z0-9]{1,5}>)';
+        $pattern_x = '(<[a-zA-Z0-9]{1,5} id="[_]?[0-9]+"\/>)';
 
         $text = preg_replace($pattern_x, "", $text);
-
         $text = preg_replace($pattern_g_o, "", $text);
         $text = preg_replace($pattern_g_c, "", $text);
         return $text;
@@ -680,7 +679,7 @@ class CatUtils {
     public static function segment_raw_wordcount( $string, $source_lang = 'en-US' ) {
 
         $string = self::clean_raw_string_4_word_count( $string, $source_lang );
-        
+
         /**
          * Escape dash and underscore and replace them with Macro and Cedilla characters!
          *
@@ -885,17 +884,30 @@ class CatUtils {
      * Returns the string representing the overall quality for a job,
      * taking into account both old revision and new revision.
      *
-     * @param $job
+     * @param Jobs_JobStruct         $job
+     *
+     * @param Projects_ProjectStruct $project
+     * @param FeatureSet             $featureSet
+     *
      * @return string
      */
-    public static function getQualityOverallFromJobStruct( Jobs_JobStruct $job ) {
+    public static function getQualityOverallFromJobStruct( Jobs_JobStruct $job, Projects_ProjectStruct $project, FeatureSet $featureSet ) {
 
-        $values = self::getQualityInfoFromJobStruct( $job );
+        $values = self::getQualityInfoFromJobStruct( $job, $project, $featureSet );
 
-        $result = null ;
+        $result = null;
+        $codes  = $featureSet->getCodes();
 
-        if ( in_array( Features::REVIEW_IMPROVED, $job->getProject()->getFeatures()->getCodes() ) ) {
-            $result = @$values->is_pass ? 'excellent' : 'fail' ;
+        if ( in_array( Features::REVIEW_IMPROVED, $codes ) || in_array( Features::REVIEW_EXTENDED, $codes) ) {
+
+            if( @$values->is_pass == null ){
+                $result = $values->is_pass;
+            } elseif( !empty( $values->is_pass ) ){
+                $result = 'excellent';
+            } else {
+                $result = 'fail';
+            }
+
         } else {
             $result = strtolower( $values['minText'] ) ;
         }
@@ -904,19 +916,19 @@ class CatUtils {
     }
 
     /**
-     * @param Jobs_JobStruct $job
+     * @param Jobs_JobStruct         $job
+     *
+     * @param Projects_ProjectStruct $project
+     * @param FeatureSet             $featureSet
      *
      * @return array|\LQA\ChunkReviewStruct|null
      *
      */
-    public static function getQualityInfoFromJobStruct( Jobs_JobStruct $job ){
+    public static function getQualityInfoFromJobStruct( Jobs_JobStruct $job, Projects_ProjectStruct $project, FeatureSet $featureSet ) {
 
         $result = null ;
 
-        $project = $job->getProject();
-        $featureSet = $project->getFeatures();
-
-        if ( in_array( Features::REVIEW_IMPROVED, $featureSet->getCodes() ) ) {
+        if ( in_array( \Features\ReviewImproved::FEATURE_CODE, $featureSet->getCodes() ) || in_array( \Features\ReviewExtended::FEATURE_CODE, $featureSet->getCodes() ) ) {
             $review = \LQA\ChunkReviewDao::findOneChunkReviewByIdJobAndPassword( $job->id, $job->password ) ;
             $result = $review;
         } else {
@@ -965,6 +977,25 @@ class CatUtils {
             return $wStruct;
         }
         return $wStruct;
+    }
+
+    public static function getSerializedCategories($reviceClass){
+        $categoriesDbNames = Constants_Revise::$categoriesDbNames;
+        $categories        = [];
+        foreach ( $categoriesDbNames as $categoryDbName ) {
+
+            $categories[] = [
+                    'label'         => constant( get_class( $reviceClass ) ."::". strtoupper( $categoryDbName ) ),
+                    'id'            => $categoryDbName,
+                    'severities'    => [
+                            ['label' => Constants_Revise::MINOR, 'penalty' => Constants_Revise::$const2ServerValues[Constants_Revise::MINOR]],
+                            ['label' => Constants_Revise::MAJOR, 'penalty' => Constants_Revise::$const2ServerValues[Constants_Revise::MAJOR]]
+                    ],
+                    'subcategories' => [],
+                    'options'       => [],
+            ];
+        }
+        return json_encode( ['categories' =>  $categories ] );
     }
 
 }

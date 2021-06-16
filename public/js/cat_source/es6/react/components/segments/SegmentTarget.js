@@ -14,7 +14,7 @@ class SegmentTarget extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            translation : this.props.segment.decoded_translation,
+            translation: this.props.segment.decoded_translation,
             originalTranslation: (this.props.segment.original_translation ? this.props.segment.original_translation : this.props.segment.translation)
         };
         this.replaceTranslation = this.replaceTranslation.bind(this);
@@ -45,6 +45,7 @@ class SegmentTarget extends React.Component {
             });
         }
     }
+
     beforeRenderActions() {
         if (!this.props.isReviewImproved) {
             var area = $("#segment-" + this.props.segment.sid + " .targetarea");
@@ -61,8 +62,36 @@ class SegmentTarget extends React.Component {
 
     onClickEvent(event) {
         if (this.props.readonly) {
-            UI.handleClickOnReadOnly( $(event.currentTarget).closest('section') );
+            UI.handleClickOnReadOnly($(event.currentTarget).closest('section'));
         }
+    }
+
+    selectIssueText(event) {
+        var selection = document.getSelection();
+        var container = $(this.issuesHighlightArea).find('.errorTaggingArea') ;
+        if ( this.textSelectedInsideSelectionArea(selection, container ) )  {
+            event.preventDefault();
+            event.stopPropagation();
+            selection = getSelectionData( selection, container ) ;
+            SegmentActions.openIssuesPanel({ sid: this.props.segment.sid,  selection : selection }, true);
+            setTimeout(()=> {
+                SegmentActions.showIssuesMessage(this.props.segment.sid, 2);
+            });
+        } else {
+            this.props.removeSelection();
+            UI.editAreaClick(event.currentTarget);
+        }
+    }
+
+    textSelectedInsideSelectionArea( selection, container ) {
+        return container.contents().text().indexOf(selection.focusNode.textContent)>=0 &&
+            container.contents().text().indexOf(selection.anchorNode.textContent)>=0 &&
+            selection.toString().length > 0 ;
+    };
+
+    lockEditArea(event) {
+        event.preventDefault();
+        SegmentActions.lockEditArea(this.props.segment.sid, this.props.segment.fid);
     }
 
     decodeTranslation(segment, translation) {
@@ -70,19 +99,22 @@ class SegmentTarget extends React.Component {
     }
 
     allowHTML(string) {
-        return { __html: string };
+        return {__html: string};
     }
 
     componentDidMount() {
         SegmentStore.addListener(SegmentConstants.REPLACE_TRANSLATION, this.replaceTranslation);
+        // SegmentStore.addListener(SegmentConstants.TRANSLATION_EDITED, this.replaceTranslation);
         SegmentStore.addListener(SegmentConstants.DISABLE_TAG_LOCK, this.toggleTagLock);
         SegmentStore.addListener(SegmentConstants.ENABLE_TAG_LOCK, this.toggleTagLock);
         SegmentStore.addListener(SegmentConstants.SET_SEGMENT_ORIGINAL_TRANSLATION, this.setOriginalTranslation);
         this.afterRenderActions();
 
     }
+
     componentWillUnmount() {
         SegmentStore.removeListener(SegmentConstants.REPLACE_TRANSLATION, this.replaceTranslation);
+        // SegmentStore.removeListener(SegmentConstants.TRANSLATION_EDITED, this.replaceTranslation);
         SegmentStore.removeListener(SegmentConstants.DISABLE_TAG_LOCK, this.toggleTagLock);
         SegmentStore.addListener(SegmentConstants.ENABLE_TAG_LOCK, this.toggleTagLock);
         SegmentStore.removeListener(SegmentConstants.SET_SEGMENT_ORIGINAL_TRANSLATION, this.setOriginalTranslation);
@@ -91,6 +123,7 @@ class SegmentTarget extends React.Component {
     componentWillMount() {
         this.beforeRenderActions();
     }
+
     componentWillUpdate() {
         this.beforeRenderActions();
     }
@@ -101,22 +134,36 @@ class SegmentTarget extends React.Component {
 
     render() {
         var textAreaContainer = "";
-        let translation = this.state.translation.replace( /(<\/span\>\s)$/gi, "</span><br class=\"end\">" );
+        let translation = this.state.translation.replace(/(<\/span\>\s)$/gi, "</span><br class=\"end\">");
 
-        if (this.props.isReviewImproved) {
+        if ( this.props.isReviewImproved ) {
             textAreaContainer = <div data-mount="segment_text_area_container">
-                                    <div className="textarea-container" onClick={this.onClickEvent.bind(this)}>
-                                        <div className="targetarea issuesHighlightArea errorTaggingArea" dangerouslySetInnerHTML={ this.allowHTML(translation) }/>
-                                    </div>
-                                </div>
-
+                <div className="textarea-container" onClick={this.onClickEvent.bind( this )}>
+                    <div className="targetarea issuesHighlightArea errorTaggingArea"
+                         dangerouslySetInnerHTML={this.allowHTML( translation )}/>
+                </div>
+            </div>
+        } else if ( this.props.segment.edit_area_locked ) {
+            textAreaContainer = <div className="segment-text-area-container" data-mount="segment_text_area_container">
+                <div className="textarea-container" onClick={this.onClickEvent.bind( this )} onMouseUp={this.selectIssueText.bind(this)}
+                ref={(div)=> this.issuesHighlightArea = div}>
+                    <div className="targetarea issuesHighlightArea errorTaggingArea"
+                         dangerouslySetInnerHTML={this.allowHTML( translation )}/>
+                </div>
+                <div className="toolbar">
+                    {config.isReview && ReviewExtended.enabled() ? (
+                        <a href="#" className="revise-lock-editArea active" onClick={this.lockEditArea.bind(this)} title="Highlight text and assign an issue to the selected text."/>
+                    ): null}
+                </div>
+            </div>
         } else {
             var s2tMicro = "";
             var tagModeButton = "";
             var tagCopyButton = "";
             var tagLockCustomizable;
-            if ( (this.props.segment.segment.match( /\&lt;.*?\&gt;/gi ) && config.tagLockCustomizable ) ) {
-                var tagLockCustomizable = (UI.tagLockEnabled  ? <a href="#" className="tagLockCustomize icon-lock" title="Toggle Tag Lock"/> :
+            if ((this.props.segment.segment.match(/\&lt;.*?\&gt;/gi) && config.tagLockCustomizable)) {
+                var tagLockCustomizable = (UI.tagLockEnabled ?
+                    <a href="#" className="tagLockCustomize icon-lock" title="Toggle Tag Lock"/> :
                     <a href="#" className="tagLockCustomize icon-unlocked3" title="Toggle Tag Lock"/>);
             }
 
@@ -142,10 +189,12 @@ class SegmentTarget extends React.Component {
             }
 
             //Tag Mode Buttons
+
             if (this.props.tagModesEnabled && !this.props.enableTagProjection && UI.tagLockEnabled) {
                 var buttonClass = ($('body').hasClass("tagmode-default-extended")) ? "active" : "";
                 tagModeButton =
-                    <a href="#" className={"tagModeToggle " + buttonClass} alt="Display full/short tags" title="Display full/short tags">
+                    <a href="#" className={"tagModeToggle " + buttonClass} alt="Display full/short tags"
+                       title="Display full/short tags">
                         <span className="icon-chevron-left"/>
                         <span className="icon-tag-expand"/>
                         <span className="icon-chevron-right"/>
@@ -161,26 +210,30 @@ class SegmentTarget extends React.Component {
             textAreaContainer = <div className="textarea-container">
 
 
-                                    <EditArea
-                                        segment={this.props.segment}
-                                        translation={translation}
-                                        locked={this.props.locked}
-                                        readonly={this.props.readonly}
-                                    />
+                <EditArea
+                    segment={this.props.segment}
+                    translation={translation}
+                    locked={this.props.locked}
+                    readonly={this.props.readonly}
+                />
 
-                                    {s2tMicro}
-                                    <div className="original-translation" style={{display: 'none'}} dangerouslySetInnerHTML={ this.allowHTML(this.state.originalTranslation) }/>
-                                    <div className="toolbar">
-                                        {tagLockCustomizable}
-                                        {tagModeButton}
-                                        {tagCopyButton}
-                                        <ul className="editToolbar">
-                                            <li className="uppercase" title="Uppercase"/>
-                                            <li className="lowercase" title="Lowercase"/>
-                                            <li className="capitalize" title="Capitalized"/>
-                                        </ul>
-                                    </div>
-                                </div>;
+                {s2tMicro}
+                <div className="original-translation" style={{display: 'none'}}
+                     dangerouslySetInnerHTML={this.allowHTML(this.state.originalTranslation)}/>
+                <div className="toolbar">
+                    {config.isReview && ReviewExtended.enabled() ? (
+                        <a href="#" className="revise-lock-editArea" onClick={this.lockEditArea.bind(this)} title="Highlight text and assign an issue to the selected text."/>
+                    ): null}
+                    {tagLockCustomizable}
+                    {tagModeButton}
+                    {tagCopyButton}
+                    <ul className="editToolbar">
+                        <li className="uppercase" title="Uppercase"/>
+                        <li className="lowercase" title="Lowercase"/>
+                        <li className="capitalize" title="Capitalized"/>
+                    </ul>
+                </div>
+            </div>;
         }
         return (
             <div className="target item" id={"segment-" + this.props.segment.sid + "-target"}>
@@ -188,7 +241,15 @@ class SegmentTarget extends React.Component {
                 {textAreaContainer}
                 <p className="warnings"/>
 
-                <ul className="buttons toggle" data-mount="main-buttons" id={"segment-" + this.props.segment.sid + "-buttons"}/>
+                <ul className="buttons toggle" data-mount="main-buttons"
+                    id={"segment-" + this.props.segment.sid + "-buttons"}/>
+
+                {this.props.segment.warnings ?
+                    <SegmentWarnings
+                        warnings={this.props.segment.warnings}
+                    />
+                    : null
+                }
             </div>
         )
     }

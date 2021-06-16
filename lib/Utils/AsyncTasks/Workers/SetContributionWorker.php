@@ -9,7 +9,7 @@
 
 namespace AsyncTasks\Workers;
 
-use Contribution\ContributionStruct,
+use Contribution\ContributionSetStruct,
         Engine,
         TaskRunner\Commons\AbstractWorker,
         TaskRunner\Commons\QueueElement,
@@ -20,6 +20,8 @@ use Contribution\ContributionStruct,
         TaskRunner\Commons\AbstractElement,
         Jobs_JobStruct;
 use INIT;
+use TildeTM;
+use Jobs_JobDao;
 
 class SetContributionWorker extends AbstractWorker {
 
@@ -59,7 +61,7 @@ class SetContributionWorker extends AbstractWorker {
          */
         $this->_checkForReQueueEnd( $queueElement );
 
-        $contributionStruct = new ContributionStruct( $queueElement->params->toArray() );
+        $contributionStruct = new ContributionSetStruct( $queueElement->params->toArray() );
 
         $this->_checkDatabaseConnection();
 
@@ -68,18 +70,15 @@ class SetContributionWorker extends AbstractWorker {
     }
 
     /**
-     * @param ContributionStruct $contributionStruct
+     * @param ContributionSetStruct $contributionStruct
      *
      * @throws ReQueueException
      * @throws \Exception
      * @throws \Exceptions\ValidationError
      */
-    protected function _execContribution( ContributionStruct $contributionStruct ){
+    protected function _execContribution( ContributionSetStruct $contributionStruct ){
 
         $jobStruct = $contributionStruct->getJobStruct();
-//        $userInfoList = $contributionStruct->getUserInfo();
-//        $userInfo = array_pop( $userInfoList );
-
         $this->_loadEngine( $contributionStruct );
 
         $config = $this->_engine->getConfigStruct();
@@ -94,13 +93,13 @@ class SetContributionWorker extends AbstractWorker {
 
         try {
 
-            if( empty( $isANewSet ) && $contributionStruct->propagationRequest ){
-                $this->_update( $config, $contributionStruct );
-                $this->_doLog( "Key UPDATE: $redisSetKey, " . var_export( $isANewSet, true ) );
-            } else {
-                $this->_set( $config, $contributionStruct );
-                $this->_doLog( "Key SET: $redisSetKey, " . var_export( $isANewSet, true ) );
-            }
+//            if( empty( $isANewSet ) && $contributionStruct->propagationRequest ){
+//                $this->_update( $config, $contributionStruct );
+//                $this->_doLog( "Key UPDATE: $redisSetKey, " . var_export( $isANewSet, true ) );
+//            } else {
+//                $this->_set( $config, $contributionStruct );
+//                $this->_doLog( "Key SET: $redisSetKey, " . var_export( $isANewSet, true ) );
+//            }
 
             $this->_queueHandler->getRedisClient()->expire(
                     $redisSetKey,
@@ -121,12 +120,12 @@ class SetContributionWorker extends AbstractWorker {
      * !Important Refresh the engine ID for each queueElement received
      * to avoid set contributions on the wrong engine ID
      *
-     * @param ContributionStruct $contributionStruct
+     * @param ContributionSetStruct $contributionStruct
      *
      * @throws \Exception
      * @throws \Exceptions\ValidationError
      */
-    protected function _loadEngine( ContributionStruct $contributionStruct ){
+    protected function _loadEngine( ContributionSetStruct $contributionStruct ){
 
         $jobStruct = $contributionStruct->getJobStruct();
         if( empty( $this->_engine ) ){
@@ -136,51 +135,50 @@ class SetContributionWorker extends AbstractWorker {
     }
 
     /**
-     * @param array              $config
-     * @param ContributionStruct $contributionStruct
+     * @param array                 $config
+     * @param ContributionSetStruct $contributionStruct
      *
      * @throws ReQueueException
      * @throws \Exceptions\ValidationError
      */
-    protected function _set( Array $config, ContributionStruct $contributionStruct ){
-
-        $config[ 'segment' ]        = $contributionStruct->segment;
-        $config[ 'translation' ]    = $contributionStruct->translation;
-        $config[ 'context_after' ]  = $contributionStruct->context_after;
-        $config[ 'context_before' ] = $contributionStruct->context_before;
-
-        //get the Props
-        $config[ 'prop' ]        = json_encode( $contributionStruct->getProp() );
-
-        // set the contribution for every key in the job belonging to the user
-        $res = $this->_engine->set( $config );
-        if ( !$res ) {
-            //reset the engine
-            $this->_raiseException( 'Set', $config );
+    protected function _set( Array $config, ContributionSetStruct $contributionStruct ) {
+        $TildeTM = new TildeTM(INIT::$TM_BASE_URL, $contributionStruct->jwt_token);
+        $memories = $TildeTM->getMemories();
+        $canWrite= $this->settingsToArray(Jobs_JobDao::getMemorySetting($contributionStruct->uid));
+        if (empty($memories)) {
+            return;
         }
-
+        foreach($memories as &$mem) {
+            $writeValue = empty($canWrite[$mem->id]) ? true : $canWrite[$mem->id];
+            $mem->write = true && $mem->canUpdate && $writeValue;
+        }
+        foreach($memories as $memory) {
+            if (!$memory->write) {
+                continue;
+            }
+            $TildeTM->writeMatch(
+                $memory->id,
+                $contributionStruct->segment,
+                $contributionStruct->translation,
+                substr($config['source'], 0, 2),
+                substr($config['target'], 0, 2)
+            );
+        }
     }
 
-    protected function _update( Array $config, ContributionStruct $contributionStruct ){
-
-        // update the contribution for every key in the job belonging to the user
-        $config[ 'segment' ]        = $contributionStruct->oldSegment;
-        $config[ 'translation' ]    = $contributionStruct->oldTranslation;
-        $config[ 'context_after' ]  = $contributionStruct->context_after;
-        $config[ 'context_before' ] = $contributionStruct->context_before;
-
-        $config[ 'newsegment' ]     = $contributionStruct->segment;
-        $config[ 'newtranslation' ] = $contributionStruct->translation;
-
-        $res = $this->_engine->update( $config );
-        if ( !$res ) {
-            //reset the engine
-            $this->_raiseException( 'Update', $config );
+    private function settingsToArray($settings) {
+        $settingsArray = [];
+        foreach($settings as $setting) {
+            $settingsArray[$setting['memory_id']] = intval($setting['write_memory']) > 0;
         }
-
+        return $settingsArray;
     }
 
-    protected function _extractAvailableKeysForUser( ContributionStruct $contributionStruct, Jobs_JobStruct $jobStruct ){
+    protected function _update( Array $config, ContributionSetStruct $contributionStruct ){
+        $this->_set($config, $contributionStruct);
+    }
+
+    protected function _extractAvailableKeysForUser( ContributionSetStruct $contributionStruct, Jobs_JobStruct $jobStruct ){
 
         if ( $contributionStruct->fromRevision ) {
             $userRole = TmKeyManagement_Filter::ROLE_REVISOR;

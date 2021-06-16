@@ -11,7 +11,7 @@ window.MC.SegmentMainButtons = require('./components/SegmentMainButtons').defaul
 
 window.classnames = require('classnames');
 
-window.ReviewSidePanel = require('./components/review/ReviewSidePanel').default ;
+window.ReviewSidePanel = require('./components/review_improved/ReviewSidePanel').default ;
 window.ReviewTranslationIssueCommentsContainer = require('./components/review_improved/ReviewTranslationIssueCommentsContainer').default ;
 window.ReviewIssueCategorySelector = require('./components/review_improved/ReviewIssueCategorySelector').default ;
 window.QualityReportVersions = require('./components/review_improved/QualityReportVersions').default ;
@@ -19,8 +19,8 @@ window.QualityReportVersions = require('./components/review_improved/QualityRepo
 
 window.Review_QualityReportButton = require('./components/review/QualityReportButton').default ;
 
-window.SubHeaderContainer = require('./components/header/SubHeaderContainer').default ;
-window.SegmentFilter = require('./components/header/segment_filter/SegmentsFilter').default;
+window.SubHeaderContainer = require('./components/header/cattol/SubHeaderContainer').default ;
+window.SegmentFilter = require('./components/header/cattol/segment_filter/SegmentsFilter').default;
 window.NotificationBox = require('./components/notificationsComponent/NotificationBox').default;
 
 window.ManageConstants = require('./constants/ManageConstants');
@@ -42,7 +42,7 @@ window.ProjectContainer = require('./components/projects/ProjectContainer').defa
 window.JobContainer = require('./components/projects/JobContainer').default;
 window.JobMenu = require('./components/projects/JobMenu').default;
 
-window.Header = require("./components/Header").default;
+window.Header = require("./components/header/Header").default;
 
 window.ModalWindow = require('./modals/ModalWindowComponent').default;
 window.SuccessModal = require('./modals/SuccessModal').default;
@@ -57,6 +57,7 @@ window.OutsourceModal = require('./modals/OutsourceModal').default;
 window.SplitJobModal = require('./modals/SplitJob').default;
 window.DQFModal = require('./modals/DQFModal').default;
 window.ShortCutsModal = require('./modals/ShortCutsModal').default;
+window.CopySourceModal = require('./modals/CopySourceModal').default;
 
 window.CreateTeamModal = require('./modals/CreateTeam').default;
 window.ModifyTeamModal = require('./modals/ModifyTeam').default;
@@ -68,5 +69,12 @@ window.OpenJobBox = require('./components/outsource/OpenJobBox').default;
 window.SegmentActions = require('./actions/SegmentActions');
 window.SegmentStore = require('./stores/SegmentStore');
 window.SegmentsContainer = require('./components/segments/SegmentsContainer').default;
+window.Segment = require('./components/segments/Segment').default;
+window.SegmentFooter = require('./components/segments/SegmentFooter').default;
 window.SegmentTabMatches = require('./components/segments/SegmentFooterTabMatches').default;
+window.SegmentTabMessages = require('./components/segments/SegmentFooterTabMessages').default;
+window.SegmentWarnings = require('./components/segments/SegmentWarnings').default;
+
+window.SearchUtils = require('./components/header/cattol/search/searchUtils');
+
 

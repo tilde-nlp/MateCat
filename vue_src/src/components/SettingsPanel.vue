@@ -1,0 +1,138 @@
+<template>
+  <div class="settings-container">
+    <div class="settings-container-head">
+      {{ $lang.titles.settings }}
+      <button
+        class="close-button"
+        @click="() => { $emit('closeSettings') }"
+      >{{ $lang.buttons.close }}</button>
+    </div>
+    <div class="bb-blueish"/>
+    <div class="settings-container-options">
+      <div>
+        <check-box
+          :value="$store.state.profile.tm_pretranslate"
+          @change="val => { setTmPretranslate(val) }"
+        />
+        <div class="ib va-top">
+          {{ $lang.messages.fill_100p_tm }}
+        </div>
+      </div>
+      <div class="mt-24">
+        <check-box
+          :value="$store.state.profile.mt_pretranslate"
+          @change="val => { setMtPretranslate(val) }"
+        />
+        <div class="ib va-top">
+          {{ $lang.messages.fill_mt }}
+        </div>
+      </div>
+      <div class="input-label mt-32 size-s-i">
+        {{ $lang.titles.translation_memories }}
+      </div>
+      <div class="input-label ib-i w-64">
+        {{ $lang.titles.read }}
+      </div>
+      <div class="input-label ib-i w-64">
+        {{ $lang.titles.write }}
+      </div>
+      <div
+        id="memory-list"
+        :style="{'max-height': memoryListHeight + 'px'}"
+        class="mt-8"
+      >
+        <svgicon
+          v-if="$loading.isLoading('memories')"
+          class="svg-loading va-middle"
+          name="loading"
+          height="24"
+        />
+        <transition-group
+          v-else
+          name="ffade"
+          mode="out-in"
+        >
+          <div
+            v-for="(memory, index) in memories"
+            :key="index"
+          >
+            <div class="size-s dark b-light-darker mt-4 p-8">
+              <check-box
+                :value="memory.read"
+                class="ib w-64"
+                @change="val => { setRead(memory, val) }"
+              />
+              <check-box
+                :value="memory.write"
+                :disabled="!memory.canUpdate"
+                class="ib w-64"
+                @change="val => { setWrite(memory, val) }"
+              />
+              <div class="ib va-top">{{ memory.name }}</div>
+            </div>
+          </div>
+        </transition-group>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import CheckBox from './Checkbox'
+import TranslationMemoryService from 'services/translation-memory'
+import LanguagesService from 'services/languages'
+import Vue from 'vue'
+export default {
+  name: 'SettingsPanel',
+  components: {
+    'check-box': CheckBox
+  },
+  data: function () {
+    return {
+      memories: [],
+      memoryListHeight: 300
+    }
+  },
+  mounted: function () {
+    this.$loading.startLoading('memories')
+    TranslationMemoryService.get()
+      .then(response => {
+        this.memories = null
+        this.memories = response.data
+        this.$loading.endLoading('memories')
+        this.$nextTick(function () {
+          window.addEventListener('resize', this.setMemoryListHeight)
+          this.setMemoryListHeight()
+        })
+      })
+  },
+  beforeDestroy: function () {
+    window.removeEventListener('resize', this.setMemoryListHeight)
+  },
+  methods: {
+    setRead: function (memory, value) {
+      Vue.set(memory, 'read', value)
+      TranslationMemoryService.saveSettings(memory)
+    },
+    setWrite: function (memory, value) {
+      Vue.set(memory, 'write', value)
+      TranslationMemoryService.saveSettings(memory)
+    },
+    setConcordance: function (memory, value) {
+      Vue.set(memory, 'concordance', value)
+      TranslationMemoryService.saveSettings(memory)
+    },
+    setTmPretranslate: function (value) {
+      LanguagesService.saveTmPretranslate({pretranslate: value ? 1 : 0})
+      this.$store.commit('tmPretranslate', value)
+    },
+    setMtPretranslate: function (value) {
+      LanguagesService.saveMtPretranslate({pretranslate: value ? 1 : 0})
+      this.$store.commit('mtPretranslate', value)
+    },
+    setMemoryListHeight: function () {
+      const appHeight = document.getElementById('cat-app').clientHeight
+      this.memoryListHeight = appHeight - 319
+    }
+  }
+}
+</script>

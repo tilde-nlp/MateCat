@@ -12,7 +12,7 @@
                 segment = new UI.Segment( editarea.closest('section') );
             }
 
-            if ( Review.enabled() && !Review.evalOpenableSegment( segment.el ) ) {
+            if ( Review.enabled() && !UI.evalOpenableSegment( segment.el ) ) {
                 return false ;
             }
 
@@ -66,9 +66,6 @@
             } else {
                 this.setCurrentSegment();
             }
-
-
-            this.currentSegment.attr('data-searchItems', ($('mark.searchMarker', this.editarea).length));
 
             this.focusEditarea = setTimeout(function() {
                 UI.editarea.focus();

@@ -38,7 +38,7 @@ class SegmentFooterTabGlossary extends React.Component {
                     UI.cacheGlossaryData( response.data.matches, self.props.id_segment );
                     // Todo: refactor
                     if ( !UI.body.hasClass( 'searchActive' )) {
-                        UI.markGlossaryItemsInSource( response.data.matches );
+                        UI.markGlossaryItemsInSource(UI.getSegmentById(self.props.id_segment), response.data.matches );
                     }
                 });
         }
@@ -57,7 +57,7 @@ class SegmentFooterTabGlossary extends React.Component {
             e.preventDefault();
             let txt = this.source.textContent;
             let target = this.target.textContent;
-            if (txt.length > 2 && !target) {
+            if (txt.length > 0 && !target) {
                 this.setState({
                     loading: true
                 });
@@ -74,7 +74,7 @@ class SegmentFooterTabGlossary extends React.Component {
                         SegmentActions.addClassToSegment(self.props.id_segment, 'glossary-loaded');
                         self.setTotalMatchesInTab( response.data.matches );
                         // Todo: refactor
-                        UI.markGlossaryItemsInSource( response.data.matches );
+                        UI.markGlossaryItemsInSource(UI.getSegmentById(self.props.id_segment), response.data.matches );
                     });
             } else if (txt && target){
                 this.setGlossaryItem();
@@ -215,7 +215,7 @@ class SegmentFooterTabGlossary extends React.Component {
                         matches: matches
                     });
                     self.setTotalMatchesInTab( matches );
-                    UI.markGlossaryItemsInSource(matches);
+                    UI.markGlossaryItemsInSource(UI.getSegmentById( self.props.id_segment ), matches);
                 });
 
         } else {
@@ -313,14 +313,12 @@ class SegmentFooterTabGlossary extends React.Component {
 
     componentDidMount() {
         this._isMounted = true;
-        console.log("Mount SegmentFooterGlossary" + this.props.id_segment);
         SegmentStore.addListener(SegmentConstants.RENDER_GLOSSARY, this.checkGlossary);
 
     }
 
     componentWillUnmount() {
         this._isMounted = false;
-        console.log("Unmount SegmentFooterGlossary" + this.props.id_segment);
         SegmentStore.removeListener(SegmentConstants.RENDER_GLOSSARY, this.checkGlossary);
 
     }

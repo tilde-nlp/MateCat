@@ -3,6 +3,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
+use Segments\ContextGroupDao;
+
 class getSegmentsController extends ajaxController {
 
     private $data = array();
@@ -17,6 +20,9 @@ class getSegmentsController extends ajaxController {
     private $filetype_handler = null;
     private $start_from = 0;
     private $page = 0;
+    private $searchInSource = '';
+    private $searchInTarget = '';
+    private $searchInComments = '';
 
     /**
      * @var Chunks_ChunkStruct
@@ -36,24 +42,38 @@ class getSegmentsController extends ajaxController {
         parent::__construct();
 
         $filterArgs = array(
-            'jid'         => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
+            'projectId'         => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
             'step'        => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
             'segment' => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
-            'password'    => array( 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH ),
+            'projectPassword'    => array( 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH ),
             'where'       => array( 'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH ),
+            'searchInSource'       => array( 'filter' => FILTER_UNSAFE_RAW ),
+            'searchInTarget'       => array( 'filter' => FILTER_UNSAFE_RAW ),
+            'searchInComments'       => array( 'filter' => FILTER_UNSAFE_RAW ),
         );
 
         $__postInput = filter_input_array( INPUT_POST, $filterArgs );
 
-        //NOTE: This is for debug purpose only,
-        //NOTE: Global $_POST Overriding from CLI Test scripts
-        //$__postInput = filter_var_array( $_POST, $filterArgs );
+        $project = Projects_ProjectDao::findByIdAndPassword(
+            $__postInput['projectId'],
+            $__postInput['projectPassword']
+        );
 
-        $this->jid         = (int)$__postInput[ 'jid' ];
+        if ( !$project ) {
+            throw new NotFoundException();
+        }
+
+        $projectData = getProjectJobData( $__postInput['projectId'] );
+        $projectData = array_pop($projectData);
+
+        $this->jid = $projectData['jid'];
+        $this->password   = $projectData['jpassword'];
         $this->step        = $__postInput[ 'step' ];
         $this->ref_segment = $__postInput[ 'segment' ];
-        $this->password    = $__postInput[ 'password' ];
         $this->where       = $__postInput[ 'where' ];
+        $this->searchInSource       = htmlentities($__postInput[ 'searchInSource' ]);
+        $this->searchInTarget       = htmlentities($__postInput[ 'searchInTarget' ]);
+        $this->searchInComments       = htmlentities($__postInput[ 'searchInComments' ]);
 
     }
 
@@ -78,16 +98,13 @@ class getSegmentsController extends ajaxController {
 
 		if ($this->ref_segment == '') {
 			$this->ref_segment = 0;
-		}
-
-
-        $data = getMoreSegments(
-                $this->jid, $this->password, $this->step,
-                $this->ref_segment, $this->where,
-                $this->getOptionalQueryFields()
-        );
+        }
+        
+        $data = $this->searchSegments();
 
         $this->prepareNotes( $data );
+        $data = $this->prepareComments( $data );
+        $contexts = $this->getContextGroups( $data );
 
 		foreach ($data as $i => $seg) {
 
@@ -193,15 +210,140 @@ class getSegmentsController extends ajaxController {
             );
 
             $this->attachNotes( $seg );
+            $this->attachContexts( $seg, $contexts );
 
             $this->data["$id_file"]['segments'][] = $seg;
         }
 
-        $this->result['data']['files'] = $this->data;
-
-        $this->result['data']['where'] = $this->where;
+        $this->result = [];
+        if (!empty($this->data)) {
+            $this->result['fileId'] = array_keys($this->data)[0];
+            $rawSegments = [];
+            $rawSegments = $this->data[$this->result['fileId']]['segments'];
+            $cleanSegments = [];
+            foreach ($rawSegments as $rawSegment) {
+                $cleanSegments[] = [
+                    'id' => $rawSegment['sid'],
+                    'original' => $rawSegment['segment'],
+                    'translation' => $rawSegment['translation'],
+                    'status' => $rawSegment['status'],
+                    'saveType' => $rawSegment['save_type'],
+                    'saveMatch' => $rawSegment['save_match'],
+                    'comments' => $this->getCleanComments($rawSegment['comments'])
+                ];
+            }
+            $this->result['segments'] = $cleanSegments;
+        }
     }
 
+    private function getCleanComments($rawComments) {
+        if (empty($rawComments)) {
+            return [];
+        }
+
+        $cleanComments = [];
+        foreach($rawComments as $rawComment) {
+            $cleanComments[] = $this->filterCommentData($rawComment);
+        }
+
+        return $cleanComments;
+    }
+
+    protected function filterCommentData($comment) {
+        return [
+            'messageType' => $comment['message_type'],
+            'fullName' => $comment['full_name'],
+            'timestamp' => $comment['timestamp'],
+            'message' => $comment['message'],
+            'threadId' => $comment['thread_id']
+        ];
+    }
+
+    private function searchSegments() {
+        $foundSegments = [];
+        $lastSegmentId = $this->ref_segment - 1;
+        $where = $this->where;
+        while(count($foundSegments) < $this->step) {
+            $data = getMoreSegments(
+                $this->jid, $this->password, $this->step,
+                $lastSegmentId + 1, $where,
+                $this->getOptionalQueryFields(),
+                $this->searchInSource, $this->searchInTarget,
+                $this->searchInComments
+            );
+            $where = 'after';
+            if (empty($data)) {
+                break;
+            }
+            $lastSegmentId = $data[count($data) -1]['sid'];
+            
+            $data = $this->stripTagMatches($data);
+            if (empty($data)) {
+                continue;
+            }
+
+            foreach($data as $row) {
+                $foundSegments[] = $row;
+                if (count($foundSegments) == 2 * $this->step) {
+                    break;
+                }
+            }
+        }
+
+        return $foundSegments;
+    }
+
+    private function stripTagMatches($data) {
+        if ($this->searchInSource == "" && $this->searchInTarget == "") {
+            return $data;
+        }
+
+        $filteredData = [];
+        foreach($data as $row) {
+            $sourceIsTagged = $this->isSegmentTagged($row['segment'], $this->searchInSource);
+            $targetIsTagged = $this->isSegmentTagged($row['translation'], $this->searchInTarget);
+
+            if ($this->searchInSource != "" && !$sourceIsTagged) {
+                $filteredData[] = $row;
+                continue;
+            }
+
+            if ($this->searchInTarget != "" && !$targetIsTagged) {
+                $filteredData[] = $row;
+            }
+        }
+
+        return $filteredData;
+    }
+
+    private function isSegmentTagged($segment, $searchTerm) {
+        if ($searchTerm == "") {
+            return false;
+        }
+        $segment = strtolower($segment);
+        $searchTerm = strtolower($searchTerm);
+
+        $taggedMatches = array_merge(
+            $this->findAllMatches('<' . $searchTerm, $segment),
+            $this->findAllMatches('<e' . $searchTerm, $segment),
+            $this->findAllMatches('<b' . $searchTerm, $segment)
+        );
+        $allMatches = $this->findAllMatches($searchTerm, $segment);
+
+        return (count($allMatches) == count($taggedMatches));
+    }
+
+    private function findAllMatches($needle, $haystack) {
+        $positions = [];
+        $lastPosition = 0;
+
+        while(($lastPosition = strpos($haystack, $needle, $lastPosition)) !== false) {
+            $positions[] = $lastPosition;
+            $lastPosition += strlen($needle);
+        }
+
+        return $positions;
+    }
 
     private function getOptionalQueryFields() {
         $feature = $this->job->getProject()->isFeatureEnabled('translation_versions');
@@ -239,5 +381,46 @@ class getSegmentsController extends ajaxController {
 
     }
 
+    private function prepareComments( $segments ) {
+        if (empty($segments[0])) return $segments;
+        $mappedSegments = array();
+        foreach($segments as $segment) {
+            $mappedSegments[$segment['sid']] = $segment;
+            $mappedSegments[$segment['sid']]['comments'] = array();
+        }
+        $struct = new Comments_CommentStruct() ;
 
+        $struct->id_job = $segments[0]['jid'];
+        $struct->first_segment = $segments[0]['sid'];
+        $last = end($segments);
+        $struct->last_segment  = $last['sid'];
+
+        $commentDao = new Comments_CommentDao( Database::obtain() );
+        $comments = $commentDao->getCommentsInJob( $struct );
+        if (empty($comments)) {
+            return array_values($mappedSegments);
+        }
+
+        foreach($comments as $comment) {
+            if (empty($mappedSegments[$comment['id_segment']])) {
+                continue;
+            }
+            $mappedSegments[$comment['id_segment']]['comments'][] = $comment;
+        }
+
+        return array_values($mappedSegments);
+    }
+
+    private function getContextGroups( $segments ){
+        if ( ! empty( $segments[0] ) ) {
+            $start = $segments[0]['sid'];
+            $last = end($segments);
+            $stop = $last['sid'];
+            return ( new ContextGroupDao() )->getBySIDRange( $start, $stop );
+        }
+    }
+
+    private function attachContexts( &$segment, $contexts ){
+        $segment['context_groups'] = @$contexts[ (int) $segment['sid'] ] ;
+    }
 }

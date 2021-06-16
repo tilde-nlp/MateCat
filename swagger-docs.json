@@ -1,0 +1,1843 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "This is swagger documentation for matecat backend modified for Tilde.",
+    "version": "1.0.0",
+    "title": "Swagger Matecat"
+  },
+  "servers": [
+    {
+      "url": "http://local.matecat.com/",
+      "description": "Local development server"
+    },
+    {
+      "url": "https://hugodev.tilde.lv/mc",
+      "description": "Development server"
+    },
+    {
+      "url": "https://hugotest.tilde.lv/mc",
+      "description": "Test server"
+    },
+    {
+      "url": "https://hugo.lv/mc",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/profile": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Get authorized user profile data",
+        "operationId": "getProfile",
+        "responses": {
+          "200": {
+            "description": "Returns authorized user profile data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/files": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Get paged file list",
+        "operationId": "getFiles",
+        "requestBody": {
+          "description": "Specify page and page size",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Paging"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns paging info and file list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileList"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/files/upload": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Upload file",
+        "operationId": "uploadFile",
+        "requestBody": {
+          "description": "Specify direction, mt system and pretranslate options",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/FileUpload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileUploadResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/files/info": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Get file info",
+        "operationId": "getFileInfo",
+        "requestBody": {
+          "description": "Specify project id and password",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectGetter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileInfo"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/files/analysis": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Get info about file segments and words",
+        "operationId": "getFileAnalysis",
+        "requestBody": {
+          "description": "Specify project id and password",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectGetter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retuns info about file",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileAnalysis"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/files/stats": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Get info about whether file is analyzed and translated percents",
+        "operationId": "getFileStats",
+        "requestBody": {
+          "description": "Specify project id and password",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectGetter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns analysis status and translated percents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileStats"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/files/creation-status": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Get info about file creation status",
+        "operationId": "getFileCreationStatus",
+        "requestBody": {
+          "description": "Specify project id and password",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectGetter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns info whether file is created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileCreationStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/files/delete": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Delete file",
+        "operationId": "deleteFile",
+        "requestBody": {
+          "description": "Specify project id and password",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectGetter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/files/pretranslate": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Pretranslate file",
+        "operationId": "pretranslateFile",
+        "requestBody": {
+          "description": "Specify project id and password, and pretranslate options",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PretranslateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/files/download-original": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Download original file",
+        "operationId": "downloadOriginal",
+        "requestBody": {
+          "description": "Specify project id and password, and jwt auth token",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/DownloadGetter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns file",
+            "content": {
+              "application/download": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/files/download-translated": {
+      "post": {
+        "tags": [
+          "files"
+        ],
+        "summary": "Download translated file",
+        "operationId": "downloadTranslated",
+        "requestBody": {
+          "description": "Specify project id and password, and jwt auth token",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/DownloadGetter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns file",
+            "content": {
+              "application/download": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/segments": {
+      "post": {
+        "tags": [
+          "segments"
+        ],
+        "summary": "Get all file segments",
+        "operationId": "getSegments",
+        "requestBody": {
+          "description": "Specify segment search parameters",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/SegmentSearch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns list by specified search params",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SegmentList"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/segments/set-active": {
+      "post": {
+        "tags": [
+          "segments"
+        ],
+        "summary": "Set active segment",
+        "operationId": "setActiveSegment",
+        "requestBody": {
+          "description": "Specify segment id",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ActiveSegment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/segments/set-edit-time": {
+      "post": {
+        "tags": [
+          "segments"
+        ],
+        "summary": "Set segment editing time",
+        "operationId": "setSegmentEditTime",
+        "requestBody": {
+          "description": "Specify segment id and time",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/SegmentEditTime"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/segments/translate": {
+      "post": {
+        "tags": [
+          "segments"
+        ],
+        "summary": "Set segment translation",
+        "operationId": "setSegmentTranslation",
+        "requestBody": {
+          "description": "Specify segment translation data",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/SegmentTranslation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/mt/matches": {
+      "post": {
+        "tags": [
+          "MT"
+        ],
+        "summary": "Get MT match",
+        "operationId": "getMtMatches",
+        "requestBody": {
+          "description": "Specify mt id and text to translate",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MtMatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return mt match",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MtMatch"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/tm/matches": {
+      "post": {
+        "tags": [
+          "TM"
+        ],
+        "summary": "Get TM match",
+        "operationId": "getTmMatches",
+        "requestBody": {
+          "description": "Specify text, direction and result count",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TmMatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return tm match",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TmMatchList"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/tm/concordance-search": {
+      "post": {
+        "tags": [
+          "TM"
+        ],
+        "summary": "Get concordance search",
+        "operationId": "getConcordanceSearch",
+        "requestBody": {
+          "description": "Specify text, direction and project id",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TmConcordanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return tm match",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TmMatchList"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/tm": {
+      "get": {
+        "tags": [
+          "TM"
+        ],
+        "summary": "Get translation memories",
+        "operationId": "getTranslationMemories",
+        "responses": {
+          "200": {
+            "description": "Return tm list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TmList"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/tm/for-file": {
+      "get": {
+        "tags": [
+          "TM"
+        ],
+        "summary": "Get translation memories for file",
+        "operationId": "getTranslationMemoriesForFile",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "projectId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return tm list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TmList"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/tm/save-settings": {
+      "post": {
+        "tags": [
+          "TM"
+        ],
+        "summary": "Save tm settings",
+        "operationId": "saveTmSettings",
+        "requestBody": {
+          "description": "Memory id and settings",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TmSettings"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/tm/save-settings-for-file": {
+      "post": {
+        "tags": [
+          "TM"
+        ],
+        "summary": "Save tm settings for file",
+        "operationId": "saveTmSettingsForFile",
+        "requestBody": {
+          "description": "Memory id, project id and settings",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TmSettingsForFile"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/comments/add": {
+      "post": {
+        "tags": [
+          "comments"
+        ],
+        "summary": "Add comment",
+        "operationId": "addComments",
+        "requestBody": {
+          "description": "Specify segment id and message",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return comment data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentData"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/comments/resolve": {
+      "post": {
+        "tags": [
+          "comments"
+        ],
+        "summary": "Resolve comment",
+        "operationId": "resolveComments",
+        "requestBody": {
+          "description": "Specify segment id and message",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return comment data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentData"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/settings/save-mt-system": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Save file mt system",
+        "operationId": "saveMtSystem",
+        "requestBody": {
+          "description": "Specify project id and system id",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSystemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/settings/save-tm-pretranslate": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Save tm pretranslate",
+        "operationId": "saveTmPretranslate",
+        "requestBody": {
+          "description": "Specify pretranslate value",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Pretranslate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/settings/save-mt-pretranslate": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Save mt pretranslate",
+        "operationId": "saveMtPretranslate",
+        "requestBody": {
+          "description": "Specify pretranslate value",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Pretranslate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/settings/save-update-mt": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Save update mt",
+        "operationId": "saveUpdateMt",
+        "requestBody": {
+          "description": "Specify update mt value",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMt"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/settings/save-update-mt-for-file": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Save update mt for project",
+        "operationId": "saveUpdateMtForProject",
+        "requestBody": {
+          "description": "Specify update mt value and project id",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMtForProject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkStatus"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/settings/update-mt-for-file": {
+      "get": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Get update mt setting for file",
+        "operationId": "getUpdateMtForFile",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "projectId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return value",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateMtResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Profile": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "mt_pretranslate": {
+            "type": "integer"
+          },
+          "tm_pretranslate": {
+            "type": "integer"
+          },
+          "update_mt": {
+            "type": "integer"
+          },
+          "uid": {
+            "type": "integer"
+          }
+        }
+      },
+      "Paging": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          },
+          "step": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 10
+          }
+        }
+      },
+      "ProjectGetter": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "projectPassword": {
+            "type": "string"
+          }
+        }
+      },
+      "FileAnalysis": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "wordCount": {
+            "type": "integer"
+          },
+          "segmentCount": {
+            "type": "integer"
+          },
+          "segmentsAnalyzed": {
+            "type": "integer"
+          },
+          "jobId": {
+            "type": "integer"
+          },
+          "jobPassword": {
+            "type": "string"
+          }
+        }
+      },
+      "FileStats": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "analysisComplete": {
+            "type": "boolean"
+          },
+          "translatedPercent": {
+            "type": "number"
+          }
+        }
+      },
+      "FileCreationStatus": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "jobId": {
+            "type": "integer"
+          },
+          "jobPassword": {
+            "type": "string"
+          },
+          "projectName": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "FileData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "createTimestamp": {
+            "type": "integer"
+          },
+          "jobId": {
+            "type": "integer"
+          },
+          "jobPassword": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          }
+        }
+      },
+      "FileUpload": {
+        "type": "object",
+        "properties": {
+          "source_language": {
+            "type": "string",
+            "default": "en-US"
+          },
+          "target_language": {
+            "type": "string",
+            "default": "lv-LV"
+          },
+          "mt_system": {
+            "type": "string",
+            "default": ""
+          },
+          "tm_pretranslate": {
+            "type": "integer",
+            "default": 0
+          },
+          "mt_pretranslate": {
+            "type": "integer",
+            "default": 0
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        }
+      },
+      "FileUploadResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "default": 1
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id_project": {
+                "type": "integer"
+              },
+              "password": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "OkStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "FileInfo": {
+        "type": "object",
+        "properties": {
+          "activeSegmentId": {
+            "type": "integer"
+          },
+          "editingTime": {
+            "type": "integer",
+            "description": "Editing time in seconds"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "firstSegmentId": {
+            "type": "integer"
+          },
+          "lastSegmentId": {
+            "type": "integer"
+          },
+          "mtSystemid": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "default": "en-US"
+          },
+          "target": {
+            "type": "string",
+            "default": "lv-LV"
+          },
+          "tmPretranslate": {
+            "type": "integer"
+          },
+          "mtPretranslate": {
+            "type": "integer"
+          },
+          "synonymBaseUrl": {
+            "type": "string"
+          },
+          "termBaseUrl": {
+            "type": "string"
+          }
+        }
+      },
+      "FileList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FileData"
+            }
+          },
+          "page": {
+            "type": "integer"
+          },
+          "pageStep": {
+            "type": "integer"
+          },
+          "totalFiles": {
+            "type": "integer"
+          }
+        }
+      },
+      "SegmentSearch": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "projectPassword": {
+            "type": "string"
+          },
+          "segment": {
+            "type": "integer",
+            "description": "Around which segment to search"
+          },
+          "where": {
+            "type": "string",
+            "description": "before, after or center"
+          },
+          "step": {
+            "type": "integer"
+          },
+          "searchInSource": {
+            "type": "string"
+          },
+          "searchInTarget": {
+            "type": "string"
+          },
+          "searchInComments": {
+            "type": "string"
+          }
+        }
+      },
+      "CommentRequest": {
+        "type": "object",
+        "properties": {
+          "segmentId": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "CommentData": {
+        "type": "object",
+        "properties": {
+          "messageType": {
+            "type": "integer",
+            "description": "1 - comment, 2 - resolving record"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "threadId": {
+            "type": "integer"
+          }
+        }
+      },
+      "Segment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "original": {
+            "type": "string"
+          },
+          "translation": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "saveType": {
+            "type": "string"
+          },
+          "saveMatch": {
+            "type": "number"
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CommentData"
+            }
+          }
+        }
+      },
+      "SegmentList": {
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "type": "integer"
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Segment"
+            }
+          }
+        }
+      },
+      "MtMatchRequest": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "mtId": {
+            "type": "string"
+          }
+        }
+      },
+      "MtMatch": {
+        "type": "string"
+      },
+      "TmMatchRequest": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "projectPassword": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "sourceLang": {
+            "type": "string"
+          },
+          "targetLang": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          }
+        }
+      },
+      "TmConcordanceRequest": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "text": {
+            "type": "string"
+          },
+          "sourceLang": {
+            "type": "string"
+          },
+          "targetLang": {
+            "type": "string"
+          }
+        }
+      },
+      "TmMatch": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "type": "string"
+          },
+          "match": {
+            "type": "number"
+          },
+          "segment": {
+            "type": "string"
+          },
+          "translation": {
+            "type": "string"
+          }
+        }
+      },
+      "TmMatchList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/TmMatch"
+        }
+      },
+      "Tm": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "readMemory": {
+            "type": "integer"
+          },
+          "writeMemory": {
+            "type": "integer"
+          },
+          "canUpdate": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TmList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Tm"
+        }
+      },
+      "TmSettings": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "readMemory": {
+            "type": "integer"
+          },
+          "writeMemory": {
+            "type": "integer"
+          }
+        }
+      },
+      "TmSettingsForFile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "integer"
+          },
+          "readMemory": {
+            "type": "integer"
+          },
+          "writeMemory": {
+            "type": "integer"
+          }
+        }
+      },
+      "ActiveSegment": {
+        "type": "object",
+        "properties": {
+          "segmentId": {
+            "type": "integer"
+          }
+        }
+      },
+      "SegmentEditTime": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "editingTime": {
+            "type": "integer",
+            "description": "editing time in seconds"
+          }
+        }
+      },
+      "SegmentTranslation": {
+        "type": "object",
+        "properties": {
+          "segmentId": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string",
+            "description": "draft or translated"
+          },
+          "translation": {
+            "type": "string"
+          },
+          "segment": {
+            "type": "string"
+          },
+          "saveType": {
+            "type": "string"
+          },
+          "saveMatch": {
+            "type": "string"
+          },
+          "mtId": {
+            "type": "string"
+          }
+        }
+      },
+      "PretranslateRequest": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "projectPassword": {
+            "type": "string"
+          },
+          "useTm": {
+            "type": "integer"
+          },
+          "useMt": {
+            "type": "integer"
+          },
+          "mtSystem": {
+            "type": "string"
+          }
+        }
+      },
+      "SaveSystemRequest": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "mtSystemId": {
+            "type": "string"
+          }
+        }
+      },
+      "Pretranslate": {
+        "type": "object",
+        "properties": {
+          "pretranslate": {
+            "type": "integer"
+          }
+        }
+      },
+      "UpdateMt": {
+        "type": "object",
+        "properties": {
+          "updateMt": {
+            "type": "integer"
+          }
+        }
+      },
+      "UpdateMtForProject": {
+        "type": "object",
+        "properties": {
+          "updateMt": {
+            "type": "integer"
+          },
+          "projectId": {
+            "type": "integer"
+          }
+        }
+      },
+      "UpdateMtResponse": {
+        "type": "integer"
+      },
+      "DownloadGetter": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer"
+          },
+          "projectPassword": {
+            "type": "string"
+          },
+          "jwt": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

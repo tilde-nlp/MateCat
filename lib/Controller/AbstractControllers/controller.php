@@ -16,6 +16,51 @@ abstract class controller implements IController {
     protected $model;
     protected $userRole = TmKeyManagement_Filter::ROLE_TRANSLATOR;
 
+    private static $requestToClassMap = [
+        'GET' => [
+            'profile' => 'getProfileController',
+
+            'tm' => 'getTranslationMemoriesController',
+            'tm/for-file' => 'getSettingsForProjectController',
+
+            'settings/update-mt-for-file' => 'getUpdateMtForFileController'
+        ],
+        'POST' => [
+            'files' => 'getProjectsController',
+            'files/analysis' => 'getVolumeAnalysisController',
+            'files/stats' => 'getFileStatsController',
+            'files/creation-status' => 'getFileCreationStatusController',
+            'files/delete' => 'deleteFileController',
+            'files/upload' => 'uploadFileController',
+            'files/info' => 'jobInfoController',
+            'files/pretranslate' => 'pretranslateController',
+            'files/download-original' => 'downloadOriginalController',
+            'files/download-translated' => 'downloadFileController',
+
+            'segments' => 'getSegmentsController',
+            'segments/set-active' => 'setCurrentSegmentController',
+            'segments/set-edit-time' => 'setEditingTimeController',
+            'segments/translate' => 'setTranslationController',
+
+            'mt/matches' => 'getMtMatchesController',
+
+            'tm/matches' => 'getContributionController',
+            'tm/concordance-search' => 'getConcordanceContributionController',
+            'tm/save-settings' => 'saveSettingsController',
+            'tm/save-settings-for-file' => 'saveSettingsForProjectController',
+
+            'comments/add' => 'commentsAddController',
+            'comments/resolve' => 'commentsResolveController',
+
+            'settings/save-mt-system' => 'saveMtSystemController',
+            'settings/save-tm-pretranslate' => 'saveTmPretranslateController',
+            'settings/save-mt-pretranslate' => 'saveTmPretranslateController',
+            'settings/save-update-mt' => 'saveUpdateMtController',
+            'settings/save-update-mt-for-file' => 'saveUpdateMtForProjectController'
+
+        ]
+    ];
+
     /**
      * @var Users_UserStruct
      */
@@ -54,6 +99,15 @@ abstract class controller implements IController {
         return $this->user;
     }
 
+    public function userIsLogged(){
+        return $this->userIsLogged;
+    }
+
+    private function log($data) {
+        file_put_contents('/var/tmp/worker.log', var_export($data, true), FILE_APPEND);
+        file_put_contents('/var/tmp/worker.log', "\n", FILE_APPEND);
+    }
+
     /**
      * Controllers Factory
      *
@@ -63,33 +117,39 @@ abstract class controller implements IController {
      * @return mixed
      */
     public static function getInstance() {
+        AuthCookie::checkAccess();
+                
+        $requestPath = ltrim(strtolower(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)), '/');
+        $method = strtoupper($_SERVER['REQUEST_METHOD']);
 
-        if( isset( $_REQUEST['api'] ) && filter_input( INPUT_GET, 'api', FILTER_VALIDATE_BOOLEAN ) ){
-
-            if( !isset( $_REQUEST['action'] ) || empty( $_REQUEST['action'] ) ){
-                header( "Location: " . INIT::$HTTPHOST . INIT::$BASEURL . "api/docs", true, 303 ); //Redirect 303 See Other
-                die();
-            }
-
-            $_REQUEST[ 'action' ][0] = strtoupper( $_REQUEST[ 'action' ][ 0 ] );
-            $_REQUEST[ 'action' ] = preg_replace_callback( '/_([a-z])/', function ( $c ) { return strtoupper( $c[ 1 ] ); }, $_REQUEST[ 'action' ] );
-
-            $_POST[ 'action' ]    = $_REQUEST[ 'action' ];
-
-            //set the log to the API Log
-            Log::$fileName = 'API.log';
-
-        }
-
-        //Default :  catController
-        $action = ( isset( $_POST[ 'action' ] ) ) ? $_POST[ 'action' ] : ( isset( $_GET[ 'action' ] ) ? $_GET[ 'action' ] : 'cat' );
-        $className = $action . "Controller";
+        $handlerClassName = self::getHandlerClassName($requestPath, $method);
 
         //Put here all actions we want to be performed by ALL controllers
         require_once INIT::$MODEL_ROOT . '/queries.php';
 
-        return new $className();
+        return new $handlerClassName();
+    }
 
+    private static function getHandlerClassName($request, $method) {
+        if (strpos($request, '&') !== false) {
+            $request = substr($request, 0, strpos($request, '&'));
+        }
+        if (strpos($request, '?') !== false) {
+            $request = substr($request, 0, strpos($request, '?'));
+        }
+        $request = rtrim($request, '/');
+        try {
+            @$className = self::$requestToClassMap[$method][$request];
+        } catch (Throwable $e) {
+            $className = null;
+        }
+
+        if ($className == null || empty($className)) {
+            header('HTTP/1.1 404 Not Found');
+            die();
+        }
+
+        return $className;
     }
 
     /**
@@ -143,13 +203,15 @@ abstract class controller implements IController {
     public function setUserCredentials() {
 
         $this->user        = new Users_UserStruct();
-        $this->user->uid   = ( isset( $_SESSION[ 'uid' ] ) && !empty( $_SESSION[ 'uid' ] ) ? $_SESSION[ 'uid' ] : null );
-        $this->user->email = ( isset( $_SESSION[ 'cid' ] ) && !empty( $_SESSION[ 'cid' ] ) ? $_SESSION[ 'cid' ] : null );
+        $username_from_cookie = AuthCookie::getCredentials();
+
+        $this->user->uid   = $username_from_cookie['uid'];
+        $this->user->email = $username_from_cookie['username'];
 
         try {
 
             $userDao    = new Users_UserDao( Database::obtain() );
-            $loggedUser = $userDao->setCacheTTL( 3600 )->read( $this->user )[ 0 ]; // one hour cache
+            $loggedUser = $userDao->setCacheTTL( 0 )->read( $this->user )[ 0 ]; // one hour cache
             $this->userIsLogged = (
                     !empty( $loggedUser->uid ) &&
                     !empty( $loggedUser->email ) &&
@@ -169,25 +231,16 @@ abstract class controller implements IController {
      *
      */
     protected function _setUserFromAuthCookie() {
-        if ( empty( $_SESSION[ 'cid' ] ) ) {
-            $username_from_cookie = AuthCookie::getCredentials();
-            if ( $username_from_cookie ) {
-                $_SESSION[ 'cid' ] = $username_from_cookie['username'];
-                $_SESSION[ 'uid' ] = $username_from_cookie['uid'];
-            }
+        $username_from_cookie = AuthCookie::getCredentials();
+        if ( $username_from_cookie ) {
+            $_SESSION[ 'cid' ] = $username_from_cookie['username'];
+            $_SESSION[ 'uid' ] = $username_from_cookie['uid'];
         }
     }
 
-    public function readLoginInfo( $close = true ) {
-        //Warning, sessions enabled, disable them after check, $_SESSION is in read only mode after disable
-        self::sessionStart();
+    public function readLoginInfo() {
         $this->_setUserFromAuthCookie();
         $this->setUserCredentials();
-
-        if ( $close ) {
-            self::disableSessions();
-        }
-
     }
 
     /**

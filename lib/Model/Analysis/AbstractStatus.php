@@ -196,10 +196,12 @@ abstract class Analysis_AbstractStatus {
 
             //SUM WITH PREVIOUS ( Accumulator )
             //take note of payable words for job/file combination
-            $total_word_counters[ $jid ][ $jpassword ][ 'eq_word_count' ] += $segInfo[ 'eq_word_count' ];
-            $total_word_counters[ $jid ][ $jpassword ][ 'standard_word_count' ] += $segInfo[ 'standard_word_count' ];
-            $total_word_counters[ $jid ][ $jpassword ][ 'raw_word_count' ] += $segInfo[ 'raw_word_count' ];
-
+            if (isset($segInfo[ 'eq_word_count' ]) && isset($total_word_counters[ $jid ][ $jpassword ][ 'eq_word_count' ])) {
+                $total_word_counters[ $jid ][ $jpassword ][ 'eq_word_count' ] += $segInfo[ 'eq_word_count' ];
+                $total_word_counters[ $jid ][ $jpassword ][ 'standard_word_count' ] += $segInfo[ 'standard_word_count' ];
+                $total_word_counters[ $jid ][ $jpassword ][ 'raw_word_count' ] += $segInfo[ 'raw_word_count' ];
+            }
+            
             $this->result[ 'data' ][ 'jobs' ][ $jid ][ 'chunks' ][ $jpassword ][ $segInfo[ 'id_file' ] ][ 'FILENAME' ] = $segInfo[ 'filename' ];
 
         }
@@ -210,7 +212,11 @@ abstract class Analysis_AbstractStatus {
         //N^2 but there are a little number of rows max 30
         foreach ( $total_word_counters as $jid => $chunks ) {
             foreach ( $chunks as $_jpassword => $v ) {
+                if (!isset($v[ 'eq_word_count' ])) {
+                    continue;
+                }
                 $this->result[ 'data' ][ 'jobs' ][ $jid ][ 'totals' ][ $_jpassword ][ "TOTAL_PAYABLE" ][ 0 ]       = $v[ 'eq_word_count' ]; //compatibility
+                
                 $this->result[ 'data' ][ 'jobs' ][ $jid ][ 'totals' ][ $_jpassword ][ "eq_word_count" ][ 0 ]       = $v[ 'eq_word_count' ];
                 $this->result[ 'data' ][ 'jobs' ][ $jid ][ 'totals' ][ $_jpassword ][ "standard_word_count" ][ 0 ] = $v[ 'standard_word_count' ];
                 $this->result[ 'data' ][ 'jobs' ][ $jid ][ 'totals' ][ $_jpassword ][ "raw_word_count" ][ 0 ]      = $v[ 'raw_word_count' ];

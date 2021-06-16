@@ -12,12 +12,10 @@ class SegmentFooterTabRevise extends React.Component {
     }
 
     componentDidMount() {
-        console.log("Mount SegmentFooterRevise" + this.props.id_segment);
 
     }
 
     componentWillUnmount() {
-        console.log("Unmount SegmentFooterRevise" + this.props.id_segment);
 
     }
 
@@ -56,7 +54,7 @@ class SegmentFooterTabRevise extends React.Component {
                         <td><input type="radio" name="t2" value="0" /></td>
                         <td><input type="radio" name="t2" value="1" /></td>
                         <td><input type="radio" name="t2" value="2" /></td>
-                        <td className="align-left">Translation errors (mistranslation, additions/omissions)</td>
+                        <td className="align-left">Translation errors (mistranslation, additions or omissions)</td>
                     </tr>
                     <tr>
                         <td><input type="radio" name="t3" value="0" /></td>

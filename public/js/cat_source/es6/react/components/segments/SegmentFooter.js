@@ -9,7 +9,6 @@ let SegmentStore = require('../../stores/SegmentStore');
 let SegmentTabConcordance = require('./SegmentFooterTabConcordance').default;
 let SegmentTabGlossary = require('./SegmentFooterTabGlossary').default;
 let SegmentTabConflicts = require('./SegmentFooterTabConflicts').default;
-let SegmentTabMessages = require('./SegmentFooterTabMessages').default;
 let SegmentTabRevise = require('./SegmentFooterTabRevise').default;
 class SegmentFooter extends React.Component {
 
@@ -63,8 +62,8 @@ class SegmentFooter extends React.Component {
                 label : 'Messages',
                 code : 'notes',
                 tab_class : 'segment-notes',
-                enabled : !!(this.props.segment.notes && this.props.segment.notes.length > 0),
-                visible : !!(this.props.segment.notes && this.props.segment.notes.length > 0),
+                enabled : !!(this.props.segment.notes && this.props.segment.notes.length > 0) || !!this.props.segment.context_groups,
+                visible : !!(this.props.segment.notes && this.props.segment.notes.length > 0) || !!this.props.segment.context_groups,
                 open : !!(this.props.segment.notes && this.props.segment.notes.length > 0),
                 elements : []
             },
@@ -88,6 +87,7 @@ class SegmentFooter extends React.Component {
         this.changeTab = this.changeTab.bind(this);
         this.openTab = this.openTab.bind(this);
         this.addTabIndex = this.addTabIndex.bind(this);
+        this.setDefaultTabOpen = this.setDefaultTabOpen.bind(this);
     }
 
     registerTab(tabName, visible, open) {
@@ -154,7 +154,9 @@ class SegmentFooter extends React.Component {
                     active_class = {open_class}
                     tab_class = {tab.tab_class}
                     id_segment = {this.props.sid}
-                    notes={this.props.segment.notes}/>;
+                    notes={this.props.segment.notes}
+                    context_groups={this.props.segment.context_groups}
+                    segmentSource = {this.props.segment.segment}/>;
                 break;
             case 'review':
                 return <SegmentTabRevise
@@ -180,7 +182,15 @@ class SegmentFooter extends React.Component {
             tabs: tabs
         });
     }
-
+    setDefaultTabOpen( sid, tabName) {
+        if (this.tabs[tabName]) {
+            //Close all tabs
+            for ( let item in this.tabs ) {
+                this.tabs[item].open = false
+            }
+            this.tabs[tabName].open = true;
+        }
+    }
     openTab(sid, tabCode) {
         // Todo: refactoring, no jquery
         if (this.props.sid === sid ) {
@@ -202,7 +212,14 @@ class SegmentFooter extends React.Component {
                 return false;
             }
         }
-        return true;
+        return false;
+    }
+
+    tabClick(tabName, forceOpen) {
+        this.changeTab(tabName, forceOpen);
+        setTimeout(( ) =>{
+            SegmentActions.setTabOpen(this.props.sid, tabName);
+        });
     }
 
     changeTab(tabName, forceOpen) {
@@ -232,21 +249,21 @@ class SegmentFooter extends React.Component {
         });
     }
     componentDidMount() {
-        console.log("Mount SegmentFooter" + this.props.sid);
         SegmentStore.addListener(SegmentConstants.CREATE_FOOTER, this.createFooter);
         SegmentStore.addListener(SegmentConstants.REGISTER_TAB, this.registerTab);
         SegmentStore.addListener(SegmentConstants.OPEN_TAB, this.openTab);
         SegmentStore.addListener(SegmentConstants.ADD_TAB_INDEX, this.addTabIndex);
         SegmentStore.addListener(SegmentConstants.CLOSE_TABS, this.closeAllTabs);
+        SegmentStore.addListener(SegmentConstants.SET_DEFAULT_TAB, this.setDefaultTabOpen);
     }
 
     componentWillUnmount() {
-        console.log("Unmount SegmentFooter" + this.props.sid);
         SegmentStore.removeListener(SegmentConstants.CREATE_FOOTER, this.createFooter);
         SegmentStore.removeListener(SegmentConstants.REGISTER_TAB, this.registerTab);
         SegmentStore.removeListener(SegmentConstants.OPEN_TAB, this.openTab);
         SegmentStore.removeListener(SegmentConstants.ADD_TAB_INDEX, this.addTabIndex);
         SegmentStore.removeListener(SegmentConstants.CLOSE_TABS, this.closeAllTabs);
+        SegmentStore.removeListener(SegmentConstants.SET_DEFAULT_TAB, this.setDefaultTabOpen);
     }
 
     componentWillMount() {
@@ -269,6 +286,26 @@ class SegmentFooter extends React.Component {
         }
     }
 
+    isTabLoading(tab) {
+        switch(tab.code) {
+            case 'tm':
+                return _.isUndefined(this.props.segment.contributions) ||
+                    (_.isUndefined(this.props.segment.contributions.matches) &&
+                    this.props.segment.contributions.errors.length === 0);
+            default:
+                return false;
+        }
+    }
+
+    getTabIndex(tab) {
+        switch(tab.code) {
+            case 'tm':
+                return this.props.segment.contributions.matches.length;
+            default:
+                return tab.index;
+        }
+    }
+
     render() {
         let labels = [];
         let containers = [];
@@ -279,17 +316,27 @@ class SegmentFooter extends React.Component {
             if ( tab.enabled) {
                 let hidden_class = (tab.visible) ? '' : 'hide';
                 let active_class = (tab.open && !hideMatches) ? 'active' : '';
+                let isLoading = this.isTabLoading(tab);
+                let tabIndex = (!isLoading) ? this.getTabIndex(tab) : null;
+                let loadingClass = (isLoading) ? "loading-tab" : "";
                 let label = <li
                     key={ tab.code }
                     ref={(elem)=> this[tab.code] = elem}
-                    className={ hidden_class + " " + active_class + " tab-switcher tab-switcher-" + tab.code }
+                    className={ hidden_class + " " + active_class + " tab-switcher tab-switcher-" + tab.code + " " + loadingClass}
                     id={"segment-" + this.props.sid + tab.code}
                     data-tab-class={ tab.tab_class }
                     data-code={ tab.code }
-                    onClick={ self.changeTab.bind(this, key, false) }>
-                    <a tabIndex="-1" >{ tab.label }
-                        <span className="number">{(tab.index) ? ' (' + tab.index + ')' : ''}</span>
-                    </a>
+                    onClick={ self.tabClick.bind(this, key, false) }>
+                    {!isLoading ? (
+                        <a tabIndex="-1" >{ tab.label }
+                            <span className="number">{(tabIndex) ? ' (' + tabIndex + ')' : ''}</span>
+                        </a>
+                    ) : (
+                        <a tabIndex="-1" >{ tab.label }
+                            <span className="loader loader_on"/>
+                        </a>
+                    ) }
+
                 </li>;
                 labels.push(label);
                 let container = self.getTabContainer(tab, active_class);

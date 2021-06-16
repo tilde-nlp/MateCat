@@ -1,5 +1,4 @@
 
-
 APP.USER = {} ;
 APP.USER.STORE = {} ;
 
@@ -45,13 +44,6 @@ APP.USER.STORE = {} ;
         upsertConnectedService : upsertConnectedService
     });
 
-    // $(document).ready( function() {
-    //     if ( APP.loadUserDataAtDocumentReady ) {
-    //         loadUserData();
-    //     }
-    // } ) ;
-
-    loadUserData();
-
 })(APP, jQuery) ;
+
 

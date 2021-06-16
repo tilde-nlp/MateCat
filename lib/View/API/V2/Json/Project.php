@@ -69,60 +69,33 @@ class Project {
     }
 
     /**
-     * @param       $data Projects_ProjectStruct
+     * @param       $project Projects_ProjectStruct
      *
      * @return array
      * @throws \Exception
-     * @throws \Exceptions\NotFoundError
+     * @throws \Exceptions\NotFoundException
      */
-    public function renderItem( Projects_ProjectStruct $data ) {
+    public function renderItem( Projects_ProjectStruct $project ) {
 
-        $jobs = $data->getJobs(60 * 10 ); //cached
-
-        $jobJSONs    = [];
-        $jobStatuses = [];
-        if ( !empty( $jobs ) ) {
-
-            /**
-             * @var $jobJSON Job
-             */
-            $jobJSON = new $this->jRenderer();
-
-            if( !empty( $this->user ) ){
-                $jobJSON->setUser( $this->user );
-            }
-
-            if( $this->called_from_api ) {
-                $jobJSON->setCalledFromApi( true );
-            }
-
-            foreach ( $jobs as $job ) {
-                /**
-                 * @var $jobJSON Job
-                 */
-                $jobJSONs[]    = $jobJSON->renderItem( new Chunks_ChunkStruct( $job->getArrayCopy() ) );
-                $jobStatuses[] = $job->status_owner;
-            }
-
-        }
+        $featureSet = $project->getFeatures();
+        $jobs = $project->getJobs((int)$project->id);
 
         $projectOutputFields = [
-                'id'                   => (int)$data->id,
-                'password'             => $data->password,
-                'name'                 => $data->name,
-                'id_team'              => (int)$data->id_team,
-                'id_assignee'          => (int)$data->id_assignee,
-                'create_date'          => $data->create_date,
-                'fast_analysis_wc'     => (int)$data->fast_analysis_wc,
-                'standard_analysis_wc' => (int)$data->standard_analysis_wc,
-                'project_slug'         => Utils::friendly_slug( $data->name ),
-                'jobs'                 => $jobJSONs,
-                'features'             => implode( ",", $data->getFeatures()->getCodes() ),
-                'is_cancelled'        => ( in_array( Constants_JobStatus::STATUS_CANCELLED, $jobStatuses ) ),
-                'is_archived'         => ( in_array( Constants_JobStatus::STATUS_ARCHIVED, $jobStatuses ) ),
-                'remote_file_service'  => $data->getRemoteFileServiceName(),
-                'due_date'             => Utils::api_timestamp( $data->due_date )
+            'id'                   => (int)$project->id,
+            'password'             => $project->password,
+            'name'                 => $project->name,
         ];
+
+        if ( !empty( $jobs ) ) {
+            $jobJSON = new $this->jRenderer();
+            $job = $jobJSON->renderItem( new Chunks_ChunkStruct( $jobs[0]->getArrayCopy() ), $project, $featureSet );
+            $projectOutputFields['createTimestamp'] = intval($job['create_timestamp']);
+            $projectOutputFields['jobId'] = intval($job['id']);
+            $projectOutputFields['jobPassword'] = $job['password'];
+            $projectOutputFields['source'] = $job['source'];
+            $projectOutputFields['target'] = $job['target'];
+            $projectOutputFields['owner'] = $job['owner'];
+        }
 
         return $projectOutputFields;
 
@@ -131,7 +104,7 @@ class Project {
     /**
      * @return array
      * @throws \Exception
-     * @throws \Exceptions\NotFoundError
+     * @throws \Exceptions\NotFoundException
      */
     public function render() {
         $out = [];

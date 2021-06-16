@@ -27,7 +27,7 @@ UI = {
         var headerMountPoint = $("header")[0];
         this.Search.currentPage = 1;
         this.pageLeft = false;
-        ReactDOM.render(React.createElement(Header), headerMountPoint);
+
 
 
 
@@ -62,6 +62,12 @@ UI = {
         });
 
         API.TEAM.getAllTeams().done(function (data) {
+
+            ReactDOM.render(React.createElement(Header ,{
+                user: APP.USER.STORE,
+                showFilterProjects: true
+            }), headerMountPoint);
+
             self.teams = data.teams;
             TeamsActions.renderTeams(self.teams);
             self.selectedTeam = APP.getLastTeamSelected(self.teams);
@@ -258,7 +264,7 @@ UI = {
             title: 'Ooops...',
             text: 'Something went wrong, the project has been assigned to another member or moved to another team.',
             type: 'warning',
-            position: 'tc',
+            position: 'bl',
             allowHtml: true,
             autoDismiss: false,
         };
@@ -305,7 +311,7 @@ UI = {
                 '<a style="color: #4183C4; font-weight: 700; text-decoration: underline;" href="https://www.matecat.com/support/advanced-features/understanding-fixing-tag-errors-tag-issues-matecat/" target="_blank">How to fix tags in MateCat </a> <br /><br />'+
                 'If you continue downloading, part of the content may be untranslated - ' +
                 'look for the string UNTRANSLATED_CONTENT in the downloaded files.',
-                successText: "Donload anyway",
+                successText: "Download anyway",
                 successCallback: continueDownloadFunction,
                 warningText: "Fix errors",
                 warningCallback: openUrl

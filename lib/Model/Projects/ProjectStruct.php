@@ -20,6 +20,8 @@ class Projects_ProjectStruct extends DataAccess_AbstractDaoSilentStruct implemen
     public $id_qa_model ;
     public $id_assignee ;
     public $due_date;
+    public $tm_pretranslate;
+    public $mt_pretranslate;
 
 
     /**
@@ -36,10 +38,8 @@ class Projects_ProjectStruct extends DataAccess_AbstractDaoSilentStruct implemen
      *
      * @return Jobs_JobStruct[]
      */
-    public function getJobs( $ttl = 0 ) {
-        return $this->cachable(__function__, $this->id, function($id) use( $ttl ) {
-            return Jobs_JobDao::getByProjectId( $id, $ttl );
-        });
+    public function getJobs($id) {
+        return Jobs_JobDao::getByProjectId($id);
     }
 
     /**

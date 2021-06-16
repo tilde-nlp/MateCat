@@ -36,6 +36,9 @@ class Analysis_WEBStatus extends Analysis_AbstractStatus {
         $this->result[ 'data' ][ 'summary' ][ 'TOTAL_TM_WC_PRINT' ]       = number_format( $this->_globals[ 'TOTAL_TM_WC' ], 0, ".", "," );
         $this->result[ 'data' ][ 'summary' ][ 'TOTAL_RAW_WC_PRINT' ]      = number_format( $this->_globals[ 'TOTAL_RAW_WC' ], 0, ".", "," );
         $this->result[ 'data' ][ 'summary' ][ 'TOTAL_PAYABLE_PRINT' ]     = number_format( $this->_globals[ 'TOTAL_PAYABLE' ], 0, ".", "," );
+        $this->result[ 'data' ][ 'project_id' ] = $this->id_project;
+        $this->result[ 'data' ][ 'job_id' ] = $this->_project_data[0]['jid'];
+        $this->result[ 'data' ][ 'job_password' ] = $this->_project_data[0]['jpassword'];
 
         return $this->result;
 

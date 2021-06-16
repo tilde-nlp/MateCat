@@ -18,9 +18,9 @@ class SegmentFooterTabMatches extends React.Component {
         this.chooseSuggestion = this.chooseSuggestion.bind(this);
     }
 
-    setContributions(sid, matches, fieldTest){
+    setContributions(sid, fid, matches){
         if ( this.props.id_segment == sid ) {
-            var matchesProcessed = this.processContributions(matches, fieldTest);
+            var matchesProcessed = this.processContributions(matches);
             if (this._isMounted) {
                 this.setState({
                     matches: matchesProcessed
@@ -29,12 +29,12 @@ class SegmentFooterTabMatches extends React.Component {
         }
     }
 
-    processContributions(matches, fieldTest) {
+    processContributions(matches) {
         var self = this;
         var matchesProcessed = [];
         // SegmentActions.createFooter(this.props.id_segment);
         $.each(matches, function(index) {
-            if ((this.segment === '') || (this.translation === '')) return false;
+            if ( _.isUndefined(this.segment) || (this.segment === '') || (this.translation === '') ) return false;
             var item = {};
             item.id = this.id;
             item.disabled = (this.id == '0') ? true : false;
@@ -57,15 +57,8 @@ class SegmentFooterTabMatches extends React.Component {
                 item.suggestion_info = '';
             }
 
-
-            if (typeof fieldTest == 'undefined') {
-                item.percentClass = UI.getPercentuageClass(this.match);
-                item.percentText = this.match;
-            } else {
-                item.quality = parseInt(this.quality);
-                item.percentClass = (this.quality > 98)? 'per-green' : (this.quality == 98)? 'per-red' : 'per-gray';
-                item.percentText = 'MT';
-            }
+            item.percentClass = UI.getPercentuageClass(this.match);
+            item.percentText = this.match;
 
             // Attention Bug: We are mixing the view mode and the raw data mode.
             // before doing a enanched  view you will need to add a data-original tag
@@ -83,9 +76,21 @@ class SegmentFooterTabMatches extends React.Component {
             if ( !_.isUndefined(this.tm_properties) ) {
                 item.tm_properties = this.tm_properties;
             }
-            matchesProcessed.push(item);
+            let matchToInsert = self.processMatchCallback(item);
+            if ( matchToInsert ) {
+                matchesProcessed.push(item);
+            }
         });
         return matchesProcessed;
+    }
+
+    /**
+     * Used by the plugins to override matches
+     * @param item
+     * @returns {*}
+     */
+    processMatchCallback( item) {
+        return item;
     }
 
     chooseSuggestion(sid, index) {
@@ -104,7 +109,7 @@ class SegmentFooterTabMatches extends React.Component {
             UI.copySuggestionInEditarea(UI.currentSegment, $(ulDataItem + index + '] li.b .translation').html(),
                 $('.editor .editarea'), $(ulDataItem + index + '] ul.graysmall-details .percent').text(), false, false, index, $(ulDataItem + index + '] li.graydesc .bold').text());
             SegmentActions.highlightEditarea(self.props.id_segment);
-        }, 0);
+        }, 200);
     }
 
     deleteSuggestion(match, index) {
@@ -143,14 +148,12 @@ class SegmentFooterTabMatches extends React.Component {
 
     componentDidMount() {
         this._isMounted = true;
-        console.log("Mount SegmentFooterMatches" + this.props.id_segment);
         SegmentStore.addListener(SegmentConstants.SET_CONTRIBUTIONS, this.setContributions);
         SegmentStore.addListener(SegmentConstants.CHOOSE_CONTRIBUTION, this.chooseSuggestion);
     }
 
     componentWillUnmount() {
         this._isMounted = false;
-        console.log("Unmount SegmentFooterMatches" + this.props.id_segment);
         SegmentStore.removeListener(SegmentConstants.SET_CONTRIBUTIONS, this.setContributions);
         SegmentStore.removeListener(SegmentConstants.CHOOSE_CONTRIBUTION, this.chooseSuggestion);
     }
@@ -208,7 +211,12 @@ class SegmentFooterTabMatches extends React.Component {
             className={"tab sub-editor "+ this.props.active_class + " " + this.props.tab_class}
             id={"segment-" + this.props.id_segment + " " + this.props.tab_class}>
             <div className="overflow">
-                {matches}
+                { !_.isUndefined(matches) && matches.length > 0 ? (
+                    matches
+                ): (
+                    <span className="loader loader_on"/>
+                )}
+
             </div>
             <div className="engine-errors"></div>
         </div>

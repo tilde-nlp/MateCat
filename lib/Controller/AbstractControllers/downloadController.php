@@ -11,6 +11,9 @@ abstract class downloadController extends controller {
 
     public $id_job ;
     public $password;
+    protected $download_type;
+    protected $id_file;
+    protected $id_project;
 
     protected $outputContent = "";
     protected $_filename     = "unknown";
@@ -22,6 +25,32 @@ abstract class downloadController extends controller {
      */
     protected $job;
 
+    public function __construct() {
+        $filterArgs = array(
+                'jwt'        => array( 'filter' => FILTER_UNSAFE_RAW ),
+                'projectId'        => array( 'filter' => FILTER_SANITIZE_NUMBER_INT ),
+                'projectPassword'      => array(
+                        'filter' => FILTER_SANITIZE_STRING, 'flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH
+                )
+        );
+
+        $this->__postInput = filter_input_array( INPUT_POST, $filterArgs );
+        try {
+            $project = Projects_ProjectDao::findByIdAndPassword(
+                $this->__postInput[ 'projectId' ],
+                $this->__postInput[ 'projectPassword' ]
+            );
+        } catch(Exceptions\NotFoundException $e) {
+            header("HTTP/1.1 404 Not Found");
+            die();
+        }        
+
+        $this->jwt = $this->__postInput[ 'jwt' ];
+        $this->id_job        = $this->getJobIdFromProjectId($this->__postInput[ 'projectId' ]);
+        $this->download_type = 'all'; 
+        $this->password      = $this->getJobPasswordFromProjectId($this->__postInput[ 'projectId' ]);
+    }
+
     /**
      * @param int $ttl
      *
@@ -32,6 +61,27 @@ abstract class downloadController extends controller {
             $this->job = Jobs_JobDao::getById( $this->id_job, $ttl )[0];
         }
         return $this->job;
+    }
+
+    protected function getJobIdFromProjectId($projectId) {
+        $projectData = getProjectJobData($projectId);
+        $projectData = array_pop($projectData);
+
+        return $projectData['jid'];
+    }
+
+    protected function getJobPasswordFromProjectId($projectId) {
+        $projectData = getProjectJobData($projectId);
+        $projectData = array_pop($projectData);
+        
+        return $projectData['jpassword'];
+    }
+
+    protected function log($data, $name = 'debug') {
+        $oldFile = \Log::$fileName;
+        \Log::$fileName = $name . '.log';
+        \Log::doLog($data);
+        \Log::$fileName = $oldFile;
     }
 
     /**

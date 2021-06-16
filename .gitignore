@@ -2,6 +2,7 @@
 .settings
 .idea
 .project
+.vscode
 nbproject/
 
 
@@ -58,3 +59,6 @@ plugins/*
 
 inc/dqf/dqf_test_secret.ini
 package-lock.json
+vue_src/npm-debug.log
+
+mmt_fallback_key.ini

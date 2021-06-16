@@ -108,7 +108,9 @@ var spec = {
                     {
                         "name": "private_tm_key",
                         "in": "formData",
-                        "description": "Private key(s) for MyMemory.  If a TMX file is uploaded and no key is provided, a new key will be created. - Existing MyMemory private keys or new to create a new key. - Multiple keys must be comma separated. Up to 5 keys allowed. (xxx345cvf,new,s342f234fc) - Only available if tms_engine is set to 1 or if is not used",
+                        "description": "Private key(s) for MyMemory.  If a TMX file is uploaded and no key is provided, a new key will be created. - Existing MyMemory private keys or new to create" +
+                        " a new key. - Multiple keys must be comma separated. Up to 5 keys allowed. (xxx345cvf,new,s342f234fc) - If you want to set read, write or both on your private key you can" +
+                        " add after the key 'r' for read, 'w' for write or 'rw' for both  separated by ':' (xxx345cvf:r,new:w,s342f234fc:rw) - Only available if tms_engine is set to 1 or if is not used",
                         "required": false,
                         "type": "string"
                     },
@@ -1487,6 +1489,41 @@ var spec = {
                 }
             }
         },
+        "/api/v2/teams/{id_team}/projects/{project_name}": {
+            "get": {
+                "tags": [
+                    "Teams",
+                ],
+                "summary": "Get projects in a team scope",
+                "description": "Get projects in a team scope by name.",
+                "parameters": [
+                    {
+                        "name": "id_team",
+                        "type": "integer",
+                        "in": "path",
+                        "required": true,
+                    },
+                    {
+                        "name": "project_name",
+                        "type": "string",
+                        "in": "path",
+                        "required": true,
+                        "description": "The name can also be a part of a project name"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Team",
+                        "schema": {
+                            "$ref": "#/definitions/ProjectsItems"
+                        },
+                    },
+                    "default": {
+                        "description": "Unexpected error"
+                    }
+                }
+            }
+        },
         "/api/v2/jobs/{id_job}/{password}/translation-issues": {
             "get": {
                 "tags": [
@@ -2231,6 +2268,27 @@ var spec = {
                     }
                 }
             }
+        },
+        "/api/v2/languages": {
+            "get": {
+                "tags": [
+                    "Languages"
+                ],
+                "summary": "Supported languages list.",
+                "description": "List of supported languages.",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Languages List",
+                        "schema": {
+                            "$ref": "#/definitions/Languages"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -2870,6 +2928,32 @@ var spec = {
             }
         },
 
+        "Languages": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/Language"
+            }
+        },
+
+        "Language": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "description": "Rfc code"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Language name"
+                },
+                "direction": {
+                    "type": "string",
+                    "enum": ["ltr",
+                        "rtl"],
+                "description": "Language direction, ltr (left-to-right text) or rtl (right-to-left text)"
+                }
+            }
+        },
         "PendingInvitation": {
             "type": "array",
             "items": {
@@ -3032,6 +3116,19 @@ var spec = {
                 }
             }
         },
+
+        "ProjectsItems": {
+            "type": "object",
+            "properties": {
+                "projects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Project"
+                    }
+                }
+            }
+        },
+
         "Project": {
             "type": "object",
             "properties": {
@@ -3117,7 +3214,7 @@ var spec = {
 
             "properties": {
                 "id": {"type": "integer"},
-                "password": {"type": "password"},
+                "password": {"type": "string"},
                 "source": {"type": "string"},
                 "target": {"type": "string"},
                 "sourceTxt": {"type": "string"},
@@ -3132,6 +3229,7 @@ var spec = {
                 "formatted_create_date": {"type": "string"},
                 "quality_overall": {"type": "string"},
                 "pee": {"type": "integer"},
+                "tte": {"type": "integer", "format": "seconds"},
                 "private_tm_key": {
                     "type": "array",
                     "items": {
@@ -3163,7 +3261,39 @@ var spec = {
                 "stats": {
                     "type": "object",
                     "$ref": "#/definitions/Stats"
+                },
+                "quality_summary": {
+                    "type": "object",
+                    "$ref": "#/definitions/QualitySummary"
+                },
+            }
+        },
+
+        "QualitySummary": {
+            "type": "object",
+            "properties": {
+                "equivalent_class": {"type": "integer"},
+                "quality_overall": {"type": "string"},
+                "errors_count": {"type": "integer"},
+                "revise_issues": {
+                    "type": "object",
+                    "properties": {
+                        "typing": {"type": "object", "$ref": "#/definitions/ReviseIssue"},
+                        "translation": {"type": "object", "$ref": "#/definitions/ReviseIssue"},
+                        "terminology": {"type": "object", "$ref": "#/definitions/ReviseIssue"},
+                        "language_quality": {"type": "object", "$ref": "#/definitions/ReviseIssue"},
+                        "style": {"type": "object", "$ref": "#/definitions/ReviseIssue"},
+
+                    }
                 }
+            }
+        },
+
+        "ReviseIssue": {
+            "type": "object",
+            "properties": {
+                "allowed": {"type": "number"},
+                "found": {"type": "integer"},
             }
         },
 

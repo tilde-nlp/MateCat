@@ -27,7 +27,6 @@ abstract class ajaxController extends controller {
      * Class constructor, initialize the header content type.
      */
     protected function __construct() {
-
         $buffer = ob_get_contents();
         ob_get_clean();
         // ob_start("ob_gzhandler");        // compress page before sending //Not supported for json response on ajax calls
@@ -44,7 +43,29 @@ abstract class ajaxController extends controller {
 		}
 
 		$this->featureSet = new FeatureSet();
+        $this->nocache();
 
+    }
+
+    protected function getProject($projectId, $projectPassword) {
+        return Projects_ProjectDao::findByIdAndPassword(
+            $projectId,
+            $projectPassword
+        );
+    }
+
+    protected function getJobIdFromProjectId($projectId) {
+        $projectData = getProjectJobData($projectId);
+        $projectData = array_pop($projectData);
+
+        return $projectData['jid'];
+    }
+
+    protected function getJobPasswordFromProjectId($projectId) {
+        $projectData = getProjectJobData($projectId);
+        $projectData = array_pop($projectData);
+        
+        return $projectData['jpassword'];
     }
 
     /**
@@ -68,6 +89,20 @@ abstract class ajaxController extends controller {
 
     public function parseIDSegment(){
         @list( $this->id_segment, $this->split_num ) = explode( "-", $this->id_segment );
+    }
+
+    protected function log_text($data, $name = 'debug') {
+        $oldFile = \Log::$fileName;
+        \Log::$fileName = $name . '.log';
+        \Log::doLog($data);
+        \Log::$fileName = $oldFile;
+    }
+
+    protected function log($data, $name = 'debug') {
+        $oldFile = \Log::$fileName;
+        \Log::$fileName = $name . '.log';
+        \Log::doLog($data);
+        \Log::$fileName = $oldFile;
     }
 
 }

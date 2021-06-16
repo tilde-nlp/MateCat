@@ -19,22 +19,47 @@ class Bootstrap {
     private $autoLoadedFeatureSet ;
 
     public static function start() {
+        // self::cors();
         new self();
     }
 
-    private function __construct() {
+    private static function cors() {
 
+        // Allow from any origin
+        if (isset($_SERVER['HTTP_ORIGIN'])) {
+            // Decide if the origin in $_SERVER['HTTP_ORIGIN'] is one
+            // you want to allow, and if so:
+            header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+            header('Access-Control-Allow-Credentials: true');
+        }
+    
+        // Access-Control headers are received during OPTIONS requests
+        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    
+            if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
+                // may also be using PUT, PATCH, HEAD etc
+                header("Access-Control-Allow-Methods: GET, POST, OPTIONS");         
+    
+            if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
+                header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
+    
+            exit(0);
+        }
+    }
+
+    private function __construct() {
+        
         self::$_ROOT        = realpath( dirname( __FILE__ ) . '/../' );
         self::$CONFIG       = parse_ini_file( self::$_ROOT . DIRECTORY_SEPARATOR . 'inc/config.ini', true );
         $OAUTH_CONFIG       = @parse_ini_file( self::$_ROOT . DIRECTORY_SEPARATOR . 'inc/oauth_config.ini', true );
 
-        register_shutdown_function( 'Bootstrap::fatalErrorHandler' );
+        register_shutdown_function( [ 'Bootstrap', 'fatalErrorHandler' ] );
 
         $mv = parse_ini_file( 'version.ini' );
         self::$_INI_VERSION = $mv['version'];
 
         $this->_setIncludePath();
-        spl_autoload_register( 'Bootstrap::loadClass' );
+        spl_autoload_register( [ 'Bootstrap', 'loadClass' ] );
         require_once 'Predis/autoload.php';
         @include_once 'vendor/autoload.php';
 
@@ -118,28 +143,6 @@ class Bootstrap {
         }
         if ( !is_dir( INIT::$QUEUE_PROJECT_REPOSITORY) ) {
             mkdir( INIT::$QUEUE_PROJECT_REPOSITORY, 0755, true );
-        }
-
-        //auth sections
-        INIT::$AUTHSECRET_PATH = INIT::$ROOT . '/inc/login_secret.dat';
-        //if secret is set in file
-        if ( file_exists( INIT::$AUTHSECRET_PATH ) ) {
-            //fetch it
-            INIT::$AUTHSECRET = file_get_contents( INIT::$AUTHSECRET_PATH );
-        } else {
-            //try creating the file and the fetch it
-            //generate pass
-            $secret = self::generate_password( 512 );
-            //put file
-            file_put_contents( INIT::$AUTHSECRET_PATH, $secret );
-            //if put succeed
-            if ( file_exists( INIT::$AUTHSECRET_PATH ) ) {
-                //restrict permissions
-                chmod( INIT::$AUTHSECRET_PATH, 0400 );
-            } else {
-                //if couldn't create due to permissions, use default secret
-                INIT::$AUTHSECRET = 'ScavengerOfHumanSorrow';
-            }
         }
 
         $this->initMandatoryPlugins();
@@ -362,17 +365,17 @@ class Bootstrap {
 
         INIT::obtain(); //load configurations
 
-        $fileSystem = trim( shell_exec( "df -T " . escapeshellcmd( INIT::$STORAGE_DIR ) . "/files_storage/ | awk '{print $2 }' | sed -n 2p" ) );
-
-        if ( self::$CONFIG['ENV'] == 'production' ) {
-            if( stripos( $fileSystem, 'nfs' ) === false && self::$CONFIG['CHECK_FS'] ){
-                die( 'Wrong Configuration! You must mount your remote filesystem to the production or change the storage directory.' );
-            }
-        } else {
-            if( stripos( $fileSystem, 'nfs' ) !== false && self::$CONFIG['CHECK_FS'] ){
-                die( 'Wrong Configuration! You must un-mount your remote filesystem or change the local directory.' );
-            }
-        }
+//        $fileSystem = trim( shell_exec( "df -T " . escapeshellcmd( INIT::$STORAGE_DIR ) . "/files_storage/ | awk '{print $2 }' | sed -n 2p" ) );
+//
+//        if ( self::$CONFIG['ENV'] == 'production' ) {
+//            if( stripos( $fileSystem, 'nfs' ) === false && self::$CONFIG['CHECK_FS'] ){
+//                die( 'Wrong Configuration! You must mount your remote filesystem to the production or change the storage directory.' );
+//            }
+//        } else {
+//            if( stripos( $fileSystem, 'nfs' ) !== false && self::$CONFIG['CHECK_FS'] ){
+//                die( 'Wrong Configuration! You must un-mount your remote filesystem or change the local directory.' );
+//            }
+//        }
 
         Features::setIncludePath();
 

@@ -17,7 +17,17 @@ class User
             'first_name'    => $user->first_name,
             'last_name'     => $user->last_name,
             'email'         => $user->email,
+            'tm_pretranslate'         => $user->tm_pretranslate,
+            'mt_pretranslate'         => $user->mt_pretranslate,
             'has_password'  => !is_null($user->pass)
+        );
+    }
+
+    public static function renderItemPublic( \Users_UserStruct $user ){
+        return array(
+                'uid'           => (int) $user->uid,
+                'first_name'    => $user->first_name,
+                'last_name'     => $user->last_name,
         );
     }
 

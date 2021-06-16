@@ -1,5 +1,7 @@
 <?php
 
+use DataAccess\LoudArray;
+
 class Chunks_ChunkDao extends DataAccess_AbstractDao {
 
     /**
@@ -7,7 +9,7 @@ class Chunks_ChunkDao extends DataAccess_AbstractDao {
      * @param $password
      *
      * @return Chunks_ChunkStruct
-     * @throws \Exceptions\NotFoundError
+     * @throws \Exceptions\NotFoundException
      */
     public static function getByIdAndPassword( $id, $password ) {
         $conn = Database::obtain()->getConnection();
@@ -28,7 +30,7 @@ class Chunks_ChunkDao extends DataAccess_AbstractDao {
         $fetched = $stmt->fetch();
 
         if ( $fetched == false ) {
-            throw new Exceptions\NotFoundError('Record not found');
+            throw new \Exceptions\NotFoundException('Record not found');
         } else {
             return $fetched;
         }
@@ -84,6 +86,23 @@ class Chunks_ChunkDao extends DataAccess_AbstractDao {
         $stmt = $conn->prepare("SELECT * FROM jobs WHERE id_project = ? ORDER BY job_first_segment ");
         return $this->_fetchObject( $stmt, new Chunks_ChunkStruct(), [ $id_project ] );
 
+    }
+
+    public function getTranslatedWordCount($projectId) {
+        $query = "SELECT SUM(s.raw_word_count) AS count
+        FROM jobs j
+        INNER JOIN segments s ON s.id >= j.job_first_segment AND s.id <= j.job_last_segment
+        INNER JOIN segment_translations st ON st.id_segment = s.id AND st.`status` = 'TRANSLATED'
+        WHERE j.id_project = ?";
+
+        $conn = $this->con->getConnection();
+        $stmt = $conn->prepare($query);
+        $data = $this->_fetchObject( $stmt, new LoudArray(), [ $projectId ] );
+        if (count($data) < 1) {
+            return 0;
+        }
+        $data = array_pop($data);
+        return intval($data['count']);
     }
 
     /**

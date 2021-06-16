@@ -87,6 +87,33 @@ class Revise_ReviseDAO extends DataAccess_AbstractDao {
         return $this->_buildResult( $arr_result );
     }
 
+    public function readBySegments($segments_id, $job_id){
+
+        $prepare_str_segments_id = str_repeat( 'UNION SELECT ? ', count( $segments_id ) - 1);
+
+        $query            = "SELECT id_job,
+                                id_segment,
+                                err_typing,
+                                err_translation,
+                                err_terminology,
+                                err_language,
+                                err_style,
+                                original_translation
+                         FROM " . self::TABLE . " JOIN (
+                            SELECT ? as id_segment
+                            ".$prepare_str_segments_id."
+                         ) AS SLIST USING( id_segment )
+                         WHERE id_job = ?";
+
+        $conn = Database::obtain()->getConnection();
+        $stmt = $conn->prepare( $query );
+        $stmt->setFetchMode( \PDO::FETCH_CLASS, '\DataAccess\ShapelessConcreteStruct' );
+
+        $stmt->execute( array_merge($segments_id, array($job_id)) );
+
+        return $stmt->fetchAll();
+    }
+
     public function update( Revise_ReviseStruct $obj ) {
         $obj = $this->sanitize( $obj );
 

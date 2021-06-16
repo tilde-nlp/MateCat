@@ -15,7 +15,7 @@
             if (!_.isUndefined(chosen_suggestion)) {
                 var storedContributions = UI.getFromStorage('contribution-' + config.id_job + '-' + UI.getSegmentId(currentSegment));
                 if (storedContributions) {
-                    currentContribution = JSON.parse(storedContributions).data.matches[chosen_suggestion - 1];
+                    currentContribution = JSON.parse(storedContributions).matches[chosen_suggestion - 1];
 
                 }
             }
@@ -166,7 +166,7 @@
             //         .replace(/\t/g, config.tabPlaceholder )
             //         .replace(String.fromCharCode( parseInt( 0xA0, 10 ) ), config.nbspPlaceholder );
             SegmentActions.replaceSourceText(UI.getSegmentId(currentSegment), UI.getSegmentFileId(currentSegment), source);
-            UI.markGlossaryItemsInSource(UI.cachedGlossaryData);
+            UI.markGlossaryItemsInSource(currentSegment, UI.cachedGlossaryData);
         },
         /**
          * Set the tag projection to true and reload file
@@ -350,15 +350,11 @@
             var next = $('.editor').nextAll( selector  ).first();
 
             if (next.is('section')) {
-                UI.scrollSegment(next);
-                UI.editAreaClick($(UI.targetContainerSelector(), next), 'moving');
-                // $(UI.targetContainerSelector(), next).trigger("click", "moving");
+                UI.editAreaClick($(UI.targetContainerSelector(), next));
             } else {
                 next = UI.currentFile.next().find( selector ).first();
                 if (next.length) {
-                    UI.scrollSegment(next);
-                    UI.editAreaClick($(UI.targetContainerSelector(), next), 'moving');
-                    // $(UI.targetContainerSelector(), next).trigger("click", "moving");
+                    UI.editAreaClick($(UI.targetContainerSelector(), next));
                 } else {
                     UI.closeSegment(UI.currentSegment, 1, 'save');
                 }
@@ -398,11 +394,15 @@
             var selector = UI.selectorForNextSegment() ;
             var prev = $('.editor').prevAll( selector ).first();
             if (prev.is('section')) {
-                $(UI.targetContainerSelector(), prev).click();
+                UI.scrollSegment(prev);
+                UI.editAreaClick($(UI.targetContainerSelector(), prev), 'moving');
+                // $(UI.targetContainerSelector(), prev).click();
             } else {
                 prev = $('.editor').parents('article').prevAll( selector ).first();
                 if (prev.length) {
-                    $(UI.targetContainerSelector() , prev).click();
+                    // $(UI.targetContainerSelector() , prev).click();
+                    UI.editAreaClick($(UI.targetContainerSelector(), prev), 'moving');
+                    UI.scrollSegment(prev);
                 }
             }
             if (prev.length)
@@ -424,7 +424,7 @@
         },
 
         isUnlockedSegment: function ( segment ) {
-            let readonly = UI.isReadonlySegment(segment);
+            var readonly = UI.isReadonlySegment(segment);
             return (segment.ice_locked === "1" && !readonly) && !_.isNull(UI.getFromStorage('unlocked-' + segment.sid))
         },
         getStatusForAutoSave : function( segment ) {
@@ -453,12 +453,12 @@
         },
 
         saveSegment: function(segment) {
-            this.setTranslation({
+            SegmentActions.addClassToSegment(UI.getSegmentId( segment ), 'saved');
+            return this.setTranslation({
                 id_segment: this.getSegmentId(segment),
                 status: this.getStatusForAutoSave( segment ) ,
                 caller: 'autosave'
             });
-            SegmentActions.addClassToSegment(UI.getSegmentId( segment ), 'saved');
         },
         setCurrentSegment: function(closed) {
             var reqArguments = arguments;
@@ -573,7 +573,7 @@
                 if (before.length === 0 ) {
                     return undefined;
                 }
-                else if (before.attr('data-split-original-id') !== originalId) {
+                else if (before.attr('data-split-original-id') && before.attr('data-split-original-id') !== originalId) {
                     return before;
                 } else {
                     return findBefore(before);
@@ -602,7 +602,7 @@
                 if (after.length === 0 ) {
                     return undefined;
                 }
-                else if (after.attr('data-split-original-id') !== originalId) {
+                else if (after.attr('data-split-original-id') && after.attr('data-split-original-id') !== originalId) {
                     return after;
                 } else {
                     return findAfter(after);
@@ -621,6 +621,49 @@
             } else {
                 return $('.source', segmentAfter ).text();
             }
+        },
+        getIdBefore: function(segmentId) {
+            var segment = $('#segment-' + segmentId);
+            var originalId = segment.attr('data-split-original-id');
+            var segmentBefore = (function  findBefore(segment) {
+                var before = segment.prev('section');
+                if (before.length === 0 ) {
+                    return undefined;
+                }
+                else if (before.attr('data-split-original-id') !== originalId) {
+                    return before;
+                } else {
+                    return findBefore(before);
+                }
+
+            })(segment);
+            // var segmentBefore = findSegmentBefore();
+            if (_.isUndefined(segmentBefore)) {
+                return null;
+            }
+            var segmentBeforeId = UI.getSegmentId(segmentBefore);
+            return segmentBeforeId;
+        },
+        getIdAfter: function(segmentId) {
+            var segment = $('#segment-' + segmentId);
+            var originalId = segment.attr('data-split-original-id');
+            var segmentAfter = (function findAfter(segment) {
+                var after = segment.next('section');
+                if (after.length === 0 ) {
+                    return undefined;
+                }
+                else if (after.attr('data-split-original-id') !== originalId) {
+                    return after;
+                } else {
+                    return findAfter(after);
+                }
+
+            })(segment);
+            if (_.isUndefined(segmentAfter)) {
+                return null;
+            }
+            var segmentAfterId = UI.getSegmentId(segmentAfter);
+            return segmentAfterId;
         },
         /**
          * findNextSegment
@@ -663,48 +706,69 @@
             APP.ModalWindow.showModalComponent(ConfirmMessageModal, props, "Warning");
         },
         approveFilteredSegments: function(segmentsArray) {
-            return API.SEGMENT.approveSegments(segmentsArray).done(function ( response ) {
-                if (response.data && response.unchangeble_segments.length === 0) {
-                    segmentsArray.forEach(function ( item ) {
-                        let fileId = UI.getSegmentFileId(UI.getSegmentById(item));
-                        SegmentActions.setStatus(item, fileId, "APPROVED");
-                        UI.setSegmentModified( UI.currentSegment, false ) ;
-                    })
-                } else if (response.unchangeble_segments.length > 0) {
-                    let arrayMapped = _.map(segmentsArray, function ( item ) {
-                        return parseInt(item);
-                    });
-                    let array = _.difference(arrayMapped, response.unchangeble_segments);
-                    array.forEach(function ( item ) {
-                        let fileId = UI.getSegmentFileId(UI.getSegmentById(item));
-                        SegmentActions.setStatus(item, fileId, "APPROVED");
-                        UI.setSegmentModified( UI.currentSegment, false ) ;
-                    });
-                    UI.showApproveAllModalWarnirng();
-                }
-            });
+            var self = this;
+            if (segmentsArray.length >= 500) {
+                var subArray = segmentsArray.slice(0, 499);
+                var todoArray = segmentsArray.slice(500, segmentsArray.length-1);
+                return this.approveFilteredSegments(subArray).then(function (  ) {
+                    return self.approveFilteredSegments(todoArray);
+                });
+            } else {
+                return API.SEGMENT.approveSegments(segmentsArray).then(function ( response ) {
+                    self.bulkChangeStatusCallback(response, segmentsArray, "APPROVED");
+                });
+            }
         },
         translateFilteredSegments: function(segmentsArray) {
-            return API.SEGMENT.translateSegments(segmentsArray).done(function ( response ) {
-                if (response.data && response.unchangeble_segments.length === 0) {
-                    segmentsArray.forEach(function ( item ) {
-                        let fileId = UI.getSegmentFileId(UI.getSegmentById(item));
-                        SegmentActions.setStatus(item, fileId, "TRANSLATED");
-                        UI.setSegmentModified( UI.currentSegment, false ) ;
-                    })
-                } else if (response.unchangeble_segments.length > 0) {
-                    let arrayMapped = _.map(segmentsArray, function ( item ) {
-                        return parseInt(item);
-                    });
-                    let array = _.difference(arrayMapped, response.unchangeble_segments);
-                    array.forEach(function ( item ) {
-                        let fileId = UI.getSegmentFileId(UI.getSegmentById(item));
-                        SegmentActions.setStatus(item, fileId, "TRANSLATED");
-                        UI.setSegmentModified( UI.currentSegment, false ) ;
-                    });
-                    UI.showTranslateAllModalWarnirng();
-                }
-            });
+            var self = this;
+            if (segmentsArray.length >= 500) {
+                var subArray = segmentsArray.slice(0, 499);
+                var todoArray = segmentsArray.slice(499, segmentsArray.length);
+                return this.translateFilteredSegments(subArray).then(function (  ) {
+                    return self.translateFilteredSegments(todoArray);
+                });
+            } else {
+                return API.SEGMENT.translateSegments(segmentsArray).then(function ( response ) {
+                    self.bulkChangeStatusCallback(response, segmentsArray, "TRANSLATED");
+                });
+            }
+        },
+        bulkChangeStatusCallback: function( response, segmentsArray, status) {
+            if (response.data && response.unchangeble_segments.length === 0) {
+                segmentsArray.forEach(function ( item ) {
+                    var $segment = UI.getSegmentById(item);
+                    if ( $segment.length > 0) {
+                        var fileId = UI.getSegmentFileId(UI.getSegmentById(item));
+                        SegmentActions.setStatus(item, fileId, status);
+                        UI.setSegmentModified( $segment, false ) ;
+                        UI.disableTPOnSegment( $segment )
+                    }
+                })
+            } else if (response.unchangeble_segments.length > 0) {
+                var arrayMapped = _.map(segmentsArray, function ( item ) {
+                    return parseInt(item);
+                });
+                var array = _.difference(arrayMapped, response.unchangeble_segments);
+                array.forEach(function ( item ) {
+                    var $segment = UI.getSegmentById(item);
+                    if ( $segment > 0) {
+                        var fileId = UI.getSegmentFileId(UI.getSegmentById(item));
+                        SegmentActions.setStatus(item, fileId, status);
+                        UI.setSegmentModified( $segment, false ) ;
+                        UI.disableTPOnSegment( $segment )
+                    }
+                });
+                UI.showTranslateAllModalWarnirng();
+            }
+        },
+        disableSegmentButtons: function ( sid ) {
+            var div =$("#segment-"+sid+"-buttons").find(".approved, .next-unapproved, .next-untranslated, .translated, .guesstags");
+            div.addClass('disabled').attr("disabled", 'disabled');
+
+        },
+        enableSegmentsButtons: function ( sid ) {
+            var div =$("#segment-"+sid+"-buttons").find(".approved, .next-unapproved, .next-untranslated, .translated, .guesstags");
+            div.removeClass('disabled').attr("disabled", false);
         }
     });
 })(jQuery); 

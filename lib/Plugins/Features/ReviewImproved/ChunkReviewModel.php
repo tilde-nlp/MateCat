@@ -17,10 +17,10 @@ class ChunkReviewModel
     /**
      * @var \LQA\ChunkReviewStruct
      */
-    private $chunk_review;
+    protected $chunk_review;
 
 
-    private $penalty_points;
+    protected $penalty_points;
 
 
     public function __construct( ChunkReviewStruct $chunk_review ) {
@@ -95,6 +95,14 @@ class ChunkReviewModel
         } else {
             return $this->chunk_review->penalty_points / $this->chunk_review->reviewed_words_count * 1000 ;
         }
+    }
+
+    public function getPenaltyPoints(){
+        return $this->chunk_review->penalty_points;
+    }
+
+    public function getReviewedWordsCount(){
+        return $this->chunk_review->reviewed_words_count;
     }
 
     /**

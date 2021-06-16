@@ -101,6 +101,7 @@ class Revise_JobQA {
      * Get the QA value for the job in a client readable structure
      *
      * @return array
+     * @throws ReflectionException
      */
     public function getQaData() {
         if ( empty( $this->job_error_totals ) ) {
@@ -115,8 +116,10 @@ class Revise_JobQA {
             $fieldName = $constants = $reflect->getConstant( "ERR_" . strtoupper( $field ) );
             $qaData[]    = array(
                     'type'    => $fieldName,
+                    'field' => $field,
                     'allowed' => round( $info[ 'acceptance' ], 1 , PHP_ROUND_HALF_UP ),
                     'found'   => $info[ 'foundErr' ],
+                    'founds' => ['minor' => $info['foundErr_min'], 'major' => $info['foundErr_maj']],
                     'vote'    => $info[ 'textVote' ]
             );
         }
@@ -148,11 +151,15 @@ class Revise_JobQA {
             /**
              * @var $errNumber int
              */
-            $errNumberMin = $this->job_error_totals->{$methodName . "Min"}() * constant( get_class( $this->reviseClass ) . "::SERV_VALUE_MINOR" );
-            $errNumberMaj = $this->job_error_totals->{$methodName . "Maj"}() * constant( get_class( $this->reviseClass ) . "::SERV_VALUE_MAJOR" );
+            $found_min = $this->job_error_totals->{$methodName . "Min"}();
+            $found_maj = $this->job_error_totals->{$methodName . "Maj"}();
+            $errNumberMin = $found_min * constant( get_class( $this->reviseClass ) . "::SERV_VALUE_MINOR" );
+            $errNumberMaj = $found_maj * constant( get_class( $this->reviseClass ) . "::SERV_VALUE_MAJOR" );
             $errNumber    = $errNumberMin + $errNumberMaj;
 
             self::$error_info[ $field ][ 'foundErr' ] = $errNumber;
+            self::$error_info[ $field ][ 'foundErr_min' ] = $found_min;
+            self::$error_info[ $field ][ 'foundErr_maj' ] = $found_maj;
             self::$error_info[ $field ][ 'vote' ]     = $errNumber / (
                     self::$error_info[ $field ][ 'acceptance' ] == 0
                             ? 1

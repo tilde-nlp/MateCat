@@ -180,17 +180,19 @@ class Routes {
 
 
     public static function httpHost( $params ) {
-        $host = INIT::$HTTPHOST;
-
-        if ( !empty( $params[ 'http_host' ] ) ) {
-            $host = $params[ 'http_host' ];
-        }
-
-        if ( empty( $host ) ) {
-            throw new Exception( 'HTTP_HOST is not set ' );
-        }
-
-        return $host;
+        // Tilde Override, since matecat is deployed as submodule.
+        return rtrim(INIT::$RELATIVE_HOST_NAME,'/');
+//        $host = INIT::$HTTPHOST;
+//
+//        if ( !empty( $params[ 'http_host' ] ) ) {
+//            $host = $params[ 'http_host' ];
+//        }
+//
+//        if ( empty( $host ) ) {
+//            throw new Exception( 'HTTP_HOST is not set ' );
+//        }
+//
+//        return $host;
     }
 
 }
