@@ -1,6 +1,7 @@
 <?php
 
 use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Hmac\Sha256 as HmacSha256;
 use Lcobucci\JWT\Signer\Rsa\Sha256 as RsaSha256;
 use Lcobucci\JWT\ValidationData;
@@ -28,7 +29,7 @@ class AuthCookie {
             $signerKeyCloak = new RsaSha256();
             $data = new ValidationData();
 
-            if (!$parsedToken->verify($signer, INIT::$JWT_KEY) && !$parsedToken->verify($signerKeyCloak, INIT::$JWT_KEY_KEYCLOAK)) {
+            if (!$parsedToken->verify($signer, INIT::$JWT_KEY) && !$parsedToken->verify($signerKeyCloak, new Key("-----BEGIN PUBLIC KEY-----\n".INIT::$JWT_KEY_KEYCLOAK."\n-----END PUBLIC KEY-----"))) {
                 header("HTTP/1.1 401 Unauthorized");
                 die();
             }
@@ -91,7 +92,7 @@ class AuthCookie {
 
             if ($parsedToken->getClaim('iss') == INIT::$JWT_ISSUER_KEYCLOAK) { // iss: KeyCloak url
                 $userId = $parsedToken->getClaim('email');
-                $group = end(explode("/", $parsedToken->getClaim('membership')));
+                $group = end(explode("/", $parsedToken->getClaim('membership')[0]));
             }
             else { // iss: LetsMTService
                 $userId = $parsedToken->getClaim('sub');
