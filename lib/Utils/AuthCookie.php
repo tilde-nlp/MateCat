@@ -30,6 +30,7 @@ class AuthCookie {
 
             if (!$parsedToken->verify($signer, INIT::$JWT_KEY) && !$parsedToken->verify($signerKeyCloak, INIT::$JWT_KEY_KEYCLOAK)) {
                 header("HTTP/1.1 401 Unauthorized");
+                die();
             }
 
             if (!INIT::$DEV_MODE && (!$parsedToken->validate($data) || $parsedToken->isExpired())) {
@@ -89,12 +90,12 @@ class AuthCookie {
             $userId = "";
 
             if ($parsedToken->getClaim('iss') == INIT::$JWT_ISSUER_KEYCLOAK) { // iss: KeyCloak url
-                $userId = $parsedToken->getClaim('email')
-                $group = end(explode("/", $parsedToken->getClaim('membership')))
+                $userId = $parsedToken->getClaim('email');
+                $group = end(explode("/", $parsedToken->getClaim('membership')));
             }
             else { // iss: LetsMTService
-                $userId = $parsedToken->getClaim('sub')
-                $group = $parsedToken->getClaim('grp')
+                $userId = $parsedToken->getClaim('sub');
+                $group = $parsedToken->getClaim('grp');
             }
 
             $jwtId = $userId . ':-:' . $group;
