@@ -41,6 +41,8 @@ class INIT {
     public static $PRINT_ERRORS        = false;
     public static $RELATIVE_HOST_NAME;
     public static $JWT_KEY;
+    public static $JWT_KEY_KEYCLOAK;
+    public static $JWT_ISSUER_KEYCLOAK;
     public static $AUTH_REDIRECT;
     public static $MT_BASE_URL;
     public static $MT_CLIENT_ID;

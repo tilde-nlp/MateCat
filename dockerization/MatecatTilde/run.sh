@@ -19,6 +19,8 @@ MYSQL_ROOT_PWD="root"
 SERVERNAME="local.matecat.com"
 RELATIVE_HOST_NAME="http://local.matecat.com/"
 JWT_KEY=""
+JWT_KEY_KEYCLOAK=""
+JWT_ISSUER_KEYCLOAK=""
 AUTH_REDIRECT="https://hugo.lv/lv/Account/Login?ReturnUrl="
 STORAGE_DIR="${MATECAT_HOME}/storage/"
 BRANCH="code-merge"
@@ -54,7 +56,7 @@ apt-get install -y screen
 #apt-get install -y nodejs
 # echo "Node Linux Installer by www.github.com/taaem"
 echo "Need Root for installing NodeJS"
-sh -c 'echo "Got Root!"' 
+sh -c 'echo "Got Root!"'
 
 echo "Get Latest v10 Number..."
 {
@@ -69,7 +71,7 @@ then
 	VER=$(grep -o 'node-v.*-linux-x64.tar.gz' node-cache.txt)
 else
 	grep -o '>node-v.*-linux-x86.tar.gz' node-updater.html > node-cache.txt 2>&1
-	
+
 	VER=$(grep -o 'node-v.*-linux-x86.tar.gz' node-cache.txt)
 fi
 rm ./node-cache.txt
@@ -146,6 +148,8 @@ php composer.phar install
 cp inc/config.ini.sample inc/config.ini
 sed -i "s|@@@relative_host_name@@@|$RELATIVE_HOST_NAME|g" inc/config.ini
 sed -i "s|@@@jwt_key@@@|$JWT_KEY|g" inc/config.ini
+sed -i "s|@@@jwt_key_keycloak@@@|$JWT_KEY_KEYCLOAK|g" inc/config.ini
+sed -i "s|@@@jwt_issuer_keycloak@@@|$JWT_ISSUER_KEYCLOAK|g" inc/config.ini
 sed -i "s|@@@auth_redirect@@@|$AUTH_REDIRECT|g" inc/config.ini
 sed -i "s|@@@storage_dir@@@|$STORAGE_DIR|g" inc/config.ini
 sed -i "s|@@@mt_base_url@@@|$MT_BASE_URL|g" inc/config.ini

@@ -88,6 +88,8 @@ LXQ_PARTNERID = false
 [production]
 RELATIVE_HOST_NAME = "@@@relative_host_name@@@" ; Relative host path for running cat as submodule
 JWT_KEY = "@@@jwt_key@@@"
+JWT_KEY_KEYCLOAK = "@@@jwt_key_keycloak@@@"
+JWT_ISSUER_KEYCLOAK = "@@@jwt_issuer_keycloak@@@"
 AUTH_REDIRECT = "@@@auth_redirect@@@"
 MT_BASE_URL = "@@@mt_base_url@@@"
 MT_CLIENT_ID = "@@@mt_client_id@@@"
