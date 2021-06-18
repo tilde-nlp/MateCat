@@ -21,6 +21,8 @@ MATECAT_USER="dark"
 SERVERNAME="local.matecat.com"
 RELATIVE_HOST_NAME="http://local.matecat.com/"
 JWT_KEY=""
+JWT_KEY_KEYCLOAK=""
+JWT_ISSUER_KEYCLOAK=""
 AUTH_REDIRECT="https://hugo.lv/lv/Account/Login?ReturnUrl="
 STORAGE_DIR="/home/dark/cattool/storage/"
 BRANCH="code-merge"
@@ -156,6 +158,8 @@ sudo -u $MATECAT_USER -H sh -c "cd /home/$MATECAT_USER/cattool;php composer.phar
 sudo -u $MATECAT_USER -H sh -c "cp /home/$MATECAT_USER/cattool/inc/config.ini.sample /home/$MATECAT_USER/cattool/inc/config.ini"
 sudo sed -i "s|@@@relative_host_name@@@|$RELATIVE_HOST_NAME|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@jwt_key@@@|$JWT_KEY|g" /home/$MATECAT_USER/cattool/inc/config.ini
+sudo sed -i "s|@@@jwt_key_keycloak@@@|$JWT_KEY_KEYCLOAK|g" /home/$MATECAT_USER/cattool/inc/config.ini
+sudo sed -i "s|@@@jwt_issuer_keycloak@@@|$JWT_ISSUER_KEYCLOAK|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@auth_redirect@@@|$AUTH_REDIRECT|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@storage_dir@@@|$STORAGE_DIR|g" /home/$MATECAT_USER/cattool/inc/config.ini
 sudo sed -i "s|@@@mt_base_url@@@|$MT_BASE_URL|g" /home/$MATECAT_USER/cattool/inc/config.ini

@@ -1,7 +1,9 @@
 <?php
 
 use Lcobucci\JWT\Parser;
-use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Signer\Key;
+use Lcobucci\JWT\Signer\Hmac\Sha256 as HmacSha256;
+use Lcobucci\JWT\Signer\Rsa\Sha256 as RsaSha256;
 use Lcobucci\JWT\ValidationData;
 use Users\JwtSignup;
 use Users_UserDao;
@@ -23,10 +25,11 @@ class AuthCookie {
             }
 
             $parsedToken = (new Parser())->parse((string) $jwt);
-            $signer = new Sha256();
+            $signer = new HmacSha256();
+            $signerKeyCloak = new RsaSha256();
             $data = new ValidationData();
 
-            if (!$parsedToken->verify($signer, INIT::$JWT_KEY)) {
+            if (!$parsedToken->verify($signer, INIT::$JWT_KEY) && !$parsedToken->verify($signerKeyCloak, new Key("-----BEGIN PUBLIC KEY-----\n".INIT::$JWT_KEY_KEYCLOAK."\n-----END PUBLIC KEY-----"))) {
                 header("HTTP/1.1 401 Unauthorized");
                 die();
             }
@@ -84,8 +87,19 @@ class AuthCookie {
     private static function getData($jwt) {
         try {
             $parsedToken = (new Parser())->parse((string) $jwt);
+            $group = "";
+            $userId = "";
 
-            $jwtId = $parsedToken->getClaim('sub') . ':-:' . $parsedToken->getClaim('grp');
+            if ($parsedToken->getClaim('iss') == INIT::$JWT_ISSUER_KEYCLOAK) { // iss: KeyCloak url
+                $userId = $parsedToken->getClaim('email');
+                $group = end(explode("/", $parsedToken->getClaim('membership')[0]));
+            }
+            else { // iss: LetsMTService
+                $userId = $parsedToken->getClaim('sub');
+                $group = $parsedToken->getClaim('grp');
+            }
+
+            $jwtId = $userId . ':-:' . $group;
             $nameArray = explode(' ', $parsedToken->getClaim('given_name'), 2);
             $firstName = isset($nameArray[0]) ? $nameArray[0] : '';
             $lastName = isset($nameArray[1]) ? $nameArray[1] : '';
