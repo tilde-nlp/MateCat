@@ -11,6 +11,7 @@ RUN locale-gen en_US.UTF-8
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 RUN LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
 RUN LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/apache2
+RUN rm -rf /var/www/matecat
 
 # Prepare the environment
 ENV PHP_POST_MAX_SIZE 1024M
@@ -19,11 +20,10 @@ ENV PHP_MAX_MEMORY 4096M
 
 ENV SERVICES_DIR "/etc/init.d"
 ENV USER_OWNER "www-data"
-ENV MATECAT_HOME "/var/www/matecat"
 
 # Start app_configslication
 COPY run.sh /tmp/run.sh
 RUN chmod +x /tmp/run.sh
 
-WORKDIR "/var/www/matecat"
+WORKDIR "/var/www"
 CMD ["/tmp/run.sh"]
