@@ -22,8 +22,8 @@ JWT_KEY=""
 JWT_KEY_KEYCLOAK=""
 JWT_ISSUER_KEYCLOAK=""
 AUTH_REDIRECT="https://hugo.lv/lv/Account/Login?ReturnUrl="
-STORAGE_DIR="${MATECAT_HOME}/storage/"
-BRANCH="code-merge"
+STORAGE_DIR="/var/www/matecat/storage/"
+BRANCH="dockerization"
 MT_BASE_URL=""
 MT_CLIENT_ID=""
 MT_APP_ID=""
@@ -33,10 +33,6 @@ TERM_BASE_URL=""
 SYNONYM_BASE_URL=""
 FILE_CONVERTER_BASE_URL="http://hugodevcode.tilde.lv:5000/"
 DEV_MODE=true
-
-# set working dir
-cd ${MATECAT_HOME}
-pwd
 
 apt-get update
 # ----- Apache2
@@ -104,37 +100,38 @@ apache2ctl restart
 apt-get -y install git
 
 # delete contents. Git cant clone in to non-empty directory on repeated installs
-cd ${MATECAT_HOME}
+cd /var/www
+
 pwd
 ls -la
-git clone https://github.com/tilde-nlp/MateCat.git .
+git clone https://github.com/tilde-nlp/MateCat.git matecat
+cd matecat
 git fetch --all
 git checkout $BRANCH
 
 # SQL
-MYSQL_ROOT_PWD="root"
-
-mysql -h mysql -P 3306 -u root -p$MYSQL_ROOT_PWD < lib/Model/matecat.sql
-mysql -h mysql -P 3306 -u root -p$MYSQL_ROOT_PWD < INSTALL/17-06-2018_user_email_alter.sql
-mysql -h mysql -P 3306 -u root -p$MYSQL_ROOT_PWD < INSTALL/20-06-2018_user_job_segment_create.sql
-mysql -h mysql -P 3306 -u root -p$MYSQL_ROOT_PWD < INSTALL/11-07-2018_add_save_type.sql
-mysql -h mysql -P 3306 -u root -p$MYSQL_ROOT_PWD < INSTALL/29-07-2018_alter_projects.sql
-mysql -h mysql -P 3306 -u root -p$MYSQL_ROOT_PWD < INSTALL/08-08-2018_create_memory_settings.sql
-mysql -h mysql -P 3306 -u root -p$MYSQL_ROOT_PWD < INSTALL/02-09-2018_modify_memory_settings.sql
-mysql -h mysql -P 3306 -u root -p$MYSQL_ROOT_PWD < INSTALL/02-09-2018_edit_job_table.sql
-mysql -h mysql -P 3306 -u root -p$MYSQL_ROOT_PWD < INSTALL/10-09-2018_alter_user.sql
-mysql -h mysql -P 3306 -u root -p$MYSQL_ROOT_PWD < INSTALL/11-09-2018_alter_jobs.sql
-mysql -h mysql -P 3306 -u root -p$MYSQL_ROOT_PWD < INSTALL/15-10-2018.sql
-mysql -h mysql -P 3306 -u root -p$MYSQL_ROOT_PWD < INSTALL/28-10-2018.sql
-mysql -h mysql -P 3306 -u root -p$MYSQL_ROOT_PWD < INSTALL/04-11-2018.sql
-mysql -h mysql -P 3306 -u root -p$MYSQL_ROOT_PWD < INSTALL/28-01-2019_project_settings.sql
+# MYSQL_ROOT_PWD="root"
+mysql -h mysql -u admin -padmin < lib/Model/matecat.sql
+mysql -h mysql -u admin -padmin < INSTALL/17-06-2018_user_email_alter.sql
+mysql -h mysql -u admin -padmin < INSTALL/20-06-2018_user_job_segment_create.sql
+mysql -h mysql -u admin -padmin < INSTALL/11-07-2018_add_save_type.sql
+mysql -h mysql -u admin -padmin < INSTALL/29-07-2018_alter_projects.sql
+mysql -h mysql -u admin -padmin < INSTALL/08-08-2018_create_memory_settings.sql
+mysql -h mysql -u admin -padmin < INSTALL/02-09-2018_modify_memory_settings.sql
+mysql -h mysql -u admin -padmin < INSTALL/02-09-2018_edit_job_table.sql
+mysql -h mysql -u admin -padmin < INSTALL/10-09-2018_alter_user.sql
+mysql -h mysql -u admin -padmin < INSTALL/11-09-2018_alter_jobs.sql
+mysql -h mysql -u admin -padmin < INSTALL/15-10-2018.sql
+mysql -h mysql -u admin -padmin < INSTALL/28-10-2018.sql
+mysql -h mysql -u admin -padmin < INSTALL/04-11-2018.sql
+mysql -h mysql -u admin -padmin < INSTALL/28-01-2019_project_settings.sql
 
 # Apache matecat vhost
 cp INSTALL/matecat-vhost.conf.sample /etc/apache2/sites-available/matecat-vhost.conf
-sed -i 's|@@@path@@@|${MATECAT_HOME}|g' /etc/apache2/sites-available/matecat-vhost.conf
-sed -i 's|localhost|$SERVERNAME|g' /etc/apache2/sites-available/matecat-vhost.conf
+sed -i 's|@@@path@@@|/var/www/matecat/public|g' /etc/apache2/sites-available/matecat-vhost.conf
 sed -i 's|#ServerName www.example.com|ServerName DONT-USE-ME-DOT-COM|g' /etc/apache2/sites-enabled/000-default.conf
 a2ensite matecat-vhost.conf
+a2dissite 000-default
 apache2ctl restart
 
 # download composer installer
@@ -163,8 +160,6 @@ sed -i "s|@@@synonym_base_url@@@|$SYNONYM_BASE_URL|g" inc/config.ini
 sed -i "s|@@@dev_mode@@@|$DEV_MODE|g" inc/config.ini
 cp inc/task_manager_config.ini.sample inc/task_manager_config.ini
 
-chown -R www-data $STORAGE_DIR
-
 sed -i "s/FILTERS_ADDRESS.*/FILTERS_ADDRESS = http:\/\/localhost:8732/g" inc/config.ini
 sed -i "s/FILTERS_MASHAPE_KEY.*/FILTERS_MASHAPE_KEY = /g" inc/config.ini
 chown -R www-data:www-data $STORAGE_DIR
@@ -174,6 +169,7 @@ chown -R www-data:www-data $STORAGE_DIR
 #pushd ./lib/Utils/Analysis
 #/bin/bash restartAnalysis.sh
 #popd
+
 
 echo "Starting Apache..."
 /etc/init.d/apache2 restart
@@ -189,4 +185,3 @@ while true; do
 #    echo date " => Waiting for an infinite. More or less..."
     sleep 5
 done
-
