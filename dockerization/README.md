@@ -1,6 +1,6 @@
 # Matecat Docker
 
-Dockerization for [https://github.com/matecat/MateCat](https://github.com/matecat/MateCat)
+Dockerization for [https://github.com/tilde-nlp/MateCat](https://github.com/tilde-nlp/MateCat)
 
 # Prerequisites
 
@@ -9,21 +9,19 @@ Dockerization for [https://github.com/matecat/MateCat](https://github.com/mateca
 
 # Configuration
 
-1. Clone this Docker repo
+Clone this Docker repo
 
 ```sh
-git clone https://github.com/CrossLangNV/matecat-docker.git
+git clone git@github.com:tilde-nlp/MateCat.git
+git checkout dockerization
 ```
 
-2. Clone **Matecat** source 
+# Configuration
+Navigate to dockerization folder
 
 ```sh
-git clone https://github.com/matecat/MateCat.git ~/matecat
+cd dockerization
 ```
-
-3. Copy/move Matecat source folder to `MateCatApache/matecat`
-
-4. Provide a valid `oauth.config.ini` file in `MateCatApache/app_configs` for Google OAuth
 
 # Start Docker
 
