@@ -20,9 +20,6 @@ class AuthCookie {
     public static function checkAccess() {
         try {
             $jwt = self::getToken();
-            if (empty($jwt)) {
-                $jwt = $_POST['jwt'];
-            }
 
             $parsedToken = (new Parser())->parse((string) $jwt);
             $signer = new HmacSha256();
@@ -54,6 +51,10 @@ class AuthCookie {
         $headers = getallheaders();
         if ( isset( $headers['Authorization'] ) and !empty( $headers['Authorization'] ) ) {
             $jwtToken = str_replace('Bearer ', '', $headers['Authorization']);
+        }
+        
+        if (empty($jwtToken)) {
+            $jwtToken = $_POST['jwt'];
         }
 
         if ($jwtToken === '' && INIT::$DEV_MODE) {
