@@ -109,23 +109,6 @@ cd matecat
 git fetch --all
 git checkout $BRANCH
 
-# SQL
-# MYSQL_ROOT_PWD="root"
-mysql -h mysql -u admin -padmin < lib/Model/matecat.sql
-mysql -h mysql -u admin -padmin < INSTALL/17-06-2018_user_email_alter.sql
-mysql -h mysql -u admin -padmin < INSTALL/20-06-2018_user_job_segment_create.sql
-mysql -h mysql -u admin -padmin < INSTALL/11-07-2018_add_save_type.sql
-mysql -h mysql -u admin -padmin < INSTALL/29-07-2018_alter_projects.sql
-mysql -h mysql -u admin -padmin < INSTALL/08-08-2018_create_memory_settings.sql
-mysql -h mysql -u admin -padmin < INSTALL/02-09-2018_modify_memory_settings.sql
-mysql -h mysql -u admin -padmin < INSTALL/02-09-2018_edit_job_table.sql
-mysql -h mysql -u admin -padmin < INSTALL/10-09-2018_alter_user.sql
-mysql -h mysql -u admin -padmin < INSTALL/11-09-2018_alter_jobs.sql
-mysql -h mysql -u admin -padmin < INSTALL/15-10-2018.sql
-mysql -h mysql -u admin -padmin < INSTALL/28-10-2018.sql
-mysql -h mysql -u admin -padmin < INSTALL/04-11-2018.sql
-mysql -h mysql -u admin -padmin < INSTALL/28-01-2019_project_settings.sql
-
 # Apache matecat vhost
 cp INSTALL/matecat-vhost.conf.sample /etc/apache2/sites-available/matecat-vhost.conf
 sed -i 's|@@@path@@@|/var/www/matecat/public|g' /etc/apache2/sites-available/matecat-vhost.conf
