@@ -104,7 +104,9 @@ class AuthCookie {
             $nameArray = explode(' ', $parsedToken->getClaim('given_name'), 2);
             $firstName = isset($nameArray[0]) ? $nameArray[0] : '';
             $lastName = isset($nameArray[1]) ? $nameArray[1] : '';
-
+            if ($firstName == '' && $lastName == '') {
+                $firstName = $userId;
+            }
             $dao  = new Users_UserDao();
             $user = $dao->getByEmail( $jwtId );
             if ($user == null) {
