@@ -37,7 +37,11 @@ services:
       - matecat-network
 
   matecat:
-    build: ./MatecatTilde/
+    build:
+      context: .
+      dockerfile: ./MatecatTilde/Dockerfile
+      args:
+        - BRANCH=dockerization
     ports:
       - 80:80
     environment: 
